@@ -3,7 +3,6 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-
 import { auth } from "express-oauth2-jwt-bearer";
 
 dotenv.config();

@@ -1,12 +1,21 @@
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+
 import "./App.css";
 
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Home from "./components/Home";
+
 function App() {
+  const approute = createBrowserRouter([
+    {
+      path: "/",
+      element: <Home />,
+    },
+  ]);
+
   return (
     <>
-      <Button>
-        click me
-        </Button>
+      <RouterProvider router={approute} />
     </>
   );
 }
