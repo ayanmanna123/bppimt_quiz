@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
 const questionSchema = new mongoose.Schema({
-  question: { type: String, required: true },
+  questionText: { type: String, required: true },
   options: [{ type: String, required: true }],
-  correctAnswer: { type: Number, required: true }, // index of correct option
+  correctAnswer: { type: Number, required: true }, 
 });
 
 const quizSchema = new mongoose.Schema(
@@ -19,13 +19,25 @@ const quizSchema = new mongoose.Schema(
       required: true,
     },
     questions: [questionSchema],
-    date: { type: Date, required: true },
-    time: { type: String, required: true }, // e.g. "10:00 AM"
-    marks: { type: Number, required: true },
-    totalQuestions: { type: Number, required: true },
+    date: {
+      type: String,
+      required: true,
+    },
+    time: {
+      type: String,
+      required: true,
+    },
+    marks: {
+      type: Number,
+      required: true,
+    },
+    totalQuestions: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-const Quize=  mongoose.model("Quiz", quizSchema);
-export default Quize
+const Quize = mongoose.model("Quiz", quizSchema);
+export default Quize;
