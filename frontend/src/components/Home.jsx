@@ -17,20 +17,9 @@ const Home = () => {
   const updateProfile = async () => {
     try {
       const token = await getAccessTokenSilently({
-        audience: "http://localhost:5000/api/v1", // 👈 matches backend audience
+        audience: "http://localhost:5000/api/v2", // 👈 matches backend audience
       });
-
-      const res = await axios.put(
-        "https://ultimate-login.vercel.app/api/v1/user/update",
-        { fullname: "New Full Name" },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log(res.data);
+       console.log(JSON.parse(atob(token.split('.')[1])))
     } catch (error) {
       console.error(error);
     }

@@ -16,7 +16,7 @@ createRoot(document.getElementById("root")).render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Auth0Provider
-          domain="https://dev-po1r5cykjnu8e0ld.us.auth0.com"
+          domain="dev-po1r5cykjnu8e0ld.us.auth0.com"
           clientId="mUjG6TRByGosW1VyMpQlVIGom6UahqLq"
           authorizationParams={{
             redirect_uri: window.location.origin,
