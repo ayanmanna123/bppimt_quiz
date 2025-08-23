@@ -39,7 +39,7 @@ export const createSubject = async (req, res) => {
     const alreadyExists = await Subject.findOne({
       department,
       semester,
-      subjectName
+      subjectName,
     });
     if (alreadyExists) {
       return res.status(409).json({
@@ -112,11 +112,10 @@ export const updateSubject = async (req, res) => {
       });
     }
 
-    
     const duplicate = await Subject.findOne({
       department,
       semester,
-      subjectName
+      subjectName,
     });
     if (duplicate) {
       return res.status(409).json({
@@ -125,7 +124,6 @@ export const updateSubject = async (req, res) => {
       });
     }
 
-     
     if (department) subject.department = department;
     if (semester) subject.semester = semester;
     if (subjectName) subject.subjectName = subjectName;
@@ -146,4 +144,105 @@ export const updateSubject = async (req, res) => {
   }
 };
 
+export const teacherCreatedSubject = async (req, res) => {
+  try {
+    const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+    if (user.role === "student") {
+      return res.status(400).json({
+        message: "you are not a teacher",
+        success: false,
+      });
+    }
+    const allSubject = await Subject.find({ createdBy: user._id });
+    if (!allSubject) {
+      return res.status(400).json({
+        message: "not subject found",
+        success: true,
+      });
+    }
+    return res.status(200).json({
+      message: "subject creat successfully",
+      allSubject,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
+export const subjectById = async (req, res) => {
+  try {
+    const subjectId = req.params.id;
+    const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+    if (!subjectId) {
+      return res.status(400).json({
+        message: "subject id id requried",
+      });
+    }
+    const subject = await Subject.findOne({ _id: subjectId }).populate({
+      path: "createdBy",
+    });
+    if (!subject) {
+      return res.status(400).json({
+        message: "subject not found",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: "subject get successfully",
+      subject,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const departmentQuiry = async (req, res) => {
+  try {
+     
+    const departmentName = req.query.department;
+
+    if (!departmentName) {
+      return res.status(400).json({
+        message: "Department name is required",
+        success: false,
+      });
+    }
+
+    const subjects = await Subject.find({ department: departmentName });
+
+    if (!subjects || subjects.length === 0) {
+      return res.status(404).json({
+        message: "No subjects found for this department",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Subjects fetched successfully",
+      subjects,
+      success: true,
+    });
+  } catch (error) {
+    console.error("Department Query Error:", error);
+    return res.status(500).json({
+      message: "Server error while fetching subjects",
+      success: false,
+    });
+  }
+};
