@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { auth } from "express-oauth2-jwt-bearer";
 import userrouter from "./routes/auth.routes.js";
+import SubjectRoute from "./routes/subject.routes.js";
 
 dotenv.config();
 connectToMongo();
@@ -48,6 +49,7 @@ app.get("/", (req, res) => {
 
 // ✅ API Routes
 app.use("/api/v1/user", userrouter)
+app.use("/api/v1/subject",SubjectRoute )
 // ✅ Server Listener
 app.listen(port, () => {
   console.log(`Website is running at http://localhost:${port}`);
