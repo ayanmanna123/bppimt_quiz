@@ -78,8 +78,8 @@ const AllQuiz = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {quizzes.map((quiz, i) => (
-              <div onClick={navegate(`/quiz/page/${quiz._id}`)}>
-                <Card key={quiz?._id || i} className="w-full">
+              <div key={quiz?._id || i} onClick={()=>navegate(`/quiz/page/${quiz._id}`)}>
+                <Card  className="w-full">
                   <CardHeader>
                     <CardTitle className={"font-bold text-2xl"}>
                       {quiz?.title}
