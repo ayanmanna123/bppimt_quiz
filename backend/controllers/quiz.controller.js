@@ -3,7 +3,7 @@ import User from "../models/User.model.js";
 
 export const createQuestion = async (req, res) => {
   try {
-    const { subject, questions, date, time, marks, totalQuestions } = req.body;
+    const {title, subject, questions, date, time, marks, totalQuestions } = req.body;
 
     if (
       !subject ||
@@ -11,6 +11,7 @@ export const createQuestion = async (req, res) => {
       !marks ||
       !date ||
       !totalQuestions ||
+      !title||
       !Array.isArray(questions) ||
       questions.length === 0
     ) {
@@ -39,6 +40,7 @@ export const createQuestion = async (req, res) => {
     }
 
     const tempQuiz = {
+      title,
       subject,
       createdBy: user._id,
       questions,

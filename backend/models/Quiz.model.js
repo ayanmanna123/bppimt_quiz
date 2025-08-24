@@ -13,6 +13,10 @@ const quizSchema = new mongoose.Schema(
       ref: "Subject",
       required: true,
     },
+    title:{
+      type: String,
+      required: true,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
