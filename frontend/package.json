@@ -9,10 +9,12 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "backend": "cd ../backend && npm run dev",
-   "both": "concurrently \"npm run dev\" \"npm run backend\""
+    "both": "concurrently \"npm run dev\" \"npm run backend\""
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.4.0",
+    "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-slot": "^1.2.3",
     "@reduxjs/toolkit": "^2.8.2",
     "@tailwindcss/vite": "^4.1.12",
@@ -20,6 +22,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "concurrently": "^9.2.0",
+    "framer-motion": "^12.23.12",
     "lucide-react": "^0.541.0",
     "next-themes": "^0.4.6",
     "react": "^19.1.1",
