@@ -66,7 +66,7 @@ export const createQuestion = async (req, res) => {
 
 export const getQuizeBySubJectId = async (req, res) => {
   try {
-    const { subjectId } = req.body;
+    const { subjectId } = req.params;
     if (!subjectId) {
       return res.status(400).json({
         message: "subject Id is required",

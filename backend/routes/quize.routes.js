@@ -10,7 +10,7 @@ import {
 const quizeRoute = express.Router();
 
 quizeRoute.post("/creatquiz", isAuthenticated, createQuestion);
-quizeRoute.get("/quiz/subject", isAuthenticated, getQuizeBySubJectId);
+quizeRoute.get("/quiz/subject/:subjectId", isAuthenticated, getQuizeBySubJectId);
 quizeRoute.get("/quiz/teacher", isAuthenticated, getQuizeByTeacherId);
 quizeRoute.delete("/delet/quiz", isAuthenticated, deletQuiz);
 

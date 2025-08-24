@@ -11,13 +11,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 const Quiz = () => {
   const { usere } = useSelector((store) => store.auth);
   useGetSubject(`${usere.department}`);
 
   const { subjectByquiry } = useSelector((store) => store.subject);
-
+  const navigate = useNavigate()
   return (
     <>
       <Navbar />
@@ -27,7 +28,9 @@ const Quiz = () => {
          
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mx-19">
           {subjectByquiry?.map((sub, i) => (
-            <Card key={i} className="w-full ">
+
+           <div key={i} onClick={()=> navigate(`/quizedetails/${sub?._id}`)} >
+             <Card className="w-full ">
               <CardHeader>
                 <CardTitle>{sub?.subjectName}</CardTitle>
                 <CardDescription>{sub?.description}</CardDescription>
@@ -41,6 +44,7 @@ const Quiz = () => {
                 <p>Semester: {sub?.semester}</p>
               </CardFooter>
             </Card>
+           </div>
           ))}
         </div>
       </div>

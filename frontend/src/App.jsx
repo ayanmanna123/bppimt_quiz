@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./components/pages/Home";
 import Complete from "./components/Complete";
 import Quiz from "./components/pages/Quiz";
+import QuizDEtails from "./components/QuizDEtails";
 function App() {
   const approute = createBrowserRouter([
     {
@@ -17,6 +18,10 @@ function App() {
      {
       path: "/quiz",
       element: <Quiz/>
+    },
+     {
+      path: "/quizedetails/:subjectId",
+      element:<QuizDEtails/>
     },
   ]);
 
