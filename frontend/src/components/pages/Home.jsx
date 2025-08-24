@@ -1,9 +1,7 @@
-import React from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import axios from "axios";
-import { CloudHail, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { User } from "lucide-react";
 import {
   Popover,
@@ -11,9 +9,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
+import { useDispatch } from "react-redux";
+import { setuser } from "../../Redux/auth.reducer";
 const Home = () => {
+  const dispatch = useDispatch()
   const {
     logout,
     loginWithRedirect,
@@ -22,13 +23,14 @@ const Home = () => {
     getAccessTokenSilently,
   } = useAuth0();
   const navigate = useNavigate();
-
+  
   const handleLogin = async () => {
     if (!isAuthenticated) {
       await loginWithRedirect();
+      
     }
   };
-
+   dispatch(setuser(user));
   const updateProfile = async () => {
     try {
       const token = await getAccessTokenSilently({

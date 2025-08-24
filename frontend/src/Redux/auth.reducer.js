@@ -4,7 +4,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState: {
     loding: false,
-    user:null,
+    usere:null,
     signupEmail: null,
   },
   reducers: {
@@ -12,7 +12,7 @@ const authSlice = createSlice({
       state.loding = action.payload;
     },
     setuser:(state, action)=>{
-        state.user=action.payload
+        state.usere=action.payload
     },
      setSignupEmail: (state, action) => {
       state.signupEmail = action.payload;

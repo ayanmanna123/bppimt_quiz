@@ -19,7 +19,7 @@ createRoot(document.getElementById("root")).render(
           domain="dev-po1r5cykjnu8e0ld.us.auth0.com"
           clientId="mUjG6TRByGosW1VyMpQlVIGom6UahqLq"
           authorizationParams={{
-            redirect_uri: window.location.origin,
+            redirect_uri: `${window.location.origin}/complete/profile`,
             audience: "http://localhost:5000/api/v2",  
           }}
         >
