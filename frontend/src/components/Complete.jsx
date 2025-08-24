@@ -99,7 +99,10 @@ const Complete = () => {
 
   return (
     <>
-      <h1 className="font-bold text-2xl p-3.5">complete the regestation</h1>
+      
+      <div className="flex justify-center items-center">
+        <h1 className="font-bold text-2xl p-3.5">complete the regestation</h1>
+      </div>
       <hr />
       <div className="flex justify-center gap-3.5 mt-9 ">
         <div>
