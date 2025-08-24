@@ -1,9 +1,10 @@
 import Navbar from "../shared/Navbar";
 import { Button } from "../ui/button";
-
+import { useAuth0 } from "@auth0/auth0-react"; 
 import { motion } from "framer-motion";
 
 const Home = () => {
+    const { getAccessTokenSilently } = useAuth0();
   const updateProfile = async () => {
     try {
       const token = await getAccessTokenSilently({

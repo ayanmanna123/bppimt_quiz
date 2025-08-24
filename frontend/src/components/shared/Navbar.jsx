@@ -28,7 +28,7 @@ const Navbar = () => {
       await loginWithRedirect();
     }
   };
-  dispatch(setuser(user));
+   
   return (
     <div>
       <nav className="flex items-center justify-between px-10 py-6">
@@ -38,10 +38,11 @@ const Navbar = () => {
         </div>
         <div className="flex justify-center items-center gap-3.5">
           <ul className="hidden md:flex items-center gap-8 text-indigo-900 font-medium">
-            <li className="cursor-pointer hover:text-indigo-600">Home</li>
-            <li className="cursor-pointer hover:text-indigo-600">About Us</li>
-            <li className="cursor-pointer hover:text-indigo-600">Service</li>
-            <li className="cursor-pointer hover:text-indigo-600">Contact Us</li>
+            <Link className="cursor-pointer hover:text-indigo-600" to={"/"}>Home</Link>
+            <Link className="cursor-pointer hover:text-indigo-600">About Us</Link>
+            <Link className="cursor-pointer hover:text-indigo-600" to={"/quiz"}>Service</Link>
+            <Link className="cursor-pointer hover:text-indigo-600">Contact Us</Link>
+           
           </ul>
           {!isAuthenticated ? (
             <Button

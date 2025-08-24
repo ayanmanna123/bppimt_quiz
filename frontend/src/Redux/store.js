@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authSlice from "./auth.reducer.js";
-
+import subjectShilice from "./subject.reducer.js"
 import {
   persistStore,
   persistReducer,
@@ -22,6 +22,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   auth: authSlice,
+  subject:subjectShilice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

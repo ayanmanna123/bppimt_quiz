@@ -223,8 +223,8 @@ export const departmentQuiry = async (req, res) => {
         success: false,
       });
     }
-
-    const subjects = await Subject.find({ department: departmentName });
+ 
+    const subjects = await Subject.find({ department: departmentName }).populate({path:"createdBy"})
 
     if (!subjects || subjects.length === 0) {
       return res.status(404).json({
