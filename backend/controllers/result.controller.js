@@ -111,7 +111,6 @@ export const getReasultByQUizeId = async (req, res) => {
 
 export const getInduvisualREasult = async (req, res) => {
   try {
-    const {quizeId} = req.body;
     const userId = req.auth.sub;
     const user = await User.findOne({ auth0Id: userId });
 
@@ -127,18 +126,24 @@ export const getInduvisualREasult = async (req, res) => {
         success: false,
       });
     }
-    const getReasult = await Reasult.findOne({student: user._id , quiz: quizeId})
-    if(!getReasult){
-        return res.status(400).json({
-            message:"reasult not found",
-            success:false
-        })
+    const getReasult = await Reasult.find({ student: user._id }).populate({
+      path: "quiz",
+      populate: {
+        path: "subject",
+      },
+    });
+
+    if (!getReasult) {
+      return res.status(400).json({
+        message: "reasult not found",
+        success: false,
+      });
     }
     return res.status(200).json({
-        message:"reasult get successFully",
-        getReasult,
-        success:true
-    })
+      message: "reasult get successFully",
+      getReasult,
+      success: true,
+    });
   } catch (error) {
     console.log(error);
   }

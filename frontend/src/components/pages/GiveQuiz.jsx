@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -13,7 +13,7 @@ const GiveQuiz = () => {
   const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState({}); // { [questionId]: "0" | "1" | ... }
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
@@ -38,7 +38,7 @@ const GiveQuiz = () => {
   const handleAnswerChange = (questionId, optionIndexString) => {
     setAnswers((prev) => ({
       ...prev,
-      [questionId]: optionIndexString, // store as string for shadcn RadioGroup
+      [questionId]: optionIndexString,
     }));
   };
 
@@ -78,12 +78,14 @@ const GiveQuiz = () => {
 
       console.log("Submit response:", res.data);
       alert(res.data.message || "Submitted successfully!");
+      navigate("/quiz");
     } catch (error) {
       console.error("Submit error:", error);
       alert(
         error.response?.data?.message ||
           "Failed to submit quiz. Please try again."
       );
+      navigate("/quiz");
     }
   };
 
@@ -110,7 +112,7 @@ const GiveQuiz = () => {
             <p className="font-medium">{currentQuestion.questionText}</p>
 
             <RadioGroup
-              // shadcn wants string value
+              
               value={currentSelected}
               onValueChange={(value) =>
                 handleAnswerChange(currentQuestion._id, value)
@@ -128,7 +130,7 @@ const GiveQuiz = () => {
             </RadioGroup>
           </div>
 
-          {/* Controls */}
+          
           <div className="flex items-center gap-3">
             <Button
               variant="outline"

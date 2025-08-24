@@ -7,6 +7,7 @@ import Quiz from "./components/pages/Quiz";
 import QuizDEtails from "./components/AllQuiz";
 import GiveQuiz from "./components/pages/GiveQuiz";
 import AllQuiz from "./components/AllQuiz";
+import Reasult from "./components/pages/Reasult";
 function App() {
   const approute = createBrowserRouter([
     {
@@ -28,6 +29,10 @@ function App() {
     {
       path: "/quiz/page/:quizId",
       element:<GiveQuiz/>
+    },
+     {
+      path: "/reasult",
+      element:<Reasult/>
     },
   ]);
 

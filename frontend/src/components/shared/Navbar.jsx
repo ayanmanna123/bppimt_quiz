@@ -28,7 +28,7 @@ const Navbar = () => {
       await loginWithRedirect();
     }
   };
-   
+
   return (
     <div>
       <nav className="flex items-center justify-between px-10 py-6">
@@ -38,11 +38,21 @@ const Navbar = () => {
         </div>
         <div className="flex justify-center items-center gap-3.5">
           <ul className="hidden md:flex items-center gap-8 text-indigo-900 font-medium">
-            <Link className="cursor-pointer hover:text-indigo-600" to={"/"}>Home</Link>
-            <Link className="cursor-pointer hover:text-indigo-600">About Us</Link>
-            <Link className="cursor-pointer hover:text-indigo-600" to={"/quiz"}>Service</Link>
-            <Link className="cursor-pointer hover:text-indigo-600">Contact Us</Link>
-           
+            <Link className="cursor-pointer hover:text-indigo-600" to={"/"}>
+              Home
+            </Link>
+            <Link className="cursor-pointer hover:text-indigo-600">
+              About Us
+            </Link>
+            <Link className="cursor-pointer hover:text-indigo-600" to={"/quiz"}>
+              Service
+            </Link>
+            <Link
+              className="cursor-pointer hover:text-indigo-600"
+              to={"/reasult"}
+            >
+              Rasult
+            </Link>
           </ul>
           {!isAuthenticated ? (
             <Button
