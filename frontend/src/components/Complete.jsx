@@ -99,91 +99,95 @@ const Complete = () => {
 
   return (
     <>
-    <h1 className="font-bold text-2xl">
-      complete the regestation
-    </h1>
-    <div className="flex justify-center gap-3.5 mt-9 ">
-    
-      <div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">{role || "Select Role"}</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Role</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup value={role} onValueChange={setRole}>
-              <DropdownMenuRadioItem value="student">
-                Student
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="teacher">
-                Teacher
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      <h1 className="font-bold text-2xl p-3.5">complete the regestation</h1>
+      <hr />
+      <div className="flex justify-center gap-3.5 mt-9 ">
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">{role || "Select Role"}</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>Role</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup value={role} onValueChange={setRole}>
+                <DropdownMenuRadioItem value="student">
+                  Student
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="teacher">
+                  Teacher
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
-      <div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              {department || "Select Department"}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Department</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup
-              value={department}
-              onValueChange={setDepartment}
-            >
-              <DropdownMenuRadioItem value="EE">EE</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="ECE">ECE</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="CSE">CSE</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="IT">IT</DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                {department || "Select Department"}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>Department</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup
+                value={department}
+                onValueChange={setDepartment}
+              >
+                <DropdownMenuRadioItem value="EE">EE</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="ECE">ECE</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="CSE">CSE</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="IT">IT</DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
-      <div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">{semester || "Select Semester"}</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Semester</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup
-              value={semester}
-              onValueChange={setSemester}
-            >
-              <DropdownMenuRadioItem value="first">First</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="second">
-                Second
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="third">Third</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="fourth">
-                Fourth
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="fifth">Fifth</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="sixth">Sixth</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="seventh">
-                Seventh
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="eighth">
-                Eighth
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">{semester || "Select Semester"}</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>Semester</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup
+                value={semester}
+                onValueChange={setSemester}
+              >
+                <DropdownMenuRadioItem value="first">
+                  First
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="second">
+                  Second
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="third">
+                  Third
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="fourth">
+                  Fourth
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="fifth">
+                  Fifth
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="sixth">
+                  Sixth
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="seventh">
+                  Seventh
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="eighth">
+                  Eighth
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
-      <Button onClick={handelsubmite}>
-        Submit
-      </Button>
-    </div>
+        <Button onClick={handelsubmite}>Submit</Button>
+      </div>
     </>
   );
 };
