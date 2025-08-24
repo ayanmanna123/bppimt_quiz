@@ -8,6 +8,7 @@ import QuizDEtails from "./components/AllQuiz";
 import GiveQuiz from "./components/pages/GiveQuiz";
 import AllQuiz from "./components/AllQuiz";
 import Reasult from "./components/pages/Reasult";
+import ReasultDetails from "./components/pages/ReasultDetails";
 function App() {
   const approute = createBrowserRouter([
     {
@@ -33,6 +34,10 @@ function App() {
      {
       path: "/reasult",
       element:<Reasult/>
+    },
+    {
+      path: "/reasult/details/:resultId",
+      element:<ReasultDetails/>
     },
   ]);
 

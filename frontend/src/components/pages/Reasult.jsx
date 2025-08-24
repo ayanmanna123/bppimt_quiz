@@ -2,11 +2,12 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "../shared/Navbar";
+import { useNavigate } from "react-router-dom";
 
 const Reasult = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [reasults, setReasults] = useState([]);
-
+    const navigate = useNavigate();
   useEffect(() => {
     const getReasult = async () => {
       try {
@@ -47,6 +48,7 @@ const Reasult = () => {
             <div
               key={index}
               className="border rounded-xl shadow-md p-4 mb-4 bg-white"
+              onClick={()=>navigate(`/reasult/details/${result?._id}`)}
             >
               <h2 className="text-xl font-bold mb-2">
                 {result?.quiz?.title || "Untitled Quiz"}

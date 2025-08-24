@@ -16,6 +16,10 @@ const resultSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    answers:{
+      type:Array,
+      required:true
+    },
     submittedAt: {
       type: Date,
       default: Date.now,

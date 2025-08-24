@@ -1,6 +1,7 @@
 import express from "express";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
 import {
+  conpareCurrectAnsWrongAns,
   getInduvisualREasult,
   getReasultByQUizeId,
   submitQuiz,
@@ -10,4 +11,5 @@ const reasultRoute = express.Router();
 reasultRoute.post("/reasult/submite", isAuthenticated, submitQuiz);
 reasultRoute.get("/get/allReasult", isAuthenticated, getReasultByQUizeId);
 reasultRoute.get("/get/reasult/student", isAuthenticated, getInduvisualREasult);
+reasultRoute.get("/result/details/:resultId", isAuthenticated,conpareCurrectAnsWrongAns)
 export default reasultRoute;

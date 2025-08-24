@@ -46,6 +46,7 @@ export const submitQuiz = async (req, res) => {
       quiz: quizId,
       student: student._id,
       score,
+      answers,
     };
 
     const reasult = await Reasult.create(newResult);
@@ -146,5 +147,51 @@ export const getInduvisualREasult = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const conpareCurrectAnsWrongAns = async (req, res) => {
+  try {
+    const { resultId } = req.params;
+
+    // find result and populate quiz
+    const result = await Reasult.findById(resultId).populate("quiz");
+    if (!result) {
+      return res.status(404).json({ message: "Result not found" });
+    }
+
+    const quiz = result.quiz;
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    // map each question with student's answer & correctness
+    const details = quiz.questions.map((q, index) => {
+      const studentAnswer = result.answers[index]; // stored answer index
+      const correctAnswer = q.correctAnswer; // correct option index
+
+      return {
+        questionText: q.questionText,
+        options: q.options,
+        studentAnswerIndex: studentAnswer,
+        studentAnswer:
+          studentAnswer !== null && studentAnswer !== undefined
+            ? q.options[studentAnswer]
+            : null,
+        correctAnswerIndex: correctAnswer,
+        correctAnswer: q.options[correctAnswer],
+        isCorrect: studentAnswer === correctAnswer,
+      };
+    });
+
+    res.status(200).json({
+      quizTitle: quiz.title,
+      score: result.score,
+      submittedAt: result.submittedAt,
+      details,
+    });
+  } catch (error) {
+    console.error("Error fetching result details:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
