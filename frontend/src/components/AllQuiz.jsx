@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,12 +13,12 @@ import {
 } from "@/components/ui/card";
 import Navbar from "./shared/Navbar";
 
-const QuizDetails = () => {
+const AllQuiz = () => {
   const { getAccessTokenSilently } = useAuth0();
   const { subjectId } = useParams();
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navegate = useNavigate();
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
@@ -78,42 +78,44 @@ const QuizDetails = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {quizzes.map((quiz, i) => (
-              <Card key={quiz?._id || i} className="w-full">
-                <CardHeader>
-                  <CardTitle className={"font-bold text-2xl"}>
-                    {quiz?.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p>Total Questions: {quiz?.questions?.length || 0}</p>
-                  <p>submit Date: {quiz?.date} </p>
-                  <p>total time: {quiz?.time}</p>
-                </CardContent>
-                <CardFooter>
-                  <div>
+              <div onClick={navegate(`/quiz/page/${quiz._id}`)}>
+                <Card key={quiz?._id || i} className="w-full">
+                  <CardHeader>
+                    <CardTitle className={"font-bold text-2xl"}>
+                      {quiz?.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Total Questions: {quiz?.questions?.length || 0}</p>
+                    <p>submit Date: {quiz?.date} </p>
+                    <p>total time: {quiz?.time}</p>
+                  </CardContent>
+                  <CardFooter>
                     <div>
-                      <p>
-                        Created:{" "}
-                        {quiz?.createdAt
-                          ? new Date(quiz?.createdAt).toLocaleDateString()
-                          : "N/A"}
-                      </p>
-                    </div>
+                      <div>
+                        <p>
+                          Created:{" "}
+                          {quiz?.createdAt
+                            ? new Date(quiz?.createdAt).toLocaleDateString()
+                            : "N/A"}
+                        </p>
+                      </div>
 
-                    <div>
-                      <Badge
-                        className={
-                          new Date(quiz.date) > new Date()
-                            ? "bg-green-600 hover:bg-green-700 text-white"
-                            : "bg-red-600 hover:bg-red-700 text-white"
-                        }
-                      >
-                        {getRemainingTime(quiz?.date)}
-                      </Badge>
+                      <div>
+                        <Badge
+                          className={
+                            new Date(quiz.date) > new Date()
+                              ? "bg-green-600 hover:bg-green-700 text-white"
+                              : "bg-red-600 hover:bg-red-700 text-white"
+                          }
+                        >
+                          {getRemainingTime(quiz?.date)}
+                        </Badge>
+                      </div>
                     </div>
-                  </div>
-                </CardFooter>
-              </Card>
+                  </CardFooter>
+                </Card>
+              </div>
             ))}
           </div>
         )}
@@ -122,4 +124,4 @@ const QuizDetails = () => {
   );
 };
 
-export default QuizDetails;
+export default AllQuiz;

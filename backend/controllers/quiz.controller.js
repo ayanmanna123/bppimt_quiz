@@ -159,3 +159,29 @@ export const deletQuiz = async (req, res) => {
     console.log(error);
   }
 };
+
+export const getQuizeByQuizeId = async (req,res)=>{
+  try {
+    const { quizId } = req.params;
+    if(!quizId){
+      return res.status(400).json({
+        message:"quiz id is required",
+        success:false
+      })
+    }
+    const quize = await Quiz.findOne({_id: quizId})
+    if(!quize){
+      return res.status(400).jsin({
+        message:"quize not found",
+        success:false
+      })
+    }
+    return res.status(200).json({
+      message:"quiz is found",
+      quize,
+      success:false
+    })
+  } catch (error) {
+    
+  }
+}
