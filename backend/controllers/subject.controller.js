@@ -1,7 +1,6 @@
 import Subject from "../models/Subject.model.js";
 import User from "../models/User.model.js";
 
- 
 export const createSubject = async (req, res) => {
   try {
     const { department, semester, subjectName } = req.body;
@@ -16,7 +15,7 @@ export const createSubject = async (req, res) => {
     const userId = req.auth?.sub;
     if (!userId) {
       return res.status(401).json({
-        message: "Unauthorized: no user ID found",
+        message: "Unauthorized: No user ID found",
         success: false,
       });
     }
@@ -31,7 +30,7 @@ export const createSubject = async (req, res) => {
 
     if (user.role !== "teacher") {
       return res.status(403).json({
-        message: "Forbidden: only teachers can create subjects",
+        message: "Forbidden: Only teachers can create subjects",
         success: false,
       });
     }
@@ -43,7 +42,7 @@ export const createSubject = async (req, res) => {
     });
     if (alreadyExists) {
       return res.status(409).json({
-        message: "Subject already exists for this department & semester",
+        message: "Subject already exists for this department and semester",
         success: false,
       });
     }
@@ -76,7 +75,7 @@ export const updateSubject = async (req, res) => {
 
     if (!_id) {
       return res.status(400).json({
-        message: "Please provide subject ID to update",
+        message: "Please provide a subject ID to update",
         success: false,
       });
     }
@@ -84,7 +83,7 @@ export const updateSubject = async (req, res) => {
     const userId = req.auth?.sub;
     if (!userId) {
       return res.status(401).json({
-        message: "Unauthorized: no user ID found",
+        message: "Unauthorized: No user ID found",
         success: false,
       });
     }
@@ -107,7 +106,7 @@ export const updateSubject = async (req, res) => {
 
     if (subject.createdBy.toString() !== user._id.toString()) {
       return res.status(403).json({
-        message: "Forbidden: you are not allowed to update this subject",
+        message: "Forbidden: You are not allowed to update this subject",
         success: false,
       });
     }
@@ -119,7 +118,7 @@ export const updateSubject = async (req, res) => {
     });
     if (duplicate) {
       return res.status(409).json({
-        message: "Another subject with the same name already exists",
+        message: "Another subject with the same details already exists",
         success: false,
       });
     }
@@ -155,25 +154,29 @@ export const teacherCreatedSubject = async (req, res) => {
       });
     }
     if (user.role === "student") {
-      return res.status(400).json({
-        message: "you are not a teacher",
+      return res.status(403).json({
+        message: "You are not authorized: Only teachers can access this",
         success: false,
       });
     }
     const allSubject = await Subject.find({ createdBy: user._id });
-    if (!allSubject) {
-      return res.status(400).json({
-        message: "not subject found",
-        success: true,
+    if (!allSubject || allSubject.length === 0) {
+      return res.status(404).json({
+        message: "No subjects found",
+        success: false,
       });
     }
     return res.status(200).json({
-      message: "subject creat successfully",
+      message: "Subjects fetched successfully",
       allSubject,
       success: true,
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "Server error while fetching teacher's subjects",
+      success: false,
+    });
   }
 };
 
@@ -190,31 +193,36 @@ export const subjectById = async (req, res) => {
     }
     if (!subjectId) {
       return res.status(400).json({
-        message: "subject id id requried",
+        message: "Subject ID is required",
+        success: false,
       });
     }
     const subject = await Subject.findOne({ _id: subjectId }).populate({
       path: "createdBy",
     });
     if (!subject) {
-      return res.status(400).json({
-        message: "subject not found",
+      return res.status(404).json({
+        message: "Subject not found",
         success: false,
       });
     }
 
     return res.status(200).json({
-      message: "subject get successfully",
+      message: "Subject fetched successfully",
       subject,
       success: true,
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "Server error while fetching subject",
+      success: false,
+    });
   }
 };
+
 export const departmentQuiry = async (req, res) => {
   try {
-     
     const departmentName = req.query.department;
 
     if (!departmentName) {
@@ -223,8 +231,10 @@ export const departmentQuiry = async (req, res) => {
         success: false,
       });
     }
- 
-    const subjects = await Subject.find({ department: departmentName }).populate({path:"createdBy"})
+
+    const subjects = await Subject.find({ department: departmentName }).populate({
+      path: "createdBy",
+    });
 
     if (!subjects || subjects.length === 0) {
       return res.status(404).json({

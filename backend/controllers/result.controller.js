@@ -30,7 +30,7 @@ export const submitQuiz = async (req, res) => {
 
     if (alreadyGiven) {
       return res.status(400).json({
-        message: "You already attempted this quiz",
+        message: "You have already attempted this quiz",
         success: false,
       });
     }
@@ -54,13 +54,12 @@ export const submitQuiz = async (req, res) => {
     return res.status(201).json({
       message: "Result submitted successfully",
       reasult,
-
       success: true,
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      message: "Server error",
+      message: "Server error while submitting result",
       success: false,
     });
   }
@@ -71,7 +70,7 @@ export const getReasultByQUizeId = async (req, res) => {
     const { quizeId } = req.params;
     if (!quizeId) {
       return res.status(404).json({
-        message: "quize id is requried",
+        message: "Quiz ID is required",
         success: false,
       });
     }
@@ -86,22 +85,22 @@ export const getReasultByQUizeId = async (req, res) => {
     }
     if (user.role === "student") {
       return res.status(400).json({
-        message: "you not able to see reasult",
+        message: "Students are not allowed to view results",
         success: false,
       });
     }
 
     const allReasult = await Reasult.find({ quiz: quizeId })
       .sort({ createdAt: -1 })
-      .populate([ "student","quiz" ]);
+      .populate(["student", "quiz"]);
     if (!allReasult) {
       return res.status(400).json({
-        message: "no reasult found",
+        message: "No results found",
         success: false,
       });
     }
     return res.status(200).json({
-      message: "reasult get successfully",
+      message: "Results fetched successfully",
       allReasult,
       success: true,
     });
@@ -123,7 +122,7 @@ export const getInduvisualREasult = async (req, res) => {
     }
     if (user.role === "student") {
       return res.status(400).json({
-        message: "you not able to see reasult",
+        message: "Students are not allowed to view results",
         success: false,
       });
     }
@@ -136,12 +135,12 @@ export const getInduvisualREasult = async (req, res) => {
 
     if (!getReasult) {
       return res.status(400).json({
-        message: "reasult not found",
+        message: "Result not found",
         success: false,
       });
     }
     return res.status(200).json({
-      message: "reasult get successFully",
+      message: "Result fetched successfully",
       getReasult,
       success: true,
     });
@@ -155,9 +154,7 @@ export const conpareCurrectAnsWrongAns = async (req, res) => {
     const { resultId } = req.params;
 
     // find result and populate quiz
-    const result = await Reasult.findById(resultId).populate(
-      ["quiz","student"]
-    );
+    const result = await Reasult.findById(resultId).populate(["quiz", "student"]);
     if (!result) {
       return res.status(404).json({ message: "Result not found" });
     }
@@ -185,17 +182,17 @@ export const conpareCurrectAnsWrongAns = async (req, res) => {
         isCorrect: studentAnswer === correctAnswer,
       };
     });
-    const totalSoure= quiz.marks * quiz.totalQuestions
+    const totalSoure = quiz.marks * quiz.totalQuestions;
     res.status(200).json({
       quizTitle: quiz.title,
       score: result.score,
       submittedAt: result.submittedAt,
-      student:result.student,
+      student: result.student,
       details,
       totalSoure,
     });
   } catch (error) {
     console.error("Error fetching result details:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error while fetching result details" });
   }
 };

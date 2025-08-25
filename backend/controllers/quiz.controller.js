@@ -4,7 +4,7 @@ import User from "../models/User.model.js";
 export const createQuestion = async (req, res) => {
   try {
     const { title, questions, date, time, marks, totalQuestions } = req.body;
-    const {subjectId} = req.params
+    const { subjectId } = req.params;
     if (
       !time ||
       !marks ||
@@ -40,7 +40,7 @@ export const createQuestion = async (req, res) => {
 
     const tempQuiz = {
       title,
-      subject:subjectId,
+      subject: subjectId,
       createdBy: user._id,
       questions,
       time,
@@ -70,19 +70,19 @@ export const getQuizeBySubJectId = async (req, res) => {
     const { subjectId } = req.params;
     if (!subjectId) {
       return res.status(400).json({
-        message: "subject Id is required",
+        message: "Subject ID is required",
         success: false,
       });
     }
     const quizes = await Quiz.find({ subject: subjectId });
     if (!quizes) {
       return res.status(400).json({
-        message: "somthing is wrong",
+        message: "Something went wrong while fetching quizzes",
         success: false,
       });
     }
     return res.status(200).json({
-      message: "quiz is get success fully",
+      message: "Quizzes fetched successfully",
       quizes,
       success: true,
     });
@@ -96,26 +96,26 @@ export const getQuizeByTeacherId = async (req, res) => {
     const userId = req.auth.sub;
     if (!userId) {
       return res.status(400).json({
-        message: "unauthorize user",
+        message: "Unauthorized user",
         success: false,
       });
     }
     const user = await User.findOne({ auth0Id: userId });
     if (!user) {
       return res.status(400).json({
-        message: "user is not define",
+        message: "User not found",
         success: false,
       });
     }
     if (user.role === "student") {
       return res.status(400).json({
-        message: "you not teacher",
+        message: "Only teachers can access this resource",
         success: false,
       });
     }
     const allQuize = await Quiz.find({ createdBy: user._id });
     return res.status(200).json({
-      message: "quiz get success fully",
+      message: "Quizzes fetched successfully",
       allQuize,
       success: true,
     });
@@ -129,7 +129,7 @@ export const deletQuiz = async (req, res) => {
     const { quizId } = req.body;
     if (!quizId) {
       return res.status(400).json({
-        message: "quize is required for delete",
+        message: "Quiz ID is required for deletion",
         success: false,
       });
     }
@@ -144,13 +144,13 @@ export const deletQuiz = async (req, res) => {
     }
     if (user.role === "student") {
       return res.status(400).json({
-        message: "you not able to delete any quize",
+        message: "You are not allowed to delete quizzes",
         success: false,
       });
     }
     const quizeDelet = await Quiz.deleteOne({ _id: quizId });
     return res.status(200).json({
-      message: "quize dwlwt sccessfully",
+      message: "Quiz deleted successfully",
       quizeDelet,
       success: true,
     });
@@ -164,21 +164,23 @@ export const getQuizeByQuizeId = async (req, res) => {
     const { quizId } = req.params;
     if (!quizId) {
       return res.status(400).json({
-        message: "quiz id is required",
+        message: "Quiz ID is required",
         success: false,
       });
     }
     const quize = await Quiz.findOne({ _id: quizId });
     if (!quize) {
-      return res.status(400).jsin({
-        message: "quize not found",
+      return res.status(400).json({
+        message: "Quiz not found",
         success: false,
       });
     }
     return res.status(200).json({
-      message: "quiz is found",
+      message: "Quiz found successfully",
       quize,
-      success: false,
+      success: true,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 };

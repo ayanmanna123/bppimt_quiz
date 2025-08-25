@@ -5,14 +5,14 @@ export const creatuser = async (req, res) => {
     const { fullname, email, picture, role, department, semester } = req.body;
     if (!fullname || !email || !picture || !role || !department || !semester) {
       return res.status(400).json({
-        message: "all field are requried",
+        message: "All fields are required",
         success: false,
       });
     }
     const exiestuser = await User.findOne({ email: email });
     if (exiestuser) {
       return res.status(400).json({
-        message: "user alresdy exiest",
+        message: "User already exists",
         success: false,
       });
     }
@@ -25,17 +25,16 @@ export const creatuser = async (req, res) => {
       role,
       department,
       semester,
-       
     };
     const createrduser = await User.create(newuser);
     if (!createrduser) {
       return res.status(400).json({
-        message: "sumthing is wrong",
+        message: "Something went wrong while creating user",
         success: false,
       });
     }
     return res.status(200).json({
-      message: "user creat succesfully",
+      message: "User created successfully",
       createrduser,
       success: true,
     });
@@ -51,14 +50,14 @@ export const updatesem = async (req, res) => {
     let user = await User.findOne({ auth0Id: userId });
     if (!user) {
       return res.status(404).json({
-        message: "user not found",
+        message: "User not found",
         success: false,
       });
     }
     const newuser = await User.updateOne({ semester: sem });
     if (!newuser) {
       return res.status(400).json({
-        message: "somthing is wrong",
+        message: "Something went wrong while updating semester",
         success: false,
       });
     }
@@ -66,12 +65,12 @@ export const updatesem = async (req, res) => {
     user = await User.findOne({ auth0Id: userId });
     if (!user) {
       return res.status(404).json({
-        message: "user not found",
+        message: "User not found",
         success: false,
       });
     }
     return res.status(200).json({
-      message: "user update success fully",
+      message: "User updated successfully",
       user,
       success: true,
     });
@@ -80,16 +79,25 @@ export const updatesem = async (req, res) => {
   }
 };
 
-
 export const getUserByEmail = async (req, res) => {
   try {
     const { email } = req.params;
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found", success: false });
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
     }
-    return res.status(200).json({ success: true, user });
+    return res.status(200).json({
+      message: "User fetched successfully",
+      success: true,
+      user,
+    });
   } catch (err) {
-    res.status(500).json({ message: "Server error", success: false });
+    res.status(500).json({
+      message: "Server error while fetching user",
+      success: false,
+    });
   }
 };
