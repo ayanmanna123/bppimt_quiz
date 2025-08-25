@@ -68,7 +68,7 @@ const Reasult = () => {
               </p>
               <p className="text-gray-600">
                 <span className="font-semibold text-green-600">Score:</span>{" "}
-                {result?.score}/{result?.quiz?.marks}
+                {result?.score}/{result?.quiz?.marks * result?.quiz?.totalQuestions}
               </p>
               <p className="text-gray-500 text-sm">
                 Submitted at: {new Date(result?.submittedAt).toLocaleString()}

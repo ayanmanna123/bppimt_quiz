@@ -50,8 +50,9 @@ const ReasultDetails = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-between items-center">
+            <span>Name: {result.student.fullname}</span>
             <p className="text-lg font-semibold">
-              Score: <span className="text-blue-600">{result.score}</span>
+              Score: <span className="text-blue-600">{result.score}/{result.totalSoure}</span>
             </p>
             <Badge variant="secondary">
               Submitted: {new Date(result.submittedAt).toLocaleString()}

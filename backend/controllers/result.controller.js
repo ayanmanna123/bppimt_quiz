@@ -155,7 +155,9 @@ export const conpareCurrectAnsWrongAns = async (req, res) => {
     const { resultId } = req.params;
 
     // find result and populate quiz
-    const result = await Reasult.findById(resultId).populate("quiz");
+    const result = await Reasult.findById(resultId).populate(
+      ["quiz","student"]
+    );
     if (!result) {
       return res.status(404).json({ message: "Result not found" });
     }
@@ -183,12 +185,14 @@ export const conpareCurrectAnsWrongAns = async (req, res) => {
         isCorrect: studentAnswer === correctAnswer,
       };
     });
-
+    const totalSoure= quiz.marks * quiz.totalQuestions
     res.status(200).json({
       quizTitle: quiz.title,
       score: result.score,
       submittedAt: result.submittedAt,
+      student:result.student,
       details,
+      totalSoure,
     });
   } catch (error) {
     console.error("Error fetching result details:", error);
