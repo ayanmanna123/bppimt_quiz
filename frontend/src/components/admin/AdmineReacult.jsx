@@ -27,11 +27,11 @@ const AdmineReacult = () => {
             },
           }
         );
-        toast.success(res.data.message)
+         
         setResults(res.data.allReasult || []);
       } catch (error) {
         console.log("Error fetching results:", error);
-        toast.error(error.message)
+         
       }
     };
     fetchResults();

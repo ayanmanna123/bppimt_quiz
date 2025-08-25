@@ -26,11 +26,10 @@ const Subject = () => {
             },
           }
         );
-        toast.success(res.data.message)
+
         setSubjects(res.data.allSubject);
       } catch (error) {
-        toast.error(error.message)
-        
+        console.log(error)
       }
     };
     fetchSubjects();
@@ -45,8 +44,9 @@ const Subject = () => {
           <ArrowLeft />
         </div>
         <div onClick={() => navigate("/admin/create/subject")}>
-        <Button className={'bg-blue-500 hover:bg-blue-600 cursor-pointer'}>Creat New Subject</Button>
-
+          <Button className={"bg-blue-500 hover:bg-blue-600 cursor-pointer"}>
+            Creat New Subject
+          </Button>
         </div>
       </div>
       <div className="p-6">

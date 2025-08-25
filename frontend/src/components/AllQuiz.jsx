@@ -36,10 +36,9 @@ const AllQuiz = () => {
           }
         );
 
-         toast.success(res.data.message)
         setQuizzes(res.data.quizes || []);
       } catch (error) {
-         toast.error(error.message)
+        console.log(error);
       } finally {
         setLoading(false);
       }
@@ -79,8 +78,11 @@ const AllQuiz = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {quizzes.map((quiz, i) => (
-              <div key={quiz?._id || i} onClick={()=>navegate(`/quiz/page/${quiz._id}`)}>
-                <Card  className="w-full">
+              <div
+                key={quiz?._id || i}
+                onClick={() => navegate(`/quiz/page/${quiz._id}`)}
+              >
+                <Card className="w-full">
                   <CardHeader>
                     <CardTitle className={"font-bold text-2xl"}>
                       {quiz?.title}

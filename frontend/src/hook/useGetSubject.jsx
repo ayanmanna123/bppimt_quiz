@@ -25,7 +25,7 @@ const useGetSubject = (department) => {
             },
           }
         );
-        toast.success(res.data.message)
+        
         dispatch(setsubjectByquiry(res.data.subjects));
       } catch (error) {
         console.error("Error fetching subjects:", error);

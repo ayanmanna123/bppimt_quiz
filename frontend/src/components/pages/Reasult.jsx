@@ -8,7 +8,7 @@ import { toast } from "sonner";
 const Reasult = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [reasults, setReasults] = useState([]);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   useEffect(() => {
     const getReasult = async () => {
       try {
@@ -24,10 +24,10 @@ const Reasult = () => {
             },
           }
         );
-         toast.success(res.data.message)
+
         setReasults(res.data.getReasult);
       } catch (error) {
-         toast.error(error.message)
+        console.log(error);
       }
     };
     getReasult();
@@ -36,7 +36,7 @@ const Reasult = () => {
   const expiredResults = reasults.filter((item) => {
     if (!item?.quiz?.date) return false;
     const quizDate = new Date(item.quiz.date);
-    return quizDate < today;  
+    return quizDate < today;
   });
   return (
     <div>
@@ -49,7 +49,7 @@ const Reasult = () => {
             <div
               key={index}
               className="border rounded-xl shadow-md p-4 mb-4 bg-white"
-              onClick={()=>navigate(`/reasult/details/${result?._id}`)}
+              onClick={() => navigate(`/reasult/details/${result?._id}`)}
             >
               <h2 className="text-xl font-bold mb-2">
                 {result?.quiz?.title || "Untitled Quiz"}
@@ -69,7 +69,8 @@ const Reasult = () => {
               </p>
               <p className="text-gray-600">
                 <span className="font-semibold text-green-600">Score:</span>{" "}
-                {result?.score}/{result?.quiz?.marks * result?.quiz?.totalQuestions}
+                {result?.score}/
+                {result?.quiz?.marks * result?.quiz?.totalQuestions}
               </p>
               <p className="text-gray-500 text-sm">
                 Submitted at: {new Date(result?.submittedAt).toLocaleString()}

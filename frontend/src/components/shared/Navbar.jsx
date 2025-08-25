@@ -34,7 +34,7 @@ const Navbar = () => {
       <nav className="flex items-center justify-between px-10 py-6">
         <div className="flex items-center gap-2">
           <img src="/img-2.png" alt="Shield Logo" className="h-8" />
-          <span className="font-bold text-xl text-[#03045E]">SHIELD</span>
+          <span className="font-bold text-xl text-[#03045E]">ExamEdge</span>
         </div>
         <div className="flex justify-center items-center gap-3.5">
           {usere.role === "student" ? (

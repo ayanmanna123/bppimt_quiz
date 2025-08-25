@@ -29,11 +29,10 @@ const Home = () => {
             className="px-20"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-[#03045E] leading-snug">
-              Fully Managed Cloud & <br /> Web Hosting
+              Smart Quiz App<br />for College Mock Tests
             </h1>
             <p className="text-gray-500 mt-4 max-w-lg">
-              Dedicated resources, full root access, & easy scaling. It’s the
-              virtual private server you’ve been craving.
+             A modern platform for students to practice mock tests, track progress, and get exam-ready with ease.
             </p>
             <Button
               className="mt-6 bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6"

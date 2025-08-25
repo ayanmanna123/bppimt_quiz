@@ -84,15 +84,15 @@ const Complete = () => {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
-            toast.success(res.data.message)
+
           if (res.data?.success) {
             dispatch(setuser(res.data.user));
             navigate("/");
           }
         } catch (error) {
-          toast.error(error.response?.data?.message || error.message)
           console.log("User not found, needs to complete profile");
-        } 
+          console.log(error)
+        }
       }
     };
 
@@ -101,7 +101,6 @@ const Complete = () => {
 
   return (
     <>
-      
       <div className="flex justify-center items-center">
         <h1 className="font-bold text-2xl p-3.5">complete the regestation</h1>
       </div>
