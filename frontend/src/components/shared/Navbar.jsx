@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -22,7 +22,7 @@ const Navbar = () => {
     getAccessTokenSilently,
   } = useAuth0();
   const navigate = useNavigate();
-
+  const { usere } = useSelector((store) => store.auth);
   const handleLogin = async () => {
     if (!isAuthenticated) {
       await loginWithRedirect();
@@ -37,23 +37,50 @@ const Navbar = () => {
           <span className="font-bold text-xl text-[#03045E]">SHIELD</span>
         </div>
         <div className="flex justify-center items-center gap-3.5">
-          <ul className="hidden md:flex items-center gap-8 text-indigo-900 font-medium">
-            <Link className="cursor-pointer hover:text-indigo-600" to={"/"}>
-              Home
-            </Link>
-            <Link className="cursor-pointer hover:text-indigo-600">
-              About Us
-            </Link>
-            <Link className="cursor-pointer hover:text-indigo-600" to={"/quiz"}>
-              Service
-            </Link>
-            <Link
-              className="cursor-pointer hover:text-indigo-600"
-              to={"/reasult"}
-            >
-              Rasult
-            </Link>
-          </ul>
+          {usere.role === "student" ? (
+            <ul className="hidden md:flex items-center gap-8 text-indigo-900 font-medium">
+              <Link className="cursor-pointer hover:text-indigo-600" to={"/"}>
+                Home
+              </Link>
+              <Link className="cursor-pointer hover:text-indigo-600">
+                About Us
+              </Link>
+              <Link
+                className="cursor-pointer hover:text-indigo-600"
+                to={"/quiz"}
+              >
+                Service
+              </Link>
+              <Link
+                className="cursor-pointer hover:text-indigo-600"
+                to={"/reasult"}
+              >
+                Rasult
+              </Link>
+            </ul>
+          ) : (
+            <ul className="hidden md:flex items-center gap-8 text-indigo-900 font-medium">
+              <Link className="cursor-pointer hover:text-indigo-600" to={"/"}>
+                Home
+              </Link>
+              <Link className="cursor-pointer hover:text-indigo-600">
+                About Us
+              </Link>
+              <Link
+                className="cursor-pointer hover:text-indigo-600"
+                to={"/Admin/subject"}
+              >
+                Subject
+              </Link>
+              <Link
+                className="cursor-pointer hover:text-indigo-600"
+                to={"/reasult"}
+              >
+                Rasult
+              </Link>
+            </ul>
+          )}
+
           {!isAuthenticated ? (
             <Button
               className="bg-[#03045E] hover:bg-indigo-900 text-white rounded-lg px-6"

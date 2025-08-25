@@ -1,0 +1,63 @@
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
+
+const Subject = () => {
+  const { getAccessTokenSilently } = useAuth0();
+  const [subjects, setSubjects] = useState([]);
+    const navigate = useNavigate();
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const token = await getAccessTokenSilently({
+          audience: "http://localhost:5000/api/v2",
+        });
+
+        const res = await axios.get(
+          "http://localhost:5000/api/v1/subject/teacher/subject",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setSubjects(res.data.allSubject);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchSubjects();
+  }, [getAccessTokenSilently]);
+
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">My Subjects</h1>
+
+      {subjects.length === 0 ? (
+        <p>No subjects available</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {subjects.map((subj) => (
+            <div
+              key={subj._id}
+              className="border rounded-xl shadow-md p-4 hover:shadow-lg transition bg-white"
+            >
+              <h2 className="text-lg font-semibold mb-2">{subj.subjectName}</h2>
+              <p className="text-sm text-gray-600">
+                <strong>Department:</strong> {subj.department}
+              </p>
+              <p className="text-sm text-gray-600">
+                <strong>Semester:</strong> {subj.semester}
+              </p>
+              <Button className={'bg-blue-500'} onClick={()=>navigate(`/admin/createQuize/${subj._id}`)}>Create quiz</Button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Subject;

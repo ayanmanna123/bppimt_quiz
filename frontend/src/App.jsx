@@ -9,6 +9,9 @@ import GiveQuiz from "./components/pages/GiveQuiz";
 import AllQuiz from "./components/AllQuiz";
 import Reasult from "./components/pages/Reasult";
 import ReasultDetails from "./components/pages/ReasultDetails";
+import Subject from "./components/admin/Subject";
+import CreateQuize from "./components/admin/CreateQuize";
+ 
 function App() {
   const approute = createBrowserRouter([
     {
@@ -39,6 +42,16 @@ function App() {
       path: "/reasult/details/:resultId",
       element:<ReasultDetails/>
     },
+    //admin panel
+     {
+      path: "/Admin/subject",
+      element:<Subject/>
+    },
+       {
+      path: "/admin/createQuize/:subjectId",
+      element:<CreateQuize/>
+    },
+
   ]);
 
   return (

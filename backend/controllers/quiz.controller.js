@@ -3,15 +3,14 @@ import User from "../models/User.model.js";
 
 export const createQuestion = async (req, res) => {
   try {
-    const {title, subject, questions, date, time, marks, totalQuestions } = req.body;
-
+    const { title, questions, date, time, marks, totalQuestions } = req.body;
+    const {subjectId} = req.params
     if (
-      !subject ||
       !time ||
       !marks ||
       !date ||
       !totalQuestions ||
-      !title||
+      !title ||
       !Array.isArray(questions) ||
       questions.length === 0
     ) {
@@ -41,7 +40,7 @@ export const createQuestion = async (req, res) => {
 
     const tempQuiz = {
       title,
-      subject,
+      subject:subjectId,
       createdBy: user._id,
       questions,
       time,
@@ -160,28 +159,26 @@ export const deletQuiz = async (req, res) => {
   }
 };
 
-export const getQuizeByQuizeId = async (req,res)=>{
+export const getQuizeByQuizeId = async (req, res) => {
   try {
     const { quizId } = req.params;
-    if(!quizId){
+    if (!quizId) {
       return res.status(400).json({
-        message:"quiz id is required",
-        success:false
-      })
+        message: "quiz id is required",
+        success: false,
+      });
     }
-    const quize = await Quiz.findOne({_id: quizId})
-    if(!quize){
+    const quize = await Quiz.findOne({ _id: quizId });
+    if (!quize) {
       return res.status(400).jsin({
-        message:"quize not found",
-        success:false
-      })
+        message: "quize not found",
+        success: false,
+      });
     }
     return res.status(200).json({
-      message:"quiz is found",
+      message: "quiz is found",
       quize,
-      success:false
-    })
-  } catch (error) {
-    
-  }
-}
+      success: false,
+    });
+  } catch (error) {}
+};
