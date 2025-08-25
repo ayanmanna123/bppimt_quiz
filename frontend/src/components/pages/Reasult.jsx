@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "../shared/Navbar";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Reasult = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -23,10 +24,10 @@ const Reasult = () => {
             },
           }
         );
-        console.log(res.data.getReasult);
+         toast.success(res.data.message)
         setReasults(res.data.getReasult);
       } catch (error) {
-        console.log(error);
+         toast.error(error.message)
       }
     };
     getReasult();
@@ -35,7 +36,7 @@ const Reasult = () => {
   const expiredResults = reasults.filter((item) => {
     if (!item?.quiz?.date) return false;
     const quizDate = new Date(item.quiz.date);
-    return quizDate < today; // only expired
+    return quizDate < today;  
   });
   return (
     <div>

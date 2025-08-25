@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const GiveQuiz = () => {
   const { quizId } = useParams();
@@ -76,15 +77,10 @@ const GiveQuiz = () => {
         }
       );
 
-      console.log("Submit response:", res.data);
-      alert(res.data.message || "Submitted successfully!");
+       toast.success(res.data.message)
       navigate("/quiz");
     } catch (error) {
-      console.error("Submit error:", error);
-      alert(
-        error.response?.data?.message ||
-          "Failed to submit quiz. Please try again."
-      );
+       toast.error(error.message)
       navigate("/quiz");
     }
   };

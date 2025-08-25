@@ -120,12 +120,7 @@ export const getInduvisualREasult = async (req, res) => {
         success: false,
       });
     }
-    if (user.role === "student") {
-      return res.status(400).json({
-        message: "Students are not allowed to view results",
-        success: false,
-      });
-    }
+
     const getReasult = await Reasult.find({ student: user._id }).populate({
       path: "quiz",
       populate: {
@@ -154,7 +149,10 @@ export const conpareCurrectAnsWrongAns = async (req, res) => {
     const { resultId } = req.params;
 
     // find result and populate quiz
-    const result = await Reasult.findById(resultId).populate(["quiz", "student"]);
+    const result = await Reasult.findById(resultId).populate([
+      "quiz",
+      "student",
+    ]);
     if (!result) {
       return res.status(404).json({ message: "Result not found" });
     }
@@ -193,6 +191,8 @@ export const conpareCurrectAnsWrongAns = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching result details:", error);
-    res.status(500).json({ message: "Server error while fetching result details" });
+    res
+      .status(500)
+      .json({ message: "Server error while fetching result details" });
   }
 };

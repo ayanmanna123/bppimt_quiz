@@ -5,6 +5,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "../shared/Navbar";
+import { toast } from "sonner";
 
 const ReasultDetails = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -27,9 +28,10 @@ const ReasultDetails = () => {
           }
           
         );
+        toast.success(res.data.message)
         setResult(res.data);
       } catch (error) {
-        console.log("Error fetching result details:", error);
+        toast.error(error.message)
       }
     };
 

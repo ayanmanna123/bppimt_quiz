@@ -4,6 +4,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setsubjectByquiry } from "../Redux/subject.reducer";
 import { useAuth0 } from "@auth0/auth0-react";  // assuming you use Auth0
+import { toast } from "sonner";
 
 const useGetSubject = (department) => {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ const useGetSubject = (department) => {
             },
           }
         );
-
+        toast.success(res.data.message)
         dispatch(setsubjectByquiry(res.data.subjects));
       } catch (error) {
         console.error("Error fetching subjects:", error);

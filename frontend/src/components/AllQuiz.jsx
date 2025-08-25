@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Navbar from "./shared/Navbar";
+import { toast } from "sonner";
 
 const AllQuiz = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -35,10 +36,10 @@ const AllQuiz = () => {
           }
         );
 
-        // backend response has `quizes`, not `allQuize`
+         toast.success(res.data.message)
         setQuizzes(res.data.quizes || []);
       } catch (error) {
-        console.error("Error fetching quizzes:", error);
+         toast.error(error.message)
       } finally {
         setLoading(false);
       }
