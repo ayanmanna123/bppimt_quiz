@@ -78,6 +78,7 @@ const AdmineReacult = () => {
                   const status = checkSubmissionStatus(res.quiz, res.submittedAt);
 
                   return (
+                    
                     <tr
                       key={res._id}
                       className={`hover:bg-gray-50 ${
@@ -85,6 +86,7 @@ const AdmineReacult = () => {
                           ? "border-green-500"
                           : "border-red-500"
                       } border-2`}
+                        onClick={()=>navigate(`/reasult/details/${res?._id}`)}
                     >
                       <td className="border border-gray-300 px-4 py-2 text-center">
                         {index + 1}

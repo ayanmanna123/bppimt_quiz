@@ -25,6 +25,7 @@ const ReasultDetails = () => {
               Authorization: `Bearer ${token}`,
             },
           }
+          
         );
         setResult(res.data);
       } catch (error) {

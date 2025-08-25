@@ -1,7 +1,7 @@
 import Subject from "../models/Subject.model.js";
 import User from "../models/User.model.js";
 
-// ✅ Create Subject
+ 
 export const createSubject = async (req, res) => {
   try {
     const { department, semester, subjectName } = req.body;

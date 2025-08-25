@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "../shared/Navbar";
+import { ArrowLeft } from "lucide-react";
 
 // ✅ Reusable input with green border when filled
 const ValidatedInput = ({
@@ -26,7 +27,7 @@ const ValidatedInput = ({
 const CreateQuize = () => {
   const { subjectId } = useParams();
   const { getAccessTokenSilently } = useAuth0();
-
+    const navigate = useNavigate()
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -97,6 +98,12 @@ const CreateQuize = () => {
   return (
     <>
       <Navbar />
+      <div
+        className="mx-4.5 max-w-fit hover:cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        <ArrowLeft />
+      </div>
       <div className="p-4 max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold mb-4">Create Quiz</h2>
         <form onSubmit={handleSubmit} className="space-y-4">

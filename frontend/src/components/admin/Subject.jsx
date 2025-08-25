@@ -36,10 +36,16 @@ const Subject = () => {
   return (
     <>
       <Navbar />
-       <div className="mx-4.5 max-w-fit hover:cursor-pointer"
-              onClick={() => navigate("/")}>
-              <ArrowLeft/>
-          </div>
+      <div className="mx-4.5 max-w-full hover:cursor-pointer flex justify-between items-center">
+        <div onClick={() => navigate("/")}>
+          {" "}
+          <ArrowLeft />
+        </div>
+        <div onClick={() => navigate("/admin/create/subject")}>
+        <Button className={'bg-blue-500 hover:bg-blue-600 cursor-pointer'}>Creat New Subject</Button>
+
+        </div>
+      </div>
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-4">My Subjects</h1>
 
@@ -61,7 +67,7 @@ const Subject = () => {
                 <p className="text-sm text-gray-600">
                   <strong>Semester:</strong> {subj.semester}
                 </p>
-                
+
                 <div className="my-3">
                   <Button
                     className={"bg-blue-500 hover:bg-blue-600 cursor-pointer"}
@@ -71,7 +77,10 @@ const Subject = () => {
                   </Button>
                 </div>
                 <div className="my-3 ">
-                  <Button onClick={() => navigate("/admin/allquiz")} className={'bg-green-500 hover:bg-green-600 cursor-pointer'}>
+                  <Button
+                    onClick={() => navigate("/admin/allquiz")}
+                    className={"bg-green-500 hover:bg-green-600 cursor-pointer"}
+                  >
                     view all quiz
                   </Button>
                 </div>

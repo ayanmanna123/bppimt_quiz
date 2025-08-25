@@ -13,6 +13,7 @@ import Subject from "./components/admin/Subject";
 import CreateQuize from "./components/admin/CreateQuize";
 import TeacherCreateQuiz from "./components/admin/TeacherCreateQuiz";
 import AdmineReacult from "./components/admin/AdmineReacult";
+import CreateSubject from "./components/admin/CreateSubject";
 
 function App() {
   const approute = createBrowserRouter([
@@ -61,6 +62,11 @@ function App() {
       path: "/admin/reasult/:quizeId",
       element:<AdmineReacult/>,
     },
+     {
+      path: "/admin/create/subject",
+      element: <CreateSubject/>,
+    },
+    
   ]);
 
   return (
