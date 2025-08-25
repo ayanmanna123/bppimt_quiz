@@ -6,11 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react"; // for delete icon
 import Navbar from "../shared/Navbar";
+import { useNavigate } from "react-router-dom";
 
 const TeacherCreateQuiz = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [quizzes, setQuizzes] = useState([]);
-
+    const navigate= useNavigate()
   // Fetch all quizzes
   const getAllQuizzes = async () => {
     try {
@@ -97,6 +98,7 @@ const TeacherCreateQuiz = () => {
                   <p className="text-sm text-gray-600">
                     Created on: {new Date(quiz.createdAt).toLocaleDateString()}
                   </p>
+                  <Button onClick={()=>navigate(`/admin/reasult/${quiz._id}`)}>view Reasult</Button>
                 </CardContent>
               </Card>
             ))}

@@ -68,7 +68,7 @@ export const submitQuiz = async (req, res) => {
 
 export const getReasultByQUizeId = async (req, res) => {
   try {
-    const { quizeId } = req.body;
+    const { quizeId } = req.params;
     if (!quizeId) {
       return res.status(404).json({
         message: "quize id is requried",

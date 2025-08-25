@@ -58,7 +58,7 @@ function App() {
       element: <TeacherCreateQuiz />,
     },
     {
-      path: "/admin/reasult",
+      path: "/admin/reasult/:quizeId",
       element:<AdmineReacult/>,
     },
   ]);

@@ -9,7 +9,7 @@ import {
 const reasultRoute = express.Router();
 
 reasultRoute.post("/reasult/submite", isAuthenticated, submitQuiz);
-reasultRoute.get("/get/allReasult", isAuthenticated, getReasultByQUizeId);
+reasultRoute.get("/get/allReasult/:quizeId", isAuthenticated, getReasultByQUizeId);
 reasultRoute.get("/get/reasult/student", isAuthenticated, getInduvisualREasult);
 reasultRoute.get("/result/details/:resultId", isAuthenticated,conpareCurrectAnsWrongAns)
 export default reasultRoute;
