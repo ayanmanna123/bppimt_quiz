@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-
+import { motion } from "framer-motion";
 const Subject = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [subjects, setSubjects] = useState([]);
@@ -29,7 +29,7 @@ const Subject = () => {
 
         setSubjects(res.data.allSubject);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     };
     fetchSubjects();
@@ -55,7 +55,12 @@ const Subject = () => {
         {subjects.length === 0 ? (
           <p>No subjects available</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+            initial={{ opacity: 0, x: 70 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+          >
             {subjects.map((subj) => (
               <div
                 key={subj._id}
@@ -89,7 +94,7 @@ const Subject = () => {
                 </div>
               </div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </>

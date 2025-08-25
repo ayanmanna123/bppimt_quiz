@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
-
+import { motion } from "framer-motion";
 const ReasultDetails = () => {
   const { getAccessTokenSilently } = useAuth0();
   const { resultId } = useParams();
@@ -65,7 +65,12 @@ const ReasultDetails = () => {
           </CardContent>
         </Card>
 
-        <div className="space-y-6">
+        <motion.div
+          className="space-y-6"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+        >
           {result.details.map((q, index) => {
             const isCorrect = q.isCorrect;
 
@@ -117,7 +122,7 @@ const ReasultDetails = () => {
               </Card>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </>
   );

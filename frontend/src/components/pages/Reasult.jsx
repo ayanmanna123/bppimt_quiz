@@ -4,7 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "../shared/Navbar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
+import {motion} from 'framer-motion'
 const Reasult = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [reasults, setReasults] = useState([]);
@@ -46,10 +46,13 @@ const Reasult = () => {
           <p className="text-center text-gray-500">No results found</p>
         ) : (
           expiredResults.map((result, index) => (
-            <div
+            <motion.div
               key={index}
               className="border rounded-xl shadow-md p-4 mb-4 bg-white"
               onClick={() => navigate(`/reasult/details/${result?._id}`)}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
             >
               <h2 className="text-xl font-bold mb-2">
                 {result?.quiz?.title || "Untitled Quiz"}
@@ -75,7 +78,7 @@ const Reasult = () => {
               <p className="text-gray-500 text-sm">
                 Submitted at: {new Date(result?.submittedAt).toLocaleString()}
               </p>
-            </div>
+            </motion.div>
           ))
         )}
       </div>

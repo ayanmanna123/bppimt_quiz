@@ -8,11 +8,11 @@ import { ArrowLeft, Trash2 } from "lucide-react"; // for delete icon
 import Navbar from "../shared/Navbar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
+import { motion } from "framer-motion";
 const TeacherCreateQuiz = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [quizzes, setQuizzes] = useState([]);
-    const navigate= useNavigate()
+  const navigate = useNavigate();
   // Fetch all quizzes
   const getAllQuizzes = async () => {
     try {
@@ -55,27 +55,34 @@ const TeacherCreateQuiz = () => {
           },
         }
       );
-      toast.success(res.data.message)
+      toast.success(res.data.message);
       setQuizzes((prev) => prev.filter((q) => q._id !== quizId));
     } catch (error) {
-       toast.error(error.message)
+      toast.error(error.message);
     }
   };
 
   return (
     <>
-    <Navbar/>
-    <div className="mx-4.5 max-w-fit hover:cursor-pointer"
-        onClick={() => navigate("/Admin/subject")}>
-        <ArrowLeft/>
-    </div>
+      <Navbar />
+      <div
+        className="mx-4.5 max-w-fit hover:cursor-pointer"
+        onClick={() => navigate("/Admin/subject")}
+      >
+        <ArrowLeft />
+      </div>
       <div className="p-6">
         <h2 className="text-2xl font-bold mb-6">📚 My Quizzes</h2>
 
         {quizzes.length === 0 ? (
           <p className="text-gray-500">No quizzes created yet.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+          >
             {quizzes.map((quiz) => (
               <Card key={quiz._id} className="shadow-md rounded-2xl border">
                 <CardHeader className="flex justify-between items-center">
@@ -103,11 +110,15 @@ const TeacherCreateQuiz = () => {
                   <p className="text-sm text-gray-600">
                     Created on: {new Date(quiz.createdAt).toLocaleDateString()}
                   </p>
-                  <Button onClick={()=>navigate(`/admin/reasult/${quiz._id}`)}>view Reasult</Button>
+                  <Button
+                    onClick={() => navigate(`/admin/reasult/${quiz._id}`)}
+                  >
+                    view Reasult
+                  </Button>
                 </CardContent>
               </Card>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </>

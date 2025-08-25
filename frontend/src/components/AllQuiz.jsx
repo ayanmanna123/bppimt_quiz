@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/card";
 import Navbar from "./shared/Navbar";
 import { toast } from "sonner";
-
+import { motion } from "framer-motion";
+import { Button } from "./ui/button";
 const AllQuiz = () => {
   const { getAccessTokenSilently } = useAuth0();
   const { subjectId } = useParams();
@@ -76,11 +77,14 @@ const AllQuiz = () => {
         ) : quizzes.length === 0 ? (
           <p>No quizzes found for this subject.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {quizzes.map((quiz, i) => (
-              <div
+              <motion.div
                 key={quiz?._id || i}
-                onClick={() => navegate(`/quiz/page/${quiz._id}`)}
+                
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
               >
                 <Card className="w-full">
                   <CardHeader>
@@ -93,32 +97,40 @@ const AllQuiz = () => {
                     <p>submit Date: {quiz?.date} </p>
                     <p>total time: {quiz?.time}</p>
                   </CardContent>
-                  <CardFooter>
-                    <div>
-                      <div>
-                        <p>
-                          Created:{" "}
-                          {quiz?.createdAt
-                            ? new Date(quiz?.createdAt).toLocaleDateString()
-                            : "N/A"}
-                        </p>
-                      </div>
-
-                      <div>
-                        <Badge
-                          className={
-                            new Date(quiz.date) > new Date()
-                              ? "bg-green-600 hover:bg-green-700 text-white"
-                              : "bg-red-600 hover:bg-red-700 text-white"
-                          }
-                        >
-                          {getRemainingTime(quiz?.date)}
-                        </Badge>
-                      </div>
+                  <CardFooter className="flex flex-col gap-3">
+                    {/* Quiz Info */}
+                    <div className="w-full">
+                      <p>
+                        Created:{" "}
+                        {quiz?.createdAt
+                          ? new Date(quiz?.createdAt).toLocaleDateString()
+                          : "N/A"}
+                      </p>
                     </div>
+
+                    {/* Badge */}
+                    <div className="w-full">
+                      <Badge
+                        className={
+                          new Date(quiz.date) > new Date()
+                            ? "bg-green-600 hover:bg-green-700 text-white"
+                            : "bg-red-600 hover:bg-red-700 text-white"
+                        }
+                      >
+                        {getRemainingTime(quiz?.date)}
+                      </Badge>
+                    </div>
+
+                    {/* Full-width Button */}
+                    <Button
+                      className="bg-green-500 hover:bg-green-600 text-white w-full"
+                      onClick={() => navegate(`/quiz/page/${quiz._id}`)}
+                    >
+                      Start Quiz
+                    </Button>
                   </CardFooter>
                 </Card>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}

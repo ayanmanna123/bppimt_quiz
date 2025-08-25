@@ -12,7 +12,7 @@ const GiveQuiz = () => {
   const { quizId } = useParams();
   const { getAccessTokenSilently } = useAuth0();
   const [quiz, setQuiz] = useState(null);
-  const [answers, setAnswers] = useState({}); // { [questionId]: "0" | "1" | ... }
+  const [answers, setAnswers] = useState({});  
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
   useEffect(() => {
@@ -61,7 +61,7 @@ const GiveQuiz = () => {
         audience: "http://localhost:5000/api/v2",
       });
 
-      // transform answers: map questions in order
+      
       const answerArray = quiz.questions.map((q) =>
         answers[q._id] !== undefined ? Number(answers[q._id]) : null
       );
