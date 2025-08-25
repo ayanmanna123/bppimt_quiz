@@ -5,8 +5,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "../shared/Navbar";
-import { toast } from "sonner";
 import { motion } from "framer-motion";
+
 const ReasultDetails = () => {
   const { getAccessTokenSilently } = useAuth0();
   const { resultId } = useParams();
@@ -45,6 +45,7 @@ const ReasultDetails = () => {
     <>
       <Navbar />
       <div className="max-w-4xl mx-auto py-6">
+        {/* Quiz Header */}
         <Card className="mb-6 shadow-lg">
           <CardHeader>
             <CardTitle className="text-xl font-bold">
@@ -65,6 +66,7 @@ const ReasultDetails = () => {
           </CardContent>
         </Card>
 
+        {/* Question Details */}
         <motion.div
           className="space-y-6"
           initial={{ opacity: 0, x: 50 }}
@@ -72,6 +74,7 @@ const ReasultDetails = () => {
           transition={{ duration: 0.6 }}
         >
           {result.details.map((q, index) => {
+            const studentAnsIndex = q.studentAnswerIndex?.selectedOption; // ✅ updated
             const isCorrect = q.isCorrect;
 
             return (
@@ -89,7 +92,7 @@ const ReasultDetails = () => {
                 <CardContent>
                   <div className="space-y-2">
                     {q.options.map((opt, i) => {
-                      const isStudentAns = i === q.studentAnswerIndex;
+                      const isStudentAns = i === studentAnsIndex;
                       const isCorrectAns = i === q.correctAnswerIndex;
 
                       return (

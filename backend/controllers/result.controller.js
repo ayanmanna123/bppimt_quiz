@@ -1,67 +1,75 @@
 import Quize from "../models/Quiz.model.js";
 import Reasult from "../models/Result.model.js";
 import User from "../models/User.model.js";
-
 export const submitQuiz = async (req, res) => {
   try {
-    const { quizId, answers } = req.body;
+    const { quizId, answers } = req.body; // answers = { questionId: selectedOptionIndex }
 
     const userId = req.auth.sub;
     const student = await User.findOne({ auth0Id: userId });
-
     if (!student) {
-      return res.status(404).json({
-        message: "Student not found",
-        success: false,
-      });
+      return res
+        .status(404)
+        .json({ message: "Student not found", success: false });
     }
 
     const quiz = await Quize.findById(quizId);
     if (!quiz) {
-      return res.status(404).json({
-        message: "Quiz not found",
-        success: false,
-      });
+      return res
+        .status(404)
+        .json({ message: "Quiz not found", success: false });
     }
+
     const alreadyGiven = await Reasult.findOne({
       student: student._id,
       quiz: quiz._id,
     });
-
     if (alreadyGiven) {
-      return res.status(400).json({
-        message: "You have already attempted this quiz",
-        success: false,
-      });
+      return res
+        .status(400)
+        .json({
+          message: "You have already attempted this quiz",
+          success: false,
+        });
     }
 
     let score = 0;
-    quiz.questions.forEach((q, index) => {
-      if (answers[index] === q.correctAnswer) {
-        score += quiz.marks;
-      }
+    const processedAnswers = quiz.questions.map((q) => {
+      const selectedOption = answers[q._id];
+      const isCorrect =
+        selectedOption !== undefined &&
+        Number(selectedOption) === q.correctAnswer;
+
+      if (isCorrect) score += quiz.marks;
+
+      return {
+        questionId: q._id,
+        selectedOption:
+          selectedOption !== undefined ? Number(selectedOption) : null,
+        isCorrect,
+      };
     });
 
-    const newResult = {
+    const result = await Reasult.create({
       quiz: quizId,
       student: student._id,
       score,
-      answers,
-    };
-
-    const reasult = await Reasult.create(newResult);
+      answers: processedAnswers,
+    });
 
     return res.status(201).json({
-      message: "Result submitted successfully",
-      reasult,
+      message: " submitted successfully",
+      result,
       success: true,
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
-      message: "Server error while submitting result",
-      success: false,
-    });
+    return res
+      .status(500)
+      .json({
+        message: "Server error while submitting result",
+        success: false,
+      });
   }
 };
 

@@ -1,5 +1,20 @@
 import mongoose from "mongoose";
 
+const answerSchema = new mongoose.Schema({
+  questionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
+  selectedOption: {
+    type: Number, // index selected
+    default: null,
+  },
+  isCorrect: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const resultSchema = new mongoose.Schema(
   {
     quiz: {
@@ -16,10 +31,7 @@ const resultSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    answers:{
-      type:Array,
-      required:true
-    },
+    answers: [answerSchema],
     submittedAt: {
       type: Date,
       default: Date.now,
@@ -28,5 +40,5 @@ const resultSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
- const Reasult =  mongoose.model("Result", resultSchema);
- export default Reasult
+const Result = mongoose.model("Result", resultSchema);
+export default Result;

@@ -4,7 +4,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import { ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
 
 const AdmineReacult = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -27,11 +26,10 @@ const AdmineReacult = () => {
             },
           }
         );
-         
+
         setResults(res.data.allReasult || []);
       } catch (error) {
         console.log("Error fetching results:", error);
-         
       }
     };
     fetchResults();
@@ -80,7 +78,6 @@ const AdmineReacult = () => {
                   const status = checkSubmissionStatus(res.quiz, res.submittedAt);
 
                   return (
-                    
                     <tr
                       key={res._id}
                       className={`hover:bg-gray-50 ${
@@ -88,7 +85,7 @@ const AdmineReacult = () => {
                           ? "border-green-500"
                           : "border-red-500"
                       } border-2`}
-                        onClick={()=>navigate(`/reasult/details/${res?._id}`)}
+                      onClick={() => navigate(`/reasult/details/${res?._id}`)}
                     >
                       <td className="border border-gray-300 px-4 py-2 text-center">
                         {index + 1}
@@ -106,9 +103,32 @@ const AdmineReacult = () => {
                         {res.score}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {res.answers && res.answers.length > 0
-                          ? res.answers.join(", ")
-                          : "—"}
+                        {res.answers && res.answers.length > 0 ? (
+                          <ul className="list-disc ml-4">
+                            {res.answers.map((ans) => {
+                              const question = res.quiz.questions.find(
+                                (q) => q._id === ans.questionId
+                              );
+                              return (
+                                <li key={ans._id} className="mb-1">
+                                  <span className="font-semibold">
+                                    {question?.questionText || "Unknown Q"}:
+                                  </span>{" "}
+                                  <span>
+                                    {question?.options[ans.selectedOption] || "N/A"}
+                                  </span>{" "}
+                                  {ans.isCorrect ? (
+                                    <span className="text-green-600 font-semibold">(✔ Correct)</span>
+                                  ) : (
+                                    <span className="text-red-600 font-semibold">(✘ Wrong)</span>
+                                  )}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        ) : (
+                          "—"
+                        )}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
                         {new Date(res.submittedAt).toLocaleString()}
