@@ -18,6 +18,7 @@ import { setuser } from "../Redux/auth.reducer";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const Complete = () => {
   const { usere } = useSelector((store) => store.auth);
@@ -83,14 +84,15 @@ const Complete = () => {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
-
+            toast.success(res.data.message)
           if (res.data?.success) {
             dispatch(setuser(res.data.user));
             navigate("/");
           }
-        } catch (err) {
+        } catch (error) {
+          toast.error(error.response?.data?.message || error.message)
           console.log("User not found, needs to complete profile");
-        }
+        } 
       }
     };
 

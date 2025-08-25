@@ -4,6 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 const AdmineReacult = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -26,10 +27,11 @@ const AdmineReacult = () => {
             },
           }
         );
-
+        toast.success(res.data.message)
         setResults(res.data.allReasult || []);
       } catch (error) {
         console.log("Error fetching results:", error);
+        toast.error(error.message)
       }
     };
     fetchResults();

@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 const Subject = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -25,9 +26,11 @@ const Subject = () => {
             },
           }
         );
+        toast.success(res.data.message)
         setSubjects(res.data.allSubject);
       } catch (error) {
-        console.log(error);
+        toast.error(error.message)
+        
       }
     };
     fetchSubjects();

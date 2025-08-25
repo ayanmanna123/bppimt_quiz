@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trash2 } from "lucide-react"; // for delete icon
 import Navbar from "../shared/Navbar";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const TeacherCreateQuiz = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -54,10 +55,10 @@ const TeacherCreateQuiz = () => {
           },
         }
       );
-
+      toast.success(res.data.message)
       setQuizzes((prev) => prev.filter((q) => q._id !== quizId));
     } catch (error) {
-      console.error("Error deleting quiz:", error.response?.data || error);
+       toast.error(error.message)
     }
   };
 

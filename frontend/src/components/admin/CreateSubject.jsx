@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const CreateSubject = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -43,9 +44,11 @@ const CreateSubject = () => {
       setSubjectName("");
       setSemester("");
       setDepartment("");
+      toast.success(res.data.message)
       navigate("/Admin/subject")
     } catch (error) {
-      console.log(error.response?.data || error.message);
+      toast.error( error.message)
+      
     }
   };
 

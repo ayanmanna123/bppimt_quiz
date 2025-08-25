@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "../shared/Navbar";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 // ✅ Reusable input with green border when filled
 const ValidatedInput = ({
@@ -36,7 +37,7 @@ const CreateQuize = () => {
   const [questions, setQuestions] = useState([
     { questionText: "", options: ["", "", "", ""], correctAnswer: 0 },
   ]);
-
+  
   const handleQuestionChange = (index, field, value) => {
     const updated = [...questions];
     if (field === "questionText") {
@@ -87,11 +88,11 @@ const CreateQuize = () => {
         }
       );
 
-      console.log("✅ Quiz Created:", res.data);
-      alert("Quiz created successfully!");
+      toast.success(res.data.message)
+      navigate("/Admin/subject")
     } catch (error) {
-      console.error("❌ Error creating quiz:", error.response?.data || error);
-      alert("Failed to create quiz");
+      
+       toast.error(error.message);
     }
   };
 
