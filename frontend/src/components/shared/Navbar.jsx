@@ -74,7 +74,7 @@ const Navbar = () => {
               </Link>
               <Link
                 className="cursor-pointer hover:text-indigo-600"
-                to={"/admin/reasult"}
+                to={"/admin/allquiz"}
               >
                 Rasult
               </Link>

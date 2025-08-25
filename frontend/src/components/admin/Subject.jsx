@@ -4,6 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
+import { ArrowLeft } from "lucide-react";
 
 const Subject = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -35,6 +36,10 @@ const Subject = () => {
   return (
     <>
       <Navbar />
+       <div className="mx-4.5 max-w-fit hover:cursor-pointer"
+              onClick={() => navigate("/")}>
+              <ArrowLeft/>
+          </div>
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-4">My Subjects</h1>
 

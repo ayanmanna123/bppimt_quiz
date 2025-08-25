@@ -93,7 +93,7 @@ export const getReasultByQUizeId = async (req, res) => {
 
     const allReasult = await Reasult.find({ quiz: quizeId })
       .sort({ createdAt: -1 })
-      .populate({ path: "student" });
+      .populate([ "student","quiz" ]);
     if (!allReasult) {
       return res.status(400).json({
         message: "no reasult found",

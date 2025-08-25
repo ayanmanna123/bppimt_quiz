@@ -4,7 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react"; // for delete icon
+import { ArrowLeft, Trash2 } from "lucide-react"; // for delete icon
 import Navbar from "../shared/Navbar";
 import { useNavigate } from "react-router-dom";
 
@@ -64,6 +64,10 @@ const TeacherCreateQuiz = () => {
   return (
     <>
     <Navbar/>
+    <div className="mx-4.5 max-w-fit hover:cursor-pointer"
+        onClick={() => navigate("/Admin/subject")}>
+        <ArrowLeft/>
+    </div>
       <div className="p-6">
         <h2 className="text-2xl font-bold mb-6">📚 My Quizzes</h2>
 
