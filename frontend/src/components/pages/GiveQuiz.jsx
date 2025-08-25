@@ -92,27 +92,30 @@ const GiveQuiz = () => {
       setCurrentIndex((prev) => prev - 1);
     }
   };
-
   const handleSubmit = async () => {
     try {
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v2",
       });
 
-      const answerArray = quiz.questions.map((q) =>
-        answers[q._id] !== undefined ? Number(answers[q._id]) : null
+      // Convert answers {questionId: option} → [{questionId, selectedOption}]
+      const answerArray = Object.entries(answers).map(
+        ([questionId, option]) => ({
+          questionId,
+          selectedOption: option !== "" ? Number(option) : null,
+        })
       );
 
       const res = await axios.post(
         "http://localhost:5000/api/v1/reasult/reasult/submite",
         {
           quizId,
-          answers, // directly send { [questionId]: selectedOption }
+          answers: answerArray,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      toast.success(res.data.message)
+      toast.success(res.data.message);
       navigate("/quiz");
     } catch (error) {
       toast.error(error.message);

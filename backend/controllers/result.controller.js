@@ -25,27 +25,24 @@ export const submitQuiz = async (req, res) => {
       quiz: quiz._id,
     });
     if (alreadyGiven) {
-      return res
-        .status(400)
-        .json({
-          message: "You have already attempted this quiz",
-          success: false,
-        });
+      return res.status(400).json({
+        message: "You have already attempted this quiz",
+        success: false,
+      });
     }
 
     let score = 0;
     const processedAnswers = quiz.questions.map((q) => {
-      const selectedOption = answers[q._id];
+      const found = answers.find((a) => String(a.questionId) === String(q._id));
+      const selectedOption = found ? found.selectedOption : null;
       const isCorrect =
-        selectedOption !== undefined &&
-        Number(selectedOption) === q.correctAnswer;
+        selectedOption !== null && selectedOption === q.correctAnswer;
 
       if (isCorrect) score += quiz.marks;
 
       return {
         questionId: q._id,
-        selectedOption:
-          selectedOption !== undefined ? Number(selectedOption) : null,
+        selectedOption,
         isCorrect,
       };
     });
@@ -64,12 +61,10 @@ export const submitQuiz = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json({
-        message: "Server error while submitting result",
-        success: false,
-      });
+    return res.status(500).json({
+      message: "Server error while submitting result",
+      success: false,
+    });
   }
 };
 
