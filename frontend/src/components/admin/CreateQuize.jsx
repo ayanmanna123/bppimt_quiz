@@ -5,7 +5,13 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "../shared/Navbar";
 
 // ✅ Reusable input with green border when filled
-const ValidatedInput = ({ value, onChange, placeholder, type = "text", className = "" }) => (
+const ValidatedInput = ({
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+  className = "",
+}) => (
   <input
     type={type}
     placeholder={placeholder}
@@ -21,7 +27,6 @@ const CreateQuize = () => {
   const { subjectId } = useParams();
   const { getAccessTokenSilently } = useAuth0();
 
-  // form states
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -174,12 +179,12 @@ const CreateQuize = () => {
                     type="number"
                     min="1"
                     max="4"
-                    value={q.correctAnswer + 1} // show 1–4 to user
+                    value={q.correctAnswer + 1}
                     onChange={(e) =>
                       handleQuestionChange(
                         i,
                         "correctAnswer",
-                        parseInt(e.target.value, 10) - 1 // store 0–3 in state
+                        parseInt(e.target.value, 10) - 1
                       )
                     }
                   />
@@ -196,7 +201,6 @@ const CreateQuize = () => {
             </button>
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             className="bg-green-600 text-white px-6 py-2 rounded font-semibold"

@@ -11,47 +11,56 @@ import Reasult from "./components/pages/Reasult";
 import ReasultDetails from "./components/pages/ReasultDetails";
 import Subject from "./components/admin/Subject";
 import CreateQuize from "./components/admin/CreateQuize";
- 
+import TeacherCreateQuiz from "./components/admin/TeacherCreateQuiz";
+import AdmineReacult from "./components/admin/AdmineReacult";
+
 function App() {
   const approute = createBrowserRouter([
     {
       path: "/",
       element: <Home />,
     },
-     {
+    {
       path: "/complete/profile",
       element: <Complete />,
     },
-     {
+    {
       path: "/quiz",
-      element: <Quiz/>
+      element: <Quiz />,
     },
-     {
+    {
       path: "/quizedetails/:subjectId",
-      element:<AllQuiz/>
+      element: <AllQuiz />,
     },
     {
       path: "/quiz/page/:quizId",
-      element:<GiveQuiz/>
+      element: <GiveQuiz />,
     },
-     {
+    {
       path: "/reasult",
-      element:<Reasult/>
+      element: <Reasult />,
     },
     {
       path: "/reasult/details/:resultId",
-      element:<ReasultDetails/>
+      element: <ReasultDetails />,
     },
     //admin panel
-     {
+    {
       path: "/Admin/subject",
-      element:<Subject/>
+      element: <Subject />,
     },
-       {
+    {
       path: "/admin/createQuize/:subjectId",
-      element:<CreateQuize/>
+      element: <CreateQuize />,
     },
-
+    {
+      path: "/admin/allquiz",
+      element: <TeacherCreateQuiz />,
+    },
+    {
+      path: "/admin/reasult",
+      element:<AdmineReacult/>,
+    },
   ]);
 
   return (

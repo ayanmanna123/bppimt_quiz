@@ -3,11 +3,12 @@ import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../shared/Navbar";
 
 const Subject = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [subjects, setSubjects] = useState([]);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
@@ -32,31 +33,49 @@ const Subject = () => {
   }, [getAccessTokenSilently]);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">My Subjects</h1>
+    <>
+      <Navbar />
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-4">My Subjects</h1>
 
-      {subjects.length === 0 ? (
-        <p>No subjects available</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {subjects.map((subj) => (
-            <div
-              key={subj._id}
-              className="border rounded-xl shadow-md p-4 hover:shadow-lg transition bg-white"
-            >
-              <h2 className="text-lg font-semibold mb-2">{subj.subjectName}</h2>
-              <p className="text-sm text-gray-600">
-                <strong>Department:</strong> {subj.department}
-              </p>
-              <p className="text-sm text-gray-600">
-                <strong>Semester:</strong> {subj.semester}
-              </p>
-              <Button className={'bg-blue-500'} onClick={()=>navigate(`/admin/createQuize/${subj._id}`)}>Create quiz</Button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+        {subjects.length === 0 ? (
+          <p>No subjects available</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {subjects.map((subj) => (
+              <div
+                key={subj._id}
+                className="border rounded-xl shadow-md p-4 hover:shadow-lg transition bg-white"
+              >
+                <h2 className="text-lg font-semibold mb-2">
+                  {subj.subjectName}
+                </h2>
+                <p className="text-sm text-gray-600">
+                  <strong>Department:</strong> {subj.department}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Semester:</strong> {subj.semester}
+                </p>
+                
+                <div className="my-3">
+                  <Button
+                    className={"bg-blue-500 hover:bg-blue-600 cursor-pointer"}
+                    onClick={() => navigate(`/admin/createQuize/${subj._id}`)}
+                  >
+                    Create quiz
+                  </Button>
+                </div>
+                <div className="my-3 ">
+                  <Button onClick={() => navigate("/admin/allquiz")} className={'bg-green-500 hover:bg-green-600 cursor-pointer'}>
+                    view all quiz
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
