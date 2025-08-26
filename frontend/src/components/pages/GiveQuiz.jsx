@@ -14,10 +14,10 @@ const GiveQuiz = () => {
   const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(null); // ⏳ Timer in seconds
+  const [timeLeft, setTimeLeft] = useState(null); 
   const navigate = useNavigate();
 
-  // 📌 Fetch quiz + start timer
+ 
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
@@ -32,7 +32,7 @@ const GiveQuiz = () => {
 
         setQuiz(res.data.quize);
 
-        // start timer (convert minutes to seconds if needed)
+       
         const duration = parseInt(res.data.quize.time) * 60;
         setTimeLeft(duration);
       } catch (error) {
@@ -43,7 +43,6 @@ const GiveQuiz = () => {
     fetchQuiz();
   }, [quizId, getAccessTokenSilently]);
 
-  // ⏱ Countdown logic
   useEffect(() => {
     if (timeLeft === null) return;
 
@@ -51,7 +50,7 @@ const GiveQuiz = () => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
-          handleSubmit(); // auto submit when timer ends
+          handleSubmit();
           return 0;
         }
         return prev - 1;
@@ -61,7 +60,6 @@ const GiveQuiz = () => {
     return () => clearInterval(interval);
   }, [timeLeft !== null]);
 
-  // ⚠️ Show warning toast at 30s
   useEffect(() => {
     if (timeLeft === 30) {
       toast.warning("⏳ Only 30 seconds left!");
@@ -98,28 +96,37 @@ const GiveQuiz = () => {
         audience: "http://localhost:5000/api/v2",
       });
 
-      // Convert answers {questionId: option} → [{questionId, selectedOption}]
-      const answerArray = Object.entries(answers).map(
-        ([questionId, option]) => ({
-          questionId,
-          selectedOption: option !== "" ? Number(option) : null,
-        })
-      );
+      // ✅ read latest state
+      setAnswers((latestAnswers) => {
+        const answerArray = Object.entries(latestAnswers).map(
+          ([questionId, option]) => ({
+            questionId,
+            selectedOption: option !== "" ? Number(option) : null,
+          })
+        );
 
-      const res = await axios.post(
-        "http://localhost:5000/api/v1/reasult/reasult/submite",
-        {
-          quizId,
-          answers: answerArray,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+        axios
+          .post(
+            "http://localhost:5000/api/v1/reasult/reasult/submite",
+            {
+              quizId,
+              answers: answerArray,
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+          )
+          .then((res) => {
+            toast.success(res.data.message);
+            navigate("/quiz");
+          })
+          .catch((error) => {
+            toast.error(error.message);
+            navigate("/quiz");
+          });
 
-      toast.success(res.data.message);
-      navigate("/quiz");
+        return latestAnswers;  
+      });
     } catch (error) {
-      toast.error(error.message);
-      navigate("/quiz");
+      toast.error("Error submitting quiz");
     }
   };
 

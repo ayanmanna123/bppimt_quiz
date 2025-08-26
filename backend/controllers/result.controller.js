@@ -3,7 +3,7 @@ import Reasult from "../models/Result.model.js";
 import User from "../models/User.model.js";
 export const submitQuiz = async (req, res) => {
   try {
-    const { quizId, answers } = req.body; // answers = { questionId: selectedOptionIndex }
+    const { quizId, answers } = req.body;
 
     const userId = req.auth.sub;
     const student = await User.findOne({ auth0Id: userId });
