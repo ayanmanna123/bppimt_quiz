@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Howl } from "howler";
-const GiveQuiz = () => {
+
+const GiveQuiz = ({ tabSwitchCount }) => {
   const { quizId } = useParams();
   const { getAccessTokenSilently } = useAuth0();
   const [quiz, setQuiz] = useState(null);
@@ -41,6 +42,7 @@ const GiveQuiz = () => {
     fetchQuiz();
   }, [quizId, getAccessTokenSilently]);
 
+  // ⏱ Timer effect
   useEffect(() => {
     if (timeLeft === null) return;
 
@@ -58,11 +60,20 @@ const GiveQuiz = () => {
     return () => clearInterval(interval);
   }, [timeLeft !== null]);
 
+  // ⚠️ Warning for last 30s
   useEffect(() => {
     if (timeLeft === 30) {
       toast.warning("⏳ Only 30 seconds left!");
     }
   }, [timeLeft]);
+
+  // 🚨 Auto-submit when tab switch count > 5
+  useEffect(() => {
+    if (tabSwitchCount > 5) {
+      toast.error("🚫 Too many tab switches! Quiz will be auto-submitted.");
+      handleSubmit();
+    }
+  }, [tabSwitchCount]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -88,13 +99,13 @@ const GiveQuiz = () => {
       setCurrentIndex((prev) => prev - 1);
     }
   };
+
   const handleSubmit = async () => {
     try {
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v2",
       });
 
-      // ✅ read latest state
       setAnswers((latestAnswers) => {
         const answerArray = Object.entries(latestAnswers).map(
           ([questionId, option]) => ({
@@ -119,7 +130,6 @@ const GiveQuiz = () => {
               volume: 0.7,
             });
             sound.play();
-
             navigate("/quiz");
           })
           .catch((error) => {
@@ -148,7 +158,6 @@ const GiveQuiz = () => {
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle className="text-lg">{quiz.title}</CardTitle>
-            {/* Timer Display */}
             <p className="text-red-500 font-semibold">
               Time Left: {timeLeft !== null ? formatTime(timeLeft) : "--:--"}
             </p>

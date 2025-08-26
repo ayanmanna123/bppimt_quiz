@@ -30,7 +30,7 @@ const Navbar = () => {
     if (isAuthenticated && user && !localStorage.getItem("loginShown")) {
        
  
-      toast.success(`Welcome ${user.name || "back"} 🎉`);
+      toast.success(`Welcome back ${user.name || "back"} 🎉`);
  
       localStorage.setItem("loginShown", "true");
     }

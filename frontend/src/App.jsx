@@ -16,6 +16,7 @@ import AdmineReacult from "./components/admin/AdmineReacult";
 import CreateSubject from "./components/admin/CreateSubject";
 import Profile from "./components/Profile";
 import SubjectRelatedQuiz from "./components/admin/SubjectRelatedQuiz";
+import FullScreen from "./components/FullScreen";
 
 function App() {
   const approute = createBrowserRouter([
@@ -31,9 +32,9 @@ function App() {
       path: "/quiz",
       element: <Quiz />,
     },
-     {
+    {
       path: "/profile",
-      element:<Profile/>,
+      element: <Profile />,
     },
     {
       path: "/quizedetails/:subjectId",
@@ -41,7 +42,7 @@ function App() {
     },
     {
       path: "/quiz/page/:quizId",
-      element: <GiveQuiz />,
+      element: <FullScreen />,
     },
     {
       path: "/reasult",
@@ -66,17 +67,16 @@ function App() {
     },
     {
       path: "/admin/reasult/:quizeId",
-      element:<AdmineReacult/>,
+      element: <AdmineReacult />,
     },
-     {
+    {
       path: "/admin/create/subject",
-      element: <CreateSubject/>,
+      element: <CreateSubject />,
     },
     {
       path: "/Admin/subject/quiz/:subjectId",
-      element: <SubjectRelatedQuiz/>,
+      element: <SubjectRelatedQuiz />,
     },
-    
   ]);
 
   return (
