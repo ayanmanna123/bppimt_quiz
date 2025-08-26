@@ -45,7 +45,7 @@ export const creatuser = async (req, res) => {
 
 export const updatesem = async (req, res) => {
   try {
-    const { sem } = req.body;
+    const { sem, name } = req.body;
     const userId = req.auth.sub;
     let user = await User.findOne({ auth0Id: userId });
     if (!user) {
@@ -54,9 +54,13 @@ export const updatesem = async (req, res) => {
         success: false,
       });
     }
+    if (sem) {
+      user.semester = sem;
+    }
 
-    user.semester = sem;
-
+    if (name) {
+      user.fullname = name;
+    }
     const neeuser = await user.save();
 
     user = await User.findOne({ auth0Id: userId });
