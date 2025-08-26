@@ -1,17 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { LogOut } from "lucide-react";
-import { User } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Howl } from "howler";
 import { Button } from "../ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "sonner";
+
 const Navbar = () => {
   const dispatch = useDispatch();
   const {
@@ -19,14 +21,32 @@ const Navbar = () => {
     loginWithRedirect,
     isAuthenticated,
     user,
-    getAccessTokenSilently,
   } = useAuth0();
   const navigate = useNavigate();
   const { usere } = useSelector((store) => store.auth);
+
+  
+  useEffect(() => {
+    if (isAuthenticated && user && !localStorage.getItem("loginShown")) {
+       
+ 
+      toast.success(`Welcome ${user.name || "back"} 🎉`);
+ 
+      localStorage.setItem("loginShown", "true");
+    }
+  }, [isAuthenticated, user]);
+
   const handleLogin = async () => {
     if (!isAuthenticated) {
       await loginWithRedirect();
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("loginShown");  
+    logout({
+      logoutParams: { returnTo: window.location.origin },
+    });
   };
 
   return (
@@ -39,45 +59,17 @@ const Navbar = () => {
         <div className="flex justify-center items-center gap-3.5">
           {usere.role === "student" ? (
             <ul className="hidden md:flex items-center gap-8 text-indigo-900 font-medium">
-              <Link className="cursor-pointer hover:text-indigo-600" to={"/"}>
-                Home
-              </Link>
-              <Link className="cursor-pointer hover:text-indigo-600">
-                About Us
-              </Link>
-              <Link
-                className="cursor-pointer hover:text-indigo-600"
-                to={"/quiz"}
-              >
-                Service
-              </Link>
-              <Link
-                className="cursor-pointer hover:text-indigo-600"
-                to={"/reasult"}
-              >
-                Rasult
-              </Link>
+              <Link to={"/"} className="cursor-pointer hover:text-indigo-600">Home</Link>
+              <Link className="cursor-pointer hover:text-indigo-600">About Us</Link>
+              <Link to={"/quiz"} className="cursor-pointer hover:text-indigo-600">Service</Link>
+              <Link to={"/reasult"} className="cursor-pointer hover:text-indigo-600">Result</Link>
             </ul>
           ) : (
             <ul className="hidden md:flex items-center gap-8 text-indigo-900 font-medium">
-              <Link className="cursor-pointer hover:text-indigo-600" to={"/"}>
-                Home
-              </Link>
-              <Link className="cursor-pointer hover:text-indigo-600">
-                About Us
-              </Link>
-              <Link
-                className="cursor-pointer hover:text-indigo-600"
-                to={"/Admin/subject"}
-              >
-                Subject
-              </Link>
-              <Link
-                className="cursor-pointer hover:text-indigo-600"
-                to={"/admin/allquiz"}
-              >
-                Rasult
-              </Link>
+              <Link to={"/"} className="cursor-pointer hover:text-indigo-600">Home</Link>
+              <Link className="cursor-pointer hover:text-indigo-600">About Us</Link>
+              <Link to={"/Admin/subject"} className="cursor-pointer hover:text-indigo-600">Subject</Link>
+              <Link to={"/admin/allquiz"} className="cursor-pointer hover:text-indigo-600">Result</Link>
             </ul>
           )}
 
@@ -102,9 +94,9 @@ const Navbar = () => {
                 </Avatar>
               </PopoverTrigger>
 
-              <PopoverContent className="w-80 ">
-                <div className="flex items-center ">
-                  <Avatar className="cursor-pointer">
+              <PopoverContent className="w-80">
+                <div className="flex items-center gap-2">
+                  <Avatar>
                     <AvatarImage
                       className="object-cover"
                       src={
@@ -113,27 +105,19 @@ const Navbar = () => {
                       }
                     />
                   </Avatar>
-                  <div>
-                    <h4 className="font-medium">{user?.name}</h4>
-                  </div>
+                  <h4 className="font-medium">{user?.name}</h4>
                 </div>
+
                 <div className="flex flex-col my-2 text-gray-600">
                   <div className="flex w-fit items-center gap-2 cursor-pointer">
                     <User />
                     <Button variant="link">
-                      <Link to={"/profile"}>view profile</Link>
+                      <Link to={"/profile"}>View Profile</Link>
                     </Button>
                   </div>
                   <div className="flex w-fit items-center gap-2 cursor-pointer">
                     <LogOut />
-                    <Button
-                      variant="link"
-                      onClick={() =>
-                        logout({
-                          logoutParams: { returnTo: window.location.origin },
-                        })
-                      }
-                    >
+                    <Button variant="link" onClick={handleLogout}>
                       Logout
                     </Button>
                   </div>

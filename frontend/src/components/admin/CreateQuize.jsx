@@ -6,7 +6,7 @@ import Navbar from "../shared/Navbar";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
-// ✅ Reusable input with green border when filled
+import { Howl } from "howler";
 const ValidatedInput = ({
   value,
   onChange,
@@ -28,7 +28,7 @@ const ValidatedInput = ({
 const CreateQuize = () => {
   const { subjectId } = useParams();
   const { getAccessTokenSilently } = useAuth0();
-    const navigate = useNavigate()
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -37,7 +37,7 @@ const CreateQuize = () => {
   const [questions, setQuestions] = useState([
     { questionText: "", options: ["", "", "", ""], correctAnswer: 0 },
   ]);
-  
+
   const handleQuestionChange = (index, field, value) => {
     const updated = [...questions];
     if (field === "questionText") {
@@ -88,11 +88,16 @@ const CreateQuize = () => {
         }
       );
 
-      toast.success(res.data.message)
-      navigate("/Admin/subject")
+      toast.success(res.data.message);
+      const sound = new Howl({
+        src: ["/notification.wav"],
+        volume: 0.7,
+      });
+      sound.play();
+
+      navigate("/Admin/subject");
     } catch (error) {
-      
-       toast.error(error.message);
+      toast.error(error.message);
     }
   };
 

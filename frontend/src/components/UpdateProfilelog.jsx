@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-
+import { Howl } from "howler";
 import {
   Dialog,
   DialogContent,
@@ -12,12 +12,11 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-import { Label } from "@/components/ui/label"; 
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { setuser } from "../Redux/auth.reducer";
-
-// Dropdown imports
+ 
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -52,8 +51,14 @@ const UpdateProfilelog = ({ open, setopen }) => {
       );
 
       dispatch(setuser(res.data.user));
+
+      const sound = new Howl({
+        src: ["/notification.wav"],
+        volume: 0.7,
+      });
+      sound.play();
       toast.success(res.data.message);
-      setopen(false);  
+      setopen(false);
     } catch (error) {
       console.log(error);
       toast.error("Update failed!");
@@ -84,7 +89,6 @@ const UpdateProfilelog = ({ open, setopen }) => {
         {/* Form */}
         <form onSubmit={submitHandler}>
           <div className="grid gap-4 py-4">
-            
             {/* Name Input */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
@@ -118,14 +122,30 @@ const UpdateProfilelog = ({ open, setopen }) => {
                     value={semester}
                     onValueChange={setsemester}
                   >
-                    <DropdownMenuRadioItem value="first">First</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="second">Second</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="third">Third</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="fourth">Fourth</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="fifth">Fifth</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="sixth">Sixth</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="seventh">Seventh</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="eighth">Eighth</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="first">
+                      First
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="second">
+                      Second
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="third">
+                      Third
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="fourth">
+                      Fourth
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="fifth">
+                      Fifth
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="sixth">
+                      Sixth
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="seventh">
+                      Seventh
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="eighth">
+                      Eighth
+                    </DropdownMenuRadioItem>
                   </DropdownMenuRadioGroup>
                 </DropdownMenuContent>
               </DropdownMenu>

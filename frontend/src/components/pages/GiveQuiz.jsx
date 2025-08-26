@@ -7,17 +7,16 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-
+import { Howl } from "howler";
 const GiveQuiz = () => {
   const { quizId } = useParams();
   const { getAccessTokenSilently } = useAuth0();
   const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(null); 
+  const [timeLeft, setTimeLeft] = useState(null);
   const navigate = useNavigate();
 
- 
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
@@ -32,7 +31,6 @@ const GiveQuiz = () => {
 
         setQuiz(res.data.quize);
 
-       
         const duration = parseInt(res.data.quize.time) * 60;
         setTimeLeft(duration);
       } catch (error) {
@@ -116,6 +114,12 @@ const GiveQuiz = () => {
           )
           .then((res) => {
             toast.success(res.data.message);
+            const sound = new Howl({
+              src: ["/notification.wav"],
+              volume: 0.7,
+            });
+            sound.play();
+
             navigate("/quiz");
           })
           .catch((error) => {
@@ -123,7 +127,7 @@ const GiveQuiz = () => {
             navigate("/quiz");
           });
 
-        return latestAnswers;  
+        return latestAnswers;
       });
     } catch (error) {
       toast.error("Error submitting quiz");

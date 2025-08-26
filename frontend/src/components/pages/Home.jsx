@@ -1,20 +1,28 @@
 import Navbar from "../shared/Navbar";
 import { Button } from "../ui/button";
-import { useAuth0 } from "@auth0/auth0-react"; 
+import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
-
+import { Howl } from "howler";
 const Home = () => {
-    const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently } = useAuth0();
   const updateProfile = async () => {
     try {
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v2",
       });
       console.log(token);
+      playSound();
       console.log(user);
     } catch (error) {
       console.error(error);
     }
+  };
+  const playSound = () => {
+    const sound = new Howl({
+      src: ["/notification.wav"],
+      volume: 0.7,
+    });
+    sound.play();
   };
 
   return (
@@ -29,10 +37,13 @@ const Home = () => {
             className="px-20"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-[#03045E] leading-snug">
-              Smart Quiz App<br />for College Mock Tests
+              Smart Quiz App
+              <br />
+              for College Mock Tests
             </h1>
             <p className="text-gray-500 mt-4 max-w-lg">
-             A modern platform for students to practice mock tests, track progress, and get exam-ready with ease.
+              A modern platform for students to practice mock tests, track
+              progress, and get exam-ready with ease.
             </p>
             <Button
               className="mt-6 bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6"

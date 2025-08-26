@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { Howl } from "howler";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,6 +48,12 @@ const CreateSubject = () => {
       setSemester("");
       setDepartment("");
       toast.success(res.data.message);
+       const sound = new Howl({
+        src: ["/notification.wav"],
+        volume: 0.7,
+      });
+      sound.play();
+
       navigate("/Admin/subject");
     } catch (error) {
       toast.error(error.message);
