@@ -86,10 +86,10 @@ const Subject = () => {
                 </div>
                 <div className="my-3 ">
                   <Button
-                    onClick={() => navigate("/admin/allquiz")}
+                    onClick={() => navigate(`/Admin/subject/quiz/${subj._id}`)}
                     className={"bg-green-500 hover:bg-green-600 cursor-pointer"}
                   >
-                    view all quiz
+                    view quiz
                   </Button>
                 </div>
               </div>

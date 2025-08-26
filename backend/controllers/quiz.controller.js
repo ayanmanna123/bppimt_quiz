@@ -184,3 +184,31 @@ export const getQuizeByQuizeId = async (req, res) => {
     console.log(error);
   }
 };
+
+
+export const getquizBysubjectId = async(req, res)=>{
+  try {
+    const {subjectId} = req.params
+    if(!subjectId){
+      return res.status(400).json({
+        message:"subject id is required",
+        success:false
+      })
+    }
+    const allquiz = await Quiz.find({subject: subjectId})
+    if(!allquiz){
+      return res.status(400).json({
+        message:"quize not found",
+        success:false
+      })
+    }
+    return res.status(200).json({
+      message:"quize get successfully",
+      allquiz,
+      success:true
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+

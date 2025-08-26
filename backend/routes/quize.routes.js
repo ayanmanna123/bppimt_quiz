@@ -3,6 +3,7 @@ import isAuthenticated from "../middlewares/isAuthenticated.js";
 import {
   createQuestion,
   deletQuiz,
+  getquizBysubjectId,
   getQuizeByQuizeId,
   getQuizeBySubJectId,
   getQuizeByTeacherId,
@@ -15,4 +16,5 @@ quizeRoute.get("/quiz/subject/:subjectId", isAuthenticated, getQuizeBySubJectId)
 quizeRoute.get("/quiz/teacher", isAuthenticated, getQuizeByTeacherId);
 quizeRoute.delete("/delet/quiz", isAuthenticated, deletQuiz);
 quizeRoute.get("/getquizId/:quizId",isAuthenticated,getQuizeByQuizeId)
+quizeRoute.get("/getSubjectId/:subjectId", isAuthenticated, getquizBysubjectId)
 export default quizeRoute;
