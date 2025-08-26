@@ -54,13 +54,10 @@ export const updatesem = async (req, res) => {
         success: false,
       });
     }
-    const newuser = await User.updateOne({ semester: sem });
-    if (!newuser) {
-      return res.status(400).json({
-        message: "Something went wrong while updating semester",
-        success: false,
-      });
-    }
+
+    user.semester = sem;
+
+    const neeuser = await user.save();
 
     user = await User.findOne({ auth0Id: userId });
     if (!user) {
