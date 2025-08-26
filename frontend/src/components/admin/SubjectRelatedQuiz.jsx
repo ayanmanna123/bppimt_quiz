@@ -4,15 +4,16 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import { ArrowLeft, Trash2 } from "lucide-react";
-import  {motion} from 'framer-motion'
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import { Badge } from "@/components/ui/badge";
+import QuizCardSkeleton from "./QuizCardSkeleton";
 const SubjectRelatedQuiz = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [quizzes, setQuizzes] = useState([]);
   const { subjectId } = useParams();
-    const navigate = useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
@@ -36,7 +37,7 @@ const SubjectRelatedQuiz = () => {
   }, [getAccessTokenSilently, subjectId]);
 
   return (
-     <>
+    <>
       <Navbar />
       <div
         className="mx-4.5 max-w-fit hover:cursor-pointer"
@@ -48,7 +49,10 @@ const SubjectRelatedQuiz = () => {
         <h2 className="text-2xl font-bold mb-6">📚 My Quizzes</h2>
 
         {quizzes.length === 0 ? (
-          <p className="text-gray-500">No quizzes created yet.</p>
+          <>
+            <QuizCardSkeleton />
+            <p className="text-gray-500">No quizzes created yet.</p>
+          </>
         ) : (
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"

@@ -7,6 +7,7 @@ import Navbar from "../shared/Navbar";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import SchlitonSubject from "./SchlitonSubject";
 const Subject = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [subjects, setSubjects] = useState([]);
@@ -53,7 +54,7 @@ const Subject = () => {
         <h1 className="text-2xl font-bold mb-4">My Subjects</h1>
 
         {subjects.length === 0 ? (
-          <p>No subjects available</p>
+          <SchlitonSubject/>
         ) : (
           <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"

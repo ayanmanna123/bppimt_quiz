@@ -9,6 +9,7 @@ import Navbar from "../shared/Navbar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import QuizCardSkeleton from "./QuizCardSkeleton";
 const TeacherCreateQuiz = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [quizzes, setQuizzes] = useState([]);
@@ -75,7 +76,7 @@ const TeacherCreateQuiz = () => {
         <h2 className="text-2xl font-bold mb-6">📚 My Quizzes</h2>
 
         {quizzes.length === 0 ? (
-          <p className="text-gray-500">No quizzes created yet.</p>
+          <QuizCardSkeleton/>
         ) : (
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
