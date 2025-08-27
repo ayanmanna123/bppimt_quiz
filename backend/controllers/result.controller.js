@@ -199,3 +199,31 @@ export const conpareCurrectAnsWrongAns = async (req, res) => {
       .json({ message: "Server error while fetching result details" });
   }
 };
+
+export const getAllQuizByUserId = async (req, res) => {
+  try {
+    const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+    const allQuiz = await Reasult.find({student: user._id });
+    if (!allQuiz) {
+      return res.status(400).json({
+        message: "not get any quiz",
+        success: false,
+      });
+    }
+    return res.status(200).json({
+      message: "quiz get successfully",
+      allQuiz,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

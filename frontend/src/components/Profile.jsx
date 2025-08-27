@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { store } from "@/Redux/store";
 import Navbar from "./shared/Navbar";
 import UpdateProfilelog from "./UpdateProfilelog";
+import Dashboard from "./pages/Dashboard";
 
 // const skilles = ["React", "Node.js", "Tailwind", "MongoDB"];
 
@@ -22,7 +23,7 @@ const Profile = () => {
       <Navbar />
       <motion.div
         className="max-w-4xl   mx-auto bg-white border border-gray-300 rounded-2xl my-5 p-8"
-        initial={{ opacity: 0, y: 50 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
@@ -73,6 +74,7 @@ const Profile = () => {
           <UpdateProfilelog open={open} setopen={setopen} />
         </div>
       </motion.div>
+      <Dashboard/>
     </div>
   );
 };
