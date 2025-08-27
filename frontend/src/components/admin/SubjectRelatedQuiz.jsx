@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import { Badge } from "@/components/ui/badge";
 import QuizCardSkeleton from "./QuizCardSkeleton";
+import { Howl } from "howler";
+import { toast } from "sonner";
 const SubjectRelatedQuiz = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [quizzes, setQuizzes] = useState([]);
@@ -35,6 +37,33 @@ const SubjectRelatedQuiz = () => {
 
     fetchQuizzes();
   }, [getAccessTokenSilently, subjectId]);
+
+  const handleDelete = async (quizId) => {
+      try {
+        const token = await getAccessTokenSilently({
+          audience: "http://localhost:5000/api/v2",
+        });
+  
+        const res = await axios.delete(
+          "http://localhost:5000/api/v1/quize/delet/quiz",
+          {
+            data: { quizId },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const sound = new Howl({
+                src: ["/notification.wav"],
+                volume: 0.7,
+              });
+              sound.play();
+        toast.success(res.data.message);
+        setQuizzes((prev) => prev.filter((q) => q._id !== quizId));
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
 
   return (
     <>

@@ -102,3 +102,55 @@ export const getUserByEmail = async (req, res) => {
     });
   }
 };
+export const getallteacher = async (req, res) => {
+  try {
+    const teacher = await User.find({ role: "teacher" });
+
+    if (!teacher || teacher.length === 0) {
+      return res.status(404).json({
+        message: "No teacher found",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Teachers fetched successfully",
+      length: teacher.length,
+       
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
+  }
+};
+
+export const getallstudent = async (req, res) => {
+  try {
+    const teacher = await User.find({ role: "student" });
+
+    if (!teacher || teacher.length === 0) {
+      return res.status(404).json({
+        message: "No student found",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: "student fetched successfully",
+      length: teacher.length,
+       
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
+  }
+};
+

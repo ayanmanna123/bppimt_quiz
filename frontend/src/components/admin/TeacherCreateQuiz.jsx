@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import QuizCardSkeleton from "./QuizCardSkeleton";
+import { Howl } from "howler";
 const TeacherCreateQuiz = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [quizzes, setQuizzes] = useState([]);
@@ -56,6 +57,11 @@ const TeacherCreateQuiz = () => {
           },
         }
       );
+      const sound = new Howl({
+              src: ["/notification.wav"],
+              volume: 0.7,
+            });
+            sound.play();
       toast.success(res.data.message);
       setQuizzes((prev) => prev.filter((q) => q._id !== quizId));
     } catch (error) {

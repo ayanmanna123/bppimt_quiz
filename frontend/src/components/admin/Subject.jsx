@@ -14,8 +14,12 @@ const Subject = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const fetchSubjects = async () => {
+
+
+      
       try {
         const token = await getAccessTokenSilently({
+          
           audience: "http://localhost:5000/api/v2",
         });
 
