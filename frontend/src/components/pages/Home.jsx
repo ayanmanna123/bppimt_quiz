@@ -3,6 +3,11 @@ import { Button } from "../ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
 import { Howl } from "howler";
+import SplitText from "./SplitText";
+import TextType from "./TextType";
+import Footer from "./Footer";
+import Features from "./features";
+import Footerreal from "./Footerreal";
 const Home = () => {
   const { getAccessTokenSilently } = useAuth0();
   const updateProfile = async () => {
@@ -25,6 +30,10 @@ const Home = () => {
     sound.play();
   };
 
+  const handleAnimationComplete = () => {
+    console.log("All letters have animated!");
+  };
+
   return (
     <>
       <div className="min-h-scree bg-white">
@@ -36,15 +45,60 @@ const Home = () => {
             transition={{ duration: 0.6 }}
             className="px-20"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-[#03045E] leading-snug">
-              Smart Quiz App
+            <h1>
+              <SplitText
+                text=" Smart Quiz App"
+                className="text-5xl font-semibold text-center"
+                delay={100}
+                duration={0.6}
+                ease="power3.out"
+                splitType="chars"
+                from={{ opacity: 0, y: 40 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0.1}
+                rootMargin="-100px"
+                textAlign="center"
+                onLetterAnimationComplete={handleAnimationComplete}
+              />
               <br />
-              for College Mock Tests
+              <SplitText
+                text="for College Mock Tests"
+                className="text-5xl font-semibold text-center"
+                delay={100}
+                duration={0.6}
+                ease="power3.out"
+                splitType="chars"
+                from={{ opacity: 0, y: 40 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0.1}
+                rootMargin="-100px"
+                textAlign="center"
+                onLetterAnimationComplete={handleAnimationComplete}
+              />
             </h1>
-            <p className="text-gray-500 mt-4 max-w-lg">
+
+            {/* <p className="text-gray-500 mt-4 max-w-lg">
               A modern platform for students to practice mock tests, track
               progress, and get exam-ready with ease.
+            </p> */}
+            <p>
+              <TextType
+                text={[
+                  "A modern platform for students to practice mock tests",
+                  "Track your progress with ease",
+                ]}
+                typingSpeed={75}
+                as="span"
+                pauseDuration={1500}
+                deletingSpeed={40}
+                loop={true}
+                className="font-bold text-2xl"
+                textColors={["#000000"]} // cycles black, blue, red
+                cursorCharacter="|"
+                cursorClassName="text-blue-600"
+              />
             </p>
+
             <Button
               className="mt-6 bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6"
               onClick={updateProfile}
@@ -66,6 +120,9 @@ const Home = () => {
             />
           </motion.div>
         </div>
+        <Features/>
+        <Footer/>
+        <Footerreal/>
       </div>
     </>
   );
