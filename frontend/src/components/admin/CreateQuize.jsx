@@ -5,9 +5,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "../shared/Navbar";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-
 import { Howl } from "howler";
 import { generateQuizQuestions } from "../services/geminiService";
+
 const ValidatedInput = ({
   value,
   onChange,
@@ -30,6 +30,7 @@ const CreateQuize = () => {
   const { subjectId } = useParams();
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
+
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -38,6 +39,7 @@ const CreateQuize = () => {
   const [questions, setQuestions] = useState([
     { questionText: "", options: ["", "", "", ""], correctAnswer: 0 },
   ]);
+  const [loadingAI, setLoadingAI] = useState(false);
 
   const handleQuestionChange = (index, field, value) => {
     const updated = [...questions];
@@ -83,17 +85,12 @@ const CreateQuize = () => {
           totalQuestions,
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       toast.success(res.data.message);
-      const sound = new Howl({
-        src: ["/notification.wav"],
-        volume: 0.7,
-      });
+      const sound = new Howl({ src: ["/notification.wav"], volume: 0.7 });
       sound.play();
 
       navigate("/Admin/subject");
@@ -102,7 +99,19 @@ const CreateQuize = () => {
     }
   };
 
-  const [loadingAI, setLoadingAI] = useState(false);
+  // ✅ Transform AI Questions into your structure
+  const transformQuestions = (rawQuestions) =>
+    rawQuestions.map((q) => {
+      const correctIndex = q.options.findIndex(
+        (opt) => opt.toLowerCase().trim() === q.answer?.toLowerCase().trim()
+      );
+      return {
+        questionText: q.question || q.questionText,
+        options: q.options,
+        correctAnswer: correctIndex >= 0 ? correctIndex : 0,
+      };
+    });
+
   const autoGenerateQuestions = async () => {
     setLoadingAI(true);
     try {
@@ -111,10 +120,7 @@ const CreateQuize = () => {
         totalQuestions || 5
       );
 
-      console.log("Raw AI Questions:", aiQuestions);
-
       const formatted = transformQuestions(aiQuestions);
-      console.log(formatted)
       if (formatted.length > 0) {
         setQuestions(formatted);
         toast.success("AI generated questions added!");
@@ -129,27 +135,20 @@ const CreateQuize = () => {
     }
   };
 
-  // ✅ Add this function above your component
-  const transformQuestions = (rawQuestions) => {
-    return rawQuestions.map((q) => {
-      // find index of correct answer
-      const correctIndex = q.options.findIndex(
-        (opt) => opt.toLowerCase().trim() === q.answer?.toLowerCase().trim()
-      );
-
-      return {
-        questionText: q.question || q.questionText, // normalize field name
-        options: q.options,
-        correctAnswer: correctIndex >= 0 ? correctIndex : 0, // default to 0 if not found
-      };
-    });
-  };
-
   return (
     <>
       <Navbar />
+      {/* Back Button */}
+      <div
+        className="mx-4.5 max-w-fit hover:cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        <ArrowLeft />
+      </div>
+
       <div className="p-4 max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold mb-4">Create Quiz</h2>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Main Quiz Details */}
           <ValidatedInput
@@ -181,7 +180,7 @@ const CreateQuize = () => {
             onChange={(e) => setTotalQuestions(e.target.value)}
           />
 
-          {/* 🔹 Generate Button */}
+          {/* 🔹 AI Generate Button */}
           <button
             type="button"
             onClick={autoGenerateQuestions}
@@ -195,8 +194,24 @@ const CreateQuize = () => {
           <div>
             <h3 className="font-semibold mb-2">Questions</h3>
             {questions.map((q, i) => (
-              <div key={i} className="border border-gray-400 p-3 mb-4 rounded">
-                <span className="font-semibold">Question {i + 1}</span>
+              <div
+                key={i}
+                className="border border-gray-400 p-3 mb-4 rounded relative"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-semibold">Question {i + 1}</span>
+                  {questions.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeQuestion(i)}
+                      className="bg-red-500 text-white px-2 py-1 rounded text-sm"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+
+                {/* Question Text */}
                 <ValidatedInput
                   placeholder="Question"
                   value={q.questionText}
@@ -204,6 +219,8 @@ const CreateQuize = () => {
                     handleQuestionChange(i, "questionText", e.target.value)
                   }
                 />
+
+                {/* Options */}
                 {q.options.map((opt, j) => (
                   <ValidatedInput
                     key={j}
@@ -214,6 +231,8 @@ const CreateQuize = () => {
                     }
                   />
                 ))}
+
+                {/* Correct Answer */}
                 <label className="block mt-2">
                   Correct Answer (1–4):
                   <ValidatedInput
@@ -232,8 +251,18 @@ const CreateQuize = () => {
                 </label>
               </div>
             ))}
+
+            {/* Add Question Button */}
+            <button
+              type="button"
+              onClick={addQuestion}
+              className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+            >
+              Add Question
+            </button>
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             className="bg-green-600 text-white px-6 py-2 rounded font-semibold"
