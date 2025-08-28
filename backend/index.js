@@ -8,6 +8,7 @@ import userrouter from "./routes/auth.routes.js";
 import SubjectRoute from "./routes/subject.routes.js";
 import quizeRoute from "./routes/quize.routes.js";
 import reasultRoute from "./routes/result.routes.js";
+import dashBordRoute from "./routes/dashbord.routes.js";
 
 dotenv.config();
 connectToMongo();
@@ -50,10 +51,11 @@ app.get("/", (req, res) => {
 });
 
 // ✅ API Routes
-app.use("/api/v1/user", userrouter)
-app.use("/api/v1/subject",SubjectRoute )
-app.use("/api/v1/quize",quizeRoute)
-app.use("/api/v1/reasult",reasultRoute )
+app.use("/api/v1/user", userrouter);
+app.use("/api/v1/subject", SubjectRoute);
+app.use("/api/v1/quize", quizeRoute);
+app.use("/api/v1/reasult", reasultRoute);
+app.use("/api/v1/dashbord", dashBordRoute);
 // ✅ Server Listener
 app.listen(port, () => {
   console.log(`Website is running at http://localhost:${port}`);

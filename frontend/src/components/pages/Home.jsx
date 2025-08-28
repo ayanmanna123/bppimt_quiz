@@ -77,22 +77,20 @@ const Home = () => {
               />
             </h1>
 
-            {/* <p className="text-gray-500 mt-4 max-w-lg">
-              A modern platform for students to practice mock tests, track
-              progress, and get exam-ready with ease.
-            </p> */}
+            
             <p>
               <TextType
                 text={[
-                  "A modern platform for students to practice mock tests",
-                  "Track your progress with ease",
+                  "A modern platform designed for students to practice mock tests,",
+                  "improve skills, track progress, identify weaknesses, and build confidence,",
+                  "helping them prepare effectively and achieve success in exams.",
                 ]}
                 typingSpeed={75}
                 as="span"
                 pauseDuration={1500}
                 deletingSpeed={40}
                 loop={true}
-                className="font-bold text-2xl"
+                className=" font-mono text-2xl"
                 textColors={["#000000"]} // cycles black, blue, red
                 cursorCharacter="|"
                 cursorClassName="text-blue-600"
@@ -105,6 +103,7 @@ const Home = () => {
             >
               View Pricing
             </Button>
+            
           </motion.div>
 
           <motion.div
@@ -120,9 +119,9 @@ const Home = () => {
             />
           </motion.div>
         </div>
-        <Features/>
-        <Footer/>
-        <Footerreal/>
+        <Features />
+        <Footer />
+        <Footerreal />
       </div>
     </>
   );

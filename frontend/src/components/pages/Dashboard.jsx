@@ -1,64 +1,83 @@
 import { useEffect, useState } from "react";
-import { motion, useMotionValue, animate } from "framer-motion";
+import { motion, animate } from "framer-motion";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
-
-// ✅ Mock Data
-const mockData = {
-  progress: {
-    attempted: 15,
-    total: 30,
-    correct: 120,
-    wrong: 80,
-  },
-  subjects: [
-    { name: "Math", attempted: 5, total: 10 },
-    { name: "Physics", attempted: 3, total: 8 },
-    { name: "Computer Science", attempted: 7, total: 12 },
-    { name: "Computer Science", attempted: 7, total: 12 },
-    { name: "Computer Science", attempted: 7, total: 12 },
-    { name: "Computer Science", attempted: 7, total: 12 },
-    { name: "Computer Science", attempted: 7, total: 12 },
-  ],
-  badges: [
-    { id: 1, name: "First Quiz", icon: "🥇" },
-    { id: 2, name: "Consistency 7 Days", icon: "🔥" },
-    { id: 3, name: "90% Score", icon: "🏆" },
-  ],
-  streak: [
-    { date: "2025-06-10", count: 2 },
-    { date: "2025-06-11", count: 1 },
-    { date: "2025-06-12", count: 3 },
-    { date: "2025-07-01", count: 2 },
-    { date: "2025-08-10", count: 4 },
-  ],
-};
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Dashboard() {
-  // States bound to animated motion values
+  // ✅ Auth0
+  const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
+
+  // ✅ States
+  const [progress, setProgress] = useState(null);
+  const [subjects, setSubjects] = useState([]);
+  const [badges, setBadges] = useState([]);
+  const [streak, setStreak] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Animated values
   const [attempted, setAttempted] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [wrong, setWrong] = useState(0);
   const [percentage, setPercentage] = useState(0);
 
   useEffect(() => {
-    const a = animate(0, mockData.progress.attempted, {
+    const fetchData = async () => {
+      try {
+        // ✅ Get Auth0 Access Token
+        const token = await getAccessTokenSilently({
+          audience: "http://localhost:5000/api/v2",
+        });
+
+        const headers = { Authorization: `Bearer ${token}` };
+
+        // ✅ Fetch all data with token
+        const [progressRes, subjectRes, badgeRes, streakRes] = await Promise.all([
+          fetch("http://localhost:5000/api/v1/dashbord/dashbord/data/progress", { headers }).then((res) => res.json()),
+          fetch("http://localhost:5000/api/v1/dashbord/data/subject", { headers }).then((res) => res.json()),
+          fetch("http://localhost:5000/api/v1/dashbord/data/badge", { headers }).then((res) => res.json()),
+          fetch("http://localhost:5000/api/v1/dashbord/data/streak", { headers }).then((res) => res.json()),
+        ]);
+
+        if (progressRes.success) setProgress(progressRes.data);
+        if (subjectRes.success) setSubjects(subjectRes.data);
+        if (badgeRes.success) setBadges(badgeRes.quizzes);
+        if (streakRes.success) setStreak(streakRes.streak);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchData();
+    } else {
+      loginWithRedirect(); // Redirect if not logged in
+    }
+  }, [getAccessTokenSilently, isAuthenticated, loginWithRedirect]);
+
+  // ✅ Animate numbers when progress data is available
+  useEffect(() => {
+    if (!progress) return;
+
+    const a = animate(0, progress.quizzesAttempted, {
       duration: 1.5,
       onUpdate: (v) => setAttempted(Math.round(v)),
     });
-    const c = animate(0, mockData.progress.correct, {
+    const c = animate(0, progress.correctAnswers, {
       duration: 1.5,
       onUpdate: (v) => setCorrect(Math.round(v)),
     });
-    const w = animate(0, mockData.progress.wrong, {
+    const w = animate(0, progress.wrongAnswers, {
       duration: 1.5,
       onUpdate: (v) => setWrong(Math.round(v)),
     });
 
-    const totalAns = mockData.progress.correct + mockData.progress.wrong;
-    const p = animate(0, (mockData.progress.correct / totalAns) * 100, {
+    const totalAns = progress.correctAnswers + progress.wrongAnswers;
+    const p = animate(0, totalAns ? (progress.correctAnswers / totalAns) * 100 : 0, {
       duration: 1.5,
       onUpdate: (v) => setPercentage(v),
     });
@@ -69,7 +88,9 @@ export default function Dashboard() {
       w.stop();
       p.stop();
     };
-  }, []);
+  }, [progress]);
+
+  if (loading) return <p className="text-center p-10">Loading Dashboard...</p>;
 
   return (
     <div className="flex min-w-screen justify-center items-center">
@@ -86,7 +107,7 @@ export default function Dashboard() {
             <div className="w-28 h-28">
               <CircularProgressbar
                 value={percentage}
-                text={`${attempted}/${mockData.progress.total}`}
+                text={`${attempted}/${progress?.totalQuizzes}`}
                 styles={buildStyles({
                   pathColor: "#3b82f6",
                   textColor: "#111",
@@ -108,12 +129,12 @@ export default function Dashboard() {
           >
             <h2 className="font-bold text-lg mb-4">By Subject</h2>
             <div className="space-y-3">
-              {mockData.subjects.map((s, i) => (
-                <motion.div key={i}>
+              {subjects.map((s, i) => (
+                <motion.div key={s.subjectId}>
                   <div className="flex justify-between text-sm">
-                    <span>{s.name}</span>
+                    <span>{s.subjectName}</span>
                     <span>
-                      {s.attempted}/{s.total}
+                      {s.completedQuizzes}/{s.totalQuizzes}
                     </span>
                   </div>
                   <motion.div
@@ -126,7 +147,7 @@ export default function Dashboard() {
                     <div
                       className="bg-blue-500 h-2 rounded-full"
                       style={{
-                        width: `${(s.attempted / s.total) * 100}%`,
+                        width: `${(s.completedQuizzes / s.totalQuizzes) * 100}%`,
                       }}
                     ></div>
                   </motion.div>
@@ -135,7 +156,7 @@ export default function Dashboard() {
             </div>
           </motion.div>
 
-          {/* Badges */}
+          {/* Badges (90% Quizzes) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -143,17 +164,21 @@ export default function Dashboard() {
             className="bg-gray-100 rounded-2xl p-6 shadow-md"
           >
             <h2 className="font-bold text-lg mb-4">Badges</h2>
-            <div className="flex gap-4">
-              {mockData.badges.map((b, index) => (
+            <div className="grid grid-cols-2 gap-4">
+              {badges.map((b, index) => (
                 <motion.div
-                  key={b.id}
+                  key={b._id}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.6, delay: index * 0.2 }}
-                  className="flex flex-col items-center bg-gray-100 rounded-xl p-3"
+                  className="flex flex-col items-center bg-gray-100 rounded-xl p-3 border"
                 >
-                  <span className="text-3xl">{b.icon}</span>
-                  <p className="text-xs mt-2">{b.name}</p>
+                  <span className="text-sm font-semibold text-center">{b.title}</span>
+                  <p className="text-xs text-gray-600 mt-1">{b.subject?.subjectName}</p>
+                  <p className="text-xs text-green-700">
+                    High Score: {b.highestScore} ({b.highestPercentage.toFixed(0)}%)
+                  </p>
+                  {b.isUserTopper && <span className="text-yellow-500 text-sm mt-1">⭐ Topper</span>}
                 </motion.div>
               ))}
             </div>
@@ -171,7 +196,7 @@ export default function Dashboard() {
           <CalendarHeatmap
             startDate={new Date("2025-01-01")}
             endDate={new Date("2025-12-31")}
-            values={mockData.streak}
+            values={streak}
             classForValue={(val) =>
               !val
                 ? "color-empty"
