@@ -178,8 +178,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex min-w-screen justify-center items-center bg-gray-50 min-h-screen">
-      <div className="p-6 space-y-6 w-full max-w-6xl">
+    <div className="flex min-w-fit justify-center items-center bg-white min-h-fit">
+      <div className=" space-y-6 w-full max-w-6xl">
         {/* Top Progress Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Circular Progress */}
