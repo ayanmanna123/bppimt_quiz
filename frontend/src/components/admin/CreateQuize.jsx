@@ -169,7 +169,7 @@ const CreateQuize = () => {
           />
           <ValidatedInput
             type="number"
-            placeholder="Marks"
+            placeholder="Per Quition Marks"
             value={marks}
             onChange={(e) => setMarks(e.target.value)}
           />

@@ -143,8 +143,9 @@ export const userHighScoreQuizzes = async (req, res) => {
     for (let [quizId, data] of quizMap.entries()) {
       const { quiz, scores } = data;
 
-      if (quiz.marks > 0) {
-        const percentages = scores.map((s) => (s / quiz.marks) * 100);
+      if (quiz.marks > 0 && quiz.totalQuestions > 0) {
+        const totalMarks = quiz.marks * quiz.totalQuestions;
+        const percentages = scores.map((s) => (s / totalMarks) * 100);
         const hasNinety = percentages.some((p) => p >= 90);
 
         if (hasNinety) {
