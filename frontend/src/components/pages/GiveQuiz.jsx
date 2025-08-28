@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -16,7 +16,18 @@ const GiveQuiz = ({ tabSwitchCount }) => {
   const [answers, setAnswers] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  // Add ref to track if quiz has been submitted
+  const hasSubmitted = useRef(false);
+  // Keep track of latest answers using ref
+  const answersRef = useRef({});
+
+  // Update answersRef whenever answers state changes
+  useEffect(() => {
+    answersRef.current = answers;
+  }, [answers]);
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -50,7 +61,6 @@ const GiveQuiz = ({ tabSwitchCount }) => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
-          handleSubmit();
           return 0;
         }
         return prev - 1;
@@ -59,6 +69,13 @@ const GiveQuiz = ({ tabSwitchCount }) => {
 
     return () => clearInterval(interval);
   }, [timeLeft !== null]);
+
+  // Separate effect to handle auto-submit when time runs out
+  useEffect(() => {
+    if (timeLeft === 0 && !hasSubmitted.current && !isSubmitting) {
+      handleSubmit();
+    }
+  }, [timeLeft]);
 
   // ⚠️ Warning for last 30s
   useEffect(() => {
@@ -69,10 +86,11 @@ const GiveQuiz = ({ tabSwitchCount }) => {
 
   // 🚨 Auto-submit when tab switch count > 5
   useEffect(() => {
-    if (tabSwitchCount > 5) {
+    if (tabSwitchCount >= 5 && !hasSubmitted.current && !isSubmitting) {
       toast.error("🚫 Too many tab switches! Quiz will be auto-submitted.");
       handleSubmit();
     }
+    console.log(tabSwitchCount);
   }, [tabSwitchCount]);
 
   const formatTime = (seconds) => {
@@ -100,49 +118,58 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
+    // Prevent multiple submissions
+    if (hasSubmitted.current || isSubmitting) {
+      return;
+    }
+
+    hasSubmitted.current = true;
+    setIsSubmitting(true);
+
     try {
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v2",
       });
 
-      setAnswers((latestAnswers) => {
-        const answerArray = Object.entries(latestAnswers).map(
-          ([questionId, option]) => ({
-            questionId,
-            selectedOption: option !== "" ? Number(option) : null,
-          })
-        );
+      // Use the ref to get the latest answers, even in async operations
+      const latestAnswers = answersRef.current;
 
-        axios
-          .post(
-            "http://localhost:5000/api/v1/reasult/reasult/submite",
-            {
-              quizId,
-              answers: answerArray,
-            },
-            { headers: { Authorization: `Bearer ${token}` } }
-          )
-          .then((res) => {
-            toast.success(res.data.message);
-            const sound = new Howl({
-              src: ["/notification.wav"],
-              volume: 0.7,
-            });
-            sound.play();
-            navigate("/quiz");
-          })
-          .catch((error) => {
-            toast.error(error.message);
-            navigate("/quiz");
-          });
+      // Create answer array directly from latest answers
+      const answerArray = Object.entries(latestAnswers).map(
+        ([questionId, option]) => ({
+          questionId,
+          selectedOption: option !== "" ? Number(option) : null,
+        })
+      );
 
-        return latestAnswers;
+      console.log("Submitting answers:", answerArray); // Debug log
+      console.log("Total answers:", answerArray.length); // Debug log
+
+      const res = await axios.post(
+        "http://localhost:5000/api/v1/reasult/reasult/submite",
+        {
+          quizId,
+          answers: answerArray,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success(res.data.message);
+      const sound = new Howl({
+        src: ["/notification.wav"],
+        volume: 0.7,
       });
+      sound.play();
+      navigate("/quiz");
     } catch (error) {
-      toast.error("Error submitting quiz");
+      console.error("Submit error:", error); // Debug log
+      toast.error(error.response?.data?.message || "Error submitting quiz");
+      navigate("/quiz");
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  }, [getAccessTokenSilently, quizId, navigate, isSubmitting]);
 
   if (!quiz) return <p className="text-center">Loading...</p>;
 
@@ -193,7 +220,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
             <Button
               variant="outline"
               onClick={handlePrevious}
-              disabled={currentIndex === 0}
+              disabled={currentIndex === 0 || isSubmitting}
               className="w-28"
             >
               Previous
@@ -202,7 +229,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
             {!isLast ? (
               <Button
                 onClick={handleNext}
-                disabled={currentSelected === ""}
+                disabled={currentSelected === "" || isSubmitting}
                 className="ml-auto w-28"
               >
                 Next
@@ -210,10 +237,10 @@ const GiveQuiz = ({ tabSwitchCount }) => {
             ) : (
               <Button
                 onClick={handleSubmit}
-                disabled={!allAnswered}
+                disabled={!allAnswered || isSubmitting}
                 className="ml-auto w-28"
               >
-                Submit
+                {isSubmitting ? "Submitting..." : "Submit"}
               </Button>
             )}
           </div>
