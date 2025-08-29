@@ -16,22 +16,14 @@ import { toast } from "sonner";
 
 const Navbar = () => {
   const dispatch = useDispatch();
-  const {
-    logout,
-    loginWithRedirect,
-    isAuthenticated,
-    user,
-  } = useAuth0();
+  const { logout, loginWithRedirect, isAuthenticated, user } = useAuth0();
   const navigate = useNavigate();
   const { usere } = useSelector((store) => store.auth);
 
-  
   useEffect(() => {
     if (isAuthenticated && user && !localStorage.getItem("loginShown")) {
-       
- 
       toast.success(`Welcome back ${user.name || "back"} 🎉`);
- 
+
       localStorage.setItem("loginShown", "true");
     }
   }, [isAuthenticated, user]);
@@ -43,7 +35,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("loginShown");  
+    localStorage.removeItem("loginShown");
     logout({
       logoutParams: { returnTo: window.location.origin },
     });
@@ -51,7 +43,7 @@ const Navbar = () => {
 
   return (
     <div>
-      <nav className="flex items-center justify-between px-10 py-6">
+      <nav className="flex items-center justify-between px-10 py-3">
         <div className="flex items-center gap-2">
           <img src="/img-2.png" alt="Shield Logo" className="h-8" />
           <span className="font-bold text-xl text-[#03045E]">ExamEdge</span>
@@ -59,17 +51,45 @@ const Navbar = () => {
         <div className="flex justify-center items-center gap-3.5">
           {usere.role === "student" ? (
             <ul className="hidden md:flex items-center gap-8 text-indigo-900 font-medium">
-              <Link to={"/"} className="cursor-pointer hover:text-indigo-600">Home</Link>
-              <Link className="cursor-pointer hover:text-indigo-600">About Us</Link>
-              <Link to={"/quiz"} className="cursor-pointer hover:text-indigo-600">Service</Link>
-              <Link to={"/reasult"} className="cursor-pointer hover:text-indigo-600">Result</Link>
+              <Link to={"/"} className="cursor-pointer hover:text-indigo-600">
+                Home
+              </Link>
+              <Link className="cursor-pointer hover:text-indigo-600">
+                About Us
+              </Link>
+              <Link
+                to={"/quiz"}
+                className="cursor-pointer hover:text-indigo-600"
+              >
+                Subject
+              </Link>
+              <Link
+                to={"/reasult"}
+                className="cursor-pointer hover:text-indigo-600"
+              >
+                Result
+              </Link>
             </ul>
           ) : (
             <ul className="hidden md:flex items-center gap-8 text-indigo-900 font-medium">
-              <Link to={"/"} className="cursor-pointer hover:text-indigo-600">Home</Link>
-              <Link className="cursor-pointer hover:text-indigo-600">About Us</Link>
-              <Link to={"/Admin/subject"} className="cursor-pointer hover:text-indigo-600">Subject</Link>
-              <Link to={"/admin/allquiz"} className="cursor-pointer hover:text-indigo-600">Result</Link>
+              <Link to={"/"} className="cursor-pointer hover:text-indigo-600">
+                Home
+              </Link>
+              <Link className="cursor-pointer hover:text-indigo-600">
+                About Us
+              </Link>
+              <Link
+                to={"/Admin/subject"}
+                className="cursor-pointer hover:text-indigo-600"
+              >
+                Subject
+              </Link>
+              <Link
+                to={"/admin/allquiz"}
+                className="cursor-pointer hover:text-indigo-600"
+              >
+                Result
+              </Link>
             </ul>
           )}
 
@@ -127,6 +147,7 @@ const Navbar = () => {
           )}
         </div>
       </nav>
+      <hr />
     </div>
   );
 };

@@ -38,7 +38,7 @@ const Home = () => {
     <>
       <div className="min-h-scree bg-white">
         <Navbar />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-10 py-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-10 py-13">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}

@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "../shared/Navbar";
 import { motion } from "framer-motion";
-
+import { Button } from "../ui/button";
+import jsPDF from "jspdf";
 const ReasultDetails = () => {
   const { getAccessTokenSilently } = useAuth0();
   const { resultId } = useParams();
@@ -41,6 +42,243 @@ const ReasultDetails = () => {
     return <div className="text-center py-10">Loading...</div>;
   }
 
+  const generateCertificate = () => {
+    if (!result) return;
+
+    const doc = new jsPDF("landscape", "pt", "a4"); // landscape A4
+
+    // Load background certificate image from public folder
+    const img = new Image();
+    img.src = "/certificate4.jpg"; // put certificate.png in public/
+
+    img.onload = () => {
+      // Draw background
+      doc.addImage(
+        img,
+        "JPG",
+        0,
+        0,
+        doc.internal.pageSize.getWidth(),
+        doc.internal.pageSize.getHeight()
+      );
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.setTextColor(80, 80, 80);
+      doc.text(
+        `Result ID: ${resultId}`,
+        pageWidth - 80,
+        60,
+        {
+          align: "right",
+        }
+      );
+      // Add student name
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(32);
+      doc.setTextColor(40, 40, 40);
+      doc.text(result.student.fullname, pageWidth / 2, 280, {
+        align: "center",
+      });
+
+      // Certification text
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(16);
+      doc.setTextColor(60, 60, 60);
+
+      const certificationLines = [
+        "appeared in the Mock Test Examination conducted by",
+        "B. P. Poddar Institute of Management & Technology.",
+        "",
+        `The candidate has demonstrated commendable performance in`,
+        ` ${result.quizTitle},`, // subject line (we’ll bold this one)
+        `securing an overall score of ${result.score}/${result.totalSoure}.`,
+        "",
+        "This achievement reflects the student's dedication, knowledge,",
+      ];
+
+      let yPosition = 350;
+      const lineHeight = 22;
+
+      certificationLines.forEach((line) => {
+        if (line === "") {
+          yPosition += lineHeight / 2;
+        } else {
+          if (
+            line.includes("B. P. Poddar Institute of Management & Technology")
+          ) {
+            doc.setFont("helvetica", "bold");
+            doc.text(line, pageWidth / 2, yPosition, { align: "center" });
+            doc.setFont("helvetica", "normal");
+          } else if (line.includes(result.quizTitle)) {
+            // Bold subject name
+            doc.setFont("helvetica", "bold");
+            doc.text(line, pageWidth / 2, yPosition, { align: "center" });
+            doc.setFont("helvetica", "normal");
+          } else {
+            doc.text(line, pageWidth / 2, yPosition, { align: "center" });
+          }
+          yPosition += lineHeight;
+        }
+      });
+
+      // Date (shifted 100px right → from 100 to 200)
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(14);
+      doc.text(
+        `Date: ${new Date().toLocaleDateString()}`,
+        200,
+        pageHeight - 80
+      );
+
+      // Grade
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(14);
+      doc.text(
+        `Date: ${new Date().toLocaleDateString()}`,
+        200,
+        pageHeight - 80
+      );
+
+      const percentage = (result.score / result.totalSoure) * 100;
+      let grade = "F";
+      let gradeColor = [255, 0, 0];
+
+      if (percentage >= 90) {
+        grade = "A+";
+        gradeColor = [0, 128, 0];
+      } else if (percentage >= 80) {
+        grade = "A";
+        gradeColor = [0, 128, 0];
+      } else if (percentage >= 70) {
+        grade = "B";
+        gradeColor = [255, 165, 0];
+      } else if (percentage >= 60) {
+        grade = "C";
+        gradeColor = [255, 165, 0];
+      } else if (percentage >= 50) {
+        grade = "D";
+        gradeColor = [255, 0, 0];
+      }
+
+      doc.setTextColor(...gradeColor);
+      doc.text(`Grade: ${grade}`, pageWidth / 2, yPosition + 30, {
+        align: "center",
+      });
+
+      doc.save(`${result.student.fullname}_Certificate.pdf`);
+    };
+
+    img.onerror = () => {
+      // fallback (same subject bold + shifted date applied here as well)
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+
+      doc.setDrawColor(200, 0, 0);
+      doc.setLineWidth(3);
+      doc.rect(50, 50, pageWidth - 100, pageHeight - 100);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(36);
+      doc.setTextColor(200, 0, 0);
+      doc.text("CERTIFICATE", pageWidth / 2, 130, { align: "center" });
+
+      doc.setFontSize(24);
+      doc.text("OF ACHIEVEMENT", pageWidth / 2, 160, { align: "center" });
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(32);
+      doc.setTextColor(40, 40, 40);
+      doc.text(result.student.fullname, pageWidth / 2, 280, {
+        align: "center",
+      });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(16);
+      doc.setTextColor(60, 60, 60);
+
+      const certificationLines = [
+        "This is to certify that the above-named student has successfully",
+        "appeared in the Mock Test Examination conducted by",
+        "B. P. Poddar Institute of Management & Technology.",
+        "",
+        `The candidate has demonstrated commendable performance in ${result.quizTitle},`,
+        `securing an overall score of ${result.score}/${result.totalScore}.`,
+        "",
+        "This achievement reflects the student's dedication, knowledge,",
+        "and readiness for upcoming academic evaluations.",
+      ];
+
+      let yPosition = 350;
+      const lineHeight = 22;
+
+      certificationLines.forEach((line) => {
+        if (line === "") {
+          yPosition += lineHeight / 2;
+        } else {
+          if (
+            line.includes(
+              "B. P. Poddar Institute of Management & Technology"
+            ) ||
+            line.includes(result.quizTitle)
+          ) {
+            doc.setFont("helvetica", "bold");
+            doc.text(line, pageWidth / 2, yPosition, { align: "center" });
+            doc.setFont("helvetica", "normal");
+          } else {
+            doc.text(line, pageWidth / 2, yPosition, { align: "center" });
+          }
+          yPosition += lineHeight;
+        }
+      });
+
+      // Date shifted
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(14);
+      doc.text(
+        `Date: ${new Date().toLocaleDateString()}`,
+        200,
+        pageHeight - 80
+      );
+
+      // Grade same as above
+      const percentage = (result.score / result.totalScore) * 100;
+      let grade = "F";
+      let gradeColor = [255, 0, 0];
+
+      if (percentage >= 90) {
+        grade = "A+";
+        gradeColor = [0, 128, 0];
+      } else if (percentage >= 80) {
+        grade = "A";
+        gradeColor = [0, 128, 0];
+      } else if (percentage >= 70) {
+        grade = "B";
+        gradeColor = [255, 165, 0];
+      } else if (percentage >= 60) {
+        grade = "C";
+        gradeColor = [255, 165, 0];
+      } else if (percentage >= 50) {
+        grade = "D";
+        gradeColor = [255, 0, 0];
+      }
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.setTextColor(...gradeColor);
+      doc.text(`Grade: ${grade}`, pageWidth / 2, yPosition + 30, {
+        align: "center",
+      });
+
+      doc.save(`${result.student.fullname}_Certificate.pdf`);
+    };
+  };
+
   return (
     <>
       <Navbar />
@@ -48,9 +286,17 @@ const ReasultDetails = () => {
         {/* Quiz Header */}
         <Card className="mb-6 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-xl font-bold">
-              {result.quizTitle}
-            </CardTitle>
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-xl font-bold">
+                {result.quizTitle}
+              </CardTitle>
+              <Button
+                className="bg-green-500 hover:bg-green-600 cursor-pointer"
+                onClick={generateCertificate}
+              >
+                Get Certificate
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="flex justify-between items-center">
             <span>Name: {result.student.fullname}</span>

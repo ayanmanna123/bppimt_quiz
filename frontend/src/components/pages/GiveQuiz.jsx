@@ -86,11 +86,17 @@ const GiveQuiz = ({ tabSwitchCount }) => {
 
   // 🚨 Auto-submit when tab switch count > 5
   useEffect(() => {
-    if (tabSwitchCount >= 5 && !hasSubmitted.current && !isSubmitting) {
+    if (tabSwitchCount >= 10 && !hasSubmitted.current && !isSubmitting) {
       toast.error("🚫 Too many tab switches! Quiz will be auto-submitted.");
       handleSubmit();
     }
-    console.log(tabSwitchCount);
+    if (tabSwitchCount > 0) {
+      toast.error(`you changing tab ${tabSwitchCount} times`);
+    }
+
+    if (tabSwitchCount == 9) {
+      toast.error("Thats the last worning");
+    }
   }, [tabSwitchCount]);
 
   const formatTime = (seconds) => {

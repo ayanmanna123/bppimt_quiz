@@ -61,7 +61,7 @@ const Profile = () => {
               Semester: {usere?.semester}
             </Label>
           </div>
-
+                
           <UpdateProfilelog open={open} setopen={setopen} />
         </motion.div>
         <div className="w-6xl">
