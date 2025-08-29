@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Counter from "./Counter";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Button } from "../ui/button";
 
 const Footer = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -10,7 +11,8 @@ const Footer = () => {
   const [studentCount, setStudentCount] = useState(0);
   const [teacherCount, setTeacherCount] = useState(0);
   const [quizCount, setQuizCount] = useState(0);
-
+  const [loading, setLoading] = useState(true);
+  const { logout, loginWithRedirect, isAuthenticated, user } = useAuth0();
   // Fetch student count
   useEffect(() => {
     const fetchStudents = async () => {
@@ -31,7 +33,11 @@ const Footer = () => {
     };
     fetchStudents();
   }, [getAccessTokenSilently]);
-
+  const handleLogin = async () => {
+    if (!isAuthenticated) {
+      await loginWithRedirect();
+    }
+  };
   // Fetch teacher count
   useEffect(() => {
     const fetchTeachers = async () => {
@@ -67,38 +73,157 @@ const Footer = () => {
           }
         );
         setQuizCount(res.data.length ?? res.data.count ?? 0);
+        setLoading(false);
       } catch (error) {
         console.error(error);
+        setLoading(false);
       }
     };
     fetchQuizzes();
   }, [getAccessTokenSilently]);
 
+  const stats = [
+    {
+      title: "Active Students",
+      count: studentCount,
+      icon: "👨‍🎓",
+      color: "from-emerald-500 to-teal-600",
+      bgColor: "bg-emerald-50",
+      textColor: "text-emerald-700",
+      glowColor: "shadow-emerald-500/25",
+    },
+    {
+      title: "Expert Teachers",
+      count: teacherCount,
+      icon: "👩‍🏫",
+      color: "from-blue-500 to-indigo-600",
+      bgColor: "bg-blue-50",
+      textColor: "text-blue-700",
+      glowColor: "shadow-blue-500/25",
+    },
+    {
+      title: "Quizzes Created",
+      count: quizCount,
+      icon: "📚",
+      color: "from-purple-500 to-pink-600",
+      bgColor: "bg-purple-50",
+      textColor: "text-purple-700",
+      glowColor: "shadow-purple-500/25",
+    },
+  ];
+
   return (
-    <footer className="bg-white py-10 mt-10">
-      <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
-        {/* Students */}
-        <div className="flex flex-col items-center">
-          <span className="text-4xl font-extrabold text-green-600">
-            <Counter from={0} to={studentCount} duration={4} />+
-          </span>
-          <p className="text-gray-600 mt-2">Active Students</p>
+    <footer className="relative bg-gradient-to-br from-slate-50 via-white to-slate-50 py-16 mt-16 overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30"></div>
+      <div
+        className="absolute inset-0 opacity-40"
+        style={{
+          backgroundImage: `radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.1) 0%, transparent 50%), 
+                         radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)`,
+        }}
+      ></div>
+
+      {/* Main Content */}
+      <div className="relative max-w-6xl mx-auto px-6">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-200/50 mb-4">
+            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              PLATFORM STATISTICS
+            </span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3">
+            Growing Every Day
+          </h2>
+          <p className="text-slate-600 text-lg max-w-2xl mx-auto">
+            Join thousands of learners and educators in our thriving educational
+            community
+          </p>
         </div>
 
-        {/* Teachers */}
-        <div className="flex flex-col items-center">
-          <span className="text-4xl font-extrabold text-blue-600">
-            <Counter from={0} to={teacherCount} duration={4} />+
-          </span>
-          <p className="text-gray-600 mt-2">Active Teachers</p>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+          {stats.map((stat, index) => (
+            <div
+              key={index}
+              className={`group relative bg-white rounded-2xl p-8 border border-slate-200/60 hover:border-slate-300/60 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ${stat.glowColor}`}
+            >
+              {/* Glow effect */}
+              <div
+                className={`absolute inset-0 bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-500`}
+              ></div>
+
+              {/* Icon */}
+              <div
+                className={`relative w-16 h-16 ${stat.bgColor} rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300`}
+              >
+                <span className="text-2xl">{stat.icon}</span>
+                <div
+                  className={`absolute inset-0 bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300`}
+                ></div>
+              </div>
+
+              {/* Count */}
+              <div className="text-center mb-4">
+                {loading ? (
+                  <div className="flex justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-slate-300 border-t-slate-600"></div>
+                  </div>
+                ) : (
+                  <div className="text-5xl lg:text-6xl font-black mb-2">
+                    <span
+                      className={`bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}
+                    >
+                      <Counter from={0} to={stat.count} duration={4} />
+                    </span>
+                    <span className={`${stat.textColor} opacity-75`}>+</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Title */}
+              <h3 className="text-xl font-bold text-slate-700 mb-2">
+                {stat.title}
+              </h3>
+
+              {/* Description */}
+              <p className="text-slate-500 text-sm leading-relaxed">
+                {index === 0 &&
+                  "Engaged learners actively participating in courses"}
+                {index === 1 && "Certified instructors sharing their expertise"}
+                {index === 2 && "Interactive assessments created and completed"}
+              </p>
+
+              {/* Progress bar */}
+              <div className="mt-6 h-1 bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  className={`h-full bg-gradient-to-r ${stat.color} rounded-full transform origin-left transition-transform duration-1000 group-hover:scale-x-100`}
+                  style={{ transform: loading ? "scaleX(0)" : "scaleX(1)" }}
+                ></div>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Quizzes */}
-        <div className="flex flex-col items-center">
-          <span className="text-4xl font-extrabold text-purple-600">
-            <Counter from={0} to={quizCount} duration={4} />+
-          </span>
-          <p className="text-gray-600 mt-2">Quizzes Created</p>
+        {/* Bottom CTA */}
+        <div className="text-center mt-16">
+          <div className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 hover:-translate-y-1">
+            <span onClick={handleLogin}>Join Our Community</span>
+            <svg
+              className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
+            </svg>
+          </div>
         </div>
       </div>
     </footer>

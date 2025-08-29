@@ -17,7 +17,7 @@ const Home = () => {
       });
       console.log(token);
       playSound();
-      console.log(user);
+       
     } catch (error) {
       console.error(error);
     }
