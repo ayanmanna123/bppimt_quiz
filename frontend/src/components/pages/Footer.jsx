@@ -3,6 +3,7 @@ import Counter from "./Counter";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "../ui/button";
+import { toast } from "sonner";
 
 const Footer = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -37,6 +38,7 @@ const Footer = () => {
     if (!isAuthenticated) {
       await loginWithRedirect();
     }
+    toast.error("you already login ")
   };
   // Fetch teacher count
   useEffect(() => {
