@@ -45,14 +45,14 @@ const ReasultDetails = () => {
   const generateCertificate = () => {
     if (!result) return;
 
-    const doc = new jsPDF("landscape", "pt", "a4"); // landscape A4
+    const doc = new jsPDF("landscape", "pt", "a4");  
 
-    // Load background certificate image from public folder
+    
     const img = new Image();
-    img.src = "/certificate4.jpg"; // put certificate.png in public/
+    img.src = "/certificate4.jpg"; 
 
     img.onload = () => {
-      // Draw background
+       
       doc.addImage(
         img,
         "JPG",
@@ -75,7 +75,7 @@ const ReasultDetails = () => {
           align: "right",
         }
       );
-      // Add student name
+      
       doc.setFont("helvetica", "bold");
       doc.setFontSize(32);
       doc.setTextColor(40, 40, 40);
@@ -83,7 +83,7 @@ const ReasultDetails = () => {
         align: "center",
       });
 
-      // Certification text
+       
       doc.setFont("helvetica", "normal");
       doc.setFontSize(16);
       doc.setTextColor(60, 60, 60);
@@ -124,7 +124,7 @@ const ReasultDetails = () => {
         }
       });
 
-      // Date (shifted 100px right → from 100 to 200)
+     
       doc.setFont("helvetica", "normal");
       doc.setFontSize(14);
       doc.text(
@@ -133,7 +133,7 @@ const ReasultDetails = () => {
         pageHeight - 80
       );
 
-      // Grade
+       
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
 
@@ -175,7 +175,7 @@ const ReasultDetails = () => {
     };
 
     img.onerror = () => {
-      // fallback (same subject bold + shifted date applied here as well)
+     
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -237,7 +237,7 @@ const ReasultDetails = () => {
         }
       });
 
-      // Date shifted
+      
       doc.setFont("helvetica", "normal");
       doc.setFontSize(14);
       doc.text(
@@ -246,7 +246,7 @@ const ReasultDetails = () => {
         pageHeight - 80
       );
 
-      // Grade same as above
+     
       const percentage = (result.score / result.totalScore) * 100;
       let grade = "F";
       let gradeColor = [255, 0, 0];
@@ -283,7 +283,7 @@ const ReasultDetails = () => {
     <>
       <Navbar />
       <div className="max-w-4xl mx-auto py-6">
-        {/* Quiz Header */}
+         
         <Card className="mb-6 shadow-lg">
           <CardHeader>
             <div className="flex justify-between items-center">
@@ -312,7 +312,7 @@ const ReasultDetails = () => {
           </CardContent>
         </Card>
 
-        {/* Question Details */}
+      
         <motion.div
           className="space-y-6"
           initial={{ opacity: 0, x: 50 }}
@@ -320,8 +320,8 @@ const ReasultDetails = () => {
           transition={{ duration: 0.6 }}
         >
           {result.details.map((q, index) => {
-            const studentAnsIndex = q.studentAnswerIndex?.selectedOption; // ✅ updated
-            const isCorrect = q.isCorrect;
+            const studentAnsIndex = q.studentAnswerIndex?.selectedOption;  
+            const isCorrect = q.studentAnswerIndex?.isCorrect;
 
             return (
               <Card
