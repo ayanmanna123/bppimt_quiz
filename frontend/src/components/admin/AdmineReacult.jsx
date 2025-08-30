@@ -3,17 +3,66 @@ import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../shared/Navbar";
-import { ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  Users,
+  TrendingUp,
+  Award,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Eye,
+  Download,
+  Filter,
+  Search,
+  Calendar,
+  BarChart3,
+  Target,
+  Star,
+  Trophy,
+  AlertTriangle,
+  CheckSquare,
+  User,
+  Mail,
+  Sparkles,
+  ChevronDown,
+  FileText
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-const AdmineReacult = () => {
+// Admin-focused gradient combinations
+const adminGradients = [
+  "bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800",
+  "bg-gradient-to-br from-emerald-600 via-green-700 to-teal-800", 
+  "bg-gradient-to-br from-amber-600 via-orange-700 to-red-800",
+  "bg-gradient-to-br from-indigo-600 via-purple-700 to-violet-800",
+  "bg-gradient-to-br from-blue-600 via-cyan-700 to-teal-800",
+  "bg-gradient-to-br from-rose-600 via-pink-700 to-purple-800",
+];
+
+const AdmineResult = () => {
   const { getAccessTokenSilently } = useAuth0();
   const { quizeId } = useParams();
   const [results, setResults] = useState([]);
+  const [filteredResults, setFilteredResults] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("score");
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalStudents: 0,
+    averageScore: 0,
+    onTimeSubmissions: 0,
+    lateSubmissions: 0,
+    passRate: 0
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
+        setLoading(true);
         const token = await getAccessTokenSilently({
           audience: "http://localhost:5000/api/v2",
         });
@@ -27,142 +76,448 @@ const AdmineReacult = () => {
           }
         );
 
-        setResults(res.data.allReasult || []);
+        const resultData = res.data.allReasult || [];
+        setResults(resultData);
+        setFilteredResults(resultData);
+        
+        // Calculate statistics
+        calculateStats(resultData);
       } catch (error) {
         console.log("Error fetching results:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchResults();
   }, [getAccessTokenSilently, quizeId]);
 
-  // ✅ Helper to check if submission is on time
+  const calculateStats = (data) => {
+    if (data.length === 0) return;
+    
+    const totalStudents = data.length;
+    const totalScore = data.reduce((sum, result) => sum + result.score, 0);
+    const averageScore = totalScore / totalStudents;
+    
+    const onTime = data.filter(result => 
+      checkSubmissionStatus(result.quiz, result.submittedAt) === "onTime"
+    ).length;
+    const late = totalStudents - onTime;
+    
+    const passRate = (data.filter(result => result.score >= 60).length / totalStudents) * 100;
+    
+    setStats({
+      totalStudents,
+      averageScore: Math.round(averageScore * 100) / 100,
+      onTimeSubmissions: onTime,
+      lateSubmissions: late,
+      passRate: Math.round(passRate * 100) / 100
+    });
+  };
+
+  // Helper to check if submission is on time
   const checkSubmissionStatus = (quiz, submittedAt) => {
     const quizEnd = new Date(quiz.date);
-    quizEnd.setMinutes(quizEnd.getMinutes() + parseInt(quiz.time)); // add quiz duration
-
+    quizEnd.setMinutes(quizEnd.getMinutes() + parseInt(quiz.time));
     const submittedDate = new Date(submittedAt);
-
     return submittedDate <= quizEnd ? "onTime" : "late";
   };
+
+  // Filter and search logic
+  useEffect(() => {
+    let filtered = results.filter(result => {
+      const matchesSearch = 
+        result.student?.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        result.student?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = statusFilter === "all" || 
+        (statusFilter === "onTime" && checkSubmissionStatus(result.quiz, result.submittedAt) === "onTime") ||
+        (statusFilter === "late" && checkSubmissionStatus(result.quiz, result.submittedAt) === "late");
+      
+      return matchesSearch && matchesStatus;
+    });
+
+    // Sort results
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "score":
+          return b.score - a.score;
+        case "name":
+          return a.student?.fullname?.localeCompare(b.student?.fullname) || 0;
+        case "submissionTime":
+          return new Date(b.submittedAt) - new Date(a.submittedAt);
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredResults(filtered);
+  }, [results, searchTerm, statusFilter, sortBy]);
+
+  const getScoreColor = (score) => {
+    if (score >= 85) return "text-green-600 bg-green-100";
+    if (score >= 70) return "text-blue-600 bg-blue-100";
+    if (score >= 60) return "text-yellow-600 bg-yellow-100";
+    return "text-red-600 bg-red-100";
+  };
+
+  const getPerformanceIcon = (score) => {
+    if (score >= 85) return <Trophy className="w-4 h-4 text-yellow-500" />;
+    if (score >= 70) return <Award className="w-4 h-4 text-blue-500" />;
+    if (score >= 60) return <CheckCircle className="w-4 h-4 text-green-500" />;
+    return <AlertTriangle className="w-4 h-4 text-red-500" />;
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-100 flex items-center justify-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full"
+          />
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
       <Navbar />
-      <div
-        className="mx-4.5 max-w-fit hover:cursor-pointer"
-        onClick={() => navigate("/admin/allquiz")}
-      >
-        <ArrowLeft />
-      </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-100">
+        {/* Enhanced Header */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-700 via-gray-800 to-slate-900 opacity-95"></div>
+          <div className="absolute inset-0">
+            <div className="absolute top-10 right-10 w-32 h-32 border-2 border-white/20 rounded-full animate-pulse"></div>
+            <div className="absolute bottom-20 left-20 w-24 h-24 bg-white/10 rounded-full animate-bounce"></div>
+            <div className="absolute top-1/2 right-1/3 w-40 h-40 border border-white/20 rounded-2xl rotate-45 animate-pulse"></div>
+          </div>
 
-      <div className="p-6">
-        <h2 className="text-2xl font-bold mb-4">Quiz Results</h2>
+          <div className="relative z-10 px-6 py-8">
+            {/* Back Button */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="mb-6"
+            >
+              <Button
+                onClick={() => navigate("/admin/allquiz")}
+                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-md rounded-xl px-4 py-2 flex items-center gap-2 transition-all duration-300"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Quizzes
+              </Button>
+            </motion.div>
 
-        <div className="overflow-x-auto">
-          <table className="table-auto border-collapse border border-gray-300 w-full text-sm">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2">#</th>
-                <th className="border border-gray-300 px-4 py-2">Student Name</th>
-                <th className="border border-gray-300 px-4 py-2">Email</th>
-                <th className="border border-gray-300 px-4 py-2">Role</th>
-                <th className="border border-gray-300 px-4 py-2">Score</th>
-                <th className="border border-gray-300 px-4 py-2">Answers</th>
-                <th className="border border-gray-300 px-4 py-2">Submitted At</th>
-                <th className="border border-gray-300 px-4 py-2">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.length > 0 ? (
-                results.map((res, index) => {
-                  const status = checkSubmissionStatus(res.quiz, res.submittedAt);
+            {/* Title and Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center"
+            >
+              <div className="inline-flex items-center gap-4 mb-6">
+                <div className="relative">
+                  <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                    <BarChart3 className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
+                    <CheckSquare className="w-3 h-3 text-white" />
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h1 className="text-4xl font-bold text-white mb-2">
+                    Quiz Results Dashboard 📊
+                  </h1>
+                  <p className="text-white/90 text-lg">
+                    Comprehensive analysis and student performance overview
+                  </p>
+                </div>
+              </div>
 
-                  return (
-                    <tr
-                      key={res._id}
-                      className={`hover:bg-gray-50 ${
-                        status === "onTime"
-                          ? "border-green-500"
-                          : "border-red-500"
-                      } border-2`}
-                      onClick={() => navigate(`/reasult/details/${res?._id}`)}
-                    >
-                      <td className="border border-gray-300 px-4 py-2 text-center">
-                        {index + 1}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {res.student?.fullname || "N/A"}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {res.student?.email || "N/A"}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2 text-center">
-                        {res.student?.role || "-"}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2 text-center">
-                        {res.score}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {res.answers && res.answers.length > 0 ? (
-                          <ul className="list-disc ml-4">
-                            {res.answers.map((ans) => {
-                              const question = res.quiz.questions.find(
-                                (q) => q._id === ans.questionId
-                              );
-                              return (
-                                <li key={ans._id} className="mb-1">
-                                  <span className="font-semibold">
-                                    {question?.questionText || "Unknown Q"}:
-                                  </span>{" "}
-                                  <span>
-                                    {question?.options[ans.selectedOption] || "N/A"}
-                                  </span>{" "}
-                                  {ans.isCorrect ? (
-                                    <span className="text-green-600 font-semibold">(✔ Correct)</span>
-                                  ) : (
-                                    <span className="text-red-600 font-semibold">(✘ Wrong)</span>
-                                  )}
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        ) : (
-                          "—"
-                        )}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {new Date(res.submittedAt).toLocaleString()}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2 text-center">
-                        {status === "onTime" ? (
-                          <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-semibold">
-                            On Time
-                          </span>
-                        ) : (
-                          <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-semibold">
-                            Late
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td
-                    colSpan="8"
-                    className="text-center py-4 text-gray-500 border"
+              {/* Admin Stats Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-8">
+                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                  <Users className="w-6 h-6 text-blue-400 mb-2 mx-auto" />
+                  <div className="text-2xl font-bold text-white">{stats.totalStudents}</div>
+                  <div className="text-white/80 text-sm">Total Students</div>
+                </div>
+                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                  <TrendingUp className="w-6 h-6 text-green-400 mb-2 mx-auto" />
+                  <div className="text-2xl font-bold text-white">{stats.averageScore}</div>
+                  <div className="text-white/80 text-sm">Average Score</div>
+                </div>
+                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                  <CheckCircle className="w-6 h-6 text-emerald-400 mb-2 mx-auto" />
+                  <div className="text-2xl font-bold text-white">{stats.onTimeSubmissions}</div>
+                  <div className="text-white/80 text-sm">On Time</div>
+                </div>
+                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                  <Clock className="w-6 h-6 text-orange-400 mb-2 mx-auto" />
+                  <div className="text-2xl font-bold text-white">{stats.lateSubmissions}</div>
+                  <div className="text-white/80 text-sm">Late</div>
+                </div>
+                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                  <Trophy className="w-6 h-6 text-yellow-400 mb-2 mx-auto" />
+                  <div className="text-2xl font-bold text-white">{stats.passRate}%</div>
+                  <div className="text-white/80 text-sm">Pass Rate</div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Enhanced Filter Section */}
+        <div className="px-6 -mt-8 relative z-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6 mb-8"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+              {/* Search */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <Search className="w-4 h-4" />
+                  Search Students
+                </label>
+                <input
+                  type="text"
+                  placeholder="Search by name or email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-blue-400 transition-all duration-300 font-medium"
+                />
+              </div>
+
+              {/* Status Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <Filter className="w-4 h-4" />
+                  Submission Status
+                </label>
+                <div className="relative">
+                  <select 
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-green-400 transition-all duration-300 font-medium appearance-none"
                   >
-                    No results found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                    <option value="all">All Status</option>
+                    <option value="onTime">On Time</option>
+                    <option value="late">Late Submissions</option>
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Sort By */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <Target className="w-4 h-4" />
+                  Sort Results
+                </label>
+                <div className="relative">
+                  <select 
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-purple-400 transition-all duration-300 font-medium appearance-none"
+                  >
+                    <option value="score">Highest Score</option>
+                    <option value="name">Student Name</option>
+                    <option value="submissionTime">Submission Time</option>
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Quick Actions
+                </label>
+                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300">
+                  <Download className="w-4 h-4" />
+                  Export Results
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Results Grid */}
+        <div className="px-6 pb-12">
+          {filteredResults.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="text-center py-16"
+            >
+              <div className="w-28 h-28 bg-gradient-to-br from-gray-200 to-slate-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
+                <Users className="w-14 h-14 text-gray-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-700 mb-2">No results found</h3>
+              <p className="text-gray-500 text-lg">Try adjusting your search or filters</p>
+            </motion.div>
+          ) : (
+            <motion.div
+              className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+            >
+              {filteredResults.map((result, index) => {
+                const status = checkSubmissionStatus(result.quiz, result.submittedAt);
+                const gradientClass = adminGradients[index % adminGradients.length];
+
+                return (
+                  <motion.div
+                    key={result._id}
+                    initial={{ opacity: 0, y: 60, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ 
+                      duration: 0.7, 
+                      delay: index * 0.05,
+                      type: "spring",
+                      stiffness: 100
+                    }}
+                    className="group cursor-pointer"
+                    onClick={() => navigate(`/reasult/details/${result?._id}`)}
+                  >
+                    <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-white/20 transform hover:scale-105 hover:-translate-y-2 overflow-hidden">
+                      {/* Student Header */}
+                      <div className={`${gradientClass} p-6 relative overflow-hidden`}>
+                        <div className="absolute inset-0 opacity-20">
+                          <div className="absolute top-4 right-4 w-16 h-16 border-2 border-white/40 rounded-full animate-pulse"></div>
+                          <div className="absolute bottom-4 left-4 w-8 h-8 bg-white/30 rounded-full animate-bounce"></div>
+                        </div>
+
+                        <div className="relative z-10 flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-3">
+                              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                <User className="w-6 h-6 text-white" />
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-bold text-white">
+                                  {result.student?.fullname || "N/A"}
+                                </h3>
+                                <div className="flex items-center gap-1 text-white/80 text-sm">
+                                  <Mail className="w-3 h-3" />
+                                  {result.student?.email || "N/A"}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getScoreColor(result.score)} bg-white/90`}>
+                                {getPerformanceIcon(result.score)}
+                                <span className="ml-1">{result.score} Points</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="text-right">
+                            {status === "onTime" ? (
+                              <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                                <CheckCircle className="w-3 h-3" />
+                                On Time
+                              </div>
+                            ) : (
+                              <div className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                                <XCircle className="w-3 h-3" />
+                                Late
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      <div className="p-6 space-y-4">
+                        {/* Quick Stats */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="bg-blue-50 rounded-xl p-3">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Award className="w-4 h-4 text-blue-600" />
+                              <span className="text-xs font-semibold text-gray-600">ROLE</span>
+                            </div>
+                            <p className="text-sm font-bold text-gray-800">
+                              {result.student?.role || "Student"}
+                            </p>
+                          </div>
+                          
+                          <div className="bg-purple-50 rounded-xl p-3">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Calendar className="w-4 h-4 text-purple-600" />
+                              <span className="text-xs font-semibold text-gray-600">SUBMITTED</span>
+                            </div>
+                            <p className="text-sm font-bold text-gray-800">
+                              {new Date(result.submittedAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Answers Summary */}
+                        {result.answers && result.answers.length > 0 && (
+                          <div className="bg-gray-50 rounded-xl p-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-sm font-semibold text-gray-700">Answer Summary</span>
+                              <span className="text-xs text-gray-500">{result.answers.length} Questions</span>
+                            </div>
+                            
+                            <div className="space-y-2 max-h-32 overflow-y-auto">
+                              {result.answers.slice(0, 3).map((ans, idx) => {
+                                const question = result.quiz.questions.find(q => q._id === ans.questionId);
+                                return (
+                                  <div key={ans._id} className="flex items-center justify-between text-sm">
+                                    <span className="text-gray-600 truncate flex-1">
+                                      Q{idx + 1}: {question?.questionText?.substring(0, 30) || "Unknown"}...
+                                    </span>
+                                    {ans.isCorrect ? (
+                                      <CheckCircle className="w-4 h-4 text-green-500 ml-2" />
+                                    ) : (
+                                      <XCircle className="w-4 h-4 text-red-500 ml-2" />
+                                    )}
+                                  </div>
+                                );
+                              })}
+                              {result.answers.length > 3 && (
+                                <div className="text-center text-xs text-gray-500 pt-2">
+                                  +{result.answers.length - 3} more questions
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Action Button */}
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/reasult/details/${result?._id}`);
+                          }}
+                          className="w-full bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300"
+                        >
+                          <Eye className="w-4 h-4" />
+                          View Detailed Report
+                          <Sparkles className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
         </div>
       </div>
     </>
   );
 };
 
-export default AdmineReacult;
+export default AdmineResult;

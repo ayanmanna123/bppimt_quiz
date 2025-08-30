@@ -8,9 +8,34 @@ import Navbar from "../shared/Navbar";
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import jsPDF from "jspdf";
-const ReasultDetails = () => {
+import {
+  ArrowLeft,
+  Award,
+  Calendar,
+  CheckCircle2,
+  Download,
+  FileText,
+  GraduationCap,
+  Star,
+  Trophy,
+  User,
+  XCircle,
+  Sparkles,
+  Target,
+  Brain,
+  Medal,
+  Crown,
+  Zap,
+  BookOpen,
+  BarChart3
+} from "lucide-react";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+
+const ResultDetails = () => {
   const { getAccessTokenSilently } = useAuth0();
   const { resultId } = useParams();
+  const navigate = useNavigate();
   const [result, setResult] = useState(null);
 
   useEffect(() => {
@@ -32,6 +57,7 @@ const ReasultDetails = () => {
         setResult(res.data);
       } catch (error) {
         console.log(error);
+        toast.error("Failed to load result details");
       }
     };
 
@@ -39,20 +65,26 @@ const ReasultDetails = () => {
   }, [getAccessTokenSilently, resultId]);
 
   if (!result) {
-    return <div className="text-center py-10">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <Brain className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-lg font-semibold text-gray-600">Loading your results...</p>
+        </div>
+      </div>
+    );
   }
 
   const generateCertificate = () => {
     if (!result) return;
 
-    const doc = new jsPDF("landscape", "pt", "a4");  
-
-    
+    const doc = new jsPDF("landscape", "pt", "a4");
     const img = new Image();
-    img.src = "/certificate4.jpg"; 
+    img.src = "/certificate4.jpg";
 
     img.onload = () => {
-       
       doc.addImage(
         img,
         "JPG",
@@ -67,23 +99,13 @@ const ReasultDetails = () => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
       doc.setTextColor(80, 80, 80);
-      doc.text(
-        `Result ID: ${resultId}`,
-        pageWidth - 80,
-        60,
-        {
-          align: "right",
-        }
-      );
-      
+      doc.text(`Result ID: ${resultId}`, pageWidth - 80, 60, { align: "right" });
+
       doc.setFont("helvetica", "bold");
       doc.setFontSize(32);
       doc.setTextColor(40, 40, 40);
-      doc.text(result.student.fullname, pageWidth / 2, 280, {
-        align: "center",
-      });
+      doc.text(result.student.fullname, pageWidth / 2, 280, { align: "center" });
 
-       
       doc.setFont("helvetica", "normal");
       doc.setFontSize(16);
       doc.setTextColor(60, 60, 60);
@@ -93,7 +115,7 @@ const ReasultDetails = () => {
         "B. P. Poddar Institute of Management & Technology.",
         "",
         `The candidate has demonstrated commendable performance in`,
-        ` ${result.quizTitle},`, // subject line (we’ll bold this one)
+        ` ${result.quizTitle},`,
         `securing an overall score of ${result.score}/${result.totalSoure}.`,
         "",
         "This achievement reflects the student's dedication, knowledge,",
@@ -106,14 +128,11 @@ const ReasultDetails = () => {
         if (line === "") {
           yPosition += lineHeight / 2;
         } else {
-          if (
-            line.includes("B. P. Poddar Institute of Management & Technology")
-          ) {
+          if (line.includes("B. P. Poddar Institute of Management & Technology")) {
             doc.setFont("helvetica", "bold");
             doc.text(line, pageWidth / 2, yPosition, { align: "center" });
             doc.setFont("helvetica", "normal");
           } else if (line.includes(result.quizTitle)) {
-            // Bold subject name
             doc.setFont("helvetica", "bold");
             doc.text(line, pageWidth / 2, yPosition, { align: "center" });
             doc.setFont("helvetica", "normal");
@@ -124,26 +143,9 @@ const ReasultDetails = () => {
         }
       });
 
-     
       doc.setFont("helvetica", "normal");
       doc.setFontSize(14);
-      doc.text(
-        `Date: ${new Date().toLocaleDateString()}`,
-        200,
-        pageHeight - 80
-      );
-
-       
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(14);
-      doc.text(
-        `Date: ${new Date().toLocaleDateString()}`,
-        200,
-        pageHeight - 80
-      );
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 200, pageHeight - 80);
 
       const percentage = (result.score / result.totalSoure) * 100;
       let grade = "F";
@@ -167,15 +169,13 @@ const ReasultDetails = () => {
       }
 
       doc.setTextColor(...gradeColor);
-      doc.text(`Grade: ${grade}`, pageWidth / 2, yPosition + 30, {
-        align: "center",
-      });
+      doc.text(`Grade: ${grade}`, pageWidth / 2, yPosition + 30, { align: "center" });
 
       doc.save(`${result.student.fullname}_Certificate.pdf`);
+      toast.success("Certificate downloaded successfully!");
     };
 
     img.onerror = () => {
-     
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -194,9 +194,7 @@ const ReasultDetails = () => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(32);
       doc.setTextColor(40, 40, 40);
-      doc.text(result.student.fullname, pageWidth / 2, 280, {
-        align: "center",
-      });
+      doc.text(result.student.fullname, pageWidth / 2, 280, { align: "center" });
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(16);
@@ -208,7 +206,7 @@ const ReasultDetails = () => {
         "B. P. Poddar Institute of Management & Technology.",
         "",
         `The candidate has demonstrated commendable performance in ${result.quizTitle},`,
-        `securing an overall score of ${result.score}/${result.totalScore}.`,
+        `securing an overall score of ${result.score}/${result.totalSoure}.`,
         "",
         "This achievement reflects the student's dedication, knowledge,",
         "and readiness for upcoming academic evaluations.",
@@ -222,9 +220,7 @@ const ReasultDetails = () => {
           yPosition += lineHeight / 2;
         } else {
           if (
-            line.includes(
-              "B. P. Poddar Institute of Management & Technology"
-            ) ||
+            line.includes("B. P. Poddar Institute of Management & Technology") ||
             line.includes(result.quizTitle)
           ) {
             doc.setFont("helvetica", "bold");
@@ -237,17 +233,11 @@ const ReasultDetails = () => {
         }
       });
 
-      
       doc.setFont("helvetica", "normal");
       doc.setFontSize(14);
-      doc.text(
-        `Date: ${new Date().toLocaleDateString()}`,
-        200,
-        pageHeight - 80
-      );
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 200, pageHeight - 80);
 
-     
-      const percentage = (result.score / result.totalScore) * 100;
+      const percentage = (result.score / result.totalSoure) * 100;
       let grade = "F";
       let gradeColor = [255, 0, 0];
 
@@ -271,110 +261,359 @@ const ReasultDetails = () => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
       doc.setTextColor(...gradeColor);
-      doc.text(`Grade: ${grade}`, pageWidth / 2, yPosition + 30, {
-        align: "center",
-      });
+      doc.text(`Grade: ${grade}`, pageWidth / 2, yPosition + 30, { align: "center" });
 
       doc.save(`${result.student.fullname}_Certificate.pdf`);
+      toast.success("Certificate downloaded successfully!");
     };
   };
+
+  const getGradeInfo = () => {
+    const percentage = (result.score / result.totalSoure) * 100;
+    if (percentage >= 90) return { grade: "A+", color: "from-green-500 to-emerald-600", icon: Crown, bgColor: "bg-green-100", textColor: "text-green-700" };
+    if (percentage >= 80) return { grade: "A", color: "from-green-500 to-green-600", icon: Medal, bgColor: "bg-green-100", textColor: "text-green-700" };
+    if (percentage >= 70) return { grade: "B", color: "from-yellow-500 to-orange-500", icon: Trophy, bgColor: "bg-yellow-100", textColor: "text-yellow-700" };
+    if (percentage >= 60) return { grade: "C", color: "from-orange-500 to-red-500", icon: Award, bgColor: "bg-orange-100", textColor: "text-orange-700" };
+    if (percentage >= 50) return { grade: "D", color: "from-red-500 to-red-600", icon: Target, bgColor: "bg-red-100", textColor: "text-red-700" };
+    return { grade: "F", color: "from-gray-500 to-gray-600", icon: XCircle, bgColor: "bg-gray-100", textColor: "text-gray-700" };
+  };
+
+  const gradeInfo = getGradeInfo();
+  const percentage = Math.round((result.score / result.totalSoure) * 100);
+  const correctAnswers = result.details.filter(q => q.studentAnswerIndex?.isCorrect).length;
 
   return (
     <>
       <Navbar />
-      <div className="max-w-4xl mx-auto py-6">
-         
-        <Card className="mb-6 shadow-lg">
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle className="text-xl font-bold">
-                {result.quizTitle}
-              </CardTitle>
-              <Button
-                className="bg-green-500 hover:bg-green-600 cursor-pointer"
-                onClick={generateCertificate}
-              >
-                Get Certificate
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="flex justify-between items-center">
-            <span>Name: {result.student.fullname}</span>
-            <p className="text-lg font-semibold">
-              Score:{" "}
-              <span className="text-blue-600">
-                {result.score}/{result.totalSoure}
-              </span>
-            </p>
-            <Badge variant="secondary">
-              Submitted: {new Date(result.submittedAt).toLocaleString()}
-            </Badge>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
+        {/* Header Section */}
+        <div className="p-6">
+          <div className="flex items-center gap-4 mb-8">
+            <motion.div
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 cursor-pointer transition-all duration-300 p-3 rounded-xl hover:bg-white/70 hover:shadow-md"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="font-semibold">Back to Results</span>
+            </motion.div>
+          </div>
 
-      
-        <motion.div
-          className="space-y-6"
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          {result.details.map((q, index) => {
-            const studentAnsIndex = q.studentAnswerIndex?.selectedOption;  
-            const isCorrect = q.studentAnswerIndex?.isCorrect;
+          {/* Creative Header for Results */}
+          <div className="relative mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              className="text-center"
+            >
+              <div className="inline-flex items-center gap-4 mb-6">
+                <div className="relative">
+                  <div className={`w-16 h-16 bg-gradient-to-br ${gradeInfo.color} rounded-2xl flex items-center justify-center shadow-xl`}>
+                    <gradeInfo.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                    <Sparkles className="w-3 h-3 text-white" />
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    Quiz Results
+                  </h1>
+                  <p className="text-gray-600 text-lg mt-1">
+                    Detailed performance analysis
+                  </p>
+                </div>
+              </div>
 
-            return (
-              <Card
-                key={index}
-                className={`border-2 ${
-                  isCorrect ? "border-green-500" : "border-red-500"
-                } shadow-md`}
-              >
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold">
-                    Q{index + 1}. {q.questionText}
+              {/* Performance Stats */}
+              <div className="flex justify-center gap-4 mb-6">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-white/50 shadow-lg">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-indigo-600" />
+                    <span className="text-sm font-semibold text-gray-700">Score</span>
+                  </div>
+                  <div className="text-2xl font-bold text-indigo-600">{percentage}%</div>
+                </div>
+                
+                <div className={`backdrop-blur-sm rounded-2xl p-4 border border-white/50 shadow-lg ${gradeInfo.bgColor}`}>
+                  <div className="flex items-center gap-2">
+                    <gradeInfo.icon className={`w-5 h-5 ${gradeInfo.textColor}`} />
+                    <span className={`text-sm font-semibold ${gradeInfo.textColor}`}>Grade</span>
+                  </div>
+                  <div className={`text-2xl font-bold ${gradeInfo.textColor}`}>{gradeInfo.grade}</div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Floating decorative elements */}
+            <div className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full opacity-20 blur-xl"></div>
+            <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full opacity-15 blur-2xl"></div>
+            <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full opacity-10 blur-lg"></div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="max-w-5xl mx-auto px-6 pb-12">
+          
+          {/* Quiz Overview Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-8"
+          >
+            <Card className="overflow-hidden shadow-2xl bg-white/80 backdrop-blur-sm border-0 rounded-3xl">
+              <CardHeader className={`bg-gradient-to-r ${gradeInfo.color} text-white relative overflow-hidden`}>
+                <div className="absolute inset-0 opacity-20">
+                  <div className="absolute top-3 right-3 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
+                  <div className="absolute bottom-3 left-3 w-12 h-12 bg-white/20 rounded-full animate-bounce"></div>
+                </div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-3 text-2xl">
+                        <BookOpen className="w-6 h-6" />
+                        {result.quizTitle}
+                        <Sparkles className="w-5 h-5" />
+                      </CardTitle>
+                      <p className="text-white/90 mt-2">Quiz Performance Overview</p>
+                    </div>
+                    
+                    <Button
+                      onClick={generateCertificate}
+                      className="bg-white/20 hover:bg-white/30 text-white border border-white/30 hover:border-white/50 backdrop-blur-sm font-bold py-3 px-6 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:scale-105"
+                    >
+                      <Download className="w-5 h-5 mr-2" />
+                      Get Certificate
+                      <Award className="w-4 h-4 ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="flex items-center gap-4 p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl">
+                    <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                      <User className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-600">Student</p>
+                      <p className="text-lg font-bold text-gray-800">{result.student.fullname}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4 p-6 bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl">
+                    <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+                      <Target className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-600">Score</p>
+                      <p className="text-lg font-bold text-gray-800">
+                        {result.score}/{result.totalSoure} ({percentage}%)
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4 p-6 bg-gradient-to-br from-purple-50 to-pink-100 rounded-2xl">
+                    <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
+                      <Calendar className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-600">Submitted</p>
+                      <p className="text-lg font-bold text-gray-800">
+                        {new Date(result.submittedAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Questions Analysis */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Card className="overflow-hidden shadow-2xl bg-white/80 backdrop-blur-sm border-0 rounded-3xl">
+              <CardHeader className="bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 text-white relative overflow-hidden">
+                <div className="absolute inset-0 opacity-20">
+                  <div className="absolute top-2 right-2 w-16 h-16 border border-white/30 rounded-2xl rotate-12 animate-pulse"></div>
+                  <div className="absolute bottom-2 left-2 w-8 h-8 bg-white/20 rounded-full"></div>
+                </div>
+                <div className="relative z-10">
+                  <CardTitle className="flex items-center gap-3 text-2xl">
+                    <Brain className="w-6 h-6" />
+                    Question Analysis ({result.details.length} Questions)
                   </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {q.options.map((opt, i) => {
-                      const isStudentAns = i === studentAnsIndex;
-                      const isCorrectAns = i === q.correctAnswerIndex;
+                  <p className="text-white/90 mt-2">
+                    Correct: {correctAnswers}/{result.details.length} • 
+                    Accuracy: {Math.round((correctAnswers / result.details.length) * 100)}%
+                  </p>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="p-8 space-y-8">
+                {result.details.map((q, index) => {
+                  const studentAnsIndex = q.studentAnswerIndex?.selectedOption;
+                  const isCorrect = q.studentAnswerIndex?.isCorrect;
 
-                      return (
-                        <div
-                          key={i}
-                          className={`p-2 rounded-md border ${
-                            isCorrectAns
-                              ? "border-green-500 bg-green-100"
-                              : isStudentAns && !isCorrect
-                              ? "border-red-500 bg-red-100"
-                              : "border-gray-300"
-                          }`}
-                        >
-                          {opt}
-                          {isCorrectAns && (
-                            <Badge className="ml-2 bg-green-500 text-white">
-                              Correct
-                            </Badge>
-                          )}
-                          {isStudentAns && !isCorrect && (
-                            <Badge className="ml-2 bg-red-500 text-white">
-                              Your Answer
-                            </Badge>
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.1 }}
+                      className={`relative p-6 rounded-3xl border-2 shadow-lg hover:shadow-xl transition-all duration-300 ${
+                        isCorrect 
+                          ? "bg-gradient-to-br from-green-50 to-emerald-100 border-green-300" 
+                          : "bg-gradient-to-br from-red-50 to-pink-100 border-red-300"
+                      }`}
+                    >
+                      {/* Question Header */}
+                      <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold ${
+                            isCorrect ? "bg-gradient-to-br from-green-500 to-emerald-600" : "bg-gradient-to-br from-red-500 to-pink-600"
+                          }`}>
+                            {index + 1}
+                          </div>
+                          <span className="text-lg font-bold text-gray-800">Question {index + 1}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          {isCorrect ? (
+                            <>
+                              <CheckCircle2 className="w-6 h-6 text-green-600" />
+                              <Badge className="bg-green-500 text-white">Correct</Badge>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-6 h-6 text-red-600" />
+                              <Badge className="bg-red-500 text-white">Incorrect</Badge>
+                            </>
                           )}
                         </div>
-                      );
-                    })}
+                      </div>
+
+                      {/* Question Text */}
+                      <div className="mb-6 p-4 bg-white/70 rounded-2xl">
+                        <p className="text-lg font-semibold text-gray-800">{q.questionText}</p>
+                      </div>
+
+                      {/* Options Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {q.options.map((opt, i) => {
+                          const isStudentAns = i === studentAnsIndex;
+                          const isCorrectAns = i === q.correctAnswerIndex;
+
+                          return (
+                            <div
+                              key={i}
+                              className={`p-4 rounded-2xl border-2 transition-all duration-300 relative ${
+                                isCorrectAns && isStudentAns
+                                  ? "border-green-400 bg-green-100 shadow-lg"
+                                  : isCorrectAns
+                                  ? "border-green-400 bg-green-100 shadow-md"
+                                  : isStudentAns && !isCorrect
+                                  ? "border-red-400 bg-red-100 shadow-md"
+                                  : "border-gray-200 bg-white/50"
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold text-sm ${
+                                    isCorrectAns 
+                                      ? "bg-green-500" 
+                                      : isStudentAns && !isCorrect 
+                                      ? "bg-red-500" 
+                                      : "bg-gray-400"
+                                  }`}>
+                                    {String.fromCharCode(65 + i)}
+                                  </div>
+                                  <span className="font-medium text-gray-800">{opt}</span>
+                                </div>
+                                
+                                <div className="flex gap-2">
+                                  {isCorrectAns && (
+                                    <Badge className="bg-green-500 text-white flex items-center gap-1">
+                                      <CheckCircle2 className="w-3 h-3" />
+                                      Correct
+                                    </Badge>
+                                  )}
+                                  {isStudentAns && !isCorrect && (
+                                    <Badge className="bg-red-500 text-white flex items-center gap-1">
+                                      <XCircle className="w-3 h-3" />
+                                      Your Answer
+                                    </Badge>
+                                  )}
+                                  {isStudentAns && isCorrect && (
+                                    <Badge className="bg-blue-500 text-white flex items-center gap-1">
+                                      <Star className="w-3 h-3" />
+                                      Your Correct Answer
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Final Performance Summary */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-8"
+          >
+            <Card className="overflow-hidden shadow-2xl bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-600 border-0 rounded-3xl text-white">
+              <CardContent className="p-8 text-center">
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <gradeInfo.icon className="w-12 h-12" />
+                  <div>
+                    <h3 className="text-3xl font-bold">Final Grade: {gradeInfo.grade}</h3>
+                    <p className="text-white/80 text-lg">
+                      {correctAnswers} out of {result.details.length} questions correct
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </motion.div>
+                </div>
+                
+                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6">
+                  <div className="flex justify-center items-center gap-8">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold">{percentage}%</div>
+                      <div className="text-white/80">Overall Score</div>
+                    </div>
+                    <div className="w-px h-12 bg-white/30"></div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold">{result.score}</div>
+                      <div className="text-white/80">Points Earned</div>
+                    </div>
+                    <div className="w-px h-12 bg-white/30"></div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold">{result.totalSoure}</div>
+                      <div className="text-white/80">Total Points</div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
       </div>
     </>
   );
 };
 
-export default ReasultDetails;
+export default ResultDetails;
