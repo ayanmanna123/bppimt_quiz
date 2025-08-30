@@ -209,7 +209,7 @@ const Home = () => {
                 src="/img-1.png"
                 alt="Hero Illustration"
                 className="w-[350px] md:w-[500px] relative z-10 drop-shadow-2xl"
-                whileHover={{ scale: 1.05, rotate: 2 }}
+                whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
               />
               

@@ -17,6 +17,7 @@ import CreateSubject from "./components/admin/CreateSubject";
 import Profile from "./components/Profile";
 import SubjectRelatedQuiz from "./components/admin/SubjectRelatedQuiz";
 import FullScreen from "./components/FullScreen";
+import Dashboard from "./components/pages/Dashboard";
 
 function App() {
   const approute = createBrowserRouter([
@@ -31,6 +32,10 @@ function App() {
     {
       path: "/quiz",
       element: <Quiz />,
+    },
+     {
+      path: "/dashbord",
+      element:<Dashboard/>,
     },
     {
       path: "/profile",

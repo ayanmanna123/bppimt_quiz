@@ -108,7 +108,7 @@ const Navbar = () => {
             {navItems.map((item, index) => {
               const IconComponent = item.icon;
               const isActive = isActivePath(item.path);
-              
+
               return (
                 <motion.li
                   key={item.name}
@@ -126,17 +126,21 @@ const Navbar = () => {
                   >
                     <IconComponent className="w-4 h-4" />
                     <span>{item.name}</span>
-                    
+
                     {!isActive && (
                       <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     )}
-                    
+
                     {isActive && (
                       <motion.div
                         className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl"
                         layoutId="activeTab"
                         initial={false}
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 30,
+                        }}
                         style={{ zIndex: -1 }}
                       />
                     )}
@@ -150,10 +154,7 @@ const Navbar = () => {
         {/* Auth Section */}
         <div className="flex items-center gap-4">
           {!isAuthenticated ? (
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-            >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
               <Button
                 className="group relative bg-gradient-to-r from-[#03045E] via-indigo-600 to-purple-600 hover:from-[#02034A] hover:via-indigo-700 hover:to-purple-700 text-white rounded-xl px-6 py-2 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                 onClick={handleLogin}
@@ -181,7 +182,7 @@ const Navbar = () => {
                       />
                     </Avatar>
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-lg opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
-                    
+
                     {/* Online indicator */}
                     <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full border-2 border-white shadow-lg">
                       <div className="w-full h-full bg-emerald-400 rounded-full animate-pulse"></div>
@@ -208,7 +209,9 @@ const Navbar = () => {
                       />
                     </Avatar>
                     <div>
-                      <h4 className="font-semibold text-slate-800">{user?.name}</h4>
+                      <h4 className="font-semibold text-slate-800">
+                        {user?.name}
+                      </h4>
                       <p className="text-sm text-slate-600">{user?.email}</p>
                     </div>
                   </div>
@@ -227,6 +230,20 @@ const Navbar = () => {
                         className="font-medium text-slate-700 group-hover:text-slate-900"
                       >
                         View Profile
+                      </Link>
+                    </motion.div>
+                    <motion.div
+                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors duration-200 cursor-pointer group"
+                      whileHover={{ x: 5 }}
+                    >
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                        <User className="w-5 h-5 text-white" />
+                      </div>
+                      <Link
+                        to="/dashbord"
+                        className="font-medium text-slate-700 group-hover:text-slate-900"
+                      >
+                        Dashbord
                       </Link>
                     </motion.div>
 
@@ -295,7 +312,7 @@ const Navbar = () => {
               {navItems.map((item, index) => {
                 const IconComponent = item.icon;
                 const isActive = isActivePath(item.path);
-                
+
                 return (
                   <motion.div
                     key={item.name}

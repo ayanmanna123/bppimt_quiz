@@ -222,11 +222,7 @@ const Features = () => {
                   }}
                   viewport={{ once: true, margin: "-50px" }}
                   style={{ willChange: "transform, opacity" }}
-                  whileHover={{ 
-                    scale: 1.05, 
-                    rotate: isEven ? 2 : -2,
-                    transition: { type: "spring", stiffness: 200, damping: 15 }
-                  }}
+                   
                 >
                   {/* Image container with enhanced effects */}
                   <div className="relative">

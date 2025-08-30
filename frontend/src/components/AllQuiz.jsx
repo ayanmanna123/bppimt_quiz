@@ -15,7 +15,18 @@ import Navbar from "./shared/Navbar";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
-import { ArrowLeft, Clock, Calendar, Trophy, Brain, Play, Sparkles, BookOpen, Timer, Users } from "lucide-react";
+import {
+  ArrowLeft,
+  Clock,
+  Calendar,
+  Trophy,
+  Brain,
+  Play,
+  Sparkles,
+  BookOpen,
+  Timer,
+  Users,
+} from "lucide-react";
 import QuizCardSkeleton from "./QuizCardSkeleton";
 
 // Unique gradient combinations for student quiz cards
@@ -35,7 +46,7 @@ const studentPatterns = [
   "radial-gradient(circle at 70% 20%, rgba(239, 68, 68, 0.4) 0%, transparent 50%), radial-gradient(circle at 20% 70%, rgba(236, 72, 153, 0.3) 0%, transparent 50%)",
   "linear-gradient(45deg, rgba(6, 182, 212, 0.3) 25%, transparent 25%), linear-gradient(135deg, rgba(59, 130, 246, 0.3) 25%, transparent 25%)",
   "radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.3) 0%, transparent 70%), conic-gradient(from 180deg at 50% 50%, rgba(168, 85, 247, 0.3) 0deg, transparent 120deg)",
-  "linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(251, 191, 36, 0.2) 0%, transparent 60%)"
+  "linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(251, 191, 36, 0.2) 0%, transparent 60%)",
 ];
 
 const AllQuiz = () => {
@@ -163,8 +174,12 @@ const AllQuiz = () => {
                 <div className="w-28 h-28 bg-gradient-to-br from-green-200 to-emerald-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
                   <BookOpen className="w-14 h-14 text-green-600" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700 mb-2">Loading Quizzes...</h3>
-                <p className="text-gray-500 text-lg">Please wait while we fetch your quizzes</p>
+                <h3 className="text-xl font-bold text-gray-700 mb-2">
+                  Loading Quizzes...
+                </h3>
+                <p className="text-gray-500 text-lg">
+                  Please wait while we fetch your quizzes
+                </p>
               </motion.div>
             </div>
           ) : quizzes.length === 0 ? (
@@ -177,8 +192,12 @@ const AllQuiz = () => {
                 <div className="w-28 h-28 bg-gradient-to-br from-blue-200 to-cyan-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
                   <BookOpen className="w-14 h-14 text-blue-600" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700 mb-2">No Quizzes Available</h3>
-                <p className="text-gray-500 text-lg">Check back later for new quizzes in this subject</p>
+                <h3 className="text-xl font-bold text-gray-700 mb-2">
+                  No Quizzes Available
+                </h3>
+                <p className="text-gray-500 text-lg">
+                  Check back later for new quizzes in this subject
+                </p>
               </motion.div>
             </div>
           ) : (
@@ -189,8 +208,10 @@ const AllQuiz = () => {
               transition={{ duration: 0.6 }}
             >
               {quizzes.map((quiz, index) => {
-                const gradientClass = studentQuizGradients[index % studentQuizGradients.length];
-                const patternStyle = studentPatterns[index % studentPatterns.length];
+                const gradientClass =
+                  studentQuizGradients[index % studentQuizGradients.length];
+                const patternStyle =
+                  studentPatterns[index % studentPatterns.length];
                 const status = getQuizStatus(quiz.date);
                 const isActive = status === "active";
 
@@ -199,17 +220,17 @@ const AllQuiz = () => {
                     key={quiz._id || index}
                     initial={{ opacity: 0, y: 60, rotate: -2 }}
                     animate={{ opacity: 1, y: 0, rotate: 0 }}
-                    transition={{ 
-                      duration: 0.7, 
+                    transition={{
+                      duration: 0.7,
                       delay: index * 0.15,
                       type: "spring",
-                      stiffness: 100
+                      stiffness: 100,
                     }}
                     className="group"
                   >
                     <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-110 relative">
                       {/* Creative gradient header with enhanced patterns */}
-                      <div 
+                      <div
                         className={`h-36 ${gradientClass} relative overflow-hidden`}
                         style={{ background: patternStyle }}
                       >
@@ -251,63 +272,91 @@ const AllQuiz = () => {
                           <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
                             <Calendar className="w-5 h-5 text-blue-600" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">Submit Date</p>
-                              <p className="text-sm font-bold text-gray-700">{quiz.date}</p>
+                              <p className="text-xs text-gray-500 font-medium">
+                                Submit Date
+                              </p>
+                              <p className="text-sm font-bold text-gray-700">
+                                {quiz.date}
+                              </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-xl">
                             <Timer className="w-5 h-5 text-orange-600" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">Duration</p>
-                              <p className="text-sm font-bold text-gray-700">{quiz.time}m</p>
+                              <p className="text-xs text-gray-500 font-medium">
+                                Duration
+                              </p>
+                              <p className="text-sm font-bold text-gray-700">
+                                {quiz.time}m
+                              </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-xl">
                             <Trophy className="w-5 h-5 text-yellow-600" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">Total Marks</p>
-                              <p className="text-sm font-bold text-gray-700">{quiz.marks || 'N/A'}</p>
+                              <p className="text-xs text-gray-500 font-medium">
+                                Total Marks
+                              </p>
+                              <p className="text-sm font-bold text-gray-700">
+                                {quiz.marks || "N/A"}
+                              </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
                             <Brain className="w-5 h-5 text-green-600" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">Questions</p>
-                              <p className="text-sm font-bold text-gray-700">{quiz.questions?.length || quiz.totalQuestions || 0}</p>
+                              <p className="text-xs text-gray-500 font-medium">
+                                Questions
+                              </p>
+                              <p className="text-sm font-bold text-gray-700">
+                                {quiz.questions?.length ||
+                                  quiz.totalQuestions ||
+                                  0}
+                              </p>
                             </div>
                           </div>
                         </div>
 
                         {/* Enhanced created date section */}
                         <div className="bg-gradient-to-r from-gray-50 to-green-50 rounded-xl p-4 border-l-4 border-green-400">
-                          <p className="text-xs text-gray-500 font-semibold mb-1">CREATED ON</p>
+                          <p className="text-xs text-gray-500 font-semibold mb-1">
+                            CREATED ON
+                          </p>
                           <p className="text-sm font-bold text-gray-800">
                             {quiz.createdAt
-                              ? new Date(quiz.createdAt).toLocaleDateString('en-US', { 
-                                  weekday: 'short',
-                                  month: 'short', 
-                                  day: 'numeric', 
-                                  year: 'numeric' 
-                                })
-                              : 'N/A'
-                            }
+                              ? new Date(quiz.createdAt).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    weekday: "short",
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  }
+                                )
+                              : "N/A"}
                           </p>
                         </div>
 
                         {/* Quiz availability status */}
-                        <div className={`rounded-xl p-4 border-l-4 ${
-                          isActive 
-                            ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-400' 
-                            : 'bg-gradient-to-r from-red-50 to-rose-50 border-red-400'
-                        }`}>
-                          <p className="text-xs text-gray-500 font-semibold mb-1">STATUS</p>
-                          <p className={`text-sm font-bold ${
-                            isActive ? 'text-green-700' : 'text-red-700'
-                          }`}>
-                            {isActive ? 'Available to Take' : 'Quiz Expired'}
+                        <div
+                          className={`rounded-xl p-4 border-l-4 ${
+                            isActive
+                              ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-400"
+                              : "bg-gradient-to-r from-red-50 to-rose-50 border-red-400"
+                          }`}
+                        >
+                          <p className="text-xs text-gray-500 font-semibold mb-1">
+                            STATUS
+                          </p>
+                          <p
+                            className={`text-sm font-bold ${
+                              isActive ? "text-green-700" : "text-red-700"
+                            }`}
+                          >
+                            {isActive ? "Available to Take" : "Quiz Expired"}
                           </p>
                         </div>
 
@@ -317,12 +366,12 @@ const AllQuiz = () => {
                           disabled={!isActive}
                           className={`w-full font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105 ${
                             isActive
-                              ? 'bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white'
-                              : 'bg-gray-300 text-gray-500 cursor-not-allowed hover:scale-100 hover:shadow-lg'
+                              ? "bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white"
+                              : "bg-gray-300 text-gray-500 cursor-not-allowed hover:scale-100 hover:shadow-lg"
                           }`}
                         >
                           <Play className="w-5 h-5" />
-                          {isActive ? 'Start Quiz' : 'Quiz Expired'}
+                          {isActive ? "Start Quiz" : "Quiz Expired"}
                           {isActive && <Sparkles className="w-4 h-4" />}
                         </Button>
                       </CardContent>
@@ -350,18 +399,24 @@ const AllQuiz = () => {
                     <BookOpen className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-left">
-                    <p className="text-2xl font-bold text-gray-800">{quizzes.length}</p>
+                    <p className="text-2xl font-bold text-gray-800">
+                      {quizzes.length}
+                    </p>
                     <p className="text-sm text-gray-600">Total Quizzes</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
                     <Clock className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-left">
                     <p className="text-2xl font-bold text-gray-800">
-                      {quizzes.filter(q => getQuizStatus(q.date) === 'active').length}
+                      {
+                        quizzes.filter(
+                          (q) => getQuizStatus(q.date) === "active"
+                        ).length
+                      }
                     </p>
                     <p className="text-sm text-gray-600">Active Quizzes</p>
                   </div>
