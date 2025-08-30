@@ -215,7 +215,7 @@ const Result = () => {
                     className="group"
                   >
                     <Card 
-                      className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-105 hover:rotate-1 relative cursor-pointer"
+                      className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-105 relative cursor-pointer"
                       onClick={() => navigate(`/reasult/details/${result?._id}`)}
                     >
                       {/* Creative gradient header with enhanced patterns */}
@@ -250,7 +250,7 @@ const Result = () => {
 
                         {/* Quiz title with enhanced styling */}
                         <div className="absolute bottom-4 left-4 right-4">
-                          <h3 className="text-white font-bold text-xl leading-tight drop-shadow-2xl truncate">
+                          <h3 className="text-gray-800 font-bold text-xl leading-tight drop-shadow-2xl truncate">
                             {result?.quiz?.title || "Untitled Quiz"}
                           </h3>
                           <div className="w-12 h-1 bg-white/60 rounded-full mt-2"></div>
@@ -289,7 +289,7 @@ const Result = () => {
                             <BookOpen className="w-5 h-5 text-green-600" />
                             <div>
                               <p className="text-xs text-gray-500 font-medium">Subject</p>
-                              <p className="text-sm font-bold text-gray-700">{result?.quiz?.subject?.subjectName}</p>
+                              <p className="text-sm font-bold text-gray-800">{result?.quiz?.subject?.subjectName}</p>
                             </div>
                           </div>
                           

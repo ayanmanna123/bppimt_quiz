@@ -186,7 +186,7 @@ const TeacherCreateQuiz = () => {
                     }}
                     className="group"
                   >
-                    <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-110 hover:rotate-1 relative">
+                    <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-110   relative">
                       {/* Creative gradient header with enhanced patterns */}
                       <div 
                         className={`h-36 ${gradientClass} relative overflow-hidden`}
@@ -218,7 +218,7 @@ const TeacherCreateQuiz = () => {
 
                         {/* Quiz title with enhanced styling */}
                         <div className="absolute bottom-4 left-4 right-4">
-                          <h3 className="text-white font-bold text-xl leading-tight drop-shadow-2xl truncate">
+                          <h3 className="  font-bold text-xl leading-tight drop-shadow-2xl truncate text-gray-800">
                             {quiz.title}
                           </h3>
                           <div className="w-12 h-1 bg-white/60 rounded-full mt-2"></div>

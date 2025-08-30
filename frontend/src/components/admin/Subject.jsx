@@ -4,7 +4,15 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
-import { ArrowLeft, Plus, Eye, BookOpen, Users, GraduationCap, Sparkles } from "lucide-react";
+import {
+  ArrowLeft,
+  Plus,
+  Eye,
+  BookOpen,
+  Users,
+  GraduationCap,
+  Sparkles,
+} from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import SchlitonSubject from "./SchlitonSubject";
@@ -19,7 +27,7 @@ import {
 // Enhanced gradient combinations for subject cards
 const subjectGradients = [
   "bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600",
-  "bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600", 
+  "bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600",
   "bg-gradient-to-br from-emerald-500 via-green-600 to-teal-600",
   "bg-gradient-to-br from-amber-500 via-orange-600 to-red-600",
   "bg-gradient-to-br from-pink-500 via-rose-600 to-red-600",
@@ -33,7 +41,7 @@ const subjectPatterns = [
   "conic-gradient(from 180deg at 50% 50%, rgba(16, 185, 129, 0.3) 0deg, transparent 120deg, rgba(34, 197, 94, 0.3) 240deg)",
   "radial-gradient(ellipse at bottom, rgba(245, 158, 11, 0.4) 0%, transparent 70%), linear-gradient(-45deg, rgba(251, 146, 60, 0.3) 0%, transparent 100%)",
   "linear-gradient(60deg, rgba(236, 72, 153, 0.3) 25%, transparent 25%), linear-gradient(120deg, rgba(219, 39, 119, 0.3) 25%, transparent 25%)",
-  "conic-gradient(from 45deg at 30% 70%, rgba(71, 85, 105, 0.3) 0deg, transparent 90deg, rgba(100, 116, 139, 0.3) 180deg, transparent 270deg)"
+  "conic-gradient(from 45deg at 30% 70%, rgba(71, 85, 105, 0.3) 0deg, transparent 90deg, rgba(100, 116, 139, 0.3) 180deg, transparent 270deg)",
 ];
 
 const Subject = () => {
@@ -82,10 +90,7 @@ const Subject = () => {
               <span className="font-semibold">Back to Home</span>
             </motion.div>
 
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 onClick={() => navigate("/admin/create/subject")}
                 className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white px-8 py-3 rounded-2xl flex items-center gap-3 transition-all duration-300 shadow-lg hover:shadow-2xl font-semibold"
@@ -146,8 +151,12 @@ const Subject = () => {
                 <div className="w-28 h-28 bg-gradient-to-br from-purple-200 to-violet-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
                   <BookOpen className="w-14 h-14 text-purple-600" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700 mb-2">No Subjects Yet</h3>
-                <p className="text-gray-500 text-lg">Ready to create your first subject?</p>
+                <h3 className="text-xl font-bold text-gray-700 mb-2">
+                  No Subjects Yet
+                </h3>
+                <p className="text-gray-500 text-lg">
+                  Ready to create your first subject?
+                </p>
               </motion.div>
             </div>
           ) : (
@@ -158,25 +167,27 @@ const Subject = () => {
               transition={{ duration: 0.6 }}
             >
               {subjects.map((subj, index) => {
-                const gradientClass = subjectGradients[index % subjectGradients.length];
-                const patternStyle = subjectPatterns[index % subjectPatterns.length];
+                const gradientClass =
+                  subjectGradients[index % subjectGradients.length];
+                const patternStyle =
+                  subjectPatterns[index % subjectPatterns.length];
 
                 return (
                   <motion.div
                     key={subj._id}
                     initial={{ opacity: 0, y: 60, rotate: -2 }}
                     animate={{ opacity: 1, y: 0, rotate: 0 }}
-                    transition={{ 
-                      duration: 0.7, 
+                    transition={{
+                      duration: 0.7,
                       delay: index * 0.15,
                       type: "spring",
-                      stiffness: 100
+                      stiffness: 100,
                     }}
                     className="group cursor-pointer"
                   >
-                    <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-110 hover:rotate-1 relative h-full">
+                    <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-110 relative h-full">
                       {/* Creative gradient header with enhanced patterns */}
-                      <div 
+                      <div
                         className={`h-40 ${gradientClass} relative overflow-hidden`}
                         style={{ background: patternStyle }}
                       >
@@ -191,7 +202,7 @@ const Subject = () => {
 
                         {/* Subject info overlay with enhanced styling */}
                         <div className="absolute bottom-4 left-4 right-4 text-white">
-                          <CardTitle className="text-xl font-bold drop-shadow-2xl mb-1 leading-tight truncate">
+                          <CardTitle className="text-xl font-bold drop-shadow-2xl mb-1 leading-tight truncate text-black">
                             {subj?.subjectName}
                           </CardTitle>
                           <p className="text-sm opacity-90 drop-shadow truncate">
@@ -207,16 +218,24 @@ const Subject = () => {
                           <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-xl">
                             <Users className="w-5 h-5 text-purple-600" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">DEPARTMENT</p>
-                              <p className="text-sm font-bold text-gray-700">{subj?.department}</p>
+                              <p className="text-xs text-gray-500 font-medium">
+                                DEPARTMENT
+                              </p>
+                              <p className="text-sm font-bold text-gray-700">
+                                {subj?.department}
+                              </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-3 p-3 bg-indigo-50 rounded-xl">
                             <GraduationCap className="w-5 h-5 text-indigo-600" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">SEMESTER</p>
-                              <p className="text-sm font-bold text-gray-700">{subj?.semester}</p>
+                              <p className="text-xs text-gray-500 font-medium">
+                                SEMESTER
+                              </p>
+                              <p className="text-sm font-bold text-gray-700">
+                                {subj?.semester}
+                              </p>
                             </div>
                           </div>
                         </div>

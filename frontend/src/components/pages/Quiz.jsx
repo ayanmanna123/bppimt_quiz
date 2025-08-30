@@ -230,7 +230,7 @@ const Quiz = () => {
                     }}
                     className="group cursor-pointer"
                   >
-                    <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-110 hover:rotate-2 relative group-hover:-translate-y-2">
+                    <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-110 relative group-hover:-translate-y-2">
                       {/* Enhanced gradient header */}
                       <div 
                         className={`h-44 ${gradientClass} relative overflow-hidden`}
@@ -254,7 +254,7 @@ const Quiz = () => {
                         </div>
 
                         {/* Subject info */}
-                        <div className="absolute bottom-4 left-4 right-4 text-white">
+                        <div className="absolute bottom-4 left-4 right-4 text-gray-700">
                           <h3 className="text-xl font-bold drop-shadow-2xl mb-2 leading-tight">
                             {sub?.subjectName}
                           </h3>
