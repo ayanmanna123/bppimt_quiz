@@ -4,6 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import { motion } from "framer-motion";
+import * as XLSX from "xlsx";
 import {
   ArrowLeft,
   Users,
@@ -27,14 +28,14 @@ import {
   Mail,
   Sparkles,
   ChevronDown,
-  FileText
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Admin-focused gradient combinations
 const adminGradients = [
   "bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800",
-  "bg-gradient-to-br from-emerald-600 via-green-700 to-teal-800", 
+  "bg-gradient-to-br from-emerald-600 via-green-700 to-teal-800",
   "bg-gradient-to-br from-amber-600 via-orange-700 to-red-800",
   "bg-gradient-to-br from-indigo-600 via-purple-700 to-violet-800",
   "bg-gradient-to-br from-blue-600 via-cyan-700 to-teal-800",
@@ -55,7 +56,7 @@ const AdmineResult = () => {
     averageScore: 0,
     onTimeSubmissions: 0,
     lateSubmissions: 0,
-    passRate: 0
+    passRate: 0,
   });
   const navigate = useNavigate();
 
@@ -79,7 +80,7 @@ const AdmineResult = () => {
         const resultData = res.data.allReasult || [];
         setResults(resultData);
         setFilteredResults(resultData);
-        
+
         // Calculate statistics
         calculateStats(resultData);
       } catch (error) {
@@ -93,24 +94,27 @@ const AdmineResult = () => {
 
   const calculateStats = (data) => {
     if (data.length === 0) return;
-    
+
     const totalStudents = data.length;
     const totalScore = data.reduce((sum, result) => sum + result.score, 0);
     const averageScore = totalScore / totalStudents;
-    
-    const onTime = data.filter(result => 
-      checkSubmissionStatus(result.quiz, result.submittedAt) === "onTime"
+
+    const onTime = data.filter(
+      (result) =>
+        checkSubmissionStatus(result.quiz, result.submittedAt) === "onTime"
     ).length;
     const late = totalStudents - onTime;
-    
-    const passRate = (data.filter(result => result.score >= 60).length / totalStudents) * 100;
-    
+
+    const passRate =
+      (data.filter((result) => result.score >= 60).length / totalStudents) *
+      100;
+
     setStats({
       totalStudents,
       averageScore: Math.round(averageScore * 100) / 100,
       onTimeSubmissions: onTime,
       lateSubmissions: late,
-      passRate: Math.round(passRate * 100) / 100
+      passRate: Math.round(passRate * 100) / 100,
     });
   };
 
@@ -124,15 +128,21 @@ const AdmineResult = () => {
 
   // Filter and search logic
   useEffect(() => {
-    let filtered = results.filter(result => {
-      const matchesSearch = 
-        result.student?.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    let filtered = results.filter((result) => {
+      const matchesSearch =
+        result.student?.fullname
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
         result.student?.email?.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesStatus = statusFilter === "all" || 
-        (statusFilter === "onTime" && checkSubmissionStatus(result.quiz, result.submittedAt) === "onTime") ||
-        (statusFilter === "late" && checkSubmissionStatus(result.quiz, result.submittedAt) === "late");
-      
+
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "onTime" &&
+          checkSubmissionStatus(result.quiz, result.submittedAt) ===
+            "onTime") ||
+        (statusFilter === "late" &&
+          checkSubmissionStatus(result.quiz, result.submittedAt) === "late");
+
       return matchesSearch && matchesStatus;
     });
 
@@ -166,7 +176,100 @@ const AdmineResult = () => {
     if (score >= 60) return <CheckCircle className="w-4 h-4 text-green-500" />;
     return <AlertTriangle className="w-4 h-4 text-red-500" />;
   };
+  const exportToExcel = () => {
+    try {
+      // Prepare data for Excel export
+      const exportData = filteredResults.map((result, index) => {
+        const status = checkSubmissionStatus(result.quiz, result.submittedAt);
 
+        // Calculate correct/incorrect answers
+        const correctAnswers =
+          result.answers?.filter((ans) => ans.isCorrect).length || 0;
+        const totalQuestions = result.answers?.length || 0;
+        const incorrectAnswers = totalQuestions - correctAnswers;
+
+        return {
+          "S.No": index + 1,
+          "Student Name": result.student?.fullname || "N/A",
+          Email: result.student?.email || "N/A",
+          Role: result.student?.role || "Student",
+          Score: result.score,
+          "Total Questions": totalQuestions,
+          "Correct Answers": correctAnswers,
+          "Incorrect Answers": incorrectAnswers,
+          "Accuracy (%)":
+            totalQuestions > 0
+              ? Math.round((correctAnswers / totalQuestions) * 100)
+              : 0,
+          "Submission Status": status === "onTime" ? "On Time" : "Late",
+          "Submitted At": new Date(result.submittedAt).toLocaleString(),
+          "Quiz Date": new Date(result.quiz?.date).toLocaleDateString(),
+          "Quiz Duration (min)": result.quiz?.time || "N/A",
+        };
+      });
+
+      // Add summary statistics at the top
+      const summaryData = [
+        {
+          "S.No": "SUMMARY",
+          "Student Name": "Total Students",
+          Email: stats.totalStudents,
+          Role: "Average Score",
+          Score: stats.averageScore,
+          "Total Questions": "Pass Rate (%)",
+          "Correct Answers": stats.passRate,
+          "Incorrect Answers": "On Time",
+          "Accuracy (%)": stats.onTimeSubmissions,
+          "Submission Status": "Late",
+          "Submitted At": stats.lateSubmissions,
+          "Quiz Date": "",
+          "Quiz Duration (min)": "",
+        },
+        {}, // Empty row for separation
+      ];
+
+      // Combine summary and detailed data
+      const finalData = [...exportData];
+
+      // Create workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(finalData);
+
+      // Set column widths
+      const colWidths = [
+        { wch: 8 }, // S.No
+        { wch: 20 }, // Student Name
+        { wch: 25 }, // Email
+        { wch: 12 }, // Role
+        { wch: 10 }, // Score
+        { wch: 15 }, // Total Questions
+        { wch: 15 }, // Correct Answers
+        { wch: 16 }, // Incorrect Answers
+        { wch: 12 }, // Accuracy
+        { wch: 15 }, // Status
+        { wch: 18 }, // Submitted At
+        { wch: 12 }, // Quiz Date
+        { wch: 18 }, // Duration
+      ];
+      ws["!cols"] = colWidths;
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, "Quiz Results");
+
+      // Generate filename with current date
+      const currentDate = new Date().toISOString().split("T")[0];
+      const filename = `Quiz_Results_${quizeId}_${currentDate}.xlsx`;
+
+      // Download the file
+      XLSX.writeFile(wb, filename);
+
+      // Optional: Show success message (you can add toast notification here)
+      console.log("Excel file downloaded successfully!");
+    } catch (error) {
+      console.error("Error exporting to Excel:", error);
+      // Optional: Show error message (you can add toast notification here)
+    }
+  };
   if (loading) {
     return (
       <>
@@ -241,27 +344,37 @@ const AdmineResult = () => {
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-8">
                 <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
                   <Users className="w-6 h-6 text-blue-400 mb-2 mx-auto" />
-                  <div className="text-2xl font-bold text-white">{stats.totalStudents}</div>
+                  <div className="text-2xl font-bold text-white">
+                    {stats.totalStudents}
+                  </div>
                   <div className="text-white/80 text-sm">Total Students</div>
                 </div>
                 <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
                   <TrendingUp className="w-6 h-6 text-green-400 mb-2 mx-auto" />
-                  <div className="text-2xl font-bold text-white">{stats.averageScore}</div>
+                  <div className="text-2xl font-bold text-white">
+                    {stats.averageScore}
+                  </div>
                   <div className="text-white/80 text-sm">Average Score</div>
                 </div>
                 <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
                   <CheckCircle className="w-6 h-6 text-emerald-400 mb-2 mx-auto" />
-                  <div className="text-2xl font-bold text-white">{stats.onTimeSubmissions}</div>
+                  <div className="text-2xl font-bold text-white">
+                    {stats.onTimeSubmissions}
+                  </div>
                   <div className="text-white/80 text-sm">On Time</div>
                 </div>
                 <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
                   <Clock className="w-6 h-6 text-orange-400 mb-2 mx-auto" />
-                  <div className="text-2xl font-bold text-white">{stats.lateSubmissions}</div>
+                  <div className="text-2xl font-bold text-white">
+                    {stats.lateSubmissions}
+                  </div>
                   <div className="text-white/80 text-sm">Late</div>
                 </div>
                 <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
                   <Trophy className="w-6 h-6 text-yellow-400 mb-2 mx-auto" />
-                  <div className="text-2xl font-bold text-white">{stats.passRate}%</div>
+                  <div className="text-2xl font-bold text-white">
+                    {stats.passRate}%
+                  </div>
                   <div className="text-white/80 text-sm">Pass Rate</div>
                 </div>
               </div>
@@ -300,7 +413,7 @@ const AdmineResult = () => {
                   Submission Status
                 </label>
                 <div className="relative">
-                  <select 
+                  <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-green-400 transition-all duration-300 font-medium appearance-none"
@@ -320,7 +433,7 @@ const AdmineResult = () => {
                   Sort Results
                 </label>
                 <div className="relative">
-                  <select 
+                  <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-purple-400 transition-all duration-300 font-medium appearance-none"
@@ -339,7 +452,10 @@ const AdmineResult = () => {
                   <FileText className="w-4 h-4" />
                   Quick Actions
                 </label>
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300">
+                <Button
+                  onClick={exportToExcel}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300"
+                >
                   <Download className="w-4 h-4" />
                   Export Results
                 </Button>
@@ -360,8 +476,12 @@ const AdmineResult = () => {
               <div className="w-28 h-28 bg-gradient-to-br from-gray-200 to-slate-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
                 <Users className="w-14 h-14 text-gray-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-700 mb-2">No results found</h3>
-              <p className="text-gray-500 text-lg">Try adjusting your search or filters</p>
+              <h3 className="text-xl font-bold text-gray-700 mb-2">
+                No results found
+              </h3>
+              <p className="text-gray-500 text-lg">
+                Try adjusting your search or filters
+              </p>
             </motion.div>
           ) : (
             <motion.div
@@ -371,26 +491,32 @@ const AdmineResult = () => {
               transition={{ duration: 0.6 }}
             >
               {filteredResults.map((result, index) => {
-                const status = checkSubmissionStatus(result.quiz, result.submittedAt);
-                const gradientClass = adminGradients[index % adminGradients.length];
+                const status = checkSubmissionStatus(
+                  result.quiz,
+                  result.submittedAt
+                );
+                const gradientClass =
+                  adminGradients[index % adminGradients.length];
 
                 return (
                   <motion.div
                     key={result._id}
                     initial={{ opacity: 0, y: 60, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ 
-                      duration: 0.7, 
+                    transition={{
+                      duration: 0.7,
                       delay: index * 0.05,
                       type: "spring",
-                      stiffness: 100
+                      stiffness: 100,
                     }}
                     className="group cursor-pointer"
                     onClick={() => navigate(`/reasult/details/${result?._id}`)}
                   >
                     <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-white/20 transform hover:scale-105 hover:-translate-y-2 overflow-hidden">
                       {/* Student Header */}
-                      <div className={`${gradientClass} p-6 relative overflow-hidden`}>
+                      <div
+                        className={`${gradientClass} p-6 relative overflow-hidden`}
+                      >
                         <div className="absolute inset-0 opacity-20">
                           <div className="absolute top-4 right-4 w-16 h-16 border-2 border-white/40 rounded-full animate-pulse"></div>
                           <div className="absolute bottom-4 left-4 w-8 h-8 bg-white/30 rounded-full animate-bounce"></div>
@@ -412,11 +538,17 @@ const AdmineResult = () => {
                                 </div>
                               </div>
                             </div>
-                            
+
                             <div className="flex items-center gap-2">
-                              <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getScoreColor(result.score)} bg-white/90`}>
+                              <div
+                                className={`px-3 py-1 rounded-full text-xs font-semibold ${getScoreColor(
+                                  result.score
+                                )} bg-white/90`}
+                              >
                                 {getPerformanceIcon(result.score)}
-                                <span className="ml-1">{result.score} Points</span>
+                                <span className="ml-1">
+                                  {result.score} Points
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -444,20 +576,26 @@ const AdmineResult = () => {
                           <div className="bg-blue-50 rounded-xl p-3">
                             <div className="flex items-center gap-2 mb-1">
                               <Award className="w-4 h-4 text-blue-600" />
-                              <span className="text-xs font-semibold text-gray-600">ROLE</span>
+                              <span className="text-xs font-semibold text-gray-600">
+                                ROLE
+                              </span>
                             </div>
                             <p className="text-sm font-bold text-gray-800">
                               {result.student?.role || "Student"}
                             </p>
                           </div>
-                          
+
                           <div className="bg-purple-50 rounded-xl p-3">
                             <div className="flex items-center gap-2 mb-1">
                               <Calendar className="w-4 h-4 text-purple-600" />
-                              <span className="text-xs font-semibold text-gray-600">SUBMITTED</span>
+                              <span className="text-xs font-semibold text-gray-600">
+                                SUBMITTED
+                              </span>
                             </div>
                             <p className="text-sm font-bold text-gray-800">
-                              {new Date(result.submittedAt).toLocaleDateString()}
+                              {new Date(
+                                result.submittedAt
+                              ).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
@@ -466,17 +604,31 @@ const AdmineResult = () => {
                         {result.answers && result.answers.length > 0 && (
                           <div className="bg-gray-50 rounded-xl p-4">
                             <div className="flex items-center justify-between mb-3">
-                              <span className="text-sm font-semibold text-gray-700">Answer Summary</span>
-                              <span className="text-xs text-gray-500">{result.answers.length} Questions</span>
+                              <span className="text-sm font-semibold text-gray-700">
+                                Answer Summary
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                {result.answers.length} Questions
+                              </span>
                             </div>
-                            
+
                             <div className="space-y-2 max-h-32 overflow-y-auto">
                               {result.answers.slice(0, 3).map((ans, idx) => {
-                                const question = result.quiz.questions.find(q => q._id === ans.questionId);
+                                const question = result.quiz.questions.find(
+                                  (q) => q._id === ans.questionId
+                                );
                                 return (
-                                  <div key={ans._id} className="flex items-center justify-between text-sm">
+                                  <div
+                                    key={ans._id}
+                                    className="flex items-center justify-between text-sm"
+                                  >
                                     <span className="text-gray-600 truncate flex-1">
-                                      Q{idx + 1}: {question?.questionText?.substring(0, 30) || "Unknown"}...
+                                      Q{idx + 1}:{" "}
+                                      {question?.questionText?.substring(
+                                        0,
+                                        30
+                                      ) || "Unknown"}
+                                      ...
                                     </span>
                                     {ans.isCorrect ? (
                                       <CheckCircle className="w-4 h-4 text-green-500 ml-2" />
