@@ -28,7 +28,7 @@ import {
   Zap,
   Clock,
   Heart,
-  Globe
+  Globe,
 } from "lucide-react";
 
 const Profile = () => {
@@ -36,45 +36,94 @@ const Profile = () => {
   const { usere } = useSelector((store) => store.auth);
 
   const profileStats = [
-    { icon: Trophy, label: "Achievements", value: "12", color: "text-yellow-500", bg: "bg-yellow-50" },
-    { icon: Target, label: "Quizzes Completed", value: "47", color: "text-blue-500", bg: "bg-blue-50" },
-    { icon: Star, label: "Average Score", value: "87%", color: "text-green-500", bg: "bg-green-50" },
-    { icon: Activity, label: "Streak Days", value: "15", color: "text-purple-500", bg: "bg-purple-50" }
+    {
+      icon: Trophy,
+      label: "Achievements",
+      value: "12",
+      color: "text-yellow-500",
+      bg: "bg-yellow-50",
+    },
+    {
+      icon: Target,
+      label: "Quizzes Completed",
+      value: "47",
+      color: "text-blue-500",
+      bg: "bg-blue-50",
+    },
+    {
+      icon: Star,
+      label: "Average Score",
+      value: "87%",
+      color: "text-green-500",
+      bg: "bg-green-50",
+    },
+    {
+      icon: Activity,
+      label: "Streak Days",
+      value: "15",
+      color: "text-purple-500",
+      bg: "bg-purple-50",
+    },
   ];
 
   const profileSections = [
-    { icon: User, label: "Full Name", value: usere?.fullname, color: "text-blue-600" },
-    { icon: Mail, label: "Email Address", value: usere?.email, color: "text-green-600" },
-    { icon: Shield, label: "Role", value: usere?.role, color: "text-purple-600" },
-    { icon: BookOpen, label: "Department", value: usere?.department, color: "text-orange-600" },
-    { icon: GraduationCap, label: "Semester", value: usere?.semester, color: "text-pink-600" }
+    {
+      icon: User,
+      label: "Full Name",
+      value: usere?.fullname,
+      color: "text-blue-600",
+    },
+    {
+      icon: Mail,
+      label: "Email Address",
+      value: usere?.email,
+      color: "text-green-600",
+    },
+    {
+      icon: Shield,
+      label: "Role",
+      value: usere?.role,
+      color: "text-purple-600",
+    },
+    {
+      icon: BookOpen,
+      label: "Department",
+      value: usere?.department,
+      color: "text-orange-600",
+    },
+    {
+      icon: GraduationCap,
+      label: "Semester",
+      value: usere?.semester,
+      color: "text-pink-600",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
       <Navbar />
-      
+
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          animate={{ 
+          animate={{
             rotate: 360,
             scale: [1, 1.2, 1],
           }}
-          transition={{ 
+          transition={{
             rotate: { duration: 50, repeat: Infinity, ease: "linear" },
-            scale: { duration: 8, repeat: Infinity, ease: "easeInOut" }
+            scale: { duration: 8, repeat: Infinity, ease: "easeInOut" },
           }}
           className="absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-full blur-3xl"
         />
         <motion.div
-          animate={{ 
+          animate={{
             rotate: -360,
             scale: [1.1, 1, 1.1],
           }}
-          transition={{ 
+          transition={{
             rotate: { duration: 40, repeat: Infinity, ease: "linear" },
-            scale: { duration: 6, repeat: Infinity, ease: "easeInOut" }
+            scale: { duration: 6, repeat: Infinity, ease: "easeInOut" },
           }}
           className="absolute -bottom-24 -left-24 w-80 h-80 bg-gradient-to-tr from-indigo-200/20 to-cyan-200/20 rounded-full blur-3xl"
         />
@@ -125,7 +174,11 @@ const Profile = () => {
                 <div className="absolute inset-0 opacity-5">
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 20,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                     className="absolute top-4 right-4 w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl"
                   />
                 </div>
@@ -150,7 +203,7 @@ const Profile = () => {
                           {usere?.fullname?.[0] || "U"}
                         </AvatarFallback>
                       </Avatar>
-                      
+
                       {/* Status indicator */}
                       <motion.div
                         animate={{ scale: [1, 1.2, 1] }}
@@ -159,7 +212,7 @@ const Profile = () => {
                       >
                         <Crown className="w-4 h-4 text-white" />
                       </motion.div>
-                      
+
                       {/* Camera overlay on hover */}
                       <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 hover:opacity-100 transition-all duration-300 flex items-center justify-center cursor-pointer">
                         <Camera className="w-8 h-8 text-white" />
@@ -178,7 +231,7 @@ const Profile = () => {
                       </h2>
                       <p className="text-gray-600 flex items-center justify-center gap-1">
                         <Badge className="w-4 h-4" />
-                        {usere?.role}  
+                        {usere?.role}
                       </p>
                     </div>
                   </div>
@@ -190,13 +243,23 @@ const Profile = () => {
                         key={stat.label}
                         initial={{ scale: 0, rotate: -180 }}
                         animate={{ scale: 1, rotate: 0 }}
-                        transition={{ delay: 0.1 * index, duration: 0.6, type: "spring" }}
+                        transition={{
+                          delay: 0.1 * index,
+                          duration: 0.6,
+                          type: "spring",
+                        }}
                         whileHover={{ scale: 1.05, y: -2 }}
                         className={`${stat.bg} rounded-2xl p-4 text-center border-2 border-transparent hover:border-gray-200 transition-all duration-300`}
                       >
-                        <stat.icon className={`w-6 h-6 ${stat.color} mx-auto mb-2`} />
-                        <div className="text-xl font-bold text-gray-800">{stat.value}</div>
-                        <div className="text-xs text-gray-600 font-medium">{stat.label}</div>
+                        <stat.icon
+                          className={`w-6 h-6 ${stat.color} mx-auto mb-2`}
+                        />
+                        <div className="text-xl font-bold text-gray-800">
+                          {stat.value}
+                        </div>
+                        <div className="text-xs text-gray-600 font-medium">
+                          {stat.label}
+                        </div>
                       </motion.div>
                     ))}
                   </div>
@@ -236,7 +299,11 @@ const Profile = () => {
                     </h3>
                     <motion.div
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
                       className="text-2xl"
                     >
                       ⚙️
@@ -255,8 +322,12 @@ const Profile = () => {
                       >
                         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl border-2 border-gray-200 group-hover:border-blue-300 transition-all duration-300">
                           <div className="flex items-center gap-4">
-                            <div className={`w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300`}>
-                              <section.icon className={`w-6 h-6 ${section.color}`} />
+                            <div
+                              className={`w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300`}
+                            >
+                              <section.icon
+                                className={`w-6 h-6 ${section.color}`}
+                              />
                             </div>
                             <div>
                               <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
@@ -275,7 +346,6 @@ const Profile = () => {
                 </div>
 
                 {/* Dashboard Embed */}
-                 
               </div>
             </motion.div>
           </div>
