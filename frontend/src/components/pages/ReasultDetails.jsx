@@ -46,7 +46,7 @@ const ResultDetails = () => {
         });
 
         const res = await axios.get(
-          `http://localhost:5000/api/v1/reasult/result/details/${resultId}`,
+          `https://bppimt-quiz-kml1.vercel.app/api/v1/reasult/result/details/${resultId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

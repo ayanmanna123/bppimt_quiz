@@ -41,7 +41,7 @@ const UpdateProfilelog = ({ open, setopen }) => {
       });
 
       const res = await axios.put(
-        "http://localhost:5000/api/v1/user/updateuser",
+        "https://bppimt-quiz-kml1.vercel.app/api/v1/user/updateuser",
         { sem: semester, name }, // send both sem and name
         {
           headers: {

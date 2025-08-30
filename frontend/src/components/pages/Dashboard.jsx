@@ -66,7 +66,7 @@ import Navbar from "../shared/Navbar";
         setError(null);
 
         const token = await getAccessTokenSilently({
-          audience: "http://localhost:5000/api/v2",
+          audience: "https://bppimt-quiz-kml1.vercel.app/api/v2",
         });
 
         const headers = { 
@@ -75,22 +75,22 @@ import Navbar from "../shared/Navbar";
         };
 
         const [progressRes, subjectRes, badgeRes, streakRes] = await Promise.all([
-          fetch("http://localhost:5000/api/v1/dashbord/dashbord/data/progress", { headers })
+          fetch("https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/dashbord/data/progress", { headers })
             .then(res => {
               if (!res.ok) throw new Error(`Progress API failed: ${res.status}`);
               return res.json();
             }),
-          fetch("http://localhost:5000/api/v1/dashbord/data/subject", { headers })
+          fetch("https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/data/subject", { headers })
             .then(res => {
               if (!res.ok) throw new Error(`Subject API failed: ${res.status}`);
               return res.json();
             }),
-          fetch("http://localhost:5000/api/v1/dashbord/data/badge", { headers })
+          fetch("https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/data/badge", { headers })
             .then(res => {
               if (!res.ok) throw new Error(`Badge API failed: ${res.status}`);
               return res.json();
             }),
-          fetch("http://localhost:5000/api/v1/dashbord/data/streak", { headers })
+          fetch("https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/data/streak", { headers })
             .then(res => {
               if (!res.ok) throw new Error(`Streak API failed: ${res.status}`);
               return res.json();

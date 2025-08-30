@@ -18,7 +18,7 @@ const useGetSubject = (department) => {
         });
 
         const res = await axios.get(
-          `http://localhost:5000/api/v1/subject/subjectByQuery?department=${department}`,
+          `https://bppimt-quiz-kml1.vercel.app/api/v1/subject/subjectByQuery?department=${department}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
