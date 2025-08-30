@@ -22,7 +22,7 @@ const Footer = () => {
           audience: "http://localhost:5000/api/v2",
         });
         const res = await axios.get(
-          "http://localhost:5000/api/v1/user/student/count",
+          "https://bppimt-quiz-kml1.vercel.app/api/v1/user/student/count",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -48,7 +48,7 @@ const Footer = () => {
           audience: "http://localhost:5000/api/v2",
         });
         const res = await axios.get(
-          "http://localhost:5000/api/v1/user/teacher/all",
+          "https://bppimt-quiz-kml1.vercel.app/api/v1/user/teacher/all",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -69,7 +69,7 @@ const Footer = () => {
           audience: "http://localhost:5000/api/v2",
         });
         const res = await axios.get(
-          "http://localhost:5000/api/v1/quize/quiz/count",
+          "https://bppimt-quiz-kml1.vercel.app/api/v1/quize/quiz/count",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
