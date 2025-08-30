@@ -67,7 +67,7 @@ const Navbar = () => {
     { name: "Result", path: "/admin/allquiz", icon: BarChart3 },
   ];
 
-  const navItems = usere.role === "student" ? studentNavItems : adminNavItems;
+  const navItems = usere?.role === "student" ? studentNavItems : adminNavItems;
 
   const isActivePath = (path) => {
     if (path === "/" && location.pathname === "/") return true;
