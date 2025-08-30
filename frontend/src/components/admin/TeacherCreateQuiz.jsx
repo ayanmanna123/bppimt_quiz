@@ -45,7 +45,7 @@ const TeacherCreateQuiz = () => {
       });
 
       const res = await axios.get(
-        "http://localhost:5000/api/v1/quize/quiz/teacher",
+        "https://bppimt-quiz-kml1.vercel.app/api/v1/quize/quiz/teacher",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -71,7 +71,7 @@ const TeacherCreateQuiz = () => {
       });
 
       const res = await axios.delete(
-        "http://localhost:5000/api/v1/quize/delet/quiz",
+        "https://bppimt-quiz-kml1.vercel.app/api/v1/quize/delet/quiz",
         {
           data: { quizId },
           headers: {
