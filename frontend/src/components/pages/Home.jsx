@@ -6,7 +6,7 @@ import { Howl } from "howler";
 import SplitText from "./SplitText";
 import TextType from "./TextType";
 import Footer from "./Footer";
-import Features from "./features";
+import Features from "./Features";
 import Footerreal from "./Footerreal";
 
 const Home = () => {
