@@ -12,27 +12,27 @@ import {
 } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
-  Search, 
-  Filter, 
-  Grid3X3, 
-  BookOpen, 
-  User, 
-  Calendar, 
-  Star, 
-  Trophy, 
+import {
+  Search,
+  Filter,
+  Grid3X3,
+  BookOpen,
+  User,
+  Calendar,
+  Star,
+  Trophy,
   Target,
   Clock,
   Sparkles,
   ChevronDown,
-  Zap
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Student-focused gradient combinations
 const studentGradients = [
   "bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600",
-  "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600", 
+  "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600",
   "bg-gradient-to-br from-purple-400 via-violet-500 to-indigo-600",
   "bg-gradient-to-br from-orange-400 via-red-500 to-pink-600",
   "bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-600",
@@ -46,7 +46,7 @@ const studentPatterns = [
   "radial-gradient(ellipse at top right, rgba(124, 58, 237, 0.4) 0%, transparent 70%), linear-gradient(45deg, rgba(167, 139, 250, 0.3) 0%, transparent 100%)",
   "linear-gradient(60deg, rgba(239, 68, 68, 0.3) 25%, transparent 25%), radial-gradient(circle at 75% 25%, rgba(251, 113, 133, 0.4) 0%, transparent 50%)",
   "conic-gradient(from 0deg at 40% 60%, rgba(245, 158, 11, 0.4) 0deg, transparent 90deg, rgba(251, 191, 36, 0.3) 180deg, transparent 270deg)",
-  "radial-gradient(circle at 30% 20%, rgba(236, 72, 153, 0.4) 0%, transparent 60%), linear-gradient(120deg, rgba(244, 114, 182, 0.3) 0%, transparent 100%)"
+  "radial-gradient(circle at 30% 20%, rgba(236, 72, 153, 0.4) 0%, transparent 60%), linear-gradient(120deg, rgba(244, 114, 182, 0.3) 0%, transparent 100%)",
 ];
 
 const Quiz = () => {
@@ -61,9 +61,10 @@ const Quiz = () => {
   const [viewMode, setViewMode] = useState("card");
 
   // Filter and search logic
-  const filteredSubjects = subjectByquiry?.filter(subject => 
-    subject.subjectName.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredSubjects =
+    subjectByquiry?.filter((subject) =>
+      subject.subjectName.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
 
   return (
     <>
@@ -77,7 +78,7 @@ const Quiz = () => {
             <div className="absolute bottom-20 right-20 w-24 h-24 bg-white/10 rounded-full animate-bounce"></div>
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-white/20 rounded-2xl rotate-45 animate-pulse"></div>
           </div>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -95,7 +96,7 @@ const Quiz = () => {
               </div>
               <div className="text-left">
                 <h1 className="text-4xl font-bold text-white mb-2">
-                  Welcome back, {usere?.fullname?.split(' ')[0]}! 👋
+                  Welcome back, {usere?.fullname?.split(" ")[0]}! 👋
                 </h1>
                 <p className="text-white/90 text-lg">
                   Ready to ace your quizzes? Let's explore your subjects!
@@ -106,7 +107,9 @@ const Quiz = () => {
             {/* Student Stats */}
             <div className="flex justify-center gap-8 mt-8">
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">{filteredSubjects.length}</div>
+                <div className="text-2xl font-bold text-white">
+                  {filteredSubjects.length}
+                </div>
                 <div className="text-white/80 text-sm">Available Subjects</div>
               </div>
               <div className="text-center">
@@ -115,7 +118,9 @@ const Quiz = () => {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-white">🎯</div>
-                <div className="text-white/80 text-sm">{usere?.semester} Semester</div>
+                <div className="text-white/80 text-sm">
+                  {usere?.semester} Semester
+                </div>
               </div>
             </div>
           </motion.div>
@@ -145,7 +150,7 @@ const Quiz = () => {
               {/* Filter */}
               <div className="relative">
                 <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <select 
+                <select
                   value={selectedFilter}
                   onChange={(e) => setSelectedFilter(e.target.value)}
                   className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-purple-400 transition-all duration-300 font-medium appearance-none"
@@ -160,7 +165,7 @@ const Quiz = () => {
               {/* Sort */}
               <div className="relative">
                 <Target className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <select 
+                <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-indigo-400 transition-all duration-300 font-medium appearance-none"
@@ -175,7 +180,7 @@ const Quiz = () => {
               {/* View Mode */}
               <div className="relative">
                 <Grid3X3 className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <select 
+                <select
                   value={viewMode}
                   onChange={(e) => setViewMode(e.target.value)}
                   className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-green-400 transition-all duration-300 font-medium appearance-none"
@@ -202,8 +207,12 @@ const Quiz = () => {
               <div className="w-28 h-28 bg-gradient-to-br from-blue-200 to-indigo-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
                 <BookOpen className="w-14 h-14 text-blue-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-700 mb-2">No subjects found</h3>
-              <p className="text-gray-500 text-lg">Try adjusting your search or filters</p>
+              <h3 className="text-xl font-bold text-gray-700 mb-2">
+                No subjects found
+              </h3>
+              <p className="text-gray-500 text-lg">
+                Try adjusting your search or filters
+              </p>
             </motion.div>
           ) : (
             <motion.div
@@ -213,8 +222,10 @@ const Quiz = () => {
               transition={{ duration: 0.6 }}
             >
               {filteredSubjects.map((sub, index) => {
-                const gradientClass = studentGradients[index % studentGradients.length];
-                const patternStyle = studentPatterns[index % studentPatterns.length];
+                const gradientClass =
+                  studentGradients[index % studentGradients.length];
+                const patternStyle =
+                  studentPatterns[index % studentPatterns.length];
 
                 return (
                   <motion.div
@@ -222,17 +233,17 @@ const Quiz = () => {
                     onClick={() => navigate(`/quizedetails/${sub?._id}`)}
                     initial={{ opacity: 0, y: 60, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ 
-                      duration: 0.7, 
+                    transition={{
+                      duration: 0.7,
                       delay: index * 0.1,
                       type: "spring",
-                      stiffness: 100
+                      stiffness: 100,
                     }}
                     className="group cursor-pointer"
                   >
                     <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-110 relative group-hover:-translate-y-2">
                       {/* Enhanced gradient header */}
-                      <div 
+                      <div
                         className={`h-44 ${gradientClass} relative overflow-hidden`}
                         style={{ background: patternStyle }}
                       >
@@ -248,18 +259,21 @@ const Quiz = () => {
                         {/* Subject badge */}
                         <div className="absolute top-4 left-4">
                           <div className="bg-white/20 backdrop-blur-md rounded-full px-3 py-1 flex items-center gap-2">
-                            <Zap className="w-4 h-4 text-white" />
-                            <span className="text-xs font-semibold text-white">ACTIVE</span>
+                            <Zap className="w-4 h-4 text-gray-600" />
+                            <span className="text-xs font-semibold text-gray-800">
+                              ACTIVE
+                            </span>
                           </div>
                         </div>
 
                         {/* Subject info */}
-                        <div className="absolute bottom-4 left-4 right-4 text-gray-700">
+                        <div className="absolute bottom-4 left-4 right-4 text-gray-900">
                           <h3 className="text-xl font-bold drop-shadow-2xl mb-2 leading-tight">
                             {sub?.subjectName}
                           </h3>
                           <p className="text-sm opacity-90 drop-shadow mb-3">
-                            {sub?.description || "Explore and master this subject"}
+                            {sub?.description ||
+                              "Explore and master this subject"}
                           </p>
                           <div className="w-12 h-1 bg-white/60 rounded-full"></div>
                         </div>
@@ -271,8 +285,12 @@ const Quiz = () => {
                           <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
                             <User className="w-5 h-5 text-blue-600" />
                             <div className="flex-1">
-                              <p className="text-xs text-gray-500 font-medium">INSTRUCTOR</p>
-                              <p className="text-sm font-bold text-gray-700">{sub?.createdBy?.fullname}</p>
+                              <p className="text-xs text-gray-500 font-medium">
+                                INSTRUCTOR
+                              </p>
+                              <p className="text-sm font-bold text-gray-700">
+                                {sub?.createdBy?.fullname}
+                              </p>
                             </div>
                           </div>
 
@@ -280,16 +298,24 @@ const Quiz = () => {
                             <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl">
                               <BookOpen className="w-4 h-4 text-purple-600" />
                               <div>
-                                <p className="text-xs text-gray-500 font-medium">DEPT</p>
-                                <p className="text-sm font-bold text-gray-700">{sub?.department}</p>
+                                <p className="text-xs text-gray-500 font-medium">
+                                  DEPT
+                                </p>
+                                <p className="text-sm font-bold text-gray-700">
+                                  {sub?.department}
+                                </p>
                               </div>
                             </div>
-                            
+
                             <div className="flex items-center gap-2 p-3 bg-green-50 rounded-xl">
                               <Calendar className="w-4 h-4 text-green-600" />
                               <div>
-                                <p className="text-xs text-gray-500 font-medium">SEM</p>
-                                <p className="text-sm font-bold text-gray-700">{sub?.semester}</p>
+                                <p className="text-xs text-gray-500 font-medium">
+                                  SEM
+                                </p>
+                                <p className="text-sm font-bold text-gray-700">
+                                  {sub?.semester}
+                                </p>
                               </div>
                             </div>
                           </div>
@@ -297,9 +323,12 @@ const Quiz = () => {
                           <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 border-l-4 border-blue-400">
                             <div className="flex items-center justify-between">
                               <div>
-                                <p className="text-xs text-gray-500 font-semibold mb-1">SUBJECT CODE</p>
+                                <p className="text-xs text-gray-500 font-semibold mb-1">
+                                  SUBJECT CODE
+                                </p>
                                 <p className="text-sm font-mono font-bold text-gray-800 bg-white px-2 py-1 rounded">
-                                  2025{sub?.department}SEM{sub?.semester?.charAt(0).toUpperCase()}
+                                  2025{sub?.department}SEM
+                                  {sub?.semester?.charAt(0).toUpperCase()}
                                 </p>
                               </div>
                               <Trophy className="w-8 h-8 text-yellow-500" />

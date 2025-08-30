@@ -178,7 +178,7 @@ const Profile = () => {
                       </h2>
                       <p className="text-gray-600 flex items-center justify-center gap-1">
                         <Badge className="w-4 h-4" />
-                        {usere?.role} Student
+                        {usere?.role}  
                       </p>
                     </div>
                   </div>

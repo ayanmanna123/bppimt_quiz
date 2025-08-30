@@ -18,6 +18,7 @@ import Profile from "./components/Profile";
 import SubjectRelatedQuiz from "./components/admin/SubjectRelatedQuiz";
 import FullScreen from "./components/FullScreen";
 import Dashboard from "./components/pages/Dashboard";
+import AboutUs from "./components/pages/AboutUs";
 
 function App() {
   const approute = createBrowserRouter([
@@ -36,6 +37,10 @@ function App() {
      {
       path: "/dashbord",
       element:<Dashboard/>,
+    },
+     {
+      path: "/about",
+      element:<AboutUs/>,
     },
     {
       path: "/profile",
