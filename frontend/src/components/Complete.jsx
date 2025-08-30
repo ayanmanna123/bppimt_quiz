@@ -62,7 +62,7 @@ const Complete = () => {
         audience: "http://localhost:5000/api/v2",
       });
       const res = await axios.post(
-        "http://localhost:5000/api/v1/user/createuser",
+        "https://bppimt-quiz-kml1.vercel.app/api/v1/user/createuser",
         {
           fullname: user?.name,
           email: user?.email,
@@ -102,7 +102,7 @@ const Complete = () => {
           });
 
           const res = await axios.get(
-            `http://localhost:5000/api/v1/user/${user.email}`,
+            `https://bppimt-quiz-kml1.vercel.app/api/v1/user/${user.email}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
