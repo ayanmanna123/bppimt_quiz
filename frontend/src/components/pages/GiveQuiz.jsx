@@ -171,7 +171,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
       console.log("Total answers:", answerArray.length);
 
       const res = await axios.post(
-        "http://localhost:5000/api/v1/reasult/reasult/submite",
+        "https://bppimt-quiz-kml1.vercel.app/api/v1/reasult/reasult/submite",
         {
           quizId,
           answers: answerArray,
