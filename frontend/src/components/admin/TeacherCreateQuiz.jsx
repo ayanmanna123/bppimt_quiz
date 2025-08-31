@@ -4,7 +4,16 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trash2, Calendar, Clock, Trophy, Brain, Eye, Sparkles } from "lucide-react";
+import {
+  ArrowLeft,
+  Trash2,
+  Calendar,
+  Clock,
+  Trophy,
+  Brain,
+  Eye,
+  Sparkles,
+} from "lucide-react";
 import Navbar from "../shared/Navbar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -29,7 +38,7 @@ const teacherPatterns = [
   "linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, transparent 50%), linear-gradient(45deg, rgba(6, 182, 212, 0.3) 50%, transparent 100%)",
   "radial-gradient(ellipse at top, rgba(245, 158, 11, 0.3) 0%, transparent 70%), linear-gradient(45deg, rgba(251, 191, 36, 0.2) 0%, transparent 100%)",
   "conic-gradient(from 90deg at 50% 50%, rgba(239, 68, 68, 0.3) 0deg, transparent 90deg, rgba(236, 72, 153, 0.3) 180deg, transparent 270deg)",
-  "linear-gradient(45deg, rgba(71, 85, 105, 0.3) 25%, transparent 25%), linear-gradient(-45deg, rgba(100, 116, 139, 0.3) 25%, transparent 25%)"
+  "linear-gradient(45deg, rgba(71, 85, 105, 0.3) 25%, transparent 25%), linear-gradient(-45deg, rgba(100, 116, 139, 0.3) 25%, transparent 25%)",
 ];
 
 const TeacherCreateQuiz = () => {
@@ -158,8 +167,12 @@ const TeacherCreateQuiz = () => {
                 <div className="w-28 h-28 bg-gradient-to-br from-blue-200 to-indigo-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
                   <Brain className="w-14 h-14 text-blue-600" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700 mb-2">No Quizzes Yet</h3>
-                <p className="text-gray-500 text-lg">Ready to create your first masterpiece quiz?</p>
+                <h3 className="text-xl font-bold text-gray-700 mb-2">
+                  No Quizzes Yet
+                </h3>
+                <p className="text-gray-500 text-lg">
+                  Ready to create your first masterpiece quiz?
+                </p>
               </motion.div>
             </div>
           ) : (
@@ -170,25 +183,27 @@ const TeacherCreateQuiz = () => {
               transition={{ duration: 0.6 }}
             >
               {quizzes.map((quiz, index) => {
-                const gradientClass = teacherQuizGradients[index % teacherQuizGradients.length];
-                const patternStyle = teacherPatterns[index % teacherPatterns.length];
+                const gradientClass =
+                  teacherQuizGradients[index % teacherQuizGradients.length];
+                const patternStyle =
+                  teacherPatterns[index % teacherPatterns.length];
 
                 return (
                   <motion.div
                     key={quiz._id}
                     initial={{ opacity: 0, y: 60, rotate: -2 }}
                     animate={{ opacity: 1, y: 0, rotate: 0 }}
-                    transition={{ 
-                      duration: 0.7, 
+                    transition={{
+                      duration: 0.7,
                       delay: index * 0.15,
                       type: "spring",
-                      stiffness: 100
+                      stiffness: 100,
                     }}
                     className="group"
                   >
                     <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-110   relative">
                       {/* Creative gradient header with enhanced patterns */}
-                      <div 
+                      <div
                         className={`h-36 ${gradientClass} relative overflow-hidden`}
                         style={{ background: patternStyle }}
                       >
@@ -221,6 +236,7 @@ const TeacherCreateQuiz = () => {
                           <h3 className="  font-bold text-xl leading-tight drop-shadow-2xl truncate text-gray-800">
                             {quiz.title}
                           </h3>
+
                           <div className="w-12 h-1 bg-white/60 rounded-full mt-2"></div>
                         </div>
                       </div>
@@ -232,46 +248,67 @@ const TeacherCreateQuiz = () => {
                           <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
                             <Calendar className="w-5 h-5 text-blue-600" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">Date</p>
-                              <p className="text-sm font-bold text-gray-700">{quiz.date}</p>
+                              <p className="text-xs text-gray-500 font-medium">
+                                Date
+                              </p>
+                              <p className="text-sm font-bold text-gray-700">
+                                {quiz.date}
+                              </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-xl">
                             <Clock className="w-5 h-5 text-orange-600" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">Time</p>
-                              <p className="text-sm font-bold text-gray-700">{quiz.time}m</p>
+                              <p className="text-xs text-gray-500 font-medium">
+                                Time
+                              </p>
+                              <p className="text-sm font-bold text-gray-700">
+                                {quiz.time}m
+                              </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-xl">
                             <Trophy className="w-5 h-5 text-yellow-600" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">Marks</p>
-                              <p className="text-sm font-bold text-gray-700">{quiz.marks}</p>
+                              <p className="text-xs text-gray-500 font-medium">
+                                Marks
+                              </p>
+                              <p className="text-sm font-bold text-gray-700">
+                                {quiz.marks}
+                              </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
                             <Brain className="w-5 h-5 text-green-600" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">Questions</p>
-                              <p className="text-sm font-bold text-gray-700">{quiz.totalQuestions}</p>
+                              <p className="text-xs text-gray-500 font-medium">
+                                Questions
+                              </p>
+                              <p className="text-sm font-bold text-gray-700">
+                                {quiz.totalQuestions}
+                              </p>
                             </div>
                           </div>
                         </div>
 
                         {/* Enhanced created date section */}
                         <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 border-l-4 border-blue-400">
-                          <p className="text-xs text-gray-500 font-semibold mb-1">CREATED ON</p>
+                          <p className="text-xs text-gray-500 font-semibold mb-1">
+                            CREATED ON
+                          </p>
                           <p className="text-sm font-bold text-gray-800">
-                            {new Date(quiz.createdAt).toLocaleDateString('en-US', { 
-                              weekday: 'short',
-                              month: 'short', 
-                              day: 'numeric', 
-                              year: 'numeric' 
-                            })}
+                            {new Date(quiz.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                weekday: "short",
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              }
+                            )}
                           </p>
                         </div>
 

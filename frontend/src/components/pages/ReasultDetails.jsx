@@ -402,6 +402,7 @@ const ResultDetails = () => {
                     <div>
                       <p className="text-sm font-semibold text-gray-600">Student</p>
                       <p className="text-lg font-bold text-gray-800">{result.student.fullname}</p>
+                      <p>{result.student.universityNo}</p>
                     </div>
                   </div>
                   

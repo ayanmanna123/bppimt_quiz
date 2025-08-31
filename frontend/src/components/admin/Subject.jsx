@@ -215,6 +215,18 @@ const Subject = () => {
                       {/* Enhanced course details section */}
                       <CardContent className="p-6 flex-grow">
                         <div className="space-y-4 mb-6">
+                          <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
+                            <BookOpen className="w-5 h-5 text-blue-600" />
+                            <div>
+                              <p className="text-xs text-gray-500 font-medium">
+                                SUBJECT CODE
+                              </p>
+                              <p className="text-sm font-bold text-gray-700">
+                                {subj?.subjectCode}
+                              </p>
+                            </div>
+                          </div>
+
                           <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-xl">
                             <Users className="w-5 h-5 text-purple-600" />
                             <div>

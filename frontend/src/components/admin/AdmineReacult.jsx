@@ -29,6 +29,7 @@ import {
   Sparkles,
   ChevronDown,
   FileText,
+  Hash,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -133,7 +134,10 @@ const AdmineResult = () => {
         result.student?.fullname
           ?.toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
-        result.student?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+        result.student?.email?.toLowerCase().includes(searchTerm.toLowerCase())||
+        result.student?.universityNo
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase())
 
       const matchesStatus =
         statusFilter === "all" ||
@@ -399,7 +403,7 @@ const AdmineResult = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="Search by name or email..."
+                  placeholder="Search by name, email, university number..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-blue-400 transition-all duration-300 font-medium"
@@ -535,6 +539,10 @@ const AdmineResult = () => {
                                 <div className="flex items-center gap-1 text-white/80 text-sm">
                                   <Mail className="w-3 h-3" />
                                   {result.student?.email || "N/A"}
+                                </div>
+                                <div className="flex items-center gap-1 text-white/80 text-sm">
+                                  <Hash className="w-3 h-3" />
+                                  {result.student?.universityNo || "N/A"}
                                 </div>
                               </div>
                             </div>

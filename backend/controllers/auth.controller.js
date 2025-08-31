@@ -2,8 +2,8 @@ import User from "../models/User.model.js";
 
 export const creatuser = async (req, res) => {
   try {
-    const { fullname, email, picture, role, department, semester } = req.body;
-    if (!fullname || !email || !picture || !role || !department || !semester) {
+    const { fullname, email, picture, role, department, semester ,universityNo} = req.body;
+    if (!fullname || !email || !picture || !role || !department || !semester || !universityNo) {
       return res.status(400).json({
         message: "All fields are required",
         success: false,
@@ -20,12 +20,14 @@ export const creatuser = async (req, res) => {
     const newuser = {
       auth0Id: userId,
       fullname,
+      universityNo,
       email,
       picture,
       role,
       department,
       semester,
     };
+    
     const createrduser = await User.create(newuser);
     if (!createrduser) {
       return res.status(400).json({

@@ -14,6 +14,10 @@ const subjectSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    subjectCode: {
+      type: String,
+      required: true,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -23,5 +27,5 @@ const subjectSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
- const Subject = mongoose.model("Subject", subjectSchema);
- export default Subject
+const Subject = mongoose.model("Subject", subjectSchema);
+export default Subject;

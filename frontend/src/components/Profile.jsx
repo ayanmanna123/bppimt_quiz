@@ -29,6 +29,7 @@ import {
   Clock,
   Heart,
   Globe,
+  Hash,
 } from "lucide-react";
 
 const Profile = () => {
@@ -77,6 +78,12 @@ const Profile = () => {
       icon: Mail,
       label: "Email Address",
       value: usere?.email,
+      color: "text-green-600",
+    },
+    {
+       icon: Hash,
+      label: "university number",
+      value: usere?.universityNo,
       color: "text-green-600",
     },
     {
@@ -232,6 +239,11 @@ const Profile = () => {
                       <p className="text-gray-600 flex items-center justify-center gap-1">
                         <Badge className="w-4 h-4" />
                         {usere?.role}
+                      </p>
+                      <p className="text-gray-600 flex items-center justify-center gap-1">
+                        <Hash className="w-4 h-4" />
+                         
+                        {usere?.universityNo}
                       </p>
                     </div>
                   </div>

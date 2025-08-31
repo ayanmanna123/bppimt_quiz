@@ -103,6 +103,7 @@ import Navbar from "../shared/Navbar";
         
         if (subjectRes?.success && Array.isArray(subjectRes?.data)) {
           setSubjects(subjectRes.data);
+          console.log(subjectRes.data)
         }
         
         if (badgeRes?.success && Array.isArray(badgeRes?.quizzes)) {
@@ -547,6 +548,8 @@ import Navbar from "../shared/Navbar";
                             </div>
                             <div>
                               <h3 className="font-bold text-gray-800 text-lg">{subject.subjectName}</h3>
+                               <h3 className="font-bold text-gray-800 text-sm">{subject.subjectCode}</h3>
+
                               <p className="text-gray-600 text-sm">Subject Progress</p>
                             </div>
                           </div>

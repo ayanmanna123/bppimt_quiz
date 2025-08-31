@@ -87,6 +87,7 @@ export const dashbordSubject = async (req, res) => {
         return {
           subjectId: subject._id,
           subjectName: subject.subjectName,
+          subjectCode:subject.subjectCode,
           totalQuizzes,
           completedQuizzes: completed,
           pendingQuizzes: totalQuizzes - completed,

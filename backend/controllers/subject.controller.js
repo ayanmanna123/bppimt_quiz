@@ -3,9 +3,9 @@ import User from "../models/User.model.js";
 
 export const createSubject = async (req, res) => {
   try {
-    const { department, semester, subjectName } = req.body;
+    const { department, semester, subjectName ,subjectCode} = req.body;
 
-    if (!department || !semester || !subjectName) {
+    if (!department || !semester || !subjectName || !subjectCode) {
       return res.status(400).json({
         message: "All fields are required",
         success: false,
@@ -39,6 +39,7 @@ export const createSubject = async (req, res) => {
       department,
       semester,
       subjectName,
+      subjectCode
     });
     if (alreadyExists) {
       return res.status(409).json({
@@ -51,6 +52,7 @@ export const createSubject = async (req, res) => {
       department,
       semester,
       subjectName,
+      subjectCode,
       createdBy: user._id,
     };
 

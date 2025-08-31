@@ -24,7 +24,8 @@ import {
   ChevronDown,
   Lightbulb,
   Target,
-  Zap
+  Zap,
+  Hash
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -137,6 +138,7 @@ const EnhancedDropdown = ({ value, onValueChange, options, placeholder, icon: Ic
 const CreateSubject = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [subjectName, setSubjectName] = useState("");
+  const [subjectCode, setSubjectCode] = useState("");
   const [semester, setSemester] = useState("");
   const [department, setDepartment] = useState("");
   const navigate = useNavigate();
@@ -171,6 +173,7 @@ const CreateSubject = () => {
           department,
           semester,
           subjectName,
+          subjectCode,
         },
         {
           headers: {
@@ -180,6 +183,7 @@ const CreateSubject = () => {
       );
 
       setSubjectName("");
+      setSubjectCode("");
       setSemester("");
       setDepartment("");
       toast.success(res.data.message);
@@ -196,11 +200,11 @@ const CreateSubject = () => {
   };
 
   const getCompletionPercentage = () => {
-    const fields = [subjectName, department, semester].filter(Boolean).length;
-    return Math.round((fields / 3) * 100);
+    const fields = [subjectName, subjectCode, department, semester].filter(Boolean).length;
+    return Math.round((fields / 4) * 100);
   };
 
-  const isFormValid = subjectName && department && semester;
+  const isFormValid = subjectName && subjectCode && department && semester;
 
   return (
     <>
@@ -296,15 +300,26 @@ const CreateSubject = () => {
               
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-8">
-                  {/* Subject Name */}
-                  <ValidatedInput
-                    label="Subject Name"
-                    icon={BookOpen}
-                    placeholder="Enter the subject name..."
-                    value={subjectName}
-                    onChange={(e) => setSubjectName(e.target.value)}
-                    required
-                  />
+                  {/* Subject Name and Code Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <ValidatedInput
+                      label="Subject Name"
+                      icon={BookOpen}
+                      placeholder="Enter the subject name..."
+                      value={subjectName}
+                      onChange={(e) => setSubjectName(e.target.value)}
+                      required
+                    />
+
+                    <ValidatedInput
+                      label="Subject Code"
+                      icon={Hash}
+                      placeholder="Enter the subject code..."
+                      value={subjectCode}
+                      onChange={(e) => setSubjectCode(e.target.value)}
+                      required
+                    />
+                  </div>
 
                   {/* Department and Semester Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -336,6 +351,9 @@ const CreateSubject = () => {
                     <div className="space-y-2 text-sm">
                       <p className="text-gray-600">
                         <span className="font-medium">Name:</span> {subjectName || "Not specified"}
+                      </p>
+                      <p className="text-gray-600">
+                        <span className="font-medium">Code:</span> {subjectCode || "Not specified"}
                       </p>
                       <p className="text-gray-600">
                         <span className="font-medium">Department:</span> {

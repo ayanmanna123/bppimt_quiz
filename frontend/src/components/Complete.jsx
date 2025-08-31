@@ -29,7 +29,8 @@ import {
   ArrowRight,
   Users,
   BookOpen,
-  Calendar
+  Calendar,
+  Hash
 } from "lucide-react";
 
 const Complete = () => {
@@ -40,6 +41,7 @@ const Complete = () => {
   const [role, setRole] = React.useState("");
   const [department, setDepartment] = React.useState("");
   const [semester, setSemester] = React.useState("");
+  const [universityNo, setuniversityNo] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const navigate = useNavigate();
   const {
@@ -51,7 +53,7 @@ const Complete = () => {
   } = useAuth0();
 
   const handelsubmite = async () => {
-    if (!role || !department || !semester) {
+    if (!role || !department || !semester || !universityNo) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -70,6 +72,7 @@ const Complete = () => {
           role,
           department,
           semester,
+          universityNo,
         },
         {
           headers: {
@@ -122,7 +125,7 @@ const Complete = () => {
     checkUser();
   }, [isAuthenticated, user, getAccessTokenSilently, dispatch, navigate]);
 
-  const isFormComplete = role && department && semester;
+  const isFormComplete = role && department && semester && universityNo;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-100 flex items-center justify-center p-6">
@@ -316,13 +319,35 @@ const Complete = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </motion.div>
+
+              {/* University Number Input Field */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9, duration: 0.6 }}
+              >
+                <label className="block text-sm font-semibold text-gray-700 mb-3 items-center gap-2">
+                  <Hash className="w-4 h-4 text-emerald-600" />
+                  University Number
+                </label>
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Enter your university number..."
+                    value={universityNo}
+                    onChange={(e) => setuniversityNo(e.target.value)}
+                    className="w-full h-14 bg-white/50 hover:bg-white/80 border-2 border-gray-200 focus:border-emerald-300 rounded-xl shadow-sm transition-all duration-300 text-lg pl-12"
+                  />
+                  <Hash className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                </div>
+              </motion.div>
             </div>
 
             {/* Submit Button */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.6 }}
+              transition={{ delay: 1.0, duration: 0.6 }}
               className="mt-8 pt-6 border-t border-gray-100"
             >
               <Button
@@ -357,7 +382,7 @@ const Complete = () => {
               {/* Progress indicator */}
               <div className="mt-4 flex justify-center">
                 <div className="flex items-center gap-2">
-                  {[role, department, semester].map((field, index) => (
+                  {[role, department, semester, universityNo].map((field, index) => (
                     <div
                       key={index}
                       className={`w-3 h-3 rounded-full transition-all duration-300 ${
@@ -370,7 +395,7 @@ const Complete = () => {
                 </div>
               </div>
               <p className="text-center text-sm text-gray-500 mt-2">
-                {Object.values({ role, department, semester }).filter(Boolean).length}/3 fields completed
+                {Object.values({ role, department, semester, universityNo }).filter(Boolean).length}/4 fields completed
               </p>
             </motion.div>
           </div>
