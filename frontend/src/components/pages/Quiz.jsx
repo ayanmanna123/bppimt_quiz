@@ -61,9 +61,13 @@ const Quiz = () => {
   const [viewMode, setViewMode] = useState("card");
 
   // Filter and search logic
+  const lowerSearch = searchTerm?.toLowerCase() || "";
+
   const filteredSubjects =
-    subjectByquiry?.filter((subject) =>
-      subject.subjectName.toLowerCase().includes(searchTerm.toLowerCase())
+    subjectByquiry?.filter(
+      (subject) =>
+        subject.subjectName?.toLowerCase()?.includes(lowerSearch) ||
+        subject.subjectCode?.toLowerCase()?.includes(lowerSearch)
     ) || [];
 
   return (
@@ -326,9 +330,8 @@ const Quiz = () => {
                                 <p className="text-xs text-gray-500 font-semibold mb-1">
                                   SUBJECT CODE
                                 </p>
-                                <p className="text-sm font-mono font-bold text-gray-800 bg-white px-2 py-1 rounded">
-                                  2025{sub?.department}SEM
-                                  {sub?.semester?.charAt(0).toUpperCase()}
+                                <p className="text-sm font-mono font-bold text-gray-800 bg-transparent px-2 py-1 rounded">
+                                  {sub?.subjectCode}
                                 </p>
                               </div>
                               <Trophy className="w-8 h-8 text-yellow-500" />
