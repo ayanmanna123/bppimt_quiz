@@ -12,9 +12,9 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    universityNo:{
-      type:String,
-      unique:true
+    universityNo: {
+      type: String,
+      unique: true,
     },
     email: {
       type: String,
@@ -39,10 +39,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    verified:{
-      type: Boolean,
-      default:true
-    }
+    verified: {
+      type: String,
+      enum: ["pending", "accept", "reject"],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );

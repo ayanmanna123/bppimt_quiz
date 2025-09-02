@@ -66,8 +66,19 @@ const Navbar = () => {
     { name: "Subject", path: "/Admin/subject", icon: BookOpen },
     { name: "Result", path: "/admin/allquiz", icon: BarChart3 },
   ];
+  const adminNavitem = [
+    { name: "Home", path: "/", icon: Home },
+    { name: "About Us", path: "/about", icon: User },
+    { name: "Subject", path: "/admine/only/subject", icon: BookOpen },
+    { name: "Un authorize", path: "/notvarifieduser", icon: BarChart3 },
+  ];
 
-  const navItems = usere?.role === "student" ? studentNavItems : adminNavItems;
+  const navItems =
+    usere?.role === "student"
+      ? studentNavItems
+      : usere?.role === "teachet"
+      ? adminNavItems
+      : adminNavitem;
 
   const isActivePath = (path) => {
     if (path === "/" && location.pathname === "/") return true;

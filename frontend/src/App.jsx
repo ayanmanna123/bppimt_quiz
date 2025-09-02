@@ -19,6 +19,9 @@ import SubjectRelatedQuiz from "./components/admin/SubjectRelatedQuiz";
 import FullScreen from "./components/FullScreen";
 import Dashboard from "./components/pages/Dashboard";
 import AboutUs from "./components/pages/AboutUs";
+import DepartmentSelector from "./components/admin/admin/DepartmentSelector";
+import AdminSubject from "./components/admin/admin/AdminSubject";
+import UnAuthorizeUser from "./components/admin/admin/UnAuthorizeUser";
 
 function App() {
   const approute = createBrowserRouter([
@@ -87,6 +90,18 @@ function App() {
       path: "/Admin/subject/quiz/:subjectId",
       element: <SubjectRelatedQuiz />,
     },
+    {
+      path:"/admine/only/subject",
+      element:<DepartmentSelector/>
+    },
+     {
+      path:"/subject/:depName",
+      element:<AdminSubject/>
+    },
+    {
+      path:"/notvarifieduser",
+      element:<UnAuthorizeUser/>
+    }
   ]);
 
   return (

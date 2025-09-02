@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useBeforeUnload } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -9,20 +9,20 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Howl } from "howler";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Clock, 
-  AlertTriangle, 
-  ChevronLeft, 
-  ChevronRight, 
-  Send, 
-  Brain, 
-  Target, 
-  CheckCircle2, 
+import {
+  Clock,
+  AlertTriangle,
+  ChevronLeft,
+  ChevronRight,
+  Send,
+  Brain,
+  Target,
+  CheckCircle2,
   Circle,
   Zap,
   Trophy,
   Timer,
-  RotateCcw
+  RotateCcw,
 } from "lucide-react";
 
 const GiveQuiz = ({ tabSwitchCount }) => {
@@ -40,11 +40,120 @@ const GiveQuiz = ({ tabSwitchCount }) => {
   const hasSubmitted = useRef(false);
   // Keep track of latest answers using ref
   const answersRef = useRef({});
+  // Ref to track if component is mounted
+  const isMounted = useRef(true);
 
   // Update answersRef whenever answers state changes
   useEffect(() => {
     answersRef.current = answers;
   }, [answers]);
+
+  // Handle page unload/refresh/back navigation
+  const handlePageLeave = useCallback(async () => {
+    if (
+      !hasSubmitted.current &&
+      !isSubmitting &&
+      Object.keys(answersRef.current).length > 0
+    ) {
+      // Use sendBeacon for reliable submission during page unload
+      try {
+        const token = await getAccessTokenSilently({
+          audience: "http://localhost:5000/api/v2",
+        });
+
+        const answerArray = Object.entries(answersRef.current).map(
+          ([questionId, option]) => ({
+            questionId,
+            selectedOption: option !== "" ? Number(option) : null,
+          })
+        );
+
+        const payload = JSON.stringify({
+          quizId,
+          answers: answerArray,
+          autoSubmitted: true, // Flag to indicate auto-submission
+        });
+
+        // Use sendBeacon for reliable submission during page unload
+        const blob = new Blob([payload], { type: "application/json" });
+        navigator.sendBeacon(
+          "https://bppimt-quiz-kml1.vercel.app/api/v1/reasult/reasult/submite",
+          blob
+        );
+
+        hasSubmitted.current = true;
+      } catch (error) {
+        console.error("Error in auto-submit:", error);
+      }
+    }
+  }, [getAccessTokenSilently, quizId, isSubmitting]);
+
+  // Block navigation and show confirmation
+  useBeforeUnload(
+    useCallback(
+      (event) => {
+        if (
+          !hasSubmitted.current &&
+          Object.keys(answersRef.current).length > 0
+        ) {
+          handlePageLeave();
+          event.preventDefault();
+          return (event.returnValue =
+            "Your quiz progress will be automatically submitted. Are you sure you want to leave?");
+        }
+      },
+      [handlePageLeave]
+    )
+  );
+
+  // Handle browser back/forward navigation
+  useEffect(() => {
+    const handlePopState = (event) => {
+      if (!hasSubmitted.current && Object.keys(answersRef.current).length > 0) {
+        handlePageLeave();
+      }
+    };
+
+    const handleBeforeUnload = (event) => {
+      if (!hasSubmitted.current && Object.keys(answersRef.current).length > 0) {
+        handlePageLeave();
+        event.preventDefault();
+        return (event.returnValue =
+          "Your quiz progress will be automatically submitted. Are you sure you want to leave?");
+      }
+    };
+
+    // Add event listeners
+    window.addEventListener("popstate", handlePopState);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      isMounted.current = false;
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [handlePageLeave]);
+
+  // Enhanced visibility change handler
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (
+        document.hidden &&
+        !hasSubmitted.current &&
+        Object.keys(answersRef.current).length > 0
+      ) {
+        // User switched tabs or minimized window
+        // You can add additional logic here if needed
+        console.log("User switched away from quiz");
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -195,6 +304,21 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     }
   }, [getAccessTokenSilently, quizId, navigate, isSubmitting]);
 
+  // Add a custom back button handler
+  const handleCustomBack = () => {
+    if (!hasSubmitted.current && Object.keys(answers).length > 0) {
+      const confirmed = window.confirm(
+        "Are you sure you want to go back? Your quiz will be automatically submitted."
+      );
+      if (confirmed) {
+        handlePageLeave();
+        navigate("/quiz");
+      }
+    } else {
+      navigate("/quiz");
+    }
+  };
+
   if (!quiz) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-100 flex items-center justify-center">
@@ -207,7 +331,9 @@ const GiveQuiz = ({ tabSwitchCount }) => {
           <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mx-auto mb-6 flex items-center justify-center">
             <Brain className="w-10 h-10 text-white animate-pulse" />
           </div>
-          <p className="text-xl font-semibold text-gray-700">Loading your quiz...</p>
+          <p className="text-xl font-semibold text-gray-700">
+            Loading your quiz...
+          </p>
         </motion.div>
       </div>
     );
@@ -222,13 +348,23 @@ const GiveQuiz = ({ tabSwitchCount }) => {
   const progressPercentage = (answeredCount / questions.length) * 100;
 
   // Time-based styling
-  const timeColor = timeLeft > 300 ? "text-green-600" : timeLeft > 60 ? "text-yellow-600" : "text-red-600";
-  const timeBgColor = timeLeft > 300 ? "bg-green-50" : timeLeft > 60 ? "bg-yellow-50" : "bg-red-50";
+  const timeColor =
+    timeLeft > 300
+      ? "text-green-600"
+      : timeLeft > 60
+      ? "text-yellow-600"
+      : "text-red-600";
+  const timeBgColor =
+    timeLeft > 300
+      ? "bg-green-50"
+      : timeLeft > 60
+      ? "bg-yellow-50"
+      : "bg-red-50";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-100">
       {/* Enhanced Header */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -241,12 +377,22 @@ const GiveQuiz = ({ tabSwitchCount }) => {
                 <Brain className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-800">{quiz.title}</h1>
-                <p className="text-sm text-gray-600">Question {currentIndex + 1} of {questions.length}</p>
+                <h1 className="text-xl font-bold text-gray-800">
+                  {quiz.title}
+                </h1>
+                <p className="text-sm text-gray-600">
+                  Question {currentIndex + 1} of {questions.length}
+                </p>
               </div>
             </div>
-            
-            <div className={`flex items-center gap-3 px-4 py-2 rounded-xl ${timeBgColor} border-2 ${timeLeft <= 30 ? 'border-red-200 animate-pulse' : 'border-transparent'}`}>
+
+            <div
+              className={`flex items-center gap-3 px-4 py-2 rounded-xl ${timeBgColor} border-2 ${
+                timeLeft <= 30
+                  ? "border-red-200 animate-pulse"
+                  : "border-transparent"
+              }`}
+            >
               <Timer className={`w-5 h-5 ${timeColor}`} />
               <span className={`font-mono font-bold text-lg ${timeColor}`}>
                 {timeLeft !== null ? formatTime(timeLeft) : "--:--"}
@@ -260,11 +406,15 @@ const GiveQuiz = ({ tabSwitchCount }) => {
           {/* Progress bar */}
           <div className="mt-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-gray-600">Progress</span>
-              <span className="text-sm font-bold text-indigo-600">{answeredCount}/{questions.length} completed</span>
+              <span className="text-sm font-medium text-gray-600">
+                Progress
+              </span>
+              <span className="text-sm font-bold text-indigo-600">
+                {answeredCount}/{questions.length} completed
+              </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3">
-              <motion.div 
+              <motion.div
                 className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 h-3 rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPercentage}%` }}
@@ -307,13 +457,19 @@ const GiveQuiz = ({ tabSwitchCount }) => {
                       <Target className="w-8 h-8 text-white" />
                     </div>
                     <div>
-                      <CardTitle className="text-2xl font-bold">Question {currentIndex + 1}</CardTitle>
-                      <p className="text-white/90 text-lg">Choose the best answer</p>
+                      <CardTitle className="text-2xl font-bold">
+                        Question {currentIndex + 1}
+                      </CardTitle>
+                      <p className="text-white/90 text-lg">
+                        Choose the best answer
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-3xl font-bold">{currentIndex + 1}</div>
-                    <div className="text-white/80 text-sm">of {questions.length}</div>
+                    <div className="text-white/80 text-sm">
+                      of {questions.length}
+                    </div>
                   </div>
                 </div>
               </CardHeader>
@@ -351,13 +507,24 @@ const GiveQuiz = ({ tabSwitchCount }) => {
                               ? "border-indigo-500 bg-indigo-50 shadow-md"
                               : "border-gray-200 bg-white hover:border-indigo-300"
                           }`}
-                          onClick={() => handleAnswerChange(currentQuestion._id, String(idx))}
+                          onClick={() =>
+                            handleAnswerChange(currentQuestion._id, String(idx))
+                          }
                         >
-                          <RadioGroupItem value={String(idx)} id={id} className="text-indigo-600" />
-                          <Label htmlFor={id} className="flex-1 cursor-pointer text-base font-medium text-gray-700">
+                          <RadioGroupItem
+                            value={String(idx)}
+                            id={id}
+                            className="text-indigo-600"
+                          />
+                          <Label
+                            htmlFor={id}
+                            className="flex-1 cursor-pointer text-base font-medium text-gray-700"
+                          >
                             {option}
                           </Label>
-                          {isSelected && <CheckCircle2 className="w-5 h-5 text-indigo-600" />}
+                          {isSelected && (
+                            <CheckCircle2 className="w-5 h-5 text-indigo-600" />
+                          )}
                         </motion.div>
                       );
                     })}
