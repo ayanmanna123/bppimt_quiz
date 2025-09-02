@@ -13,6 +13,21 @@ export const submitQuiz = async (req, res) => {
         .json({ message: "Student not found", success: false });
     }
 
+    const user = await User.findOne({ auth0Id: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
+      });
+    }
+
     const quiz = await Quize.findById(quizId);
     if (!quiz) {
       return res
@@ -86,6 +101,12 @@ export const getReasultByQUizeId = async (req, res) => {
         success: false,
       });
     }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
+      });
+    }
     if (user.role === "student") {
       return res.status(400).json({
         message: "Students are not allowed to view results",
@@ -123,6 +144,12 @@ export const getInduvisualREasult = async (req, res) => {
         success: false,
       });
     }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
+      });
+    }
 
     const getReasult = await Reasult.find({ student: user._id }).populate({
       path: "quiz",
@@ -156,6 +183,21 @@ export const conpareCurrectAnsWrongAns = async (req, res) => {
       "quiz",
       "student",
     ]);
+    const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
+      });
+    }
     if (!result) {
       return res.status(404).json({ message: "Result not found" });
     }
@@ -211,7 +253,13 @@ export const getAllQuizByUserId = async (req, res) => {
         success: false,
       });
     }
-    const allQuiz = await Reasult.find({student: user._id });
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
+      });
+    }
+    const allQuiz = await Reasult.find({ student: user._id });
     if (!allQuiz) {
       return res.status(400).json({
         message: "not get any quiz",

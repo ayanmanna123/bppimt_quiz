@@ -21,9 +21,16 @@ export const createSubject = async (req, res) => {
     }
 
     const user = await User.findOne({ auth0Id: userId });
+
     if (!user) {
       return res.status(404).json({
         message: "User not found",
+        success: false,
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
         success: false,
       });
     }
@@ -90,10 +97,18 @@ export const updateSubject = async (req, res) => {
       });
     }
 
+   
     const user = await User.findOne({ auth0Id: userId });
+
     if (!user) {
       return res.status(404).json({
         message: "User not found",
+        success: false,
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
         success: false,
       });
     }
@@ -149,9 +164,16 @@ export const teacherCreatedSubject = async (req, res) => {
   try {
     const userId = req.auth.sub;
     const user = await User.findOne({ auth0Id: userId });
+
     if (!user) {
       return res.status(404).json({
         message: "User not found",
+        success: false,
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
         success: false,
       });
     }
@@ -187,9 +209,16 @@ export const subjectById = async (req, res) => {
     const subjectId = req.params.id;
     const userId = req.auth.sub;
     const user = await User.findOne({ auth0Id: userId });
+
     if (!user) {
       return res.status(404).json({
         message: "User not found",
+        success: false,
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
         success: false,
       });
     }
@@ -225,6 +254,22 @@ export const subjectById = async (req, res) => {
 
 export const departmentQuiry = async (req, res) => {
   try {
+
+      const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
+      });
+    }
     const departmentName = req.query.department;
 
     if (!departmentName) {
