@@ -56,6 +56,12 @@ export const updatesem = async (req, res) => {
         success: false,
       });
     }
+    if(user.verified === "pending" || user.verified==="reject"){
+      return res.status(404).json({
+        message: "You Not Verified",
+        success:false
+      })
+    }
     if (sem) {
       user.semester = sem;
     }
@@ -92,6 +98,7 @@ export const getUserByEmail = async (req, res) => {
         success: false,
       });
     }
+    
     return res.status(200).json({
       message: "User fetched successfully",
       success: true,

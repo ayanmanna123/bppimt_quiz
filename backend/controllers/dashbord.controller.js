@@ -14,6 +14,12 @@ export const progressroute = async (req, res) => {
         success: false,
       });
     }
+    if(user.verified === "pending" || user.verified==="reject"){
+      return res.status(404).json({
+        message: "You Not Verified",
+        success:false
+      })
+    }
 
     const results = await Result.find({ student: user._id });
 
@@ -65,6 +71,12 @@ export const dashbordSubject = async (req, res) => {
         message: "User not found",
         success: false,
       });
+    }
+    if(user.verified === "pending" || user.verified==="reject"){
+      return res.status(404).json({
+        message: "You Not Verified",
+        success:false
+      })
     }
 
     const { department, semester } = user;

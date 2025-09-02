@@ -76,7 +76,7 @@ const Navbar = () => {
   const navItems =
     usere?.role === "student"
       ? studentNavItems
-      : usere?.role === "teachet"
+      : usere?.role === "teacher"
       ? adminNavItems
       : adminNavitem;
 
