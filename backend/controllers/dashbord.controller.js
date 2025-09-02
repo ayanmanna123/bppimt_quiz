@@ -14,11 +14,11 @@ export const progressroute = async (req, res) => {
         success: false,
       });
     }
-    if(user.verified === "pending" || user.verified==="reject"){
+    if (user.verified === "pending" || user.verified === "reject") {
       return res.status(404).json({
         message: "You Not Verified",
-        success:false
-      })
+        success: false,
+      });
     }
 
     const results = await Result.find({ student: user._id });
@@ -72,11 +72,11 @@ export const dashbordSubject = async (req, res) => {
         success: false,
       });
     }
-    if(user.verified === "pending" || user.verified==="reject"){
+    if (user.verified === "pending" || user.verified === "reject") {
       return res.status(404).json({
         message: "You Not Verified",
-        success:false
-      })
+        success: false,
+      });
     }
 
     const { department, semester } = user;
@@ -99,7 +99,7 @@ export const dashbordSubject = async (req, res) => {
         return {
           subjectId: subject._id,
           subjectName: subject.subjectName,
-          subjectCode:subject.subjectCode,
+          subjectCode: subject.subjectCode,
           totalQuizzes,
           completedQuizzes: completed,
           pendingQuizzes: totalQuizzes - completed,
@@ -129,6 +129,12 @@ export const userHighScoreQuizzes = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "User not found",
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
       });
     }
 
@@ -219,6 +225,12 @@ export const userStreakRoute = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "User not found",
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
       });
     }
 

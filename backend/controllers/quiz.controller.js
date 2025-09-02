@@ -30,6 +30,12 @@ export const createQuestion = async (req, res) => {
         success: false,
       });
     }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
+      });
+    }
 
     if (user.role === "student") {
       return res.status(403).json({
@@ -74,6 +80,21 @@ export const getQuizeBySubJectId = async (req, res) => {
         success: false,
       });
     }
+      const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
+      });
+    }
     const quizes = await Quiz.find({ subject: subjectId });
     if (!quizes) {
       return res.status(400).json({
@@ -104,6 +125,12 @@ export const getQuizeByTeacherId = async (req, res) => {
     if (!user) {
       return res.status(400).json({
         message: "User not found",
+        success: false,
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
         success: false,
       });
     }
@@ -142,6 +169,12 @@ export const deletQuiz = async (req, res) => {
         success: false,
       });
     }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
+      });
+    }
     if (user.role === "student") {
       return res.status(400).json({
         message: "You are not allowed to delete quizzes",
@@ -165,6 +198,21 @@ export const getQuizeByQuizeId = async (req, res) => {
     if (!quizId) {
       return res.status(400).json({
         message: "Quiz ID is required",
+        success: false,
+      });
+    }
+      const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
         success: false,
       });
     }
@@ -194,6 +242,21 @@ export const getquizBysubjectId = async (req, res) => {
         success: false,
       });
     }
+      const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
+      });
+    }
     const allquiz = await Quiz.find({ subject: subjectId });
     if (!allquiz) {
       return res.status(400).json({
@@ -213,7 +276,7 @@ export const getquizBysubjectId = async (req, res) => {
 
 export const getquizlength = async (req, res) => {
   try {
-    const total =await Quiz.find({});
+    const total = await Quiz.find({});
     if (!total) {
       return res.status({
         message: "quiz not found",
