@@ -362,6 +362,7 @@ const Profile = () => {
             </motion.div>
           </div>
         </div>
+        
       </div>
 
       <UpdateProfilelog open={open} setopen={setopen} />
