@@ -8,6 +8,7 @@ import TextType from "./TextType";
 import Footer from "./Footer";
 import Features from "./Features";
 import Footerreal from "./Footerreal";
+import Calander from "./Calander";
 
 const Home = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -262,6 +263,7 @@ const Home = () => {
       <Features />
       <Footer />
       <Footerreal />
+      
     </>
   );
 };

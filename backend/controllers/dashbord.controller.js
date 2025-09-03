@@ -268,7 +268,7 @@ export const userStreakRoute = async (req, res) => {
 };
 export const calender = async (req, res) => {
   try {
-    const { department, semester } = req.body;
+    const { department, semester } = req.query;  // ✅ use query instead of body
 
     const userId = req.auth.sub;
     const user = await User.findOne({ auth0Id: userId });
@@ -279,15 +279,17 @@ export const calender = async (req, res) => {
         message: "User not found",
       });
     }
+
     if (user.verified === "pending" || user.verified === "reject") {
-      return res.status(404).json({
-        message: "You Not Verified",
+      return res.status(403).json({
         success: false,
+        message: "You are not verified",
       });
     }
+
     const subjects = await Subject.find({ department, semester }).select("_id");
 
-    if (!subjects) {
+    if (!subjects || subjects.length === 0) {
       return res.status(404).json({ message: "No subjects found" });
     }
 
