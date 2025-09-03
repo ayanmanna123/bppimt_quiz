@@ -1,21 +1,44 @@
 import User from "../models/User.model.js";
 
+function isCollegeEmail(email) {
+  return email.toLowerCase().endsWith("@bppimt.ac.in");
+}
+
 export const creatuser = async (req, res) => {
   try {
-    const { fullname, email, picture, role, department, semester ,universityNo} = req.body;
-    if (!fullname || !email || !picture || !role || !department || !semester || !universityNo) {
+    const {
+      fullname,
+      email,
+      picture,
+      role,
+      department,
+      semester,
+      universityNo,
+    } = req.body;
+
+    if (
+      !fullname ||
+      !email ||
+      !picture ||
+      !role ||
+      !department ||
+      !semester ||
+      !universityNo
+    ) {
       return res.status(400).json({
         message: "All fields are required",
         success: false,
       });
     }
-    const exiestuser = await User.findOne({ email: email });
+
+    const exiestuser = await User.findOne({ email });
     if (exiestuser) {
       return res.status(400).json({
         message: "User already exists",
         success: false,
       });
     }
+
     const userId = req.auth.sub;
     const newuser = {
       auth0Id: userId,
@@ -26,22 +49,26 @@ export const creatuser = async (req, res) => {
       role,
       department,
       semester,
+      verified: isCollegeEmail(email) ? "accept" : "pending",
     };
-    
-    const createrduser = await User.create(newuser);
-    if (!createrduser) {
+
+    const createdUser = await User.create(newuser);
+
+    if (!createdUser) {
       return res.status(400).json({
         message: "Something went wrong while creating user",
         success: false,
       });
     }
+
     return res.status(200).json({
       message: "User created successfully",
-      createrduser,
+      createdUser,
       success: true,
     });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Internal server error", success: false });
   }
 };
 
@@ -56,11 +83,11 @@ export const updatesem = async (req, res) => {
         success: false,
       });
     }
-    if(user.verified === "pending" || user.verified==="reject"){
+    if (user.verified === "pending" || user.verified === "reject") {
       return res.status(404).json({
         message: "You Not Verified",
-        success:false
-      })
+        success: false,
+      });
     }
     if (sem) {
       user.semester = sem;
@@ -98,7 +125,7 @@ export const getUserByEmail = async (req, res) => {
         success: false,
       });
     }
-    
+
     return res.status(200).json({
       message: "User fetched successfully",
       success: true,
@@ -125,7 +152,7 @@ export const getallteacher = async (req, res) => {
     return res.status(200).json({
       message: "Teachers fetched successfully",
       length: teacher.length,
-       
+
       success: true,
     });
   } catch (error) {
@@ -151,7 +178,7 @@ export const getallstudent = async (req, res) => {
     return res.status(200).json({
       message: "student fetched successfully",
       length: teacher.length,
-       
+
       success: true,
     });
   } catch (error) {
@@ -162,4 +189,3 @@ export const getallstudent = async (req, res) => {
     });
   }
 };
-
