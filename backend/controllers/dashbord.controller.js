@@ -266,3 +266,40 @@ export const userStreakRoute = async (req, res) => {
     });
   }
 };
+export const calender = async (req, res) => {
+  try {
+    const { department, semester } = req.body;
+
+    const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
+      });
+    }
+    const subjects = await Subject.find({ department, semester }).select("_id");
+
+    if (!subjects) {
+      return res.status(404).json({ message: "No subjects found" });
+    }
+
+    const subjectIds = subjects.map((sub) => sub._id);
+
+    const quizzes = await Quize.find({ subject: { $in: subjectIds } })
+      .populate("subject", "subjectName subjectCode department semester")
+      .populate("createdBy", "fullname email");
+
+    res.status(200).json({ total: quizzes.length, quizzes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

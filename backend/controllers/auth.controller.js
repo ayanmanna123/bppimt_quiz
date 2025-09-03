@@ -1,5 +1,7 @@
 import User from "../models/User.model.js";
 
+ 
+
 function isCollegeEmail(email) {
   return email.toLowerCase().endsWith("@bppimt.ac.in");
 }

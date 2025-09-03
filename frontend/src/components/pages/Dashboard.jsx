@@ -33,6 +33,7 @@ import {
   Diamond
 } from "lucide-react";
 import Navbar from "../shared/Navbar";
+import Calander from "./Calander";
 
  const Dashboard = ()=> {
   // ✅ Auth0
@@ -852,6 +853,7 @@ import Navbar from "../shared/Navbar";
             </div>
           </div>
         </motion.div>
+        <Calander/>
       </div>
 
       {/* Enhanced Custom Styles */}
