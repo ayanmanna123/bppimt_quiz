@@ -190,7 +190,7 @@ const Navbar = () => {
                         className="object-cover"
                         src={
                           usere?.picture ||
-                          `https://api.dicebear.com/6.x/initials/svg?seed=${usere.fullname}`
+                          `https://api.dicebear.com/6.x/initials/svg?seed=${usere?.fullname}`
                         }
                       />
                     </Avatar>
@@ -217,7 +217,7 @@ const Navbar = () => {
                         className="object-cover"
                         src={
                           usere?.picture ||
-                          `https://api.dicebear.com/6.x/initials/svg?seed=${usere.fullname}`
+                          `https://api.dicebear.com/6.x/initials/svg?seed=${usere?.fullname}`
                         }
                       />
                     </Avatar>
