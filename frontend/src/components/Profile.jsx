@@ -6,11 +6,12 @@ import { useSelector } from "react-redux";
 import Navbar from "./shared/Navbar";
 import UpdateProfilelog from "./UpdateProfilelog";
 import Dashboard from "./pages/Dashboard";
+import  Calendar from '../components/pages/Calander'
 import {
   User,
   Mail,
   BookOpen,
-  Calendar,
+   
   Edit3,
   Shield,
   GraduationCap,
@@ -362,9 +363,9 @@ const Profile = () => {
             </motion.div>
           </div>
         </div>
-        
+ 
       </div>
-
+             <Calendar/>
       <UpdateProfilelog open={open} setopen={setopen} />
 
       {/* Enhanced Custom Styles */}
