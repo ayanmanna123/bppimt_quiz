@@ -22,6 +22,8 @@ import AboutUs from "./components/pages/AboutUs";
 import DepartmentSelector from "./components/admin/admin/DepartmentSelector";
 import AdminSubject from "./components/admin/admin/AdminSubject";
 import UnAuthorizeUser from "./components/admin/admin/UnAuthorizeUser";
+import ProtectedRoute from "./components/pages/ProtectedRoute";
+import NotFound from "./components/pages/NotFound ";
 
 function App() {
   const approute = createBrowserRouter([
@@ -37,13 +39,13 @@ function App() {
       path: "/quiz",
       element: <Quiz />,
     },
-     {
+    {
       path: "/dashbord",
-      element:<Dashboard/>,
+      element: <Dashboard />,
     },
-     {
+    {
       path: "/about",
-      element:<AboutUs/>,
+      element: <AboutUs />,
     },
     {
       path: "/profile",
@@ -68,40 +70,80 @@ function App() {
     //admin panel
     {
       path: "/Admin/subject",
-      element: <Subject />,
+      element: (
+        <ProtectedRoute>
+          <Subject />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/admin/createQuize/:subjectId",
-      element: <CreateQuize />,
+      element: (
+        <ProtectedRoute>
+          <CreateQuize />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/admin/allquiz",
-      element: <TeacherCreateQuiz />,
+      element: (
+        <ProtectedRoute>
+          <TeacherCreateQuiz />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/admin/reasult/:quizeId",
-      element: <AdmineReacult />,
+      element: (
+        <ProtectedRoute>
+          <AdmineReacult />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/admin/create/subject",
-      element: <CreateSubject />,
+      element: (
+        <ProtectedRoute>
+          <CreateSubject />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/Admin/subject/quiz/:subjectId",
-      element: <SubjectRelatedQuiz />,
+      element: (
+        <ProtectedRoute>
+          <SubjectRelatedQuiz />
+        </ProtectedRoute>
+      ),
     },
     {
-      path:"/admine/only/subject",
-      element:<DepartmentSelector/>
-    },
-     {
-      path:"/subject/:depName",
-      element:<AdminSubject/>
+      path: "/admine/only/subject",
+      element: (
+        <ProtectedRoute>
+          <DepartmentSelector />
+        </ProtectedRoute>
+      ),
     },
     {
-      path:"/notvarifieduser",
-      element:<UnAuthorizeUser/>
-    }
+      path: "/subject/:depName",
+      element: (
+        <ProtectedRoute>
+          <AdminSubject />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/notvarifieduser",
+      element: (
+        <ProtectedRoute>
+          <UnAuthorizeUser />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/notfound",
+      element: <NotFound />,
+    },
   ]);
 
   return (
