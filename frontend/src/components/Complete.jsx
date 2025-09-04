@@ -81,7 +81,7 @@ const Complete = () => {
         }
       );
 
-      dispatch(setuser(res.data.createrduser));
+      dispatch(setuser(res.data.createdUser));
       toast.success("Profile completed successfully! Welcome aboard! 🎉");
       console.log("User created:", res.data.createrduser);
       navigate("/");
