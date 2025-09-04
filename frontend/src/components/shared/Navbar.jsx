@@ -17,8 +17,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const dispatch = useDispatch();
-  const { logout, loginWithRedirect, isAuthenticated ,user} = useAuth0();
-   
+  const { logout, loginWithRedirect, isAuthenticated, user } = useAuth0();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -197,8 +196,25 @@ const Navbar = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-lg opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
 
                     {/* Online indicator */}
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full border-2 border-white shadow-lg">
-                      <div className="w-full h-full bg-emerald-400 rounded-full animate-pulse"></div>
+                    <div
+                      className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white shadow-lg 
+                     ${
+                       usere?.verified === "accept"
+                         ? "bg-gradient-to-r from-emerald-500 to-teal-500"
+                         : usere?.verified === "pending"
+                         ? "bg-gray-400"
+                         : "bg-red-500"
+                     }`}
+                    >
+                      <div
+                        className={`w-full h-full rounded-full ${
+                          usere?.verified === "accept"
+                            ? "bg-emerald-400 animate-pulse"
+                            : usere?.verified === "pending"
+                            ? "bg-gray-300"
+                            : "bg-red-400"
+                        }`}
+                      ></div>
                     </div>
                   </div>
                 </motion.div>
