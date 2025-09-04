@@ -180,100 +180,103 @@ const AdmineResult = () => {
     if (score >= 60) return <CheckCircle className="w-4 h-4 text-green-500" />;
     return <AlertTriangle className="w-4 h-4 text-red-500" />;
   };
+
   const exportToExcel = () => {
-    try {
-      // Prepare data for Excel export
-      const exportData = filteredResults.map((result, index) => {
-        const status = checkSubmissionStatus(result.quiz, result.submittedAt);
+  try {
+    // Prepare data for Excel export
+    const exportData = filteredResults.map((result, index) => {
+      const status = checkSubmissionStatus(result.quiz, result.submittedAt);
 
-        // Calculate correct/incorrect answers
-        const correctAnswers =
-          result.answers?.filter((ans) => ans.isCorrect).length || 0;
-        const totalQuestions = result.answers?.length || 0;
-        const incorrectAnswers = totalQuestions - correctAnswers;
+      // Calculate correct/incorrect answers
+      const correctAnswers =
+        result.answers?.filter((ans) => ans.isCorrect).length || 0;
+      const totalQuestions = result.answers?.length || 0;
+      const incorrectAnswers = totalQuestions - correctAnswers;
 
-        return {
-          "S.No": index + 1,
-          "Student Name": result.student?.fullname || "N/A",
-          Email: result.student?.email || "N/A",
-          Role: result.student?.role || "Student",
-          Score: result.score,
-          "Total Questions": totalQuestions,
-          "Correct Answers": correctAnswers,
-          "Incorrect Answers": incorrectAnswers,
-          "Accuracy (%)":
-            totalQuestions > 0
-              ? Math.round((correctAnswers / totalQuestions) * 100)
-              : 0,
-          "Submission Status": status === "onTime" ? "On Time" : "Late",
-          "Submitted At": new Date(result.submittedAt).toLocaleString(),
-          "Quiz Date": new Date(result.quiz?.date).toLocaleDateString(),
-          "Quiz Duration (min)": result.quiz?.time || "N/A",
-        };
-      });
+      return {
+        "S.No": index + 1,
+        "University No": result.student?.universityNo || "N/A", // ✅ Added new column
+        "Student Name": result.student?.fullname || "N/A",
+        Email: result.student?.email || "N/A",
+        Role: result.student?.role || "Student",
+        Score: result.score,
+        "Total Questions": totalQuestions,
+        "Correct Answers": correctAnswers,
+        "Incorrect Answers": incorrectAnswers,
+        "Accuracy (%)":
+          totalQuestions > 0
+            ? Math.round((correctAnswers / totalQuestions) * 100)
+            : 0,
+        "Submission Status": status === "onTime" ? "On Time" : "Late",
+        "Submitted At": new Date(result.submittedAt).toLocaleString(),
+        "Quiz Date": new Date(result.quiz?.date).toLocaleDateString(),
+        "Quiz Duration (min)": result.quiz?.time || "N/A",
+      };
+    });
 
-      // Add summary statistics at the top
-      const summaryData = [
-        {
-          "S.No": "SUMMARY",
-          "Student Name": "Total Students",
-          Email: stats.totalStudents,
-          Role: "Average Score",
-          Score: stats.averageScore,
-          "Total Questions": "Pass Rate (%)",
-          "Correct Answers": stats.passRate,
-          "Incorrect Answers": "On Time",
-          "Accuracy (%)": stats.onTimeSubmissions,
-          "Submission Status": "Late",
-          "Submitted At": stats.lateSubmissions,
-          "Quiz Date": "",
-          "Quiz Duration (min)": "",
-        },
-        {}, // Empty row for separation
-      ];
+    // Add summary statistics at the top
+    const summaryData = [
+      {
+        "S.No": "SUMMARY",
+        "University No": "", // ✅ Empty since summary isn’t per student
+        "Student Name": "Total Students",
+        Email: stats.totalStudents,
+        Role: "Average Score",
+        Score: stats.averageScore,
+        "Total Questions": "Pass Rate (%)",
+        "Correct Answers": stats.passRate,
+        "Incorrect Answers": "On Time",
+        "Accuracy (%)": stats.onTimeSubmissions,
+        "Submission Status": "Late",
+        "Submitted At": stats.lateSubmissions,
+        "Quiz Date": "",
+        "Quiz Duration (min)": "",
+      },
+      {}, // Empty row for separation
+    ];
 
-      // Combine summary and detailed data
-      const finalData = [...exportData];
+    // Combine summary and detailed data
+    const finalData = [...exportData]; // If you want summary on top: [...summaryData, ...exportData]
 
-      // Create workbook and worksheet
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.json_to_sheet(finalData);
+    // Create workbook and worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(finalData);
 
-      // Set column widths
-      const colWidths = [
-        { wch: 8 }, // S.No
-        { wch: 20 }, // Student Name
-        { wch: 25 }, // Email
-        { wch: 12 }, // Role
-        { wch: 10 }, // Score
-        { wch: 15 }, // Total Questions
-        { wch: 15 }, // Correct Answers
-        { wch: 16 }, // Incorrect Answers
-        { wch: 12 }, // Accuracy
-        { wch: 15 }, // Status
-        { wch: 18 }, // Submitted At
-        { wch: 12 }, // Quiz Date
-        { wch: 18 }, // Duration
-      ];
-      ws["!cols"] = colWidths;
+    // Set column widths (added University No)
+    const colWidths = [
+      { wch: 8 },  // S.No
+      { wch: 18 }, // University No ✅
+      { wch: 29 }, // Student Name
+      { wch: 29 }, // Email
+      { wch: 12 }, // Role
+      { wch: 10 }, // Score
+      { wch: 15 }, // Total Questions
+      { wch: 15 }, // Correct Answers
+      { wch: 16 }, // Incorrect Answers
+      { wch: 12 }, // Accuracy
+      { wch: 15 }, // Status
+      { wch: 18 }, // Submitted At
+      { wch: 12 }, // Quiz Date
+      { wch: 18 }, // Duration
+    ];
+    ws["!cols"] = colWidths;
 
-      // Add worksheet to workbook
-      XLSX.utils.book_append_sheet(wb, ws, "Quiz Results");
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(wb, ws, "Quiz Results");
 
-      // Generate filename with current date
-      const currentDate = new Date().toISOString().split("T")[0];
-      const filename = `Quiz_Results_${quizeId}_${currentDate}.xlsx`;
+    // Generate filename with current date
+    const currentDate = new Date().toISOString().split("T")[0];
+    const filename = `Quiz_Results_${quizeId}_${currentDate}.xlsx`;
 
-      // Download the file
-      XLSX.writeFile(wb, filename);
+    // Download the file
+    XLSX.writeFile(wb, filename);
 
-      // Optional: Show success message (you can add toast notification here)
-      console.log("Excel file downloaded successfully!");
-    } catch (error) {
-      console.error("Error exporting to Excel:", error);
-      // Optional: Show error message (you can add toast notification here)
-    }
-  };
+    console.log("Excel file downloaded successfully!");
+  } catch (error) {
+    console.error("Error exporting to Excel:", error);
+  }
+};
+
   if (loading) {
     return (
       <>
