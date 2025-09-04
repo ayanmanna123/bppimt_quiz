@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
-import { motion } from "framer-motion";
+import { motion, animate } from "framer-motion";
 import { useSelector } from "react-redux";
+import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "./shared/Navbar";
 import UpdateProfilelog from "./UpdateProfilelog";
 import Dashboard from "./pages/Dashboard";
-import  Calendar from '../components/pages/Calander'
+import Calendar from "../components/pages/Calander";
 import {
   User,
   Mail,
   BookOpen,
-   
   Edit3,
   Shield,
   GraduationCap,
@@ -31,38 +31,190 @@ import {
   Heart,
   Globe,
   Hash,
+  Brain,
+  Award,
+  Flame,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 
 const Profile = () => {
-  let [open, setopen] = useState(false);
+  const [open, setopen] = useState(false);
   const { usere } = useSelector((store) => store.auth);
+  const { getAccessTokenSilently, isAuthenticated, loginWithRedirect, user } =
+    useAuth0();
+
+  // Dynamic stats states
+  const [progress, setProgress] = useState(null);
+  const [badges, setBadges] = useState([]);
+  const [streak, setStreak] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Animated values
+  const [attempted, setAttempted] = useState(0);
+  const [correct, setCorrect] = useState(0);
+  const [wrong, setWrong] = useState(0);
+  const [percentage, setPercentage] = useState(0);
+
+  // Fetch dynamic data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        if (!isAuthenticated) {
+          loginWithRedirect();
+          return;
+        }
+
+        const token = await getAccessTokenSilently({
+          audience: "https://bppimt-quiz-kml1.vercel.app/api/v2",
+        });
+
+        const headers = {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        };
+
+        const [progressRes, subjectRes, badgeRes, streakRes] =
+          await Promise.all([
+            fetch(
+              "https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/dashbord/data/progress",
+              { headers }
+            ).then((res) => {
+              if (!res.ok)
+                throw new Error(`Progress API failed: ${res.status}`);
+              return res.json();
+            }),
+            fetch(
+              "https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/data/subject",
+              { headers }
+            ).then((res) => {
+              if (!res.ok) throw new Error(`Subject API failed: ${res.status}`);
+              return res.json();
+            }),
+            fetch(
+              "https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/data/badge",
+              { headers }
+            ).then((res) => {
+              if (!res.ok) throw new Error(`Badge API failed: ${res.status}`);
+              return res.json();
+            }),
+            fetch(
+              "https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/data/streak",
+              { headers }
+            ).then((res) => {
+              if (!res.ok) throw new Error(`Streak API failed: ${res.status}`);
+              return res.json();
+            }),
+          ]);
+
+        if (progressRes?.success && progressRes?.data) {
+          setProgress(progressRes.data);
+        }
+
+        if (subjectRes?.success && Array.isArray(subjectRes?.data)) {
+          setSubjects(subjectRes.data);
+        }
+
+        if (badgeRes?.success && Array.isArray(badgeRes?.quizzes)) {
+          setBadges(badgeRes.quizzes);
+        }
+
+        if (streakRes?.success && Array.isArray(streakRes?.streak)) {
+          const heatmapData = streakRes.streak.map((item) => ({
+            date: item.date,
+            count: item.count || 0,
+          }));
+          setStreak(heatmapData);
+        }
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [getAccessTokenSilently, isAuthenticated, loginWithRedirect]);
+
+  // Animate numbers when progress data is available
+  useEffect(() => {
+    if (!progress) return;
+
+    const animations = [];
+
+    const attemptedAnim = animate(0, progress.quizzesAttempted || 0, {
+      duration: 2,
+      onUpdate: (v) => setAttempted(Math.round(v)),
+    });
+    animations.push(attemptedAnim);
+
+    const correctAnim = animate(0, progress.correctAnswers || 0, {
+      duration: 2,
+      onUpdate: (v) => setCorrect(Math.round(v)),
+    });
+    animations.push(correctAnim);
+
+    const wrongAnim = animate(0, progress.wrongAnswers || 0, {
+      duration: 2,
+      onUpdate: (v) => setWrong(Math.round(v)),
+    });
+    animations.push(wrongAnim);
+
+    const totalAnswers =
+      (progress.correctAnswers || 0) + (progress.wrongAnswers || 0);
+    const calculatedPercentage =
+      totalAnswers > 0 ? (progress.correctAnswers / totalAnswers) * 100 : 0;
+
+    const percentageAnim = animate(0, calculatedPercentage, {
+      duration: 2,
+      onUpdate: (v) => setPercentage(v),
+    });
+    animations.push(percentageAnim);
+
+    return () => {
+      animations.forEach((anim) => anim.stop());
+    };
+  }, [progress]);
+
+  // Calculate dynamic stats
+  const currentStreak =
+    streak.length > 0 ? Math.max(...streak.map((s) => s.count)) : 0;
+  const totalBadges = badges.length;
+  const topperBadges = badges.filter((b) => b.isUserTopper).length;
+  const completedQuizzes = subjects.reduce(
+    (total, subject) => total + (subject.completedQuizzes || 0),
+    0
+  );
 
   const profileStats = [
     {
       icon: Trophy,
       label: "Achievements",
-      value: "12",
+      value: totalBadges.toString(),
       color: "text-yellow-500",
       bg: "bg-yellow-50",
     },
     {
       icon: Target,
       label: "Quizzes Completed",
-      value: "47",
+      value: attempted.toString(),
       color: "text-blue-500",
       bg: "bg-blue-50",
     },
     {
       icon: Star,
       label: "Average Score",
-      value: "87%",
+      value: `${percentage.toFixed(1)}%`,
       color: "text-green-500",
       bg: "bg-green-50",
     },
     {
       icon: Activity,
       label: "Streak Days",
-      value: "15",
+      value: currentStreak.toString(),
       color: "text-purple-500",
       bg: "bg-purple-50",
     },
@@ -82,8 +234,8 @@ const Profile = () => {
       color: "text-green-600",
     },
     {
-       icon: Hash,
-      label: "university number",
+      icon: Hash,
+      label: "University Number",
       value: usere?.universityNo,
       color: "text-green-600",
     },
@@ -106,6 +258,36 @@ const Profile = () => {
       color: "text-pink-600",
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex justify-center items-center">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="text-center"
+        >
+          <div className="relative">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              className="w-20 h-20 border-4 border-blue-200 border-t-blue-600 rounded-full mx-auto mb-6"
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Brain className="w-8 h-8 text-blue-600 animate-pulse" />
+            </div>
+          </div>
+          <motion.p
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="text-xl font-semibold text-gray-700"
+          >
+            Loading Your Profile...
+          </motion.p>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
@@ -243,13 +425,12 @@ const Profile = () => {
                       </p>
                       <p className="text-gray-600 flex items-center justify-center gap-1">
                         <Hash className="w-4 h-4" />
-                         
                         {usere?.universityNo}
                       </p>
                     </div>
                   </div>
 
-                  {/* Quick Stats */}
+                  {/* Dynamic Quick Stats */}
                   <div className="grid grid-cols-2 gap-3 mb-6">
                     {profileStats.map((stat, index) => (
                       <motion.div
@@ -357,15 +538,13 @@ const Profile = () => {
                     ))}
                   </div>
                 </div>
-
-                {/* Dashboard Embed */}
               </div>
             </motion.div>
           </div>
         </div>
- 
       </div>
-             <Calendar/>
+
+      <Calendar />
       <UpdateProfilelog open={open} setopen={setopen} />
 
       {/* Enhanced Custom Styles */}
