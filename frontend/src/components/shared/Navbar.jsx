@@ -17,7 +17,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const dispatch = useDispatch();
-  const { logout, loginWithRedirect, isAuthenticated} = useAuth0();
+  const { logout, loginWithRedirect, isAuthenticated ,user} = useAuth0();
    
 
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ const Navbar = () => {
 
   useEffect(() => {
     if (isAuthenticated && !localStorage.getItem("loginShown")) {
-      toast.success(`Welcome back ${usere.name || "back"} 🎉`);
+      toast.success(`Welcome back ${user.name || "back"} 🎉`);
       localStorage.setItem("loginShown", "true");
     }
   }, [isAuthenticated, usere]);
@@ -189,8 +189,8 @@ const Navbar = () => {
                       <AvatarImage
                         className="object-cover"
                         src={
-                          usere?.picture ||
-                          `https://api.dicebear.com/6.x/initials/svg?seed=${usere.name}`
+                          user?.picture ||
+                          `https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`
                         }
                       />
                     </Avatar>
@@ -216,16 +216,16 @@ const Navbar = () => {
                       <AvatarImage
                         className="object-cover"
                         src={
-                          usere?.picture ||
-                          `https://api.dicebear.com/6.x/initials/svg?seed=${usere.name}`
+                          user?.picture ||
+                          `https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`
                         }
                       />
                     </Avatar>
                     <div>
                       <h4 className="font-semibold text-slate-800">
-                        {usere?.name}
+                        {user?.name}
                       </h4>
-                      <p className="text-sm text-slate-600">{usere?.email}</p>
+                      <p className="text-sm text-slate-600">{user?.email}</p>
                     </div>
                   </div>
 
