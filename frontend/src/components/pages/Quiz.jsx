@@ -51,7 +51,8 @@ const studentPatterns = [
 
 const Quiz = () => {
   const { usere } = useSelector((store) => store.auth);
-  useGetSubject(`${usere.department}`);
+  useGetSubject(usere.department, usere.semester);
+
   const { subjectByquiry } = useSelector((store) => store.subject);
   const navigate = useNavigate();
 

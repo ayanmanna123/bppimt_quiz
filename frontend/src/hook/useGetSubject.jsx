@@ -6,7 +6,7 @@ import { setsubjectByquiry } from "../Redux/subject.reducer";
 import { useAuth0 } from "@auth0/auth0-react";  // assuming you use Auth0
 import { toast } from "sonner";
 
-const useGetSubject = (department) => {
+const useGetSubject = (department , semester) => {
   const dispatch = useDispatch();
   const { getAccessTokenSilently } = useAuth0();
 
@@ -18,7 +18,7 @@ const useGetSubject = (department) => {
         });
 
         const res = await axios.get(
-          `https://bppimt-quiz-kml1.vercel.app/api/v1/subject/subjectByQuery?department=${department}`,
+          `http://localhost:5000/api/v1/subject/subjectByQuery?department=${department}&semester=${semester}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

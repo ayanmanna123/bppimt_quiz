@@ -271,7 +271,7 @@ export const departmentQuiry = async (req, res) => {
       });
     }
     const departmentName = req.query.department;
-
+    const semester = req.query.semester;
     if (!departmentName) {
       return res.status(400).json({
         message: "Department name is required",
@@ -279,7 +279,7 @@ export const departmentQuiry = async (req, res) => {
       });
     }
 
-    const subjects = await Subject.find({ department: departmentName }).populate({
+    const subjects = await Subject.find({ department: departmentName , semester:semester }).populate({
       path: "createdBy",
     });
 
