@@ -1,6 +1,7 @@
 import { Facebook, Instagram, Twitter } from "lucide-react";
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const Footerreal = () => {
   const footerSections = [
@@ -48,6 +49,7 @@ const Footerreal = () => {
       color: "from-orange-500 to-red-600",
     },
   ];
+  const navigate = useNavigate()
 
   const socialLinks = [
     {
@@ -211,7 +213,7 @@ const Footerreal = () => {
               {["Legal", "Privacy Policy", "Cookies", "Accessibility"].map((item, index) => (
                 <motion.a
                   key={item}
-                  href="#"
+                  onClick={()=>{navigate("/veryfi")}}
                   className="relative hover:text-slate-800 transition-colors duration-300 group"
                   whileHover={{ y: -2 }}
                 >

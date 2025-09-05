@@ -24,6 +24,7 @@ import AdminSubject from "./components/admin/admin/AdminSubject";
 import UnAuthorizeUser from "./components/admin/admin/UnAuthorizeUser";
 import ProtectedRoute from "./components/pages/ProtectedRoute";
 import NotFound from "./components/pages/NotFound ";
+import CertificateVerifier from "./components/pages/CertificateVerifier";
 
 function App() {
   const approute = createBrowserRouter([
@@ -143,6 +144,10 @@ function App() {
     {
       path: "/notfound",
       element: <NotFound />,
+    },
+     {
+      path: "/veryfi",
+      element:  <CertificateVerifier/>,
     },
   ]);
 

@@ -1,4 +1,5 @@
 import Quize from "../models/Quiz.model.js";
+import Result from "../models/Result.model.js";
 import Reasult from "../models/Result.model.js";
 import User from "../models/User.model.js";
 export const submitQuiz = async (req, res) => {
@@ -273,5 +274,41 @@ export const getAllQuizByUserId = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const veryfiReult = async (req, res) => {
+  try {
+    const {resultId} = req.body;
+    const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(404).json({
+        message: "You Not Verified",
+        success: false,
+      });
+    }
+
+    const result = await Result.findOne({ _id: resultId }).populate({path:"student"});
+    if (!result) {
+      return res.status(404).json({
+        message: "cirtificat not found",
+        success: false,
+      });
+    }
+    return res.status(200).json({
+      message: "this cirtificate is avalabe",
+      result,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error)
   }
 };
