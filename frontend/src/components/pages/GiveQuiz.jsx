@@ -24,6 +24,7 @@ import {
   Timer,
   RotateCcw,
 } from "lucide-react";
+import confetti from 'canvas-confetti';
 
 const GiveQuiz = ({ tabSwitchCount }) => {
   const { quizId } = useParams();
@@ -250,6 +251,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
       setCurrentIndex((prev) => prev - 1);
     }
   };
+  
 
   const handleSubmit = useCallback(async () => {
     // Prevent multiple submissions
@@ -294,6 +296,9 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         volume: 0.7,
       });
       sound.play();
+
+        confetti({ particleCount: 150, spread: 60 });
+        
       navigate("/quiz");
     } catch (error) {
       console.error("Submit error:", error);
