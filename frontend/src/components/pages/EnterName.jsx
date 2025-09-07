@@ -6,6 +6,7 @@ import { Input } from "../ui/input";
 import { Target } from "lucide-react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 const EnterName = () => {
   const [semester, setsemester] = useState("");
   const [name, setname] = useState("");
