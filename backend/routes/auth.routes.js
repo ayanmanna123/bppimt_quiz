@@ -5,7 +5,9 @@ import {
   getallstudent,
   getallteacher,
   getUserByEmail,
+  sendCode,
   updatesem,
+  verifycode,
 } from "../controllers/auth.controller.js";
 const userrouter = express.Router();
 
@@ -14,4 +16,6 @@ userrouter.put("/updateuser", isAuthenticated, updatesem);
 userrouter.get("/:email", isAuthenticated, getUserByEmail);
 userrouter.get("/teacher/all", getallteacher);
 userrouter.get("/student/count", getallstudent);
+userrouter.post("/send-code",sendCode)
+userrouter.post("/verify-code",verifycode)
 export default userrouter;

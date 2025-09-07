@@ -58,6 +58,22 @@ app.use("/api/v1/quize", quizeRoute);
 app.use("/api/v1/reasult", reasultRoute);
 app.use("/api/v1/dashbord", dashBordRoute);
 app.use("/api/v1/admin",adminRoute)
+
+app.get("/test-email", async (req, res) => {
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: "ayanmanna858@gmail.com",
+      subject: "✅ Test Email",
+      text: "Hello Ayan, this works with App Password!",
+    });
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, error: err.message });
+  }
+});
+
 // ✅ Server Listener
 app.listen(port, () => {
   console.log(`Website is running at http://localhost:${port}`);

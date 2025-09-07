@@ -1,7 +1,8 @@
 import User from "../models/User.model.js";
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 
- 
-
+dotenv.config(); 
 function isCollegeEmail(email) {
   return email.toLowerCase().endsWith("@bppimt.ac.in");
 }
@@ -189,5 +190,68 @@ export const getallstudent = async (req, res) => {
       message: "Server error",
       success: false,
     });
+  }
+};
+const codes = {};
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+export const verifycode = async (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email and code required" });
+    }
+
+    if (codes[email] && codes[email] === code) {
+      delete codes[email]; // remove once verified
+      return res.json({
+        success: true,
+        message: "Code verified successfully!",
+      });
+    }
+
+    return res.json({ success: false, message: "Invalid or expired code" });
+  } catch (error) {
+    console.error("Verify Code Error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Verification failed" });
+  }
+};
+
+export const sendCode = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is required" });
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    codes[email] = code;
+
+    await transporter.sendMail({
+      from: `"Quiz App" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Your Verification Code",
+      text: `Your verification code is: ${code}`,
+    });
+
+    return res.json({ success: true, message: "Code sent successfully!" });
+  } catch (error) {
+    console.error("Send Code Error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to send code" });
   }
 };
