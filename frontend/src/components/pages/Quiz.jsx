@@ -28,7 +28,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
+import { useAuth0 } from "@auth0/auth0-react";   
 // Student-focused gradient combinations
 const studentGradients = [
   "bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600",
@@ -70,13 +70,14 @@ const Quiz = () => {
         subject.subjectName?.toLowerCase()?.includes(lowerSearch) ||
         subject.subjectCode?.toLowerCase()?.includes(lowerSearch)
     ) || [];
-
+     const { getAccessTokenSilently } = useAuth0();
   useEffect(() => {
+    
     const fatch = async () => {
       useGetSubject(usere.department, usere.semester);
     };
     fatch();
-  });
+  },[getAccessTokenSilently]);
   return (
     <>
       <Navbar />
