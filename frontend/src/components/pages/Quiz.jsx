@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../shared/Navbar";
 import { useSelector } from "react-redux";
 import useGetSubject from "../../hook/useGetSubject";
@@ -71,6 +71,12 @@ const Quiz = () => {
         subject.subjectCode?.toLowerCase()?.includes(lowerSearch)
     ) || [];
 
+  useEffect(() => {
+    const fatch = async () => {
+      useGetSubject(usere.department, usere.semester);
+    };
+    fatch();
+  });
   return (
     <>
       <Navbar />
