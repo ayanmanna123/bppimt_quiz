@@ -20,17 +20,17 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { 
-  UserCircle, 
-  Building2, 
-  GraduationCap, 
-  Sparkles, 
-  CheckCircle2, 
+import {
+  UserCircle,
+  Building2,
+  GraduationCap,
+  Sparkles,
+  CheckCircle2,
   ArrowRight,
   Users,
   BookOpen,
   Calendar,
-  Hash
+  Hash,
 } from "lucide-react";
 
 const Complete = () => {
@@ -84,7 +84,11 @@ const Complete = () => {
       dispatch(setuser(res.data.createdUser));
       toast.success("Profile completed successfully! Welcome aboard! 🎉");
       console.log("User created:", res.data.createrduser);
-      navigate("/");
+      if (user?.name === user?.email) {
+        navigate("/enter/name");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       toast.error("Failed to complete registration. Please try again.");
       console.log(
@@ -113,6 +117,7 @@ const Complete = () => {
 
           if (res.data?.success) {
             dispatch(setuser(res.data.user));
+
             navigate("/");
           }
         } catch (error) {
@@ -160,7 +165,9 @@ const Complete = () => {
               <div className="w-20 h-20 bg-white/20 rounded-full mx-auto mb-4 flex items-center justify-center backdrop-blur-sm">
                 <UserCircle className="w-10 h-10 text-white" />
               </div>
-              <h1 className="text-3xl font-bold text-white mb-2">Welcome! 👋</h1>
+              <h1 className="text-3xl font-bold text-white mb-2">
+                Welcome! 👋
+              </h1>
               <p className="text-white/90 text-lg">
                 Let's complete your profile to get started
               </p>
@@ -185,7 +192,9 @@ const Complete = () => {
                     className="w-16 h-16 rounded-full border-4 border-white shadow-lg"
                   />
                   <div>
-                    <h3 className="text-xl font-bold text-gray-800">{user.name}</h3>
+                    <h3 className="text-xl font-bold text-gray-800">
+                      {user.name}
+                    </h3>
                     <p className="text-gray-600">{user.email}</p>
                   </div>
                 </div>
@@ -209,20 +218,37 @@ const Complete = () => {
                       variant="outline"
                       className="w-full h-14 text-left justify-between bg-white/50 hover:bg-white/80 border-2 border-gray-200 hover:border-indigo-300 rounded-xl shadow-sm transition-all duration-300"
                     >
-                      <span className={role ? "text-gray-900" : "text-gray-500"}>
-                        {role ? (role === "student" ? "🎓 Student" : "👨‍🏫 Teacher") : "Select your role..."}
+                      <span
+                        className={role ? "text-gray-900" : "text-gray-500"}
+                      >
+                        {role
+                          ? role === "student"
+                            ? "🎓 Student"
+                            : "👨‍🏫 Teacher"
+                          : "Select your role..."}
                       </span>
                       <UserCircle className="w-5 h-5 text-gray-400" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-full rounded-xl border-0 shadow-xl bg-white/95 backdrop-blur-xl">
-                    <DropdownMenuLabel className="text-indigo-600 font-semibold">Choose Role</DropdownMenuLabel>
+                    <DropdownMenuLabel className="text-indigo-600 font-semibold">
+                      Choose Role
+                    </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuRadioGroup value={role} onValueChange={setRole}>
-                      <DropdownMenuRadioItem value="student" className="cursor-pointer py-3">
+                    <DropdownMenuRadioGroup
+                      value={role}
+                      onValueChange={setRole}
+                    >
+                      <DropdownMenuRadioItem
+                        value="student"
+                        className="cursor-pointer py-3"
+                      >
                         🎓 Student
                       </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="teacher" className="cursor-pointer py-3">
+                      <DropdownMenuRadioItem
+                        value="teacher"
+                        className="cursor-pointer py-3"
+                      >
                         👨‍🏫 Teacher
                       </DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
@@ -245,26 +271,49 @@ const Complete = () => {
                       variant="outline"
                       className="w-full h-14 text-left justify-between bg-white/50 hover:bg-white/80 border-2 border-gray-200 hover:border-purple-300 rounded-xl shadow-sm transition-all duration-300"
                     >
-                      <span className={department ? "text-gray-900" : "text-gray-500"}>
-                        {department ? `🏛️ ${department}` : "Choose your department..."}
+                      <span
+                        className={
+                          department ? "text-gray-900" : "text-gray-500"
+                        }
+                      >
+                        {department
+                          ? `🏛️ ${department}`
+                          : "Choose your department..."}
                       </span>
                       <Building2 className="w-5 h-5 text-gray-400" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-full rounded-xl border-0 shadow-xl bg-white/95 backdrop-blur-xl">
-                    <DropdownMenuLabel className="text-purple-600 font-semibold">Department</DropdownMenuLabel>
+                    <DropdownMenuLabel className="text-purple-600 font-semibold">
+                      Department
+                    </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuRadioGroup value={department} onValueChange={setDepartment}>
-                      <DropdownMenuRadioItem value="EE" className="cursor-pointer py-3">
+                    <DropdownMenuRadioGroup
+                      value={department}
+                      onValueChange={setDepartment}
+                    >
+                      <DropdownMenuRadioItem
+                        value="EE"
+                        className="cursor-pointer py-3"
+                      >
                         ⚡ Electrical Engineering (EE)
                       </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="ECE" className="cursor-pointer py-3">
+                      <DropdownMenuRadioItem
+                        value="ECE"
+                        className="cursor-pointer py-3"
+                      >
                         📡 Electronics & Communication (ECE)
                       </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="CSE" className="cursor-pointer py-3">
+                      <DropdownMenuRadioItem
+                        value="CSE"
+                        className="cursor-pointer py-3"
+                      >
                         💻 Computer Science (CSE)
                       </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="IT" className="cursor-pointer py-3">
+                      <DropdownMenuRadioItem
+                        value="IT"
+                        className="cursor-pointer py-3"
+                      >
                         🌐 Information Technology (IT)
                       </DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
@@ -287,16 +336,28 @@ const Complete = () => {
                       variant="outline"
                       className="w-full h-14 text-left justify-between bg-white/50 hover:bg-white/80 border-2 border-gray-200 hover:border-pink-300 rounded-xl shadow-sm transition-all duration-300"
                     >
-                      <span className={semester ? "text-gray-900" : "text-gray-500"}>
-                        {semester ? `📚 ${semester.charAt(0).toUpperCase() + semester.slice(1)} Semester` : "Pick your semester..."}
+                      <span
+                        className={semester ? "text-gray-900" : "text-gray-500"}
+                      >
+                        {semester
+                          ? `📚 ${
+                              semester.charAt(0).toUpperCase() +
+                              semester.slice(1)
+                            } Semester`
+                          : "Pick your semester..."}
                       </span>
                       <Calendar className="w-5 h-5 text-gray-400" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-full rounded-xl border-0 shadow-xl bg-white/95 backdrop-blur-xl">
-                    <DropdownMenuLabel className="text-pink-600 font-semibold">Semester</DropdownMenuLabel>
+                    <DropdownMenuLabel className="text-pink-600 font-semibold">
+                      Semester
+                    </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuRadioGroup value={semester} onValueChange={setSemester}>
+                    <DropdownMenuRadioGroup
+                      value={semester}
+                      onValueChange={setSemester}
+                    >
                       {[
                         { value: "first", label: "1️⃣ First Semester" },
                         { value: "second", label: "2️⃣ Second Semester" },
@@ -305,11 +366,11 @@ const Complete = () => {
                         { value: "fifth", label: "5️⃣ Fifth Semester" },
                         { value: "sixth", label: "6️⃣ Sixth Semester" },
                         { value: "seventh", label: "7️⃣ Seventh Semester" },
-                        { value: "eighth", label: "8️⃣ Eighth Semester" }
+                        { value: "eighth", label: "8️⃣ Eighth Semester" },
                       ].map((sem) => (
-                        <DropdownMenuRadioItem 
-                          key={sem.value} 
-                          value={sem.value} 
+                        <DropdownMenuRadioItem
+                          key={sem.value}
+                          value={sem.value}
                           className="cursor-pointer py-3"
                         >
                           {sem.label}
@@ -382,20 +443,30 @@ const Complete = () => {
               {/* Progress indicator */}
               <div className="mt-4 flex justify-center">
                 <div className="flex items-center gap-2">
-                  {[role, department, semester, universityNo].map((field, index) => (
-                    <div
-                      key={index}
-                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                        field
-                          ? "bg-gradient-to-r from-indigo-500 to-purple-500"
-                          : "bg-gray-200"
-                      }`}
-                    ></div>
-                  ))}
+                  {[role, department, semester, universityNo].map(
+                    (field, index) => (
+                      <div
+                        key={index}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                          field
+                            ? "bg-gradient-to-r from-indigo-500 to-purple-500"
+                            : "bg-gray-200"
+                        }`}
+                      ></div>
+                    )
+                  )}
                 </div>
               </div>
               <p className="text-center text-sm text-gray-500 mt-2">
-                {Object.values({ role, department, semester, universityNo }).filter(Boolean).length}/4 fields completed
+                {
+                  Object.values({
+                    role,
+                    department,
+                    semester,
+                    universityNo,
+                  }).filter(Boolean).length
+                }
+                /4 fields completed
               </p>
             </motion.div>
           </div>
