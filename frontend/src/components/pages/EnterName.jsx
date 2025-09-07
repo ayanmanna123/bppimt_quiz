@@ -5,12 +5,13 @@ import { toast } from "sonner";
 import { Input } from "../ui/input";
 import { Target } from "lucide-react";
 import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
 const EnterName = () => {
   const [semester, setsemester] = useState("");
   const [name, setname] = useState("");
   const dispatch = useDispatch();
   const { getAccessTokenSilently } = useAuth0();
-
+    const navigate = useNavigate()
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
@@ -36,6 +37,7 @@ const EnterName = () => {
       });
       sound.play();
       toast.success(res.data.message);
+      navigate("/")
     } catch (error) {
       console.log(error);
       toast.error("Update failed!");
