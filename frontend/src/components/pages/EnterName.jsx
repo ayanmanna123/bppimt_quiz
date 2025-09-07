@@ -29,7 +29,7 @@ const EnterName = () => {
         audience: "http://localhost:5000/api/v2",
       });
       await axios.post(
-        "http://localhost:5000/api/v1/user/send-code",
+        "https://bppimt-quiz-kml1.vercel.app/api/v1/user/send-code",
         {
           email: usere?.email,
         },
@@ -51,7 +51,7 @@ const EnterName = () => {
         audience: "http://localhost:5000/api/v2",
       });
       const res = await axios.post(
-        "http://localhost:5000/api/v1/user/verify-code",
+        "https://bppimt-quiz-kml1.vercel.app/api/v1/user/verify-code",
         {
           email: usere?.email,
           code,
