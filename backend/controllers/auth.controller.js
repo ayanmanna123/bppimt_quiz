@@ -2,7 +2,7 @@ import User from "../models/User.model.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
-dotenv.config(); 
+dotenv.config();
 function isCollegeEmail(email) {
   return email.toLowerCase().endsWith("@bppimt.ac.in");
 }
@@ -86,7 +86,7 @@ export const updatesem = async (req, res) => {
         success: false,
       });
     }
-    
+
     if (sem) {
       user.semester = sem;
     }
@@ -204,13 +204,27 @@ export const verifycode = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Email and code required" });
     }
+    const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
 
     if (codes[email] && codes[email] === code) {
+      user.verified = isCollegeEmail(user?.email) ? "accept" : "pending";
+      const newuser = await user.save();
       delete codes[email]; // remove once verified
       return res.json({
         success: true,
         message: "Code verified successfully!",
       });
+    } else {
+      user.verified = "reject";
+      const newuser = await user.save();
     }
 
     return res.json({ success: false, message: "Invalid or expired code" });

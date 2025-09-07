@@ -17,5 +17,5 @@ userrouter.get("/:email", isAuthenticated, getUserByEmail);
 userrouter.get("/teacher/all", getallteacher);
 userrouter.get("/student/count", getallstudent);
 userrouter.post("/send-code",sendCode)
-userrouter.post("/verify-code",verifycode)
+userrouter.post("/verify-code",isAuthenticated,verifycode)
 export default userrouter;
