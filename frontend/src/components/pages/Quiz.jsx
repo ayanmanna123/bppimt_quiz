@@ -28,7 +28,8 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth0 } from "@auth0/auth0-react";   
+import { useAuth0 } from "@auth0/auth0-react";
+import { setsubjectByquiry } from "../../Redux/subject.reducer";
 // Student-focused gradient combinations
 const studentGradients = [
   "bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600",
@@ -70,14 +71,32 @@ const Quiz = () => {
         subject.subjectName?.toLowerCase()?.includes(lowerSearch) ||
         subject.subjectCode?.toLowerCase()?.includes(lowerSearch)
     ) || [];
-     const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently } = useAuth0();
+
   useEffect(() => {
-    
-    const fatch = async () => {
-      useGetSubject(usere.department, usere.semester);
+    const fetchSubjects = async () => {
+      try {
+        const token = await getAccessTokenSilently({
+          audience: "http://localhost:5000/api/v2",
+        });
+
+        const res = await axios.get(
+          `http://localhost:5000/api/v1/subject/subjectByQuery?department=${usere.department}&semester=${usere.semester}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        dispatch(setsubjectByquiry(res.data.subjects));
+      } catch (error) {
+        console.error("Error fetching subjects:", error);
+      }
     };
-    fatch();
-  },[getAccessTokenSilently]);
+
+    fetchSubjects()
+  }, [getAccessTokenSilently]);
   return (
     <>
       <Navbar />
