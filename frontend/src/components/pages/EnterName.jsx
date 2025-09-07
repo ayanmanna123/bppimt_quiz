@@ -4,6 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { toast } from "sonner";
 import { Input } from "../ui/input";
 import { Target } from "lucide-react";
+import { Button } from "../ui/button";
 const EnterName = () => {
   const [semester, setsemester] = useState("");
   const [name, setname] = useState("");
