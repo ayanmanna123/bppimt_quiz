@@ -1,6 +1,8 @@
 import User from "../models/User.model.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import getDataUri from "../utils/datauri.js";
+import cloudinary from "../utils/cloudinary.js";
 
 dotenv.config();
 function isCollegeEmail(email) {
@@ -86,6 +88,9 @@ export const updatesem = async (req, res) => {
         success: false,
       });
     }
+    const file = req.file;
+    const fileUri = getDataUri(file);
+    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
 
     if (sem) {
       user.semester = sem;
@@ -93,6 +98,9 @@ export const updatesem = async (req, res) => {
 
     if (name) {
       user.fullname = name;
+    }
+    if (cloudResponse.secure_url) {
+      user.picture = cloudResponse.secure_url;
     }
     const neeuser = await user.save();
 

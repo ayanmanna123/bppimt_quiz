@@ -9,10 +9,11 @@ import {
   updatesem,
   verifycode,
 } from "../controllers/auth.controller.js";
+import { singleUplode } from "../middlewares/multer.js";
 const userrouter = express.Router();
 
 userrouter.post("/createuser", isAuthenticated, creatuser);
-userrouter.put("/updateuser", isAuthenticated, updatesem);
+userrouter.put("/updateuser", isAuthenticated,singleUplode, updatesem);
 userrouter.get("/:email", isAuthenticated, getUserByEmail);
 userrouter.get("/teacher/all", getallteacher);
 userrouter.get("/student/count", getallstudent);
