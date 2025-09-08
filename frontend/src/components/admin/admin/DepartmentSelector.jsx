@@ -10,6 +10,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../../shared/Navbar";
 
 // Department data with icons and descriptions
 const departments = [
@@ -66,6 +67,8 @@ const DepartmentSelector = () => {
   };
 
   return (
+    <>
+   <Navbar/>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
@@ -277,6 +280,7 @@ const DepartmentSelector = () => {
         </div>
       </div>
     </div>
+     </>
   );
 };
 

@@ -38,6 +38,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Navbar from "../../shared/Navbar";
 
 // Admin-focused gradient combinations
 const adminGradients = [
@@ -154,6 +155,8 @@ const AdminSubject = () => {
   }
 
   return (
+    <>
+    <Navbar/>
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
@@ -354,17 +357,17 @@ const AdminSubject = () => {
                           </div>
                           <div>
                             <p className="font-semibold text-gray-800">{subj.subjectName}</p>
-                            <p className="text-xs text-gray-500">{subj.description || "No description"}</p>
+                            <p className="text-xs text-gray-800">{subj.description || "No description"}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="bg-gray-100 text-gray-800 font-mono text-sm px-3 py-1 rounded-full">
+                        <span className="bg-white-800 text-gray-800 font-mono text-sm px-3 py-1 rounded-full">
                           {subj.subjectCode}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="bg-blue-100 text-blue-800 font-semibold text-sm px-3 py-1 rounded-full">
+                        <span className="bg-white-800 text-blue-800 font-semibold text-sm px-3 py-1 rounded-full">
                           Sem {subj.semester}
                         </span>
                       </td>
@@ -433,8 +436,8 @@ const AdminSubject = () => {
                       {/* Admin badge */}
                       <div className="absolute top-4 left-4">
                         <div className="bg-white/20 backdrop-blur-md rounded-full px-3 py-1 flex items-center gap-2">
-                          <Settings className="w-4 h-4 text-white" />
-                          <span className="text-xs font-semibold text-white">
+                          <Settings className="w-4 h-4 text-black" />
+                          <span className="text-xs font-semibold text-black">
                             ADMIN
                           </span>
                         </div>
@@ -442,10 +445,10 @@ const AdminSubject = () => {
 
                       {/* Subject info */}
                       <div className="absolute bottom-4 left-4 right-4 text-white">
-                        <h3 className="text-xl font-bold drop-shadow-2xl mb-2 leading-tight">
+                        <h3 className="text-xl font-bold text-black drop-shadow-2xl mb-2 leading-tight">
                           {subj.subjectName}
                         </h3>
-                        <p className="text-sm opacity-90 drop-shadow mb-3">
+                        <p className="text-sm opacity-90 drop-shadow mb-3 text-black">
                           {subj.description || "Administrative management view"}
                         </p>
                         <div className="w-12 h-1 bg-white/60 rounded-full"></div>
@@ -538,6 +541,7 @@ const AdminSubject = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
