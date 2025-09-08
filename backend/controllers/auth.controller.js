@@ -81,6 +81,7 @@ export const updatesem = async (req, res) => {
   try {
     const { sem, name } = req.body;
     const userId = req.auth.sub;
+
     let user = await User.findOne({ auth0Id: userId });
     if (!user) {
       return res.status(404).json({
@@ -88,9 +89,15 @@ export const updatesem = async (req, res) => {
         success: false,
       });
     }
-    const file = req.file;
-    const fileUri = getDataUri(file);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+
+    // ✅ Only run file upload if file exists
+    if (req.file) {
+      const fileUri = getDataUri(req.file);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+      if (cloudResponse.secure_url) {
+        user.picture = cloudResponse.secure_url;
+      }
+    }
 
     if (sem) {
       user.semester = sem;
@@ -99,27 +106,23 @@ export const updatesem = async (req, res) => {
     if (name) {
       user.fullname = name;
     }
-    if (cloudResponse.secure_url) {
-      user.picture = cloudResponse.secure_url;
-    }
-    const neeuser = await user.save();
 
-    user = await User.findOne({ auth0Id: userId });
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-        success: false,
-      });
-    }
+    const newUser = await user.save();
+
     return res.status(200).json({
       message: "User updated successfully",
-      user,
+      user: newUser,
       success: true,
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
   }
 };
+
 
 export const getUserByEmail = async (req, res) => {
   try {
