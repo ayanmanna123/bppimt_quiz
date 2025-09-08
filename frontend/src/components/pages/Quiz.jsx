@@ -53,16 +53,15 @@ const studentPatterns = [
 
 const Quiz = () => {
   const { usere } = useSelector((store) => store.auth);
-  useGetSubject(usere.department, usere.semester);
 
-  const { subjectByquiry } = useSelector((store) => store.subject);
+  const [subjectByquiry, setsetsubjectByquiry] = useState([]);
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [sortBy, setSortBy] = useState("name");
   const [viewMode, setViewMode] = useState("card");
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   // Filter and search logic
   const lowerSearch = searchTerm?.toLowerCase() || "";
 
@@ -90,13 +89,13 @@ const Quiz = () => {
           }
         );
 
-        dispatch(setsubjectByquiry(res.data.subjects));
+        setsetsubjectByquiry(res.data.subjects || []);
       } catch (error) {
         console.error("Error fetching subjects:", error);
       }
     };
 
-    fetchSubjects()
+    fetchSubjects();
   }, [getAccessTokenSilently]);
   return (
     <>
