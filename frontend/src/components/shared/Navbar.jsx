@@ -188,7 +188,7 @@ const Navbar = () => {
                       <AvatarImage
                         className="object-cover"
                         src={
-                          user?.picture ||
+                          usere?.picture ||
                           `https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`
                         }
                       />
@@ -232,14 +232,14 @@ const Navbar = () => {
                       <AvatarImage
                         className="object-cover"
                         src={
-                          user?.picture ||
+                          usere?.picture ||
                           `https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`
                         }
                       />
                     </Avatar>
                     <div>
                       <h4 className="font-semibold text-slate-800">
-                        {user?.name}
+                        {usere?.fullname}
                       </h4>
                       <p className="text-sm text-slate-600">{user?.email}</p>
                     </div>

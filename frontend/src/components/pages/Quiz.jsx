@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../shared/Navbar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useGetSubject from "../../hook/useGetSubject";
 import {
   Card,
@@ -62,7 +62,7 @@ const Quiz = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [sortBy, setSortBy] = useState("name");
   const [viewMode, setViewMode] = useState("card");
-
+  const dispatch = useDispatch()
   // Filter and search logic
   const lowerSearch = searchTerm?.toLowerCase() || "";
 
