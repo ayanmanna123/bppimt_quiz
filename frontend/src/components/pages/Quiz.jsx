@@ -30,6 +30,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setsubjectByquiry } from "../../Redux/subject.reducer";
+import axios from "axios";
 // Student-focused gradient combinations
 const studentGradients = [
   "bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600",
