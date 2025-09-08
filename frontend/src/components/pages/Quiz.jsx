@@ -81,7 +81,7 @@ const Quiz = () => {
         });
 
         const res = await axios.get(
-          `http://localhost:5000/api/v1/subject/subjectByQuery?department=${usere.department}&semester=${usere.semester}`,
+          `https://bppimt-quiz-kml1.vercel.app/api/v1/subject/subjectByQuery?department=${usere.department}&semester=${usere.semester}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
