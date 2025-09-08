@@ -104,7 +104,7 @@ import Calander from "./Calander";
         
         if (subjectRes?.success && Array.isArray(subjectRes?.data)) {
           setSubjects(subjectRes.data);
-          console.log(subjectRes.data)
+          
         }
         
         if (badgeRes?.success && Array.isArray(badgeRes?.quizzes)) {

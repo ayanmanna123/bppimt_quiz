@@ -81,7 +81,7 @@ const UpdateProfilelog = ({ open, setopen }) => {
       toast.success(res.data.message);
       setopen(false);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error("Update failed!");
     }
   };

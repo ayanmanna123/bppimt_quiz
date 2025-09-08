@@ -58,7 +58,7 @@ const Result = () => {
 
         setResults(res.data.getReasult);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         toast.error("Failed to load results");
       } finally {
         setLoading(false);

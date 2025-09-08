@@ -67,7 +67,7 @@ const Subject = () => {
 
         setSubjects(res.data.allSubject);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
     fetchSubjects();

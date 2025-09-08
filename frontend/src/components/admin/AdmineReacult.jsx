@@ -32,6 +32,7 @@ import {
   Hash,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 // Admin-focused gradient combinations
 const adminGradients = [
@@ -271,7 +272,7 @@ const AdmineResult = () => {
     // Download the file
     XLSX.writeFile(wb, filename);
 
-    console.log("Excel file downloaded successfully!");
+    toast.success("Excel file downloaded successfully!")
   } catch (error) {
     console.error("Error exporting to Excel:", error);
   }

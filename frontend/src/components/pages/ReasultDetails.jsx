@@ -56,7 +56,7 @@ const ResultDetails = () => {
 
         setResult(res.data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         toast.error("Failed to load result details");
       }
     };

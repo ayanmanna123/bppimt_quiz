@@ -11,7 +11,7 @@ const FullScreen = () => {
       try {
         if (elem.requestFullscreen) await elem.requestFullscreen();
       } catch (error) {
-        console.log("Fullscreen failed:", error);
+        console.error("Fullscreen failed:", error);
       }
     };
 

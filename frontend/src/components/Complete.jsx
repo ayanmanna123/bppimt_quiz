@@ -83,7 +83,7 @@ const Complete = () => {
 
       dispatch(setuser(res.data.createdUser));
       toast.success("Profile completed successfully! Welcome aboard! 🎉");
-      console.log("User created:", res.data.createrduser);
+      
       if (user?.name === user?.email) {
         navigate("/enter/name");
       } else {
@@ -91,7 +91,7 @@ const Complete = () => {
       }
     } catch (error) {
       toast.error("Failed to complete registration. Please try again.");
-      console.log(
+      console.error(
         "Error creating user:",
         error.response?.data || error.message
       );
@@ -121,8 +121,8 @@ const Complete = () => {
             navigate("/");
           }
         } catch (error) {
-          console.log("User not found, needs to complete profile");
-          console.log(error);
+          
+          console.error(error);
         }
       }
     };

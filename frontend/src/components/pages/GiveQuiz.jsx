@@ -145,7 +145,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
       ) {
         // User switched tabs or minimized window
         // You can add additional logic here if needed
-        console.log("User switched away from quiz");
+        
       }
     };
 
@@ -173,7 +173,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         const duration = parseInt(res.data.quize.time) * 60;
         setTimeLeft(duration);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
 
@@ -278,8 +278,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         })
       );
 
-      console.log("Submitting answers:", answerArray);
-      console.log("Total answers:", answerArray.length);
+       
 
       const res = await axios.post(
         "https://bppimt-quiz-kml1.vercel.app/api/v1/reasult/reasult/submite",

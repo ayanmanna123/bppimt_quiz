@@ -29,6 +29,7 @@ const useGetSubject = (department , semester) => {
         dispatch(setsubjectByquiry(res.data.subjects));
       } catch (error) {
         console.error("Error fetching subjects:", error);
+         
       }
     };
 

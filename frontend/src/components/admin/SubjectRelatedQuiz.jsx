@@ -51,7 +51,7 @@ const SubjectRelatedQuiz = () => {
           }
         );
         setQuizzes(res.data.allquiz || []);
-        console.log(res.data);
+        
       } catch (error) {
         console.error("Error fetching quizzes:", error);
       }

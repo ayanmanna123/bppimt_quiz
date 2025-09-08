@@ -128,7 +128,7 @@ const EnterName = () => {
       toast.success(res.data.message);
       navigate("/");
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error("Update failed!");
     }
   };
