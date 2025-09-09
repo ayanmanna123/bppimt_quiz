@@ -26,6 +26,7 @@ import ProtectedRoute from "./components/pages/ProtectedRoute";
 import NotFound from "./components/pages/NotFound ";
 import CertificateVerifier from "./components/pages/CertificateVerifier";
 import EnterName from "./components/pages/EnterName";
+import OtherTeacher from "./components/admin/OtherTeacher";
 
 function App() {
   const approute = createBrowserRouter([
@@ -131,6 +132,14 @@ function App() {
       element: (
         <ProtectedRoute>
           <AdminSubject />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin/othersubject",
+      element: (
+        <ProtectedRoute>
+          <OtherTeacher/>
         </ProtectedRoute>
       ),
     },

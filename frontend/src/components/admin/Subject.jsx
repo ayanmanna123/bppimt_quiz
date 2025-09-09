@@ -65,7 +65,7 @@ const Subject = () => {
           }
         );
 
-        setSubjects(res.data.allSubject);
+        setSubjects(res.data.subjects);
       } catch (error) {
         console.error(error);
       }

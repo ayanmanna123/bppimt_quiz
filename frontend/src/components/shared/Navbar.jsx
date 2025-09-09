@@ -66,6 +66,7 @@ const Navbar = () => {
     { name: "About Us", path: "/about", icon: User },
     { name: "Subject", path: "/Admin/subject", icon: BookOpen },
     { name: "Result", path: "/admin/allquiz", icon: BarChart3 },
+    { name: "Other teacher", path: "/admin/othersubject", icon: BarChart3 },
   ];
   const adminNavitem = [
     { name: "Home", path: "/", icon: Home },

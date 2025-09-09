@@ -214,7 +214,15 @@ export const teacherCreatedSubject = async (req, res) => {
     }
 
     const subjects = await Subject.find({
-      $or: [{ createdBy: user._id }, { "otherTeachers.teacher": user._id }],
+      $or: [
+        { createdBy: user._id },
+        {
+          $and: [
+            { "otherTeachers.teacher": user._id },
+            { "otherTeachers.status": "accept" },
+          ],
+        },
+      ],
     }).populate("otherTeachers.teacher", "fullname email");
 
     return res.status(200).json({
@@ -376,7 +384,7 @@ export const getMySubjects = async (req, res) => {
   }
 };
 
-export const getAnyWherSubject = async (req, res) => {
+export const getpendingTeacher = async (req, res) => {
   try {
     const userId = req.auth.sub;
     const user = await User.findOne({ auth0Id: userId });
@@ -402,7 +410,8 @@ export const getAnyWherSubject = async (req, res) => {
     }
 
     const subjects = await Subject.find({
-      $or: [{ createdBy: user._id }, { "otherTeachers.teacher": user._id }],
+      createdBy: user._id,
+      otherTeachers: { $exists: true, $not: { $size: 0 } },
     }).populate("otherTeachers.teacher", "fullname email");
 
     return res.status(200).json({
@@ -418,7 +427,6 @@ export const getAnyWherSubject = async (req, res) => {
     });
   }
 };
-
 
 export const updateTeacherStatus = async (req, res) => {
   try {
@@ -501,5 +509,3 @@ export const updateTeacherStatus = async (req, res) => {
     });
   }
 };
-
-
