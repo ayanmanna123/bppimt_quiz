@@ -207,7 +207,7 @@ const Home = () => {
             {/* Image container with glow */}
             <div className="relative group">
               <motion.img
-                src="/img-1.png"
+                src="/img-1.webp"
                 alt="Hero Illustration"
                 className="w-[350px] md:w-[500px] relative z-10 drop-shadow-2xl"
                 whileHover={{ scale: 1.05 }}
