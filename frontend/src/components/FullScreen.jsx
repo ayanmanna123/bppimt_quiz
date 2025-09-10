@@ -53,7 +53,7 @@ const FullScreen = () => {
 
   return (
     <>
-      
+
       <GiveQuiz tabSwitchCount={tabSwitchCount} />
     </>
   );
