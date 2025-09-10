@@ -31,7 +31,7 @@ const FullScreen = () => {
       alert("⚠️ You switched windows! Stay on quiz page.");
     };
 
-    // 3️⃣ Detect DevTools (F12 / Ctrl+Shift+I)
+    // 3️⃣ Detect DevTools
     const detectDevTools = (e) => {
       if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
         alert("⚠️ DevTools is not allowed!");
@@ -39,73 +39,21 @@ const FullScreen = () => {
       }
     };
 
-    // 4️⃣ Disable right-click
-    const disableRightClick = (e) => {
-      e.preventDefault();
-      alert("⚠️ Right-click is disabled!");
-    };
-
-    // 5️⃣ Disable copy/cut
-    const disableCopy = (e) => {
-      e.preventDefault();
-      alert("⚠️ Copying is disabled!");
-    };
-
-    // 6️⃣ Block shortcuts (Ctrl+C, Ctrl+X, Ctrl+A, Ctrl+S, Ctrl+U)
-    const blockKeys = (e) => {
-      if (
-        (e.ctrlKey && e.key.toLowerCase() === "c") ||
-        (e.ctrlKey && e.key.toLowerCase() === "x") ||
-        (e.ctrlKey && e.key.toLowerCase() === "a") ||
-        (e.ctrlKey && e.key.toLowerCase() === "s") ||
-        (e.ctrlKey && e.key.toLowerCase() === "u")
-      ) {
-        e.preventDefault();
-        alert("⚠️ Keyboard shortcuts are blocked!");
-      }
-    };
-
-    // Attach listeners
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("blur", handleBlur);
     document.addEventListener("keydown", detectDevTools);
-    document.addEventListener("keydown", blockKeys);
-    document.addEventListener("contextmenu", disableRightClick);
-    document.addEventListener("copy", disableCopy);
-    document.addEventListener("cut", disableCopy);
-
-    // Disable text selection globally
-    document.onselectstart = () => false;
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("blur", handleBlur);
       document.removeEventListener("keydown", detectDevTools);
-      document.removeEventListener("keydown", blockKeys);
-      document.removeEventListener("contextmenu", disableRightClick);
-      document.removeEventListener("copy", disableCopy);
-      document.removeEventListener("cut", disableCopy);
-      document.onselectstart = null;
-
       if (document.exitFullscreen) document.exitFullscreen();
     };
   }, []);
 
   return (
     <>
-      {/* Apply inline CSS protection */}
-      <style>{`
-        * {
-          -webkit-user-select: none;
-          -moz-user-select: none;
-          -ms-user-select: none;
-          user-select: none;
-
-          -webkit-user-drag: none;
-          user-drag: none;
-        }
-      `}</style>
-
+      
       <GiveQuiz tabSwitchCount={tabSwitchCount} />
     </>
   );
