@@ -21,6 +21,7 @@ import {
   Check,
   X,
 } from "lucide-react";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -348,11 +349,15 @@ const OtherTeacher = () => {
                                       <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-2">
                                           <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                                            <span className="text-white text-xs font-bold">
-                                              {otherTeacher.teacher?.fullname?.charAt(
-                                                0
-                                              )}
-                                            </span>
+                                            <Avatar className="w-12 h-12 border-2 border-transparent group-hover:border-gradient-to-r group-hover:from-blue-500 group-hover:to-purple-500 transition-all duration-300">
+                                              <AvatarImage
+                                                className="object-cover"
+                                                src={
+                                                  otherTeacher?.picture ||
+                                                  `https://api.dicebear.com/6.x/initials/svg?seed=${otherTeacher.teacher?.fullname}`
+                                                }
+                                              />
+                                            </Avatar>
                                           </div>
                                           <div>
                                             <p className="font-semibold text-gray-800 text-sm">

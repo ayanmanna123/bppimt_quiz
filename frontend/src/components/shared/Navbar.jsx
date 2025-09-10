@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { LogOut, User, Menu, X, Home, BookOpen, BarChart3 } from "lucide-react";
+import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -66,7 +66,7 @@ const Navbar = () => {
     { name: "About Us", path: "/about", icon: User },
     { name: "Subject", path: "/Admin/subject", icon: BookOpen },
     { name: "Result", path: "/admin/allquiz", icon: BarChart3 },
-    { name: "Other teacher", path: "/admin/othersubject", icon: BarChart3 },
+  { name: "Contributed Teacher", path: "/admin/othersubject", icon: GraduationCap }
   ];
   const adminNavitem = [
     { name: "Home", path: "/", icon: Home },

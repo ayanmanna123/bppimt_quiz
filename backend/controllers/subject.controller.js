@@ -69,6 +69,7 @@ export const createSubject = async (req, res) => {
       subject.otherTeachers.push({
         teacher: user._id,
         status: "pending",
+        picture:user.picture
       });
 
       await subject.save();

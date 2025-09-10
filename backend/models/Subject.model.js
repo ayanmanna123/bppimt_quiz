@@ -12,6 +12,10 @@ const otherTeacherSchema = new mongoose.Schema(
       enum: ["pending", "accept", "reject"],
       default: "pending",
     },
+     picture: {
+      type: String,
+      required: true,
+    },
   },
   { _id: false }  
 );
