@@ -1,5 +1,6 @@
 import Subject from "../models/Subject.model.js";
 import User from "../models/User.model.js";
+import redisClient from "../utils/redis.js";
 export const createSubject = async (req, res) => {
   try {
     const { department, semester, subjectName, subjectCode } = req.body;
@@ -69,7 +70,7 @@ export const createSubject = async (req, res) => {
       subject.otherTeachers.push({
         teacher: user._id,
         status: "pending",
-        picture:user.picture
+        picture: user.picture,
       });
 
       await subject.save();
@@ -213,6 +214,14 @@ export const teacherCreatedSubject = async (req, res) => {
         success: false,
       });
     }
+    const cacheKey = `user:${user._id}`;
+    const cachedUser = await redisClient.get(cacheKey);
+    if (cachedUser) {
+      return res.status(200).json({
+        source: "cache",
+         subjects: JSON.parse(cachedUser),
+      });
+    }
 
     const subjects = await Subject.find({
       $or: [
@@ -225,6 +234,8 @@ export const teacherCreatedSubject = async (req, res) => {
         },
       ],
     }).populate("otherTeachers.teacher", "fullname email");
+
+     await redisClient.set(cacheKey, JSON.stringify(subjects), { EX: 60 });
 
     return res.status(200).json({
       message: "Subjects fetched successfully",
