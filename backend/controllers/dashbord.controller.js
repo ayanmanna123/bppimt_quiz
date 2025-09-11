@@ -26,7 +26,7 @@ export const progressroute = async (req, res) => {
     if (cachedUser) {
       return res.status(200).json({
         source: "cache",
-         subjects: JSON.parse(cachedUser),
+          data: JSON.parse(cachedUser),
       });
     }
     const results = await Result.find({ student: user._id });
