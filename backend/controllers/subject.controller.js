@@ -214,7 +214,7 @@ export const teacherCreatedSubject = async (req, res) => {
         success: false,
       });
     }
-    const cacheKey = `user:${user._id}`;
+    const cacheKey = `subject:${user._id}`;
     const cachedUser = await redisClient.get(cacheKey);
     if (cachedUser) {
       return res.status(200).json({

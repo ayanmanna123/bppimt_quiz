@@ -2,6 +2,7 @@ import Quize from "../models/Quiz.model.js";
 import Result from "../models/Result.model.js";
 import Subject from "../models/Subject.model.js";
 import User from "../models/User.model.js";
+import redisClient from "../utils/redis.js";
 
 export const progressroute = async (req, res) => {
   try {
@@ -20,7 +21,14 @@ export const progressroute = async (req, res) => {
         success: false,
       });
     }
-
+        const cacheKey = `dashbordProgress:${user._id}`;
+    const cachedUser = await redisClient.get(cacheKey);
+    if (cachedUser) {
+      return res.status(200).json({
+        source: "cache",
+         subjects: JSON.parse(cachedUser),
+      });
+    }
     const results = await Result.find({ student: user._id });
 
     let totalAttempted = 0;
@@ -41,6 +49,9 @@ export const progressroute = async (req, res) => {
     });
 
     const totalQuizzes = await Quize.countDocuments();
+
+    
+     await redisClient.set(cacheKey, JSON.stringify(totalQuizzes), { EX: 60 });
 
     return res.status(200).json({
       success: true,
