@@ -21,12 +21,12 @@ export const progressroute = async (req, res) => {
         success: false,
       });
     }
-        const cacheKey = `dashbordProgress:${user._id}`;
+    const cacheKey = `dashbordProgress:${user._id}`;
     const cachedUser = await redisClient.get(cacheKey);
     if (cachedUser) {
       return res.status(200).json({
         source: "cache",
-          data: JSON.parse(cachedUser),
+        data: JSON.parse(cachedUser),
       });
     }
     const results = await Result.find({ student: user._id });
@@ -50,8 +50,14 @@ export const progressroute = async (req, res) => {
 
     const totalQuizzes = await Quize.countDocuments();
 
-    
-     await redisClient.set(cacheKey, JSON.stringify(totalQuizzes), { EX: 60 });
+    const alldetails = {
+      quizzesAttempted: results.length,
+      totalQuizzes,
+      totalAttempted,
+      correctAnswers,
+      wrongAnswers,
+    };
+    await redisClient.set(cacheKey, JSON.stringify(alldetails), { EX: 60 });
 
     return res.status(200).json({
       success: true,
@@ -279,7 +285,7 @@ export const userStreakRoute = async (req, res) => {
 };
 export const calender = async (req, res) => {
   try {
-    const { department, semester } = req.query;  // ✅ use query instead of body
+    const { department, semester } = req.query; // ✅ use query instead of body
 
     const userId = req.auth.sub;
     const user = await User.findOne({ auth0Id: userId });
