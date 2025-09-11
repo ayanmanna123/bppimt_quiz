@@ -25,7 +25,7 @@ export const progressroute = async (req, res) => {
     const cachedUser = await redisClient.get(cacheKey);
     if (cachedUser) {
       return res.status(200).json({
-        source: "cache",
+       success: true,
         data: JSON.parse(cachedUser),
       });
     }
