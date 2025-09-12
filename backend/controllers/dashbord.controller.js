@@ -57,7 +57,7 @@ export const progressroute = async (req, res) => {
       correctAnswers,
       wrongAnswers,
     };
-    await redisClient.set(cacheKey, JSON.stringify(alldetails), { EX: 60 });
+    await redisClient.set(cacheKey, JSON.stringify(alldetails), { EX: 600 });
 
     return res.status(200).json({
       success: true,
@@ -131,7 +131,7 @@ export const dashbordSubject = async (req, res) => {
         };
       })
     );
-    await redisClient.set(cacheKey, JSON.stringify(subjectStats), { EX: 60 });
+    await redisClient.set(cacheKey, JSON.stringify(subjectStats), { EX: 600 });
 
     return res.status(200).json({
       success: true,
@@ -242,7 +242,7 @@ export const userHighScoreQuizzes = async (req, res) => {
       count: response.length,
       quizzes: response,
     };
-    await redisClient.set(cacheKey, JSON.stringify(alldetails), { EX: 60 });
+    await redisClient.set(cacheKey, JSON.stringify(alldetails), { EX: 600 });
     return res.status(200).json({
       success: true,
       count: response.length,
@@ -302,7 +302,7 @@ export const userStreakRoute = async (req, res) => {
       date,
       count,
     }));
-    await redisClient.set(cacheKey, JSON.stringify(streak), { EX: 60 });
+    await redisClient.set(cacheKey, JSON.stringify(streak), { EX: 600 });
     return res.status(200).json({
       success: true,
       streak,
@@ -364,7 +364,7 @@ export const calender = async (req, res) => {
       total: quizzes.length,
       quizzes,
     };
-    await redisClient.set(cacheKey, JSON.stringify(dataToCache), { EX: 60 });
+    await redisClient.set(cacheKey, JSON.stringify(dataToCache), { EX: 600 });
 
     res.status(200).json({ total: quizzes.length, quizzes });
   } catch (error) {
