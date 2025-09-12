@@ -95,6 +95,14 @@ export const dashbordSubject = async (req, res) => {
         success: false,
       });
     }
+     const cacheKey = `dashbordSubject:${user._id}`;
+    const cachedUser = await redisClient.get(cacheKey);
+    if (cachedUser) {
+      return res.status(200).json({
+       success: true,
+        data: JSON.parse(cachedUser),
+      });
+    }
 
     const { department, semester } = user;
 
@@ -123,6 +131,7 @@ export const dashbordSubject = async (req, res) => {
         };
       })
     );
+     await redisClient.set(cacheKey, JSON.stringify(subjectStats), { EX: 60 });
 
     return res.status(200).json({
       success: true,
