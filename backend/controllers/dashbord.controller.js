@@ -25,7 +25,7 @@ export const progressroute = async (req, res) => {
     const cachedUser = await redisClient.get(cacheKey);
     if (cachedUser) {
       return res.status(200).json({
-       success: true,
+        success: true,
         data: JSON.parse(cachedUser),
       });
     }
@@ -95,11 +95,11 @@ export const dashbordSubject = async (req, res) => {
         success: false,
       });
     }
-     const cacheKey = `dashbordSubject:${user._id}`;
+    const cacheKey = `dashbordSubject:${user._id}`;
     const cachedUser = await redisClient.get(cacheKey);
     if (cachedUser) {
       return res.status(200).json({
-       success: true,
+        success: true,
         data: JSON.parse(cachedUser),
       });
     }
@@ -131,7 +131,7 @@ export const dashbordSubject = async (req, res) => {
         };
       })
     );
-     await redisClient.set(cacheKey, JSON.stringify(subjectStats), { EX: 60 });
+    await redisClient.set(cacheKey, JSON.stringify(subjectStats), { EX: 60 });
 
     return res.status(200).json({
       success: true,
@@ -161,6 +161,17 @@ export const userHighScoreQuizzes = async (req, res) => {
       return res.status(404).json({
         message: "You Not Verified",
         success: false,
+      });
+    }
+    const cacheKey = `dashbordHighScore:${user._id}`;
+    const cachedUser = await redisClient.get(cacheKey);
+    if (cachedUser) {
+      const parsed = JSON.parse(cachedUser);
+      return res.status(200).json({
+        success: true,
+        count: parsed.count,
+        quizzes: parsed.quizzes,
+        fromCache: true,
       });
     }
 
@@ -227,7 +238,11 @@ export const userHighScoreQuizzes = async (req, res) => {
         isUserTopper: found?.isUserTopper || false,
       };
     });
-
+    const alldetails = {
+      count: response.length,
+      quizzes: response,
+    };
+    await redisClient.set(cacheKey, JSON.stringify(alldetails), { EX: 60 });
     return res.status(200).json({
       success: true,
       count: response.length,
