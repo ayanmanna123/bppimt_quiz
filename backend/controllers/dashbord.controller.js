@@ -274,6 +274,14 @@ export const userStreakRoute = async (req, res) => {
         success: false,
       });
     }
+    const cacheKey = `dashbordStreak:${user._id}`;
+    const cachedUser = await redisClient.get(cacheKey);
+    if (cachedUser) {
+      return res.status(200).json({
+        success: true,
+        streak: JSON.parse(cachedUser),
+      });
+    }
 
     // ✅ Get all results for this user
     const results = await Result.find({ student: user._id });
@@ -294,7 +302,7 @@ export const userStreakRoute = async (req, res) => {
       date,
       count,
     }));
-
+    await redisClient.set(cacheKey, JSON.stringify(streak), { EX: 60 });
     return res.status(200).json({
       success: true,
       streak,
