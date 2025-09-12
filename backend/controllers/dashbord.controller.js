@@ -335,6 +335,18 @@ export const calender = async (req, res) => {
         message: "You are not verified",
       });
     }
+    const cacheKey = `dashbordcalender:${user._id}`;
+    const cachedUser = await redisClient.get(cacheKey);
+
+    if (cachedUser) {
+      const parsed = JSON.parse(cachedUser);
+      return res.status(200).json({
+        success: true,
+        total: parsed.total,
+        quizzes: parsed.quizzes,
+        fromCache: true, // helpful for debugging
+      });
+    }
 
     const subjects = await Subject.find({ department, semester }).select("_id");
 
@@ -347,6 +359,12 @@ export const calender = async (req, res) => {
     const quizzes = await Quize.find({ subject: { $in: subjectIds } })
       .populate("subject", "subjectName subjectCode department semester")
       .populate("createdBy", "fullname email");
+
+    const dataToCache = {
+      total: quizzes.length,
+      quizzes,
+    };
+    await redisClient.set(cacheKey, JSON.stringify(dataToCache), { EX: 60 });
 
     res.status(200).json({ total: quizzes.length, quizzes });
   } catch (error) {
