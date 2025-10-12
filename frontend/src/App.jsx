@@ -28,6 +28,7 @@ import CertificateVerifier from "./components/pages/CertificateVerifier";
 import EnterName from "./components/pages/EnterName";
 import OtherTeacher from "./components/admin/OtherTeacher";
 import AttendanceSheet from "./components/pages/AttendanceSheet";
+import StudentAttendanceSummary from "./components/pages/StudentAttendanceSummary";
 
 function App() {
   const approute = createBrowserRouter([
@@ -168,6 +169,10 @@ function App() {
       path: "/attandance/:subjectId",
       element: <AttendanceSheet />,
     },
+    {
+      path:"/StudentAttendanceSummary",
+      element:<StudentAttendanceSummary/>
+    }
   ]);
 
   return (

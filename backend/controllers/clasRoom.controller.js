@@ -212,3 +212,94 @@ export const getAttandance = async (req, res) => {
     });
   }
 };
+export const getAttandanceforStudent = async (req, res) => {
+  try {
+    const userId = req.auth?.sub;
+    const user = await User.findOne({ auth0Id: userId });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // 1️⃣ Get all subjects for this student's department & semester
+    const subjects = await Subject.find({
+      department: user.department,
+      semester: user.semester,
+    });
+
+    const result = [];
+
+    // 2️⃣ For each subject, find all classrooms
+    for (const subject of subjects) {
+      const classrooms = await ClassRoom.find({ subject: subject._id });
+
+      let totalPresent = 0;
+      let totalAbsent = 0;
+      let totalDays = 0;
+
+      // 3️⃣ Loop through each classroom and attendance
+      classrooms.forEach((classroom) => {
+        classroom.attendance.forEach((att) => {
+          totalDays++;
+
+          const isPresent = att.records.some(
+            (rec) => rec.student.toString() === user._id.toString()
+          );
+
+          if (isPresent) totalPresent++;
+          else totalAbsent++;
+        });
+      });
+
+      // 4️⃣ Calculate attendance percentage
+      const attendancePercentage =
+        totalDays > 0 ? ((totalPresent / totalDays) * 100).toFixed(2) : "0.00";
+
+      // 5️⃣ Calculate how many more classes needed to reach 75%
+      let classesNeededFor75 = 0;
+      const target = 0.75;
+
+      if (totalDays > 0 && totalPresent / totalDays < target) {
+        // Solve for n where (totalPresent + n) / (totalDays + n) >= 0.75
+        // => n >= (0.75 * totalDays - totalPresent) / (1 - 0.75)
+        const required = (target * totalDays - totalPresent) / (1 - target);
+        classesNeededFor75 = Math.ceil(required > 0 ? required : 0);
+      } else {
+        classesNeededFor75 = 0; // Already above 75%
+      }
+
+      // 6️⃣ Push result for each subject
+      result.push({
+        subjectId: subject._id,
+        subjectName: subject.subjectName,
+        subjectCode: subject.subjectCode,
+        totalDays,
+        totalPresent,
+        totalAbsent,
+        attendancePercentage,
+        classesNeededFor75,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      student: {
+        id: user._id,
+        fullname: user.fullname,
+        universityNo: user.universityNo,
+        department: user.department,
+        semester: user.semester,
+      },
+      attendanceSummary: result,
+    });
+  } catch (error) {
+    console.error("Error in getAttandanceforStudent:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};

@@ -14,6 +14,7 @@ import { Button } from "../ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import path from "path";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -59,6 +60,7 @@ const Navbar = () => {
     { name: "About Us", path: "/about", icon: User },
     { name: "Subject", path: "/quiz", icon: BookOpen },
     { name: "Result", path: "/reasult", icon: BarChart3 },
+    {name:"Attendance" ,path:"/StudentAttendanceSummary",icon: BookOpen},
   ];
 
   const adminNavItems = [
