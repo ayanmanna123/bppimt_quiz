@@ -25,7 +25,11 @@ import {
   Lightbulb,
   Target,
   Zap,
-  Hash
+  Hash,
+  MapPin,
+  Clock,
+  Plus,
+  X
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -141,6 +145,9 @@ const CreateSubject = () => {
   const [subjectCode, setSubjectCode] = useState("");
   const [semester, setSemester] = useState("");
   const [department, setDepartment] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [timeSlots, setTimeSlots] = useState([{ startTime: "", endTime: "" }]);
   const navigate = useNavigate();
 
   const departmentOptions = [
@@ -161,6 +168,21 @@ const CreateSubject = () => {
     { value: "eighth", label: "Eighth Semester" }
   ];
 
+  const addTimeSlot = () => {
+    setTimeSlots([...timeSlots, { startTime: "", endTime: "" }]);
+  };
+
+  const removeTimeSlot = (index) => {
+    const newTimeSlots = timeSlots.filter((_, i) => i !== index);
+    setTimeSlots(newTimeSlots);
+  };
+
+  const updateTimeSlot = (index, field, value) => {
+    const newTimeSlots = [...timeSlots];
+    newTimeSlots[index][field] = value;
+    setTimeSlots(newTimeSlots);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -174,6 +196,14 @@ const CreateSubject = () => {
           semester,
           subjectName,
           subjectCode,
+          location: {
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude)
+          },
+          timeSlots: timeSlots.map(slot => ({
+            startTime: slot.startTime,
+            endTime: slot.endTime
+          }))
         },
         {
           headers: {
@@ -186,6 +216,9 @@ const CreateSubject = () => {
       setSubjectCode("");
       setSemester("");
       setDepartment("");
+      setLatitude("");
+      setLongitude("");
+      setTimeSlots([{ startTime: "", endTime: "" }]);
       toast.success(res.data.message);
       const sound = new Howl({
         src: ["/notification.wav"],
@@ -200,11 +233,15 @@ const CreateSubject = () => {
   };
 
   const getCompletionPercentage = () => {
-    const fields = [subjectName, subjectCode, department, semester].filter(Boolean).length;
-    return Math.round((fields / 4) * 100);
+    const basicFields = [subjectName, subjectCode, department, semester].filter(Boolean).length;
+    const locationFields = [latitude, longitude].filter(Boolean).length;
+    const timeSlotsFilled = timeSlots.filter(slot => slot.startTime && slot.endTime).length;
+    const totalFields = 4 + 2 + (timeSlots.length > 0 ? 1 : 0);
+    const filledFields = basicFields + locationFields + (timeSlotsFilled > 0 ? 1 : 0);
+    return Math.round((filledFields / totalFields) * 100);
   };
 
-  const isFormValid = subjectName && subjectCode && department && semester;
+  const isFormValid = subjectName && subjectCode && department && semester && latitude && longitude && timeSlots.every(slot => slot.startTime && slot.endTime);
 
   return (
     <>
@@ -342,6 +379,89 @@ const CreateSubject = () => {
                     />
                   </div>
 
+                  {/* Location Section */}
+                  <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 border-l-4 border-blue-400">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                      <MapPin className="w-5 h-5 text-blue-600" />
+                      Location Coordinates
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <ValidatedInput
+                        label="Latitude"
+                        icon={MapPin}
+                        type="number"
+                        step="any"
+                        placeholder="e.g., 22.611522"
+                        value={latitude}
+                        onChange={(e) => setLatitude(e.target.value)}
+                        required
+                      />
+
+                      <ValidatedInput
+                        label="Longitude"
+                        icon={MapPin}
+                        type="number"
+                        step="any"
+                        placeholder="e.g., 88.420322"
+                        value={longitude}
+                        onChange={(e) => setLongitude(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Time Slots Section */}
+                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border-l-4 border-purple-400">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                        <Clock className="w-5 h-5 text-purple-600" />
+                        Time Slots
+                      </h3>
+                      <Button
+                        type="button"
+                        onClick={addTimeSlot}
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-xl px-4 py-2 text-sm flex items-center gap-2"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add Slot
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      {timeSlots.map((slot, index) => (
+                        <div key={index} className="flex items-end gap-4">
+                          <div className="flex-1 grid grid-cols-2 gap-4">
+                            <ValidatedInput
+                              label={`Start Time ${index + 1}`}
+                              icon={Clock}
+                              type="time"
+                              value={slot.startTime}
+                              onChange={(e) => updateTimeSlot(index, "startTime", e.target.value)}
+                              required
+                            />
+                            <ValidatedInput
+                              label={`End Time ${index + 1}`}
+                              icon={Clock}
+                              type="time"
+                              value={slot.endTime}
+                              onChange={(e) => updateTimeSlot(index, "endTime", e.target.value)}
+                              required
+                            />
+                          </div>
+                          {timeSlots.length > 1 && (
+                            <Button
+                              type="button"
+                              onClick={() => removeTimeSlot(index)}
+                              className="bg-red-100 hover:bg-red-200 text-red-600 rounded-xl px-3 py-3 mb-1"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Form Summary */}
                   <div className="bg-gradient-to-r from-gray-50 to-emerald-50 rounded-2xl p-6 border-l-4 border-emerald-400">
                     <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
@@ -364,6 +484,16 @@ const CreateSubject = () => {
                         <span className="font-medium">Semester:</span> {
                           semesterOptions.find(opt => opt.value === semester)?.label || "Not selected"
                         }
+                      </p>
+                      <p className="text-gray-600">
+                        <span className="font-medium">Location:</span> {
+                          latitude && longitude ? `${latitude}, ${longitude}` : "Not specified"
+                        }
+                      </p>
+                      <p className="text-gray-600">
+                        <span className="font-medium">Time Slots:</span> {
+                          timeSlots.filter(slot => slot.startTime && slot.endTime).length || "None"
+                        } slot(s)
                       </p>
                     </div>
                   </div>

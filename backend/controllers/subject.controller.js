@@ -1,13 +1,34 @@
+import ClassRoom from "../models/classRoom.model.js";
 import Subject from "../models/Subject.model.js";
 import User from "../models/User.model.js";
 import redisClient from "../utils/redis.js";
+
 export const createSubject = async (req, res) => {
   try {
-    const { department, semester, subjectName, subjectCode } = req.body;
+    const {
+      department,
+      semester,
+      subjectName,
+      subjectCode,
+      location, // { latitude, longitude }
+      timeSlots, // [{ startTime, endTime }]
+    } = req.body;
 
-    if (!department || !semester || !subjectName || !subjectCode) {
+    if (
+      !department ||
+      !semester ||
+      !subjectName ||
+      !subjectCode ||
+      !location ||
+      !location.latitude ||
+      !location.longitude ||
+      !timeSlots ||
+      !Array.isArray(timeSlots) ||
+      timeSlots.length === 0
+    ) {
       return res.status(400).json({
-        message: "All fields are required",
+        message:
+          "All fields (department, semester, subjectName, subjectCode, location, timeSlots) are required",
         success: false,
       });
     }
@@ -43,7 +64,7 @@ export const createSubject = async (req, res) => {
       });
     }
 
-    // check if subject already exists
+    // Check if subject already exists
     let subject = await Subject.findOne({
       department,
       semester,
@@ -52,7 +73,7 @@ export const createSubject = async (req, res) => {
     });
 
     if (subject) {
-      // check if this teacher is already assigned (either createdBy or in otherTeachers)
+      // Check if this teacher is already assigned (either createdBy or in otherTeachers)
       const alreadyAdded =
         subject.createdBy.toString() === user._id.toString() ||
         subject.otherTeachers.some(
@@ -66,7 +87,7 @@ export const createSubject = async (req, res) => {
         });
       }
 
-      // add this teacher into otherTeachers with pending status
+      // Add this teacher into otherTeachers with pending status
       subject.otherTeachers.push({
         teacher: user._id,
         status: "pending",
@@ -83,28 +104,45 @@ export const createSubject = async (req, res) => {
       });
     }
 
-    // create new subject (first teacher = creator, auto accepted)
+    // ✅ Create new subject
     const subjectDetails = {
       department,
       semester,
       subjectName,
       subjectCode,
       createdBy: user._id,
-      otherTeachers: [], // no others yet
+      otherTeachers: [],
     };
 
     const createdSub = await Subject.create(subjectDetails);
 
+    // ✅ Automatically create a Classroom for this subject
+    const newClassRoom = await ClassRoom.create({
+      name: subjectName,
+      subject: createdSub._id,
+      teacher: user._id,
+      location: {
+        type: "Point",
+        coordinates: [location.longitude, location.latitude],
+      },
+      timeSlots: timeSlots.map((slot) => ({
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+      })),
+    });
+
     return res.status(201).json({
-      message: "Subject created successfully",
+      message: "Subject and classroom created successfully",
       subject: createdSub,
+      classroom: newClassRoom,
       success: true,
     });
   } catch (error) {
     console.error("Create Subject Error:", error);
     return res.status(500).json({
-      message: "Server error while creating subject",
+      message: "Server error while creating subject and classroom",
       success: false,
+      error: error.message,
     });
   }
 };
@@ -219,7 +257,7 @@ export const teacherCreatedSubject = async (req, res) => {
     if (cachedUser) {
       return res.status(200).json({
         source: "cache",
-         subjects: JSON.parse(cachedUser),
+        subjects: JSON.parse(cachedUser),
       });
     }
 
@@ -235,7 +273,7 @@ export const teacherCreatedSubject = async (req, res) => {
       ],
     }).populate("otherTeachers.teacher", "fullname email");
 
-     await redisClient.set(cacheKey, JSON.stringify(subjects), { EX: 60 });
+    await redisClient.set(cacheKey, JSON.stringify(subjects), { EX: 60 });
 
     return res.status(200).json({
       message: "Subjects fetched successfully",

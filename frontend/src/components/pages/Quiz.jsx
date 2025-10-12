@@ -26,6 +26,8 @@ import {
   Sparkles,
   ChevronDown,
   Zap,
+  ClipboardCheck,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -72,7 +74,43 @@ const Quiz = () => {
         subject.subjectCode?.toLowerCase()?.includes(lowerSearch)
     ) || [];
   const { getAccessTokenSilently } = useAuth0();
+  const giveAttandance = async (subjectId) => {
+    try {
+      // Get user's current location
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser");
+        return;
+      }
 
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        try {
+          const token = await getAccessTokenSilently({
+            audience: "http://localhost:5000/api/v2",
+          });
+
+          const res = await axios.post(
+            "http://localhost:5000/api/v1/attandance/give-attandance",
+            {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              subjectid: subjectId,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          console.log(res.data);
+        } catch (error) {
+          console.error("Error marking attendance:", error);
+        }
+      });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
@@ -81,7 +119,7 @@ const Quiz = () => {
         });
 
         const res = await axios.get(
-          `https://bppimt-quiz-kml1.vercel.app/api/v1/subject/subjectByQuery?department=${usere.department}&semester=${usere.semester}`,
+          `http://localhost:5000/api/v1/subject/subjectByQuery?department=${usere.department}&semester=${usere.semester}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -368,7 +406,7 @@ const Quiz = () => {
                       </CardContent>
 
                       {/* Action button */}
-                      <CardFooter className="p-6 pt-0">
+                      <CardFooter className="p-6 pt-0 flex flex-col items-center gap-3">
                         <Button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -379,6 +417,17 @@ const Quiz = () => {
                           <Target className="w-5 h-5" />
                           Start Quiz Journey
                           <Sparkles className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          className="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
+                          onClick={(e) => {
+                            e.stopPropagation(); // ✅ Prevent card click
+                            giveAttandance(sub?._id);
+                          }}
+                        >
+                          <ClipboardCheck className="w-5 h-5" />
+                          Give Attendance
+                          <CheckCircle2 className="w-4 h-4" />
                         </Button>
                       </CardFooter>
                     </Card>
