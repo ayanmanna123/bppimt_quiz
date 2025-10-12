@@ -27,6 +27,7 @@ import NotFound from "./components/pages/NotFound ";
 import CertificateVerifier from "./components/pages/CertificateVerifier";
 import EnterName from "./components/pages/EnterName";
 import OtherTeacher from "./components/admin/OtherTeacher";
+import AttendanceSheet from "./components/pages/AttendanceSheet";
 
 function App() {
   const approute = createBrowserRouter([
@@ -139,7 +140,7 @@ function App() {
       path: "/admin/othersubject",
       element: (
         <ProtectedRoute>
-          <OtherTeacher/>
+          <OtherTeacher />
         </ProtectedRoute>
       ),
     },
@@ -155,13 +156,17 @@ function App() {
       path: "/notfound",
       element: <NotFound />,
     },
-     {
+    {
       path: "/veryfi",
-      element:  <CertificateVerifier/>,
+      element: <CertificateVerifier />,
     },
     {
-      path:"/enter/name",
-      element:<EnterName/>
+      path: "/enter/name",
+      element: <EnterName />,
+    },
+    {
+      path: "/attandance/:subjectId",
+      element: <AttendanceSheet />,
     },
   ]);
 

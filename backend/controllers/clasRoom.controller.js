@@ -169,3 +169,46 @@ function isTimeBetween(current, start, end) {
   const e = toMinutes(end);
   return cur >= s && cur <= e;
 }
+
+export const getAttandance = async (req, res) => {
+  try {
+    const { subjectId } = req.params;
+
+    const subject = await ClassRoom.findOne({ subject: subjectId })
+      .populate({
+        path: "attendance.records.student",
+        select: "fullname universityNo department semester", // student details
+      })
+      .populate({
+        path: "subject", // populate subject details
+        select: "subjectName subjectCode department semester createdBy", // include fields you want
+        populate: {
+          path: "createdBy", // optional: populate teacher details
+          select: "fullname email",
+        },
+      });
+    if (!subject) {
+      return res.status(404).json({
+        message: "Subject not found",
+        success: false,
+      });
+    }
+    const totalStudent = await User.find({
+      semester: subject.subject.semester,
+      department: subject.subject.department,
+    });
+    return res.json({
+      message: "Attendance fetched successfully",
+      subject,
+      totalStudent,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Server error while fetching attendance",
+      success: false,
+      error: error.message,
+    });
+  }
+};
