@@ -278,6 +278,16 @@ const Subject = () => {
                             <Eye className="w-5 h-5" />
                             View Quizzes
                           </Button>
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/attandance/${subj._id}`);
+                            }}
+                            className="w-full bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 hover:from-emerald-700 hover:via-green-700 hover:to-teal-700 text-white flex items-center justify-center gap-3 transition-all duration-300 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
+                          >
+                            <Eye className="w-5 h-5" />
+                             view Attandance
+                          </Button>
                         </div>
                       </CardFooter>
                     </Card>
