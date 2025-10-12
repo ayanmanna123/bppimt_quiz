@@ -76,22 +76,22 @@ import Calander from "./Calander";
         };
 
         const [progressRes, subjectRes, badgeRes, streakRes] = await Promise.all([
-          fetch("https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/dashbord/data/progress", { headers })
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/dashbord/dashbord/data/progress`, { headers })
             .then(res => {
               if (!res.ok) throw new Error(`Progress API failed: ${res.status}`);
               return res.json();
             }),
-          fetch("https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/data/subject", { headers })
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/dashbord/data/subject`, { headers })
             .then(res => {
               if (!res.ok) throw new Error(`Subject API failed: ${res.status}`);
               return res.json();
             }),
-          fetch("https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/data/badge", { headers })
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/dashbord/data/badge`, { headers })
             .then(res => {
               if (!res.ok) throw new Error(`Badge API failed: ${res.status}`);
               return res.json();
             }),
-          fetch("https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/data/streak", { headers })
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/dashbord/data/streak`, { headers })
             .then(res => {
               if (!res.ok) throw new Error(`Streak API failed: ${res.status}`);
               return res.json();

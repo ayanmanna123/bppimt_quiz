@@ -80,7 +80,7 @@ const Profile = () => {
         const [progressRes, subjectRes, badgeRes, streakRes] =
           await Promise.all([
             fetch(
-              "https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/dashbord/data/progress",
+              `${import.meta.env.VITE_BACKEND_URL}/dashbord/dashbord/data/progress`,
               { headers }
             ).then((res) => {
               if (!res.ok)
@@ -88,21 +88,21 @@ const Profile = () => {
               return res.json();
             }),
             fetch(
-              "https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/data/subject",
+              `${import.meta.env.VITE_BACKEND_URL}/dashbord/data/subject`,
               { headers }
             ).then((res) => {
               if (!res.ok) throw new Error(`Subject API failed: ${res.status}`);
               return res.json();
             }),
             fetch(
-              "https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/data/badge",
+              `${import.meta.env.VITE_BACKEND_URL}/dashbord/data/badge`,
               { headers }
             ).then((res) => {
               if (!res.ok) throw new Error(`Badge API failed: ${res.status}`);
               return res.json();
             }),
             fetch(
-              "https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/data/streak",
+              `${import.meta.env.VITE_BACKEND_URL}/dashbord/data/streak`,
               { headers }
             ).then((res) => {
               if (!res.ok) throw new Error(`Streak API failed: ${res.status}`);

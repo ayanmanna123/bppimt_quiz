@@ -78,7 +78,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         // Use sendBeacon for reliable submission during page unload
         const blob = new Blob([payload], { type: "application/json" });
         navigator.sendBeacon(
-          "https://bppimt-quiz-kml1.vercel.app/api/v1/reasult/reasult/submite",
+          `${import.meta.env.VITE_BACKEND_URL}/reasult/reasult/submite`,
           blob
         );
 
@@ -164,7 +164,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         });
 
         const res = await axios.get(
-          `https://bppimt-quiz-kml1.vercel.app/api/v1/quize/getquizId/${quizId}`,
+          `${import.meta.env.VITE_BACKEND_URL}/quize/getquizId/${quizId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -281,7 +281,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
        
 
       const res = await axios.post(
-        "https://bppimt-quiz-kml1.vercel.app/api/v1/reasult/reasult/submite",
+        `${import.meta.env.VITE_BACKEND_URL}/reasult/reasult/submite`,
         {
           quizId,
           answers: answerArray,

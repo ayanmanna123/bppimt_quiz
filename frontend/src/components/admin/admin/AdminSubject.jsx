@@ -79,7 +79,7 @@ const AdminSubject = () => {
           audience: "http://localhost:5000/api/v2",
         });
         const res = await axios.get(
-          `https://bppimt-quiz-kml1.vercel.app/api/v1/admin/subject/${depName}`,
+          `${import.meta.env.VITE_BACKEND_URL}/admin/subject/${depName}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

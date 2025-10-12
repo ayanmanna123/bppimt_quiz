@@ -120,7 +120,7 @@ const CreateQuize = () => {
       });
 
       const res = await axios.post(
-        `https://bppimt-quiz-kml1.vercel.app/api/v1/quize/creatquiz/${subjectId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/quize/creatquiz/${subjectId}`,
         {
           title,
           questions,

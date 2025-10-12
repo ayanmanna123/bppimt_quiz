@@ -25,7 +25,7 @@ const AttendanceSheet = () => {
           audience: "http://localhost:5000/api/v2",
         });
         const res = await axios.get(
-          `http://localhost:5000/api/v1/attandance/get-subject/${subjectId}`,
+          `${import.meta.env.VITE_BACKEND_URL}/attandance/get-subject/${subjectId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 

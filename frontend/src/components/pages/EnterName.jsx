@@ -51,7 +51,7 @@ const EnterName = () => {
         audience: "http://localhost:5000/api/v2",
       });
       await axios.post(
-        "https://bppimt-quiz-kml1.vercel.app/api/v1/user/send-code",
+        `${import.meta.env.VITE_BACKEND_URL}/user/send-code`,
         {
           email: usere?.email,
         },
@@ -79,7 +79,7 @@ const EnterName = () => {
         audience: "http://localhost:5000/api/v2",
       });
       const res = await axios.post(
-        "https://bppimt-quiz-kml1.vercel.app/api/v1/user/verify-code",
+        `${import.meta.env.VITE_BACKEND_URL}/user/verify-code`,
         {
           email: usere?.email,
           code,
@@ -115,7 +115,7 @@ const EnterName = () => {
       });
 
       const res = await axios.put(
-        "https://bppimt-quiz-kml1.vercel.app/api/v1/user/updateuser",
+        `${import.meta.env.VITE_BACKEND_URL}/user/updateuser`,
         { sem: semester, name },
         { headers: { Authorization: `Bearer ${token}` } }
       );

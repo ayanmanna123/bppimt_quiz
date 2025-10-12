@@ -59,7 +59,7 @@ const OtherTeacher = () => {
           audience: "http://localhost:5000/api/v2",
         });
         const res = await axios.get(
-          "https://bppimt-quiz-kml1.vercel.app/api/v1/subject/pending/teacher",
+          `${import.meta.env.VITE_BACKEND_URL}/subject/pending/teacher`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -86,7 +86,7 @@ const OtherTeacher = () => {
       });
 
       const response = await axios.patch(
-        `https://bppimt-quiz-kml1.vercel.app/api/v1/subject/updateStatus/${subjectId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/subject/updateStatus/${subjectId}`,
         {
           teacherId: teacherId,
           status: newStatus,

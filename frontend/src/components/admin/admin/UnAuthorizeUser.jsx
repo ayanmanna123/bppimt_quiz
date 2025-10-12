@@ -51,7 +51,7 @@ const UnAuthorizeUser = () => {
           audience: "http://localhost:5000/api/v2",
         });
         const res = await axios.get(
-          "https://bppimt-quiz-kml1.vercel.app/api/v1/admin/all/unauthorize/user",
+          `${import.meta.env.VITE_BACKEND_URL}/admin/all/unauthorize/user`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setUnAuthorize(res.data.allUnuser || []);
@@ -74,7 +74,7 @@ const UnAuthorizeUser = () => {
       });
 
       await axios.put(
-        "https://bppimt-quiz-kml1.vercel.app/api/v1/admin/veryfy/newUser",
+        `${import.meta.env.VITE_BACKEND_URL}/admin/veryfy/newUser`,
         {
           unveryfyuser: id,
           status: status,

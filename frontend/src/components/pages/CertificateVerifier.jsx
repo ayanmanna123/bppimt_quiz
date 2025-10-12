@@ -39,7 +39,7 @@ const CertificateVerifier = () => {
         audience: "http://localhost:5000/api/v2",
       });
       const response = await axios.post(
-        "https://bppimt-quiz-kml1.vercel.app/api/v1/reasult/veryfi",
+        `${import.meta.env.VITE_BACKEND_URL}/reasult/veryfi`,
         {
           resultId: resultId,
         },

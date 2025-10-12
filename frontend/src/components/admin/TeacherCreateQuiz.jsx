@@ -54,7 +54,7 @@ const TeacherCreateQuiz = () => {
       });
 
       const res = await axios.get(
-        "https://bppimt-quiz-kml1.vercel.app/api/v1/quize/quiz/teacher",
+        `${import.meta.env.VITE_BACKEND_URL}/quize/quiz/teacher`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -80,7 +80,7 @@ const TeacherCreateQuiz = () => {
       });
 
       const res = await axios.delete(
-        "https://bppimt-quiz-kml1.vercel.app/api/v1/quize/delet/quiz",
+        `${import.meta.env.VITE_BACKEND_URL}/quize/delet/quiz`,
         {
           data: { quizId },
           headers: {

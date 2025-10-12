@@ -190,7 +190,7 @@ const CreateSubject = () => {
         audience: "http://localhost:5000/api/v2",
       });
       const res = await axios.post(
-        "https://bppimt-quiz-kml1.vercel.app/api/v1/subject/creatsubject",
+        `${import.meta.env.VITE_BACKEND_URL}/subject/creatsubject`,
         {
           department,
           semester,

@@ -53,7 +53,7 @@ const StudentAttendanceSummary = () => {
         });
 
         const res = await axios.get(
-          "http://localhost:5000/api/v1/attandance/total-attandance",
+          `${import.meta.env.VITE_BACKEND_URL}/attandance/total-attandance`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

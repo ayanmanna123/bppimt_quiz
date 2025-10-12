@@ -45,7 +45,7 @@ const SubjectRelatedQuiz = () => {
           audience: "http://localhost:5000/api/v2",
         });
         const res = await axios.get(
-          `https://bppimt-quiz-kml1.vercel.app/api/v1/quize/getSubjectId/${subjectId}`,
+          `${import.meta.env.VITE_BACKEND_URL}/quize/getSubjectId/${subjectId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -67,7 +67,7 @@ const SubjectRelatedQuiz = () => {
       });
 
       const res = await axios.delete(
-        "https://bppimt-quiz-kml1.vercel.app/api/v1/quize/delet/quiz",
+        `${import.meta.env.VITE_BACKEND_URL}/quize/delet/quiz`,
         {
           data: { quizId },
           headers: {

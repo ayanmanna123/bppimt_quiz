@@ -71,7 +71,7 @@ const AdmineResult = () => {
         });
 
         const res = await axios.get(
-          `https://bppimt-quiz-kml1.vercel.app/api/v1/reasult/get/allReasult/${quizeId}`,
+          `${import.meta.env.VITE_BACKEND_URL}/reasult/get/allReasult/${quizeId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

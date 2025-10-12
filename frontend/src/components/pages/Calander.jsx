@@ -28,7 +28,7 @@ const Calendar = () => {
           audience: "http://localhost:5000/api/v2",
         });
         const res = await axios.get(
-          `https://bppimt-quiz-kml1.vercel.app/api/v1/dashbord/calender/details?department=${usere.department}&semester=${usere.semester}`,
+          `${import.meta.env.VITE_BACKEND_URL}/dashbord/calender/details?department=${usere.department}&semester=${usere.semester}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

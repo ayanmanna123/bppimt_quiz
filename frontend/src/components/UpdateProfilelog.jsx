@@ -61,7 +61,7 @@ const UpdateProfilelog = ({ open, setopen }) => {
       }
 
       const res = await axios.put(
-        "https://bppimt-quiz-kml1.vercel.app/api/v1/user/updateuser",
+        `${import.meta.env.VITE_BACKEND_URL}/user/updateuser`,
         formData,
         {
           headers: {
