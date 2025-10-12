@@ -20,7 +20,7 @@ const port = process.env.PORT || 8000;
 
 // ✅ CORS Options
 const corsOptions = {
-  origin: ["http://localhost:5173" , "https://bppimt-quiz.vercel.app"],
+  origin: ["http://localhost:5173", "https://bppimt-quiz.vercel.app"],
   credentials: true,
 };
 app.use(cors(corsOptions));
@@ -58,8 +58,8 @@ app.use("/api/v1/subject", SubjectRoute);
 app.use("/api/v1/quize", quizeRoute);
 app.use("/api/v1/reasult", reasultRoute);
 app.use("/api/v1/dashbord", dashBordRoute);
-app.use("/api/v1/admin",adminRoute)
-app.use("/api/v1/attandance", classroomRoute)
+app.use("/api/v1/admin", adminRoute);
+app.use("/api/v1/attandance", classroomRoute);
 
 app.get("/test-email", async (req, res) => {
   try {

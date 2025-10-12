@@ -6,6 +6,7 @@ const authSlice = createSlice({
     loding: false,
     usere:null,
     signupEmail: null,
+    darktheme:false
   },
   reducers: {
     setLoding: (state, action) => {
@@ -17,10 +18,13 @@ const authSlice = createSlice({
      setSignupEmail: (state, action) => {
       state.signupEmail = action.payload;
     },
+    setdarktheme:(state,action)=>{
+      state.darktheme=action.payload
+    }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setLoding ,setuser,setSignupEmail} = authSlice.actions;
+export const { setLoding ,setuser,setSignupEmail, setdarktheme} = authSlice.actions;
 
 export default authSlice.reducer;

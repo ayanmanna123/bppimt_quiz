@@ -89,7 +89,7 @@ const Quiz = () => {
           });
 
           const res = await axios.post(
-            "http://localhost:5000/api/v1/attandance/give-attandance",
+            `${import.meta.env.VITE_BACKEND_URL}/attandance/give-attandance`,
             {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
@@ -119,7 +119,7 @@ const Quiz = () => {
         });
 
         const res = await axios.get(
-          `http://localhost:5000/api/v1/subject/subjectByQuery?department=${usere.department}&semester=${usere.semester}`,
+          `${import.meta.env.VITE_BACKEND_URL}/subject/subjectByQuery?department=${usere.department}&semester=${usere.semester}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
