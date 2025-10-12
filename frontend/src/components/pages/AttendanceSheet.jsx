@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import Navbar from "../shared/Navbar";
+import { FileSpreadsheet, Download, Calendar, Users, CheckCircle, XCircle } from "lucide-react";
 
 const monthNames = [
   "January", "February", "March", "April", "May", "June",
@@ -125,91 +126,148 @@ const AttendanceSheet = () => {
   return (
     <> 
     <Navbar/>
-    <div className="overflow-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Attendance Sheet</h2>
-        <button
-          onClick={exportToExcel}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Export to Excel
-        </button>
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-100">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 opacity-90"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-10 right-10 w-28 h-28 border-2 border-white/20 rounded-2xl rotate-45"></div>
+          <div className="absolute bottom-20 left-20 w-20 h-20 bg-white/10 rounded-full"></div>
+          <div className="absolute top-1/3 right-1/4 w-16 h-16 border border-white/30 rounded-full"></div>
+          <div className="absolute bottom-1/3 left-1/3 w-12 h-12 bg-white/10 rounded-2xl rotate-12"></div>
+        </div>
+
+        <div className="relative z-10 py-16 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between flex-wrap gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center backdrop-blur-sm shadow-2xl">
+                  <FileSpreadsheet className="w-10 h-10 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-5xl font-bold text-white mb-2 drop-shadow-lg">
+                    Attendance Sheet
+                  </h1>
+                  <p className="text-white/90 text-xl font-medium">
+                    View and manage student attendance records
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={exportToExcel}
+                className="bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/90 shadow-2xl flex items-center gap-3"
+              >
+                <Download className="w-5 h-5" />
+                Export to Excel
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {months.map(month => (
-        <div key={month.month} className="mb-10">
-          <h3 className="text-lg font-semibold mb-2">
-            Month: {monthNames[month.month - 1]}
-          </h3>
+      {/* Main Content Section */}
+      <div className="px-6 -mt-8 relative z-20 pb-12">
+        <div className=" max-w-fit mx-auto">
+          {months.map(month => (
+            <div key={month.month} className="mb-10">
+              <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
+                {/* Month Header */}
+                <div className="bg-gradient-to-r from-purple-500 via-violet-500 to-indigo-500 p-6 text-white">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                      <Calendar className="w-7 h-7" />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-bold mb-1">
+                        {monthNames[month.month - 1]} 2025
+                      </h3>
+                      <p className="text-white/90 flex items-center gap-2">
+                        <Users className="w-4 h-4" />
+                        {students.length} Students
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-          <table className="min-w-full border border-gray-300">
-            <thead className="bg-gray-100 sticky top-0">
-              <tr>
-                <th className="border px-4 py-2 text-left">Name</th>
-                <th className="border px-4 py-2 text-left">University No</th>
-                {month.days.map(day => (
-                  <th
-                    key={day.date}
-                    className="border px-2 py-1 text-center text-xs"
-                  >
-                    {new Date(day.date).getDate()}
-                  </th>
-                ))}
-                <th className="border px-4 py-2 text-center text-xs bg-green-100">
-                  Total Present
-                </th>
-                <th className="border px-4 py-2 text-center text-xs bg-red-100">
-                  Total Absent
-                </th>
-              </tr>
-            </thead>
+                {/* Table */}
+                <div className="overflow-auto">
+                  <table className="min-w-full">
+                    <thead className="bg-gradient-to-r from-purple-50 to-indigo-50 sticky top-0">
+                      <tr>
+                        <th className="border border-gray-200 px-4 py-3 text-left font-bold text-gray-700">Name</th>
+                        <th className="border border-gray-200 px-4 py-3 text-left font-bold text-gray-700">University No</th>
+                        {month.days.map(day => (
+                          <th
+                            key={day.date}
+                            className="border border-gray-200 px-2 py-2 text-center text-sm font-bold text-gray-700"
+                          >
+                            {new Date(day.date).getDate()}
+                          </th>
+                        ))}
+                        <th className="border border-gray-200 px-4 py-3 text-center text-sm font-bold bg-green-50 text-green-700">
+                          <div className="flex items-center justify-center gap-2">
+                            <CheckCircle className="w-4 h-4" />
+                            Total Present
+                          </div>
+                        </th>
+                        <th className="border border-gray-200 px-4 py-3 text-center text-sm font-bold bg-red-50 text-red-700">
+                          <div className="flex items-center justify-center gap-2">
+                            <XCircle className="w-4 h-4" />
+                            Total Absent
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
 
-            <tbody>
-              {students.map((student, idx) => {
-                let monthPresent = 0;
-                let monthAbsent = 0;
+                    <tbody className="bg-white">
+                      {students.map((student, idx) => {
+                        let monthPresent = 0;
+                        let monthAbsent = 0;
 
-                month.days.forEach(day => {
-                  if (student[day.date] === "P") monthPresent++;
-                  else if (student[day.date] === "A") monthAbsent++;
-                });
+                        month.days.forEach(day => {
+                          if (student[day.date] === "P") monthPresent++;
+                          else if (student[day.date] === "A") monthAbsent++;
+                        });
 
-                return (
-                  <tr key={idx} className="hover:bg-gray-50">
-                    <td className="border px-4 py-2">{student.fullname}</td>
-                    <td className="border px-4 py-2">{student.universityNo}</td>
+                        return (
+                          <tr key={idx} className="hover:bg-purple-50/50">
+                            <td className="border border-gray-200 px-4 py-3 font-medium text-gray-800">{student.fullname}</td>
+                            <td className="border border-gray-200 px-4 py-3 text-gray-700">{student.universityNo}</td>
 
-                    {month.days.map(day => (
-                      <td
-                        key={day.date}
-                        className={`border px-2 py-1 text-center font-semibold ${
-                          student[day.date] === "P"
-                            ? "text-green-600"
-                            : student[day.date] === "A"
-                            ? "text-red-600"
-                            : ""
-                        }`}
-                      >
-                        {student[day.date]}
-                      </td>
-                    ))}
+                            {month.days.map(day => (
+                              <td
+                                key={day.date}
+                                className={`border border-gray-200 px-2 py-2 text-center font-bold ${
+                                  student[day.date] === "P"
+                                    ? "text-green-600 bg-green-50/50"
+                                    : student[day.date] === "A"
+                                    ? "text-red-600 bg-red-50/50"
+                                    : "text-gray-400"
+                                }`}
+                              >
+                                {student[day.date]}
+                              </td>
+                            ))}
 
-                    <td className="border px-4 py-2 text-center font-bold text-green-700">
-                      {monthPresent}
-                    </td>
-                    <td className="border px-4 py-2 text-center font-bold text-red-700">
-                      {monthAbsent}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                            <td className="border border-gray-200 px-4 py-3 text-center font-bold text-green-700 bg-green-50">
+                              {monthPresent}
+                            </td>
+                            <td className="border border-gray-200 px-4 py-3 text-center font-bold text-red-700 bg-red-50">
+                              {monthAbsent}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
     </>
-   
   );
 };
 
