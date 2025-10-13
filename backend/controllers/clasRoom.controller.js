@@ -177,7 +177,7 @@ export const getAttandance = async (req, res) => {
     const subject = await ClassRoom.findOne({ subject: subjectId })
       .populate({
         path: "attendance.records.student",
-        select: "fullname universityNo department semester", // student details
+        select: "fullname universityNo department semester auth0Id", // student details
       })
       .populate({
         path: "subject", // populate subject details
@@ -299,6 +299,95 @@ export const getAttandanceforStudent = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+export const markManualAttendance = async (req, res) => {
+  try {
+    const teacherAuthId = req.auth?.sub; // Auth0 teacher ID
+    const { subjectId, date, attendanceList } = req.body;
+    
+
+    if (!subjectId || !attendanceList?.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Subject ID and attendance list are required",
+      });
+    }
+
+    const teacher = await User.findOne({ auth0Id: teacherAuthId });
+    if (!teacher) {
+      return res.status(404).json({
+        success: false,
+        message: "Teacher not found",
+      });
+    }
+
+    const subject = await Subject.findById(subjectId);
+    if (!subject) {
+      return res.status(404).json({
+        success: false,
+        message: "Subject not found",
+      });
+    }
+
+    // 🔍 Find classroom for this teacher and subject
+    let classroom = await ClassRoom.findOne({
+      subject: subjectId,
+      teacher: teacher._id,
+    });
+
+    if (!classroom) {
+      classroom = new ClassRoom({
+        name: `${subject.subjectName} Class`,
+        subject: subjectId,
+        teacher: teacher._id,
+      });
+    }
+
+    // ✅ Build attendance record for present students
+    const presentRecords = attendanceList
+      .filter((a) => a.status === "present")
+      .map((a) => ({
+        student: a.studentId,
+        markedAt: new Date(),
+      }));
+
+    // Check if date already exists (avoid duplicates)
+    const existingDay = classroom.attendance.find(
+      (att) => att.date.toDateString() === new Date(date).toDateString()
+    );
+
+    if (existingDay) {
+      // Update existing attendance
+      existingDay.records = presentRecords;
+    } else {
+      // Add new attendance record
+      classroom.attendance.push({
+        date: new Date(date),
+        records: presentRecords,
+      });
+    }
+
+    await classroom.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Manual attendance marked successfully",
+      classroomId: classroom._id,
+      totalPresent: presentRecords.length,
+      totalAbsent:
+        attendanceList.length > presentRecords.length
+          ? attendanceList.length - presentRecords.length
+          : 0,
+    });
+  } catch (error) {
+    console.error("Error marking manual attendance:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while marking attendance",
       error: error.message,
     });
   }
