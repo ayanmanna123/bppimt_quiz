@@ -15,8 +15,18 @@ import {
 } from "lucide-react";
 
 const monthNames = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 const AttendanceSheet = () => {
@@ -38,7 +48,9 @@ const AttendanceSheet = () => {
           audience: "http://localhost:5000/api/v2",
         });
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/attandance/get-subject/${subjectId}`,
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/attandance/get-subject/${subjectId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -57,15 +69,15 @@ const AttendanceSheet = () => {
         });
 
         const attendanceMap = {};
-        subject.attendance.forEach(day => {
+        subject.attendance.forEach((day) => {
           const dateStr = new Date(day.date).toLocaleDateString();
-          attendanceMap[dateStr] = day.records.map(r => r.student._id);
+          attendanceMap[dateStr] = day.records.map((r) => r.student._id);
         });
 
-        const studentArr = totalStudent.map(stu => {
+        const studentArr = totalStudent.map((stu) => {
           const attendanceObj = {};
-          monthsData.forEach(month => {
-            month.days.forEach(day => {
+          monthsData.forEach((month) => {
+            month.days.forEach((day) => {
               if (attendanceMap[day.date]) {
                 const isPresent = attendanceMap[day.date].includes(stu._id);
                 attendanceObj[day.date] = isPresent ? "P" : "A";
@@ -83,7 +95,11 @@ const AttendanceSheet = () => {
         });
 
         setMonths(monthsData);
-        setStudents(studentArr);
+        setStudents(
+          studentArr.sort((a, b) =>
+            a.universityNo.localeCompare(b.universityNo)
+          )
+        );
       } catch (error) {
         console.error("Error fetching attendance:", error);
       }
@@ -95,7 +111,7 @@ const AttendanceSheet = () => {
   const handleDateClick = (date) => {
     setSelectedDate(date);
     const initial = {};
-    students.forEach(stu => {
+    students.forEach((stu) => {
       initial[stu._id] = stu[date] || "";
     });
     setSelectedAttendance(initial);
@@ -104,7 +120,7 @@ const AttendanceSheet = () => {
 
   // ✅ Toggle attendance for a student
   const toggleAttendance = (id, status) => {
-    setSelectedAttendance(prev => ({ ...prev, [id]: status }));
+    setSelectedAttendance((prev) => ({ ...prev, [id]: status }));
   };
 
   // ✅ Submit manual attendance
@@ -144,18 +160,18 @@ const AttendanceSheet = () => {
   // ✅ Excel Export
   const exportToExcel = () => {
     const wb = XLSX.utils.book_new();
-    months.forEach(month => {
+    months.forEach((month) => {
       const sheetData = [];
       const header = ["Name", "University No"];
-      month.days.forEach(day => header.push(new Date(day.date).getDate()));
+      month.days.forEach((day) => header.push(new Date(day.date).getDate()));
       header.push("Total Present", "Total Absent");
       sheetData.push(header);
 
-      students.forEach(student => {
+      students.forEach((student) => {
         let monthPresent = 0;
         let monthAbsent = 0;
         const row = [student.fullname, student.universityNo];
-        month.days.forEach(day => {
+        month.days.forEach((day) => {
           const status = student[day.date];
           row.push(status);
           if (status === "P") monthPresent++;
@@ -188,7 +204,9 @@ const AttendanceSheet = () => {
                   <FileSpreadsheet className="w-10 h-10 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-5xl font-bold text-white">Attendance Sheet</h1>
+                  <h1 className="text-5xl font-bold text-white">
+                    Attendance Sheet
+                  </h1>
                   <p className="text-white/90 text-lg">
                     Manage & update student attendance manually
                   </p>
@@ -208,7 +226,7 @@ const AttendanceSheet = () => {
         {/* Attendance Table */}
         <div className="px-6 -mt-8 pb-12">
           <div className="max-w-fit mx-auto">
-            {months.map(month => (
+            {months.map((month) => (
               <div key={month.month} className="mb-10">
                 <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
                   <div className="bg-gradient-to-r from-purple-500 via-violet-500 to-indigo-500 p-6 text-white flex justify-between">
@@ -216,9 +234,15 @@ const AttendanceSheet = () => {
                       {monthNames[month.month - 1]} 2025
                     </h3>
                     <button
-                      onClick={() => handleDateClick(
-                        new Date(2025, month.month - 1, new Date().getDate()).toLocaleDateString()
-                      )}
+                      onClick={() =>
+                        handleDateClick(
+                          new Date(
+                            2025,
+                            month.month - 1,
+                            new Date().getDate()
+                          ).toLocaleDateString()
+                        )
+                      }
                       className="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-white/90"
                     >
                       + Give Attendance
@@ -232,7 +256,7 @@ const AttendanceSheet = () => {
                         <tr>
                           <th className="px-4 py-3 border">Name</th>
                           <th className="px-4 py-3 border">University No</th>
-                          {month.days.map(day => (
+                          {month.days.map((day) => (
                             <th
                               key={day.date}
                               onClick={() => handleDateClick(day.date)}
@@ -241,60 +265,64 @@ const AttendanceSheet = () => {
                               {new Date(day.date).getDate()}
                             </th>
                           ))}
-                           <th className="border border-gray-200 px-4 py-3 text-center text-sm font-bold bg-green-50 text-green-700">
-                          <div className="flex items-center justify-center gap-2">
-                            <CheckCircle className="w-4 h-4" />
-                             T.P
-                          </div>
-                        </th>
-                        <th className="border border-gray-200 px-4 py-3 text-center text-sm font-bold bg-red-50 text-red-700">
-                          <div className="flex items-center justify-center gap-2">
-                            <XCircle className="w-4 h-4" />
-                             T.A
-                          </div>
-                        </th>
+                          <th className="border border-gray-200 px-4 py-3 text-center text-sm font-bold bg-green-50 text-green-700">
+                            <div className="flex items-center justify-center gap-2">
+                              <CheckCircle className="w-4 h-4" />
+                              T.P
+                            </div>
+                          </th>
+                          <th className="border border-gray-200 px-4 py-3 text-center text-sm font-bold bg-red-50 text-red-700">
+                            <div className="flex items-center justify-center gap-2">
+                              <XCircle className="w-4 h-4" />
+                              T.A
+                            </div>
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="bg-white">
-                      {students.map((student, idx) => {
-                        let monthPresent = 0;
-                        let monthAbsent = 0;
+                        {students.map((student, idx) => {
+                          let monthPresent = 0;
+                          let monthAbsent = 0;
 
-                        month.days.forEach(day => {
-                          if (student[day.date] === "P") monthPresent++;
-                          else if (student[day.date] === "A") monthAbsent++;
-                        });
+                          month.days.forEach((day) => {
+                            if (student[day.date] === "P") monthPresent++;
+                            else if (student[day.date] === "A") monthAbsent++;
+                          });
 
-                        return (
-                          <tr key={idx} className="hover:bg-purple-50/50">
-                            <td className="border border-gray-200 px-4 py-3 font-medium text-gray-800">{student.fullname}</td>
-                            <td className="border border-gray-200 px-4 py-3 text-gray-700">{student.universityNo}</td>
-
-                            {month.days.map(day => (
-                              <td
-                                key={day.date}
-                                className={`border border-gray-200 px-2 py-2 text-center font-bold ${
-                                  student[day.date] === "P"
-                                    ? "text-green-600 bg-green-50/50"
-                                    : student[day.date] === "A"
-                                    ? "text-red-600 bg-red-50/50"
-                                    : "text-gray-400"
-                                }`}
-                              >
-                                {student[day.date]}
+                          return (
+                            <tr key={idx} className="hover:bg-purple-50/50">
+                              <td className="border border-gray-200 px-4 py-3 font-medium text-gray-800">
+                                {student.fullname}
                               </td>
-                            ))}
+                              <td className="border border-gray-200 px-4 py-3 text-gray-700">
+                                {student.universityNo}
+                              </td>
 
-                            <td className="border border-gray-200 px-4 py-3 text-center font-bold text-green-700 bg-green-50">
-                              {monthPresent}
-                            </td>
-                            <td className="border border-gray-200 px-4 py-3 text-center font-bold text-red-700 bg-red-50">
-                              {monthAbsent}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
+                              {month.days.map((day) => (
+                                <td
+                                  key={day.date}
+                                  className={`border border-gray-200 px-2 py-2 text-center font-bold ${
+                                    student[day.date] === "P"
+                                      ? "text-green-600 bg-green-50/50"
+                                      : student[day.date] === "A"
+                                      ? "text-red-600 bg-red-50/50"
+                                      : "text-gray-400"
+                                  }`}
+                                >
+                                  {student[day.date]}
+                                </td>
+                              ))}
+
+                              <td className="border border-gray-200 px-4 py-3 text-center font-bold text-green-700 bg-green-50">
+                                {monthPresent}
+                              </td>
+                              <td className="border border-gray-200 px-4 py-3 text-center font-bold text-red-700 bg-red-50">
+                                {monthAbsent}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
                     </table>
                   </div>
                 </div>
@@ -312,7 +340,7 @@ const AttendanceSheet = () => {
               Mark Attendance for {selectedDate}
             </h2>
             <div className="max-h-[400px] overflow-y-auto border rounded-lg">
-              {students.map(stu => (
+              {students.map((stu) => (
                 <div
                   key={stu._id}
                   className="flex justify-between items-center px-4 py-2 border-b hover:bg-purple-50"
