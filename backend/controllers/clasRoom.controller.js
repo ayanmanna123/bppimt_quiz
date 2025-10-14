@@ -23,9 +23,8 @@ export const giveAttandance = async (req, res) => {
       });
     }
 
-    // Find subject based on user's subject + semester
-
-    const subject = await Subject.findOne({ _id: subjectid });
+    // Find subject
+    const subject = await Subject.findById(subjectid);
     if (!subject) {
       return res.status(404).json({
         success: false,
@@ -60,44 +59,50 @@ export const giveAttandance = async (req, res) => {
       });
     }
 
-    // ✅ Check current time inside time slot
+    // ✅ Get current weekday (e.g., "Monday")
+    const currentWeekDay = new Date().toLocaleString("en-US", {
+      weekday: "long",
+    });
+
+    // ✅ Get current time in HH:mm format
     const now = new Date();
     const currentTime = `${now.getHours().toString().padStart(2, "0")}:${now
       .getMinutes()
       .toString()
       .padStart(2, "0")}`;
 
+    // ✅ Check if there’s a time slot that matches both weekday and time
     const isWithinSlot = classRoom.timeSlots.some((slot) => {
-      return isTimeBetween(currentTime, slot.startTime, slot.endTime);
+      return (
+        slot.dayOfWeek === currentWeekDay &&
+        isTimeBetween(currentTime, slot.startTime, slot.endTime)
+      );
     });
 
     if (!isWithinSlot) {
       return res.status(403).json({
         success: false,
-        message: "Attendance time is over or not started yet.",
+        message: "Attendance time is not active right now (wrong day or time).",
       });
     }
 
+    // ✅ Mark attendance if not already marked
     const today = new Date().toDateString();
 
-    // Find today's attendance record (using Mongoose subdoc reference)
     let attendanceForToday = classRoom.attendance.find(
       (a) => new Date(a.date).toDateString() === today
     );
 
-    // If no record for today, create one
     if (!attendanceForToday) {
       classRoom.attendance.push({
         date: new Date(),
         records: [],
       });
 
-      // Get the reference to the newly added subdocument
       attendanceForToday =
         classRoom.attendance[classRoom.attendance.length - 1];
     }
 
-    // Check if already marked
     const alreadyMarked = attendanceForToday.records.some(
       (r) => r.student.toString() === user._id.toString()
     );
@@ -109,16 +114,12 @@ export const giveAttandance = async (req, res) => {
       });
     }
 
-    // Add attendance record
     attendanceForToday.records.push({
       student: user._id,
       markedAt: new Date(),
     });
 
-    // ✅ Explicitly mark attendance array as modified
     classRoom.markModified("attendance");
-
-    // Save classroom
     await classRoom.save();
 
     return res.status(200).json({
@@ -308,7 +309,6 @@ export const markManualAttendance = async (req, res) => {
   try {
     const teacherAuthId = req.auth?.sub; // Auth0 teacher ID
     const { subjectId, date, attendanceList } = req.body;
-    
 
     if (!subjectId || !attendanceList?.length) {
       return res.status(400).json({
