@@ -41,6 +41,10 @@ const classroomSchema = new mongoose.Schema({
   },
   timeSlots: [
     {
+      dayOfWeek: {
+        type: String,
+        required: true, // e.g., "Monday"
+      },
       startTime: {
         type: String,
         required: true,

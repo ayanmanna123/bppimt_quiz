@@ -83,7 +83,7 @@ const ValidatedInput = ({
   );
 };
 
-const EnhancedDropdown = ({ value, onValueChange, options, placeholder, icon: Icon, label }) => {
+const EnhancedDropdown = ({ value, onValueChange, options, placeholder, icon: Icon, label, required = false }) => {
   const isValid = value && value.toString().trim();
 
   return (
@@ -92,7 +92,7 @@ const EnhancedDropdown = ({ value, onValueChange, options, placeholder, icon: Ic
         <label className="block text-sm font-semibold text-gray-700 mb-2 items-center gap-2">
           {Icon && <Icon className="w-4 h-4 text-emerald-600" />}
           {label}
-          <span className="text-red-500">*</span>
+          {required && <span className="text-red-500">*</span>}
         </label>
       )}
       
@@ -147,7 +147,7 @@ const CreateSubject = () => {
   const [department, setDepartment] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
-  const [timeSlots, setTimeSlots] = useState([{ startTime: "", endTime: "" }]);
+  const [timeSlots, setTimeSlots] = useState([{ dayOfWeek: "", startTime: "", endTime: "" }]);
   const navigate = useNavigate();
 
   const departmentOptions = [
@@ -168,8 +168,18 @@ const CreateSubject = () => {
     { value: "eighth", label: "Eighth Semester" }
   ];
 
+  const dayOfWeekOptions = [
+    { value: "Monday", label: "Monday" },
+    { value: "Tuesday", label: "Tuesday" },
+    { value: "Wednesday", label: "Wednesday" },
+    { value: "Thursday", label: "Thursday" },
+    { value: "Friday", label: "Friday" },
+    { value: "Saturday", label: "Saturday" },
+    { value: "Sunday", label: "Sunday" }
+  ];
+
   const addTimeSlot = () => {
-    setTimeSlots([...timeSlots, { startTime: "", endTime: "" }]);
+    setTimeSlots([...timeSlots, { dayOfWeek: "", startTime: "", endTime: "" }]);
   };
 
   const removeTimeSlot = (index) => {
@@ -201,6 +211,7 @@ const CreateSubject = () => {
             longitude: parseFloat(longitude)
           },
           timeSlots: timeSlots.map(slot => ({
+            dayOfWeek: slot.dayOfWeek,
             startTime: slot.startTime,
             endTime: slot.endTime
           }))
@@ -218,7 +229,7 @@ const CreateSubject = () => {
       setDepartment("");
       setLatitude("");
       setLongitude("");
-      setTimeSlots([{ startTime: "", endTime: "" }]);
+      setTimeSlots([{ dayOfWeek: "", startTime: "", endTime: "" }]);
       toast.success(res.data.message);
       const sound = new Howl({
         src: ["/notification.wav"],
@@ -235,13 +246,13 @@ const CreateSubject = () => {
   const getCompletionPercentage = () => {
     const basicFields = [subjectName, subjectCode, department, semester].filter(Boolean).length;
     const locationFields = [latitude, longitude].filter(Boolean).length;
-    const timeSlotsFilled = timeSlots.filter(slot => slot.startTime && slot.endTime).length;
+    const timeSlotsFilled = timeSlots.filter(slot => slot.dayOfWeek && slot.startTime && slot.endTime).length;
     const totalFields = 4 + 2 + (timeSlots.length > 0 ? 1 : 0);
     const filledFields = basicFields + locationFields + (timeSlotsFilled > 0 ? 1 : 0);
     return Math.round((filledFields / totalFields) * 100);
   };
 
-  const isFormValid = subjectName && subjectCode && department && semester && latitude && longitude && timeSlots.every(slot => slot.startTime && slot.endTime);
+  const isFormValid = subjectName && subjectCode && department && semester && latitude && longitude && timeSlots.every(slot => slot.dayOfWeek && slot.startTime && slot.endTime);
 
   return (
     <>
@@ -367,6 +378,7 @@ const CreateSubject = () => {
                       value={department}
                       onValueChange={setDepartment}
                       options={departmentOptions}
+                      required
                     />
 
                     <EnhancedDropdown
@@ -376,6 +388,7 @@ const CreateSubject = () => {
                       value={semester}
                       onValueChange={setSemester}
                       options={semesterOptions}
+                      required
                     />
                   </div>
 
@@ -429,34 +442,50 @@ const CreateSubject = () => {
                     
                     <div className="space-y-4">
                       {timeSlots.map((slot, index) => (
-                        <div key={index} className="flex items-end gap-4">
-                          <div className="flex-1 grid grid-cols-2 gap-4">
-                            <ValidatedInput
-                              label={`Start Time ${index + 1}`}
-                              icon={Clock}
-                              type="time"
-                              value={slot.startTime}
-                              onChange={(e) => updateTimeSlot(index, "startTime", e.target.value)}
-                              required
-                            />
-                            <ValidatedInput
-                              label={`End Time ${index + 1}`}
-                              icon={Clock}
-                              type="time"
-                              value={slot.endTime}
-                              onChange={(e) => updateTimeSlot(index, "endTime", e.target.value)}
-                              required
-                            />
+                        <div key={index} className="bg-white rounded-xl p-4 border border-purple-200">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm font-semibold text-gray-700">Slot {index + 1}</span>
+                            {timeSlots.length > 1 && (
+                              <Button
+                                type="button"
+                                onClick={() => removeTimeSlot(index)}
+                                className="bg-red-100 hover:bg-red-200 text-red-600 rounded-xl px-3 py-2"
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            )}
                           </div>
-                          {timeSlots.length > 1 && (
-                            <Button
-                              type="button"
-                              onClick={() => removeTimeSlot(index)}
-                              className="bg-red-100 hover:bg-red-200 text-red-600 rounded-xl px-3 py-3 mb-1"
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          )}
+                          
+                          <div className="space-y-4">
+                            <EnhancedDropdown
+                              label="Day of Week"
+                              icon={Calendar}
+                              placeholder="Select Day"
+                              value={slot.dayOfWeek}
+                              onValueChange={(value) => updateTimeSlot(index, "dayOfWeek", value)}
+                              options={dayOfWeekOptions}
+                              required
+                            />
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              <ValidatedInput
+                                label="Start Time"
+                                icon={Clock}
+                                type="time"
+                                value={slot.startTime}
+                                onChange={(e) => updateTimeSlot(index, "startTime", e.target.value)}
+                                required
+                              />
+                              <ValidatedInput
+                                label="End Time"
+                                icon={Clock}
+                                type="time"
+                                value={slot.endTime}
+                                onChange={(e) => updateTimeSlot(index, "endTime", e.target.value)}
+                                required
+                              />
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -492,9 +521,18 @@ const CreateSubject = () => {
                       </p>
                       <p className="text-gray-600">
                         <span className="font-medium">Time Slots:</span> {
-                          timeSlots.filter(slot => slot.startTime && slot.endTime).length || "None"
+                          timeSlots.filter(slot => slot.dayOfWeek && slot.startTime && slot.endTime).length || "None"
                         } slot(s)
                       </p>
+                      {timeSlots.filter(slot => slot.dayOfWeek && slot.startTime && slot.endTime).length > 0 && (
+                        <div className="mt-2 space-y-1">
+                          {timeSlots.filter(slot => slot.dayOfWeek && slot.startTime && slot.endTime).map((slot, idx) => (
+                            <p key={idx} className="text-gray-600 text-xs pl-4">
+                              • {slot.dayOfWeek}: {slot.startTime} - {slot.endTime}
+                            </p>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 

@@ -11,7 +11,7 @@ export const createSubject = async (req, res) => {
       subjectName,
       subjectCode,
       location, // { latitude, longitude }
-      timeSlots, // [{ startTime, endTime }]
+      timeSlots, // [{ dayOfWeek, startTime, endTime }]
     } = req.body;
 
     if (
@@ -33,6 +33,17 @@ export const createSubject = async (req, res) => {
       });
     }
 
+    // Validate each timeSlot has dayOfWeek, startTime, and endTime
+    for (const slot of timeSlots) {
+      if (!slot.dayOfWeek || !slot.startTime || !slot.endTime) {
+        return res.status(400).json({
+          message:
+            "Each time slot must include dayOfWeek, startTime, and endTime",
+          success: false,
+        });
+      }
+    }
+
     const userId = req.auth?.sub;
     if (!userId) {
       return res.status(401).json({
@@ -42,7 +53,6 @@ export const createSubject = async (req, res) => {
     }
 
     const user = await User.findOne({ auth0Id: userId });
-
     if (!user) {
       return res.status(404).json({
         message: "User not found",
@@ -73,7 +83,6 @@ export const createSubject = async (req, res) => {
     });
 
     if (subject) {
-      // Check if this teacher is already assigned (either createdBy or in otherTeachers)
       const alreadyAdded =
         subject.createdBy.toString() === user._id.toString() ||
         subject.otherTeachers.some(
@@ -87,7 +96,6 @@ export const createSubject = async (req, res) => {
         });
       }
 
-      // Add this teacher into otherTeachers with pending status
       subject.otherTeachers.push({
         teacher: user._id,
         status: "pending",
@@ -126,6 +134,7 @@ export const createSubject = async (req, res) => {
         coordinates: [location.longitude, location.latitude],
       },
       timeSlots: timeSlots.map((slot) => ({
+        dayOfWeek: slot.dayOfWeek,
         startTime: slot.startTime,
         endTime: slot.endTime,
       })),
@@ -146,6 +155,7 @@ export const createSubject = async (req, res) => {
     });
   }
 };
+
 
 export const updateSubject = async (req, res) => {
   try {
