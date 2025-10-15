@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import Navbar from "../shared/Navbar";
+import { Howl } from "howler";
 import {
   FileSpreadsheet,
   Download,
@@ -13,6 +14,7 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const monthNames = [
   "January",
@@ -138,7 +140,7 @@ const AttendanceSheet = () => {
         })
       );
 
-      await axios.post(
+      const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/attandance/give-attandance-manuly`,
         {
           subjectId,
@@ -150,8 +152,15 @@ const AttendanceSheet = () => {
 
       setShowPopup(false);
       setIsUpdating(false);
-      alert("✅ Attendance updated successfully!");
+      toast.success(res.data.message);
+      const sound = new Howl({
+        src: ["/notification.wav"],
+        volume: 0.7,
+      });
+      sound.play();
     } catch (error) {
+      const msg = error?.response?.data?.message || error.message;
+      toast.error(msg);
       console.error("Error submitting manual attendance:", error);
       setIsUpdating(false);
     }

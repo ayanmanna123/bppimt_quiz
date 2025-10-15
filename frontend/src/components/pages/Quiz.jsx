@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../shared/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import useGetSubject from "../../hook/useGetSubject";
+import { Howl } from "howler";
 import {
   Card,
   CardContent,
@@ -33,6 +34,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setsubjectByquiry } from "../../Redux/subject.reducer";
 import axios from "axios";
+import { toast } from "sonner";
 // Student-focused gradient combinations
 const studentGradients = [
   "bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600",
@@ -103,7 +105,15 @@ const Quiz = () => {
           );
 
           console.log(res.data);
+          toast.success(res.data.message);
+          const sound = new Howl({
+            src: ["/notification.wav"],
+            volume: 0.7,
+          });
+          sound.play();
         } catch (error) {
+          const msg = error?.response?.data?.message || error.message;
+          toast.error(msg);
           console.error("Error marking attendance:", error);
         }
       });
@@ -119,7 +129,11 @@ const Quiz = () => {
         });
 
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/subject/subjectByQuery?department=${usere.department}&semester=${usere.semester}`,
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/subject/subjectByQuery?department=${usere.department}&semester=${
+            usere.semester
+          }`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
