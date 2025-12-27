@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import { Howl } from "howler";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Clock,
   AlertTriangle,
   ChevronLeft,
   ChevronRight,
@@ -18,11 +17,9 @@ import {
   Brain,
   Target,
   CheckCircle2,
-  Circle,
   Zap,
   Trophy,
   Timer,
-  RotateCcw,
 } from "lucide-react";
 import confetti from 'canvas-confetti';
 
@@ -37,26 +34,26 @@ const GiveQuiz = ({ tabSwitchCount }) => {
   const [showWarning, setShowWarning] = useState(false);
   const navigate = useNavigate();
 
-  // Add ref to track if quiz has been submitted
+ 
   const hasSubmitted = useRef(false);
-  // Keep track of latest answers using ref
+ 
   const answersRef = useRef({});
-  // Ref to track if component is mounted
+ 
   const isMounted = useRef(true);
 
-  // Update answersRef whenever answers state changes
+ 
   useEffect(() => {
     answersRef.current = answers;
   }, [answers]);
 
-  // Handle page unload/refresh/back navigation
+  
   const handlePageLeave = useCallback(async () => {
     if (
       !hasSubmitted.current &&
       !isSubmitting &&
       Object.keys(answersRef.current).length > 0
     ) {
-      // Use sendBeacon for reliable submission during page unload
+ 
       try {
         const token = await getAccessTokenSilently({
           audience: "http://localhost:5000/api/v2",
@@ -72,10 +69,9 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         const payload = JSON.stringify({
           quizId,
           answers: answerArray,
-          autoSubmitted: true, // Flag to indicate auto-submission
+          autoSubmitted: true,  
         });
-
-        // Use sendBeacon for reliable submission during page unload
+ 
         const blob = new Blob([payload], { type: "application/json" });
         navigator.sendBeacon(
           `${import.meta.env.VITE_BACKEND_URL}/reasult/reasult/submite`,
@@ -89,7 +85,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     }
   }, [getAccessTokenSilently, quizId, isSubmitting]);
 
-  // Block navigation and show confirmation
+
   useBeforeUnload(
     useCallback(
       (event) => {
@@ -107,7 +103,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     )
   );
 
-  // Handle browser back/forward navigation
+
   useEffect(() => {
     const handlePopState = (event) => {
       if (!hasSubmitted.current && Object.keys(answersRef.current).length > 0) {
@@ -124,7 +120,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
       }
     };
 
-    // Add event listeners
+ 
     window.addEventListener("popstate", handlePopState);
     window.addEventListener("beforeunload", handleBeforeUnload);
 
@@ -135,7 +131,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     };
   }, [handlePageLeave]);
 
-  // Enhanced visibility change handler
+ 
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (
@@ -143,8 +139,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         !hasSubmitted.current &&
         Object.keys(answersRef.current).length > 0
       ) {
-        // User switched tabs or minimized window
-        // You can add additional logic here if needed
+         
         
       }
     };
@@ -180,7 +175,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     fetchQuiz();
   }, [quizId, getAccessTokenSilently]);
 
-  // Timer effect
+
   useEffect(() => {
     if (timeLeft === null) return;
 
@@ -197,14 +192,14 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     return () => clearInterval(interval);
   }, [timeLeft !== null]);
 
-  // Separate effect to handle auto-submit when time runs out
+  
   useEffect(() => {
     if (timeLeft === 0 && !hasSubmitted.current && !isSubmitting) {
       handleSubmit();
     }
   }, [timeLeft]);
 
-  // Warning for last 30s
+ 
   useEffect(() => {
     if (timeLeft === 30) {
       setShowWarning(true);
@@ -212,7 +207,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     }
   }, [timeLeft]);
 
-  // Auto-submit when tab switch count > 5
+ 
   useEffect(() => {
     if (tabSwitchCount >= 10 && !hasSubmitted.current && !isSubmitting) {
       toast.error("Too many tab switches! Quiz will be auto-submitted.");
@@ -254,7 +249,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
   
 
   const handleSubmit = useCallback(async () => {
-    // Prevent multiple submissions
+
     if (hasSubmitted.current || isSubmitting) {
       return;
     }
@@ -267,10 +262,10 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         audience: "http://localhost:5000/api/v2",
       });
 
-      // Use the ref to get the latest answers, even in async operations
+   
       const latestAnswers = answersRef.current;
 
-      // Create answer array directly from latest answers
+ 
       const answerArray = Object.entries(latestAnswers).map(
         ([questionId, option]) => ({
           questionId,
@@ -308,7 +303,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     }
   }, [getAccessTokenSilently, quizId, navigate, isSubmitting]);
 
-  // Add a custom back button handler
+ 
   const handleCustomBack = () => {
     if (!hasSubmitted.current && Object.keys(answers).length > 0) {
       const confirmed = window.confirm(
@@ -351,7 +346,6 @@ const GiveQuiz = ({ tabSwitchCount }) => {
   const answeredCount = Object.keys(answers).length;
   const progressPercentage = (answeredCount / questions.length) * 100;
 
-  // Time-based styling
   const timeColor =
     timeLeft > 300
       ? "text-green-600"
@@ -367,7 +361,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-100">
-      {/* Enhanced Header */}
+ 
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -407,7 +401,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
             </div>
           </div>
 
-          {/* Progress bar */}
+ 
           <div className="mt-4">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium text-gray-600">
@@ -427,7 +421,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
             </div>
           </div>
 
-          {/* Tab switch warning */}
+ 
           {tabSwitchCount > 0 && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -443,7 +437,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         </div>
       </motion.div>
 
-      {/* Main Content */}
+ 
       <div className="max-w-4xl mx-auto p-6">
         <AnimatePresence mode="wait">
           <motion.div
@@ -535,7 +529,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
                   </RadioGroup>
                 </div>
 
-                {/* Navigation Buttons */}
+ 
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -602,7 +596,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
           </motion.div>
         </AnimatePresence>
 
-        {/* Question Navigation Grid */}
+ 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
