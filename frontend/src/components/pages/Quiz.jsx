@@ -150,6 +150,82 @@ const Quiz = () => {
 
     fetchSubjects();
   }, [getAccessTokenSilently]);
+
+  // Combined Attendance Handler
+  const handleAttendanceClick = async (subId) => {
+    try {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v2",
+      });
+
+      // 1. Check if there is an active OTP
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/attandance/check-otp-status/${subId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (res.data.success && res.data.hasActiveOtp) {
+        // 2a. If OTP is active -> Show OTP Modal
+        initiateAttendance(subId);
+      } else {
+        // 2b. If NO OTP -> Normal Location-based Attendance
+        handleNormalAttendance(subId);
+      }
+    } catch (error) {
+      console.error("Error checking attendance mode:", error);
+      toast.error("Failed to check attendance mode");
+    }
+  };
+
+  const handleNormalAttendance = (subId) => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+
+    toast.info("Fetching your location...");
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const token = await getAccessTokenSilently({
+            audience: "http://localhost:5000/api/v2",
+          });
+
+          const res = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/attandance/give-attandance`,
+            {
+              subjectid: subId,
+              latitude,
+              longitude,
+            },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          if (res.data.success) {
+            toast.success(res.data.message);
+            const sound = new Howl({
+              src: ["/notification.wav"],
+              volume: 0.7,
+            });
+            sound.play();
+          }
+        } catch (error) {
+          const msg = error?.response?.data?.message || "Attendance failed";
+          toast.error(msg);
+        }
+      },
+      (error) => {
+        console.error("Location error:", error);
+        toast.error("Unable to retrieve your location. Please enable location access.");
+      }
+    );
+  };
   return (
     <>
       <Navbar />
@@ -437,7 +513,7 @@ const Quiz = () => {
                           className="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
                           onClick={(e) => {
                             e.stopPropagation(); // ✅ Prevent card click
-                            initiateAttendance(sub?._id);
+                            handleAttendanceClick(sub?._id);
                           }}
                         >
                           <ClipboardCheck className="w-5 h-5" />

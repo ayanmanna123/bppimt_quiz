@@ -17,8 +17,11 @@ import {
   CheckCircle2,
   XCircle,
   BarChart3,
+  Zap
 } from "lucide-react";
 import Navbar from "../shared/Navbar";
+import { toast } from "sonner";
+import { Howl } from "howler";
 
 // Student-focused gradient combinations
 const studentGradients = [
@@ -44,6 +47,7 @@ const StudentAttendanceSummary = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [attendanceData, setAttendanceData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [markingLoading, setMarkingLoading] = useState(null);
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -69,6 +73,63 @@ const StudentAttendanceSummary = () => {
 
     fetchAttendance();
   }, [getAccessTokenSilently]);
+
+  // ✅ Handle Attendance Marking
+  const handleMarkAttendance = async (subjectId) => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setMarkingLoading(subjectId);
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const token = await getAccessTokenSilently({
+            audience: "http://localhost:5000/api/v2",
+          });
+
+          const res = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/attendance-toggle/mark`,
+            { subjectid: subjectId, latitude, longitude },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+          if (res.data.success) {
+            toast.success(res.data.message);
+            const sound = new Howl({
+              src: ["/notification.wav"],
+              volume: 0.7,
+            });
+            sound.play();
+            // Refresh data to show updated stats
+            const tokenRef = await getAccessTokenSilently({
+              audience: "http://localhost:5000/api/v2",
+            });
+            const resRef = await axios.get(
+              `${import.meta.env.VITE_BACKEND_URL}/attandance/total-attandance`,
+              { headers: { Authorization: `Bearer ${tokenRef}` } }
+            );
+            setAttendanceData(resRef.data);
+          }
+        } catch (error) {
+          console.error("Error marking attendance:", error);
+          const msg = error?.response?.data?.message || "Failed to mark attendance";
+          toast.error(msg);
+        } finally {
+          setMarkingLoading(null);
+        }
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        toast.error("Unable to retrieve your location. Please enable location services.");
+        setMarkingLoading(null);
+      }
+    );
+  };
+
 
   if (loading) {
     return (
@@ -164,7 +225,7 @@ const StudentAttendanceSummary = () => {
               return (
                 <Card
                   key={subj.subjectId}
-                  className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-110"
+                  className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-105"
                 >
                   {/* Enhanced gradient header */}
                   <div
@@ -188,7 +249,21 @@ const StudentAttendanceSummary = () => {
                       <p className="text-sm opacity-90 drop-shadow mb-3">
                         Code: {subj.subjectCode}
                       </p>
-                      <div className="w-12 h-1 bg-white/60 rounded-full"></div>
+
+                      {/* ✅ Quick Attendance Button */}
+                      <button
+                        onClick={() => handleMarkAttendance(subj.subjectId)}
+                        disabled={markingLoading === subj.subjectId}
+                        className="absolute right-0 bottom-1 bg-white/90 backdrop-blur-sm hover:bg-white text-blue-600 text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg transition-all flex items-center gap-1 disabled:opacity-70 disabled:cursor-not-allowed"
+                      >
+                        {markingLoading === subj.subjectId ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <Zap className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                        )}
+                        {markingLoading === subj.subjectId ? "Marking..." : "Quick Mark"}
+                      </button>
+
                     </div>
                   </div>
 
@@ -206,11 +281,11 @@ const StudentAttendanceSummary = () => {
                           </p>
                         </div>
                       </div>
-                       <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
+                      <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
                         <Calendar className="w-5 h-5 text-blue-600" />
                         <div className="flex-1">
                           <p className="text-xs text-gray-500 font-medium">
-                             TOTAL DAY NEED FOR 75% ATTENDANCE
+                            TOTAL DAY NEED FOR 75% ATTENDANCE
                           </p>
                           <p className="text-sm font-bold text-gray-700">
                             {subj.classesNeededFor75}

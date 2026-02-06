@@ -194,6 +194,52 @@ const AttendanceSheet = () => {
     }
   };
 
+  // ✅ Attendance Toggle Logic
+  const [isAttendanceEnabled, setIsAttendanceEnabled] = useState(false);
+
+  useEffect(() => {
+    const fetchToggleStatus = async () => {
+      try {
+        const token = await getAccessTokenSilently({
+          audience: "http://localhost:5000/api/v2",
+        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/attendance-toggle/status/${subjectId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (res.data.success) {
+          setIsAttendanceEnabled(res.data.isAttendanceEnabled);
+        }
+      } catch (error) {
+        console.error("Error fetching attendance toggle status:", error);
+      }
+    };
+    fetchToggleStatus();
+  }, [subjectId, getAccessTokenSilently]);
+
+  const handleToggleAttendance = async () => {
+    try {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v2",
+      });
+      const newStatus = !isAttendanceEnabled;
+
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/attendance-toggle/toggle`,
+        { subjectId, status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data.success) {
+        setIsAttendanceEnabled(newStatus);
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.error("Error toggling attendance:", error);
+      toast.error("Failed to toggle attendance");
+    }
+  };
+
   // ✅ Excel Export
   const exportToExcel = () => {
     const wb = XLSX.utils.book_new();
@@ -250,6 +296,17 @@ const AttendanceSheet = () => {
                 </div>
               </div>
               <div className="flex gap-4">
+                <button
+                  onClick={handleToggleAttendance}
+                  className={`px-8 py-4 rounded-xl font-bold text-lg shadow-2xl flex items-center gap-3 transition-colors ${isAttendanceEnabled
+                      ? "bg-green-500 text-white hover:bg-green-600"
+                      : "bg-red-500 text-white hover:bg-red-600"
+                    }`}
+                >
+                  <div className={`w-3 h-3 rounded-full ${isAttendanceEnabled ? "bg-white animate-pulse" : "bg-white/50"}`} />
+                  {isAttendanceEnabled ? "Attendance Enabled" : "Attendance Disabled"}
+                </button>
+
                 <button
                   onClick={exportToExcel}
                   className="bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/90 shadow-2xl flex items-center gap-3"

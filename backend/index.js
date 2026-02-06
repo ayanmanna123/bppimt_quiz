@@ -11,6 +11,7 @@ import reasultRoute from "./routes/result.routes.js";
 import dashBordRoute from "./routes/dashbord.routes.js";
 import adminRoute from "./routes/admin.routes.js";
 import classroomRoute from "./routes/classRoom.routes.js";
+import attendanceToggleRoutes from "./routes/attendanceToggle.routes.js";
 
 dotenv.config();
 connectToMongo();
@@ -60,6 +61,7 @@ app.use("/api/v1/reasult", reasultRoute);
 app.use("/api/v1/dashbord", dashBordRoute);
 app.use("/api/v1/admin", adminRoute);
 app.use("/api/v1/attandance", classroomRoute);
+app.use("/api/v1/attendance-toggle", attendanceToggleRoutes);
 
 app.get("/test-email", async (req, res) => {
   try {

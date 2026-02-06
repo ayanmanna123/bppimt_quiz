@@ -42,6 +42,7 @@ const classroomSchema = new mongoose.Schema({
   currentOtp: { type: String, default: null },
   otpExpiresAt: { type: Date, default: null },
   otpTargetDate: { type: Date, default: null },
+  isAttendanceEnabled: { type: Boolean, default: false },
   timeSlots: [
     {
       dayOfWeek: {

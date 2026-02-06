@@ -570,3 +570,134 @@ export const giveOtpAttendance = async (req, res) => {
     });
   }
 };
+
+/**
+ * Check if there is an active OTP for the given subject
+ */
+export const checkActiveOtp = async (req, res) => {
+  try {
+    const { subjectId } = req.params;
+
+    const classroom = await ClassRoom.findOne({ subject: subjectId });
+
+    if (!classroom) {
+      return res.status(200).json({
+        success: true,
+        hasActiveOtp: false,
+        message: "No classroom found",
+      });
+    }
+
+    // Check if OTP exists and is not expired
+    const hasActiveOtp =
+      classroom.currentOtp && new Date() < new Date(classroom.otpExpiresAt);
+
+    return res.status(200).json({
+      success: true,
+      hasActiveOtp: !!hasActiveOtp,
+    });
+  } catch (error) {
+    console.error("Error checking OTP status:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error checking OTP status",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Update Time Slots for a Subject's Classroom
+ * Only accessible by Teacher of that subject
+ */
+export const updateTimeSlots = async (req, res) => {
+  try {
+    const userId = req.auth?.sub;
+    const { subjectId } = req.params;
+    const { timeSlots } = req.body;
+
+    if (!subjectId) {
+      return res.status(400).json({
+        success: false,
+        message: "Subject ID is required",
+      });
+    }
+
+    if (!timeSlots || !Array.isArray(timeSlots)) {
+      return res.status(400).json({
+        success: false,
+        message: "Time slots must be an array",
+      });
+    }
+
+    // Validate time slots structure
+    for (const slot of timeSlots) {
+      if (!slot.dayOfWeek || !slot.startTime || !slot.endTime) {
+        return res.status(400).json({
+          success: false,
+          message: "Each time slot must have dayOfWeek, startTime, and endTime",
+        });
+      }
+    }
+
+    // Find User
+    const user = await User.findOne({ auth0Id: userId });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Find Classroom for this subject
+    const classroom = await ClassRoom.findOne({ subject: subjectId });
+
+    if (!classroom) {
+      return res.status(404).json({
+        success: false,
+        message: "Classroom not found for this subject",
+      });
+    }
+
+    // Check authorization: Creator or Accepted Teacher
+    const subject = await Subject.findById(subjectId);
+
+    // Fallback if subject missing but classroom exists (rare data inconsistency)
+    if (!subject) {
+      // Check if current user is the classroom teacher
+      if (classroom.teacher.toString() !== user._id.toString()) {
+        return res.status(403).json({
+          success: false,
+          message: "You are not authorized to update this subject's schedule",
+        });
+      }
+    } else {
+      const isCreator = subject.createdBy.toString() === user._id.toString();
+      const isAcceptedTeacher = subject.otherTeachers?.some(
+        (t) => t.teacher.toString() === user._id.toString() && t.status === 'accept'
+      );
+
+      if (!isCreator && !isAcceptedTeacher) {
+        return res.status(403).json({
+          success: false,
+          message: "You are not authorized to update this subject's schedule",
+        });
+      }
+    }
+
+    // Update time slots
+    classroom.timeSlots = timeSlots;
+    await classroom.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Time slots updated successfully",
+      timeSlots: classroom.timeSlots,
+    });
+
+  } catch (error) {
+    console.error("Error updating time slots:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error updating time slots",
+      error: error.message,
+    });
+  }
+};

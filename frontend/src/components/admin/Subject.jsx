@@ -12,10 +12,12 @@ import {
   Users,
   GraduationCap,
   Sparkles,
+  Clock,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import SchlitonSubject from "./SchlitonSubject";
+import EditTimeSlotModal from "./EditTimeSlotModal";
 import {
   Card,
   CardContent,
@@ -47,6 +49,8 @@ const subjectPatterns = [
 const Subject = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [subjects, setSubjects] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [isTimeSlotModalOpen, setIsTimeSlotModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -286,7 +290,19 @@ const Subject = () => {
                             className="w-full bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 hover:from-emerald-700 hover:via-green-700 hover:to-teal-700 text-white flex items-center justify-center gap-3 transition-all duration-300 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
                           >
                             <Eye className="w-5 h-5" />
-                             view Attandance
+                            view Attandance
+                          </Button>
+
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedSubject(subj);
+                              setIsTimeSlotModalOpen(true);
+                            }}
+                            className="w-full bg-gradient-to-r from-amber-500 via-orange-600 to-red-600 hover:from-amber-600 hover:via-orange-700 hover:to-red-700 text-white flex items-center justify-center gap-3 transition-all duration-300 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
+                          >
+                            <Clock className="w-5 h-5" />
+                            Edit Time Slots
                           </Button>
                         </div>
                       </CardFooter>
@@ -298,6 +314,16 @@ const Subject = () => {
           )}
         </div>
       </div>
+
+      <EditTimeSlotModal
+        isOpen={isTimeSlotModalOpen}
+        onClose={() => {
+          setIsTimeSlotModalOpen(false);
+          setSelectedSubject(null);
+        }}
+        subjectId={selectedSubject?._id}
+        subjectName={selectedSubject?.subjectName}
+      />
     </>
   );
 };
