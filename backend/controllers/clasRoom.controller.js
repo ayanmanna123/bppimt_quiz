@@ -405,3 +405,168 @@ export const markManualAttendance = async (req, res) => {
     });
   }
 };
+
+// ------------------------------------------------------------------
+// ✅ OTP Based Attendance System
+// ------------------------------------------------------------------
+
+/**
+ * Generate a 6-digit OTP for a specific classroom
+ * Only accessible by Teacher
+ */
+export const generateOtp = async (req, res) => {
+  try {
+    const teacherId = req.auth?.sub; // Auth0 ID
+    const { subjectId, targetDate } = req.body;
+
+    if (!subjectId) {
+      return res.status(400).json({
+        success: false,
+        message: "Subject ID is required",
+      });
+    }
+
+    // specific teacher check
+    const teacher = await User.findOne({ auth0Id: teacherId });
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    const classroom = await ClassRoom.findOne({
+      subject: subjectId,
+      teacher: teacher._id,
+    });
+
+    if (!classroom) {
+      return res.status(404).json({
+        success: false,
+        message: "Classroom not found for this subject/teacher",
+      });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Set expiration to 5 minutes from now
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+    // ✅ Use provided target date or default to now
+    const attDate = targetDate ? new Date(targetDate) : new Date();
+
+    classroom.currentOtp = otp;
+    classroom.otpExpiresAt = expiresAt;
+    classroom.otpTargetDate = attDate;
+    await classroom.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "OTP generated successfully",
+      otp,
+      expiresAt,
+      targetDate: attDate
+    });
+  } catch (error) {
+    console.error("Error generating OTP:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error generating OTP",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Student gives attendance using OTP
+ * No Location Check | No Weekday Check | No Time Slot Check
+ */
+export const giveOtpAttendance = async (req, res) => {
+  try {
+    const userId = req.auth?.sub;
+    const { subjectid, otp } = req.body;
+
+    if (!subjectid || !otp) {
+      return res.status(400).json({
+        success: false,
+        message: "Subject ID and OTP are required",
+      });
+    }
+
+    // Find User
+    const user = await User.findOne({ auth0Id: userId });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Find Classroom
+    const classroom = await ClassRoom.findOne({ subject: subjectid });
+    if (!classroom) {
+      return res.status(404).json({
+        success: false,
+        message: "Classroom not found for this subject",
+      });
+    }
+
+    // ✅ Validate OTP
+    if (!classroom.currentOtp || classroom.currentOtp !== otp) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP. Please ask your teacher for the correct code.",
+      });
+    }
+
+    // ✅ Validate Expiration
+    if (new Date() > new Date(classroom.otpExpiresAt)) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP has expired. Please ask for a new one.",
+      });
+    }
+
+    // ✅ Use the Teacher's Target Date for this OTP
+    const targetDate = classroom.otpTargetDate || new Date();
+    const dateString = new Date(targetDate).toDateString();
+
+    let attendanceForToday = classroom.attendance.find(
+      (a) => new Date(a.date).toDateString() === dateString
+    );
+
+    if (!attendanceForToday) {
+      classroom.attendance.push({
+        date: targetDate, // Use the stored target date
+        records: [],
+      });
+      attendanceForToday = classroom.attendance[classroom.attendance.length - 1];
+    }
+
+    const alreadyMarked = attendanceForToday.records.some(
+      (r) => r.student.toString() === user._id.toString()
+    );
+
+    if (alreadyMarked) {
+      return res.status(400).json({
+        success: false,
+        message: `Attendance already marked for ${dateString}`,
+      });
+    }
+
+    attendanceForToday.records.push({
+      student: user._id,
+      markedAt: new Date(),
+    });
+
+    classroom.markModified("attendance");
+    await classroom.save();
+
+    return res.status(200).json({
+      success: true,
+      message: `Attendance marked successfully for ${dateString}!`,
+    });
+  } catch (error) {
+    console.error("Error giving OTP attendance:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error marking attendance",
+      error: error.message,
+    });
+  }
+};

@@ -76,60 +76,52 @@ const Quiz = () => {
         subject.subjectCode?.toLowerCase()?.includes(lowerSearch)
     ) || [];
   const { getAccessTokenSilently } = useAuth0();
-  const giveAttandance = async (subjectId) => {
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [targetSubjectId, setTargetSubjectId] = useState(null);
+  const [otpInput, setOtpInput] = useState("");
+
+  const initiateAttendance = (subId) => {
+    setTargetSubjectId(subId);
+    setShowOtpModal(true);
+    setOtpInput("");
+  };
+
+  const submitOtpAttendance = async () => {
     try {
-      // Get user's current location
-      if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser");
+      if (!otpInput) {
+        toast.error("Please enter the OTP");
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            const token = await getAccessTokenSilently({
-              audience: "http://localhost:5000/api/v2",
-            });
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v2",
+      });
 
-            const res = await axios.post(
-              `${import.meta.env.VITE_BACKEND_URL}/attandance/give-attandance`,
-              {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                subjectid: subjectId,
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
-
-            console.log(res.data);
-            toast.success(res.data.message);
-            const sound = new Howl({
-              src: ["/notification.wav"],
-              volume: 0.7,
-            });
-            sound.play();
-          } catch (error) {
-            const msg = error?.response?.data?.message || error.message;
-            toast.error(msg);
-            console.error("Error marking attendance:", error);
-          }
-        },
-        (error) => {
-          console.error("Location error:", error);
-          toast.error("Error getting location: " + error.message);
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/attandance/give-attandance-otp`,
+        {
+          otp: otpInput,
+          subjectid: targetSubjectId,
         },
         {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
+
+      console.log(res.data);
+      toast.success(res.data.message);
+      const sound = new Howl({
+        src: ["/notification.wav"],
+        volume: 0.7,
+      });
+      sound.play();
+      setShowOtpModal(false);
     } catch (error) {
-      console.error("Error:", error);
+      const msg = error?.response?.data?.message || error.message;
+      toast.error(msg);
+      console.error("Error marking attendance:", error);
     }
   };
   useEffect(() => {
@@ -445,7 +437,7 @@ const Quiz = () => {
                           className="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
                           onClick={(e) => {
                             e.stopPropagation(); // ✅ Prevent card click
-                            giveAttandance(sub?._id);
+                            initiateAttendance(sub?._id);
                           }}
                         >
                           <ClipboardCheck className="w-5 h-5" />
@@ -461,6 +453,40 @@ const Quiz = () => {
           )}
         </div>
       </div>
+
+      {/* OTP Modal */}
+      {showOtpModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-2xl w-[400px] shadow-2xl">
+            <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">Enter Class OTP</h2>
+            <p className="text-center text-gray-500 mb-6">Enter the 6-digit code shared by your teacher</p>
+
+            <input
+              type="text"
+              maxLength="6"
+              value={otpInput}
+              onChange={(e) => setOtpInput(e.target.value)}
+              className="w-full text-center text-3xl tracking-[1em] font-mono font-bold py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none mb-6"
+              placeholder="000000"
+            />
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowOtpModal(false)}
+                className="flex-1 py-3 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitOtpAttendance}
+                className="flex-1 py-3 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

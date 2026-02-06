@@ -5,12 +5,19 @@ import {
   getAttandanceforStudent,
   giveAttandance,
   markManualAttendance,
+  generateOtp,
+  giveOtpAttendance,
 } from "../controllers/clasRoom.controller.js";
 
 const classroomRoute = express.Router();
 
 classroomRoute.post("/give-attandance", isAuthenticated, giveAttandance);
 classroomRoute.get("/get-subject/:subjectId", isAuthenticated, getAttandance);
-classroomRoute.get("/total-attandance", isAuthenticated,getAttandanceforStudent )
-classroomRoute.post("/give-attandance-manuly", isAuthenticated , markManualAttendance)
+classroomRoute.get("/total-attandance", isAuthenticated, getAttandanceforStudent)
+classroomRoute.post("/give-attandance-manuly", isAuthenticated, markManualAttendance)
+
+// OTP Routes
+classroomRoute.post("/generate-otp", isAuthenticated, generateOtp);
+classroomRoute.post("/give-attandance-otp", isAuthenticated, giveOtpAttendance);
+
 export default classroomRoute;

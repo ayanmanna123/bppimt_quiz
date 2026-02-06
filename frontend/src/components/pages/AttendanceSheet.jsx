@@ -167,6 +167,33 @@ const AttendanceSheet = () => {
     }
   };
 
+  // ✅ Generate OTP
+  const [generatedOtp, setGeneratedOtp] = useState(null);
+  const [otpExpiresAt, setOtpExpiresAt] = useState(null);
+
+  const generateOtpAuth = async (date) => {
+    try {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v2",
+      });
+
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/attandance/generate-otp`,
+        { subjectId, targetDate: date }, // ✅ Pass selected date
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data.success) {
+        setGeneratedOtp(res.data.otp);
+        setOtpExpiresAt(new Date(res.data.expiresAt));
+        toast.success(`OTP Generated for ${date}! Valid for 5 minutes.`);
+      }
+    } catch (error) {
+      console.error("Error generating OTP:", error);
+      toast.error("Failed to generate OTP");
+    }
+  };
+
   // ✅ Excel Export
   const exportToExcel = () => {
     const wb = XLSX.utils.book_new();
@@ -222,16 +249,31 @@ const AttendanceSheet = () => {
                   </p>
                 </div>
               </div>
-              <button
-                onClick={exportToExcel}
-                className="bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/90 shadow-2xl flex items-center gap-3"
-              >
-                <Download className="w-5 h-5" />
-                Export to Excel
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={exportToExcel}
+                  className="bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/90 shadow-2xl flex items-center gap-3"
+                >
+                  <Download className="w-5 h-5" />
+                  Export to Excel
+                </button>
+              </div>
             </div>
+            {/* OTP Display Banner */}
+            {generatedOtp && (
+              <div className="mt-8 bg-white/20 backdrop-blur-md rounded-2xl p-6 border border-white/30 flex items-center justify-between">
+                <div>
+                  <h3 className="text-white text-xl font-semibold mb-1">Active Class OTP</h3>
+                  <p className="text-white/80">Share this code with students. Valid until {otpExpiresAt?.toLocaleTimeString()}</p>
+                </div>
+                <div className="bg-white px-8 py-4 rounded-xl">
+                  <span className="text-4xl font-mono font-bold text-purple-600 tracking-widest">{generatedOtp}</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
+
 
         {/* Attendance Table */}
         <div className="px-6 -mt-8 pb-12">
@@ -342,63 +384,73 @@ const AttendanceSheet = () => {
       </div>
 
       {/* ✅ Manual Attendance Popup */}
-      {showPopup && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-2xl w-[600px] shadow-2xl">
-            <h2 className="text-2xl font-bold mb-4 text-purple-700">
-              Mark Attendance for {selectedDate}
-            </h2>
-            <div className="max-h-[400px] overflow-y-auto border rounded-lg">
-              {students.map((stu) => (
-                <div
-                  key={stu._id}
-                  className="flex justify-between items-center px-4 py-2 border-b hover:bg-purple-50"
+      {
+        showPopup && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white p-8 rounded-2xl w-[600px] shadow-2xl">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-purple-700">
+                  Mark Attendance for {selectedDate}
+                </h2>
+                <button
+                  onClick={() => generateOtpAuth(selectedDate)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 shadow-md text-sm"
                 >
-                  <div>
-                    <p className="font-semibold">{stu.fullname}</p>
-                    <p className="text-sm text-gray-500">{stu.universityNo}</p>
+                  Generate OTP for this Date
+                </button>
+              </div>
+              <div className="max-h-[400px] overflow-y-auto border rounded-lg">
+                {students.map((stu) => (
+                  <div
+                    key={stu._id}
+                    className="flex justify-between items-center px-4 py-2 border-b hover:bg-purple-50"
+                  >
+                    <div>
+                      <p className="font-semibold">{stu.fullname}</p>
+                      <p className="text-sm text-gray-500">{stu.universityNo}</p>
+                    </div>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => toggleAttendance(stu._id, "P")}
+                        className={`px-4 py-1 rounded-lg font-semibold ${selectedAttendance[stu._id] === "P"
+                          ? "bg-green-600 text-white"
+                          : "bg-green-100 text-green-700"
+                          }`}
+                      >
+                        Present
+                      </button>
+                      <button
+                        onClick={() => toggleAttendance(stu._id, "A")}
+                        className={`px-4 py-1 rounded-lg font-semibold ${selectedAttendance[stu._id] === "A"
+                          ? "bg-red-600 text-white"
+                          : "bg-red-100 text-red-700"
+                          }`}
+                      >
+                        Absent
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => toggleAttendance(stu._id, "P")}
-                      className={`px-4 py-1 rounded-lg font-semibold ${selectedAttendance[stu._id] === "P"
-                        ? "bg-green-600 text-white"
-                        : "bg-green-100 text-green-700"
-                        }`}
-                    >
-                      Present
-                    </button>
-                    <button
-                      onClick={() => toggleAttendance(stu._id, "A")}
-                      className={`px-4 py-1 rounded-lg font-semibold ${selectedAttendance[stu._id] === "A"
-                        ? "bg-red-600 text-white"
-                        : "bg-red-100 text-red-700"
-                        }`}
-                    >
-                      Absent
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-end mt-6 gap-4">
-              <button
-                onClick={() => setShowPopup(false)}
-                className="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-semibold"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmitAttendance}
-                disabled={isUpdating}
-                className="px-8 py-2 rounded-lg bg-purple-600 text-white font-bold hover:bg-purple-700"
-              >
-                {isUpdating ? "Updating..." : "Update Attendance"}
-              </button>
+                ))}
+              </div>
+              <div className="flex justify-end mt-6 gap-4">
+                <button
+                  onClick={() => setShowPopup(false)}
+                  className="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmitAttendance}
+                  disabled={isUpdating}
+                  className="px-8 py-2 rounded-lg bg-purple-600 text-white font-bold hover:bg-purple-700"
+                >
+                  {isUpdating ? "Updating..." : "Update Attendance"}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </>
   );
 };
