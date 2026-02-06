@@ -50,20 +50,21 @@ const AttendanceSheet = () => {
           audience: "http://localhost:5000/api/v2",
         });
         const res = await axios.get(
-          `${
-            import.meta.env.VITE_BACKEND_URL
+          `${import.meta.env.VITE_BACKEND_URL
           }/attandance/get-subject/${subjectId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
         const { totalStudent, subject } = res.data;
 
+        const currentYear = new Date().getFullYear(); // ✅ Get current year dynamically
+
         const monthsData = Array.from({ length: 12 }, (_, i) => {
-          const daysInMonth = new Date(2025, i + 1, 0).getDate();
+          const daysInMonth = new Date(currentYear, i + 1, 0).getDate();
           return {
             month: i + 1,
             days: Array.from({ length: daysInMonth }, (_, d) => {
-              const dateObj = new Date(2025, i, d + 1);
+              const dateObj = new Date(currentYear, i, d + 1);
               const dateStr = dateObj.toLocaleDateString();
               return { date: dateStr };
             }),
@@ -196,7 +197,7 @@ const AttendanceSheet = () => {
 
     const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
     const blob = new Blob([wbout], { type: "application/octet-stream" });
-    saveAs(blob, "Attendance_Sheet_2025.xlsx");
+    saveAs(blob, `Attendance_Sheet_${new Date().getFullYear()}.xlsx`);
   };
 
   return (
@@ -240,13 +241,13 @@ const AttendanceSheet = () => {
                 <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
                   <div className="bg-gradient-to-r from-purple-500 via-violet-500 to-indigo-500 p-6 text-white flex justify-between">
                     <h3 className="text-3xl font-bold">
-                      {monthNames[month.month - 1]} 2025
+                      {monthNames[month.month - 1]} {new Date().getFullYear()}
                     </h3>
                     <button
                       onClick={() =>
                         handleDateClick(
                           new Date(
-                            2025,
+                            new Date().getFullYear(),
                             month.month - 1,
                             new Date().getDate()
                           ).toLocaleDateString()
@@ -310,13 +311,12 @@ const AttendanceSheet = () => {
                               {month.days.map((day) => (
                                 <td
                                   key={day.date}
-                                  className={`border border-gray-200 px-2 py-2 text-center font-bold ${
-                                    student[day.date] === "P"
-                                      ? "text-green-600 bg-green-50/50"
-                                      : student[day.date] === "A"
+                                  className={`border border-gray-200 px-2 py-2 text-center font-bold ${student[day.date] === "P"
+                                    ? "text-green-600 bg-green-50/50"
+                                    : student[day.date] === "A"
                                       ? "text-red-600 bg-red-50/50"
                                       : "text-gray-400"
-                                  }`}
+                                    }`}
                                 >
                                   {student[day.date]}
                                 </td>
@@ -361,21 +361,19 @@ const AttendanceSheet = () => {
                   <div className="flex gap-3">
                     <button
                       onClick={() => toggleAttendance(stu._id, "P")}
-                      className={`px-4 py-1 rounded-lg font-semibold ${
-                        selectedAttendance[stu._id] === "P"
-                          ? "bg-green-600 text-white"
-                          : "bg-green-100 text-green-700"
-                      }`}
+                      className={`px-4 py-1 rounded-lg font-semibold ${selectedAttendance[stu._id] === "P"
+                        ? "bg-green-600 text-white"
+                        : "bg-green-100 text-green-700"
+                        }`}
                     >
                       Present
                     </button>
                     <button
                       onClick={() => toggleAttendance(stu._id, "A")}
-                      className={`px-4 py-1 rounded-lg font-semibold ${
-                        selectedAttendance[stu._id] === "A"
-                          ? "bg-red-600 text-white"
-                          : "bg-red-100 text-red-700"
-                      }`}
+                      className={`px-4 py-1 rounded-lg font-semibold ${selectedAttendance[stu._id] === "A"
+                        ? "bg-red-600 text-white"
+                        : "bg-red-100 text-red-700"
+                        }`}
                     >
                       Absent
                     </button>

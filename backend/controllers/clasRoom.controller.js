@@ -146,9 +146,9 @@ function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(deg2rad(lat1)) *
-      Math.cos(deg2rad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+    Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -345,6 +345,13 @@ export const markManualAttendance = async (req, res) => {
         subject: subjectId,
         teacher: teacher._id,
       });
+    }
+
+    // 🛠 Fix: Remove incomplete timeSlots that cause validation errors
+    if (classroom.timeSlots && classroom.timeSlots.length > 0) {
+      classroom.timeSlots = classroom.timeSlots.filter(
+        (slot) => slot.dayOfWeek && slot.startTime && slot.endTime
+      );
     }
 
     // ✅ Build attendance record for present students
