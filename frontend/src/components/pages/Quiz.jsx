@@ -84,39 +84,50 @@ const Quiz = () => {
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        try {
-          const token = await getAccessTokenSilently({
-            audience: "http://localhost:5000/api/v2",
-          });
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const token = await getAccessTokenSilently({
+              audience: "http://localhost:5000/api/v2",
+            });
 
-          const res = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/attandance/give-attandance`,
-            {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              subjectid: subjectId,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
+            const res = await axios.post(
+              `${import.meta.env.VITE_BACKEND_URL}/attandance/give-attandance`,
+              {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                subjectid: subjectId,
               },
-            }
-          );
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
 
-          console.log(res.data);
-          toast.success(res.data.message);
-          const sound = new Howl({
-            src: ["/notification.wav"],
-            volume: 0.7,
-          });
-          sound.play();
-        } catch (error) {
-          const msg = error?.response?.data?.message || error.message;
-          toast.error(msg);
-          console.error("Error marking attendance:", error);
+            console.log(res.data);
+            toast.success(res.data.message);
+            const sound = new Howl({
+              src: ["/notification.wav"],
+              volume: 0.7,
+            });
+            sound.play();
+          } catch (error) {
+            const msg = error?.response?.data?.message || error.message;
+            toast.error(msg);
+            console.error("Error marking attendance:", error);
+          }
+        },
+        (error) => {
+          console.error("Location error:", error);
+          toast.error("Error getting location: " + error.message);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
         }
-      });
+      );
     } catch (error) {
       console.error("Error:", error);
     }
@@ -129,10 +140,8 @@ const Quiz = () => {
         });
 
         const res = await axios.get(
-          `${
-            import.meta.env.VITE_BACKEND_URL
-          }/subject/subjectByQuery?department=${usere.department}&semester=${
-            usere.semester
+          `${import.meta.env.VITE_BACKEND_URL
+          }/subject/subjectByQuery?department=${usere.department}&semester=${usere.semester
           }`,
           {
             headers: {

@@ -13,14 +13,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
-  ArrowLeft, 
-  BookOpen, 
-  GraduationCap, 
-  Building2, 
+import {
+  ArrowLeft,
+  BookOpen,
+  GraduationCap,
+  Building2,
   Calendar,
-  Sparkles, 
-  CheckCircle2, 
+  Sparkles,
+  CheckCircle2,
   ChevronDown,
   Lightbulb,
   Target,
@@ -36,6 +36,42 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Howl } from "howler";
 import Navbar from "../shared/Navbar";
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default marker icon
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+});
+
+function LocationMarker({ position, setPosition, setLatitude, setLongitude }) {
+  const map = useMapEvents({
+    click(e) {
+      setPosition(e.latlng);
+      setLatitude(e.latlng.lat);
+      setLongitude(e.latlng.lng);
+      map.flyTo(e.latlng, map.getZoom());
+    },
+    locationfound(e) {
+      setPosition(e.latlng);
+      map.flyTo(e.latlng, map.getZoom());
+    },
+  });
+
+  React.useEffect(() => {
+    if (position) {
+      map.flyTo(position, map.getZoom());
+    }
+  }, [position, map]);
+
+  return position === null ? null : (
+    <Marker position={position}></Marker>
+  )
+}
 
 const ValidatedInput = ({
   value,
@@ -48,7 +84,7 @@ const ValidatedInput = ({
   required = false
 }) => {
   const isValid = value && value.toString().trim();
-  
+
   return (
     <div className="relative group">
       {label && (
@@ -67,8 +103,8 @@ const ValidatedInput = ({
           required={required}
           className={`
             w-full px-4 py-3 rounded-2xl border-2 transition-all duration-300 text-gray-800 font-medium
-            ${isValid 
-              ? "border-green-400 bg-green-50 focus:border-green-500 focus:ring-4 focus:ring-green-100" 
+            ${isValid
+              ? "border-green-400 bg-green-50 focus:border-green-500 focus:ring-4 focus:ring-green-100"
               : "border-gray-200 bg-white focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
             }
             focus:outline-none shadow-sm hover:shadow-md
@@ -95,15 +131,15 @@ const EnhancedDropdown = ({ value, onValueChange, options, placeholder, icon: Ic
           {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className={`
               w-full justify-between px-4 py-3 h-auto rounded-2xl border-2 transition-all duration-300 font-medium
-              ${isValid 
-                ? "border-green-400 bg-green-50 hover:bg-green-50 text-gray-800" 
+              ${isValid
+                ? "border-green-400 bg-green-50 hover:bg-green-50 text-gray-800"
                 : "border-gray-200 bg-white hover:bg-gray-50 text-gray-600"
               }
               focus:ring-4 focus:ring-emerald-100 shadow-sm hover:shadow-md
@@ -118,14 +154,14 @@ const EnhancedDropdown = ({ value, onValueChange, options, placeholder, icon: Ic
             </div>
           </Button>
         </DropdownMenuTrigger>
-        
+
         <DropdownMenuContent className="w-full min-w-[var(--radix-dropdown-menu-trigger-width)] bg-white/95 backdrop-blur-sm border-0 shadow-2xl rounded-2xl">
           <DropdownMenuLabel className="text-emerald-700 font-semibold">{label}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuRadioGroup value={value} onValueChange={onValueChange}>
             {options.map((option) => (
-              <DropdownMenuRadioItem 
-                key={option.value} 
+              <DropdownMenuRadioItem
+                key={option.value}
                 value={option.value}
                 className="cursor-pointer hover:bg-emerald-50 focus:bg-emerald-50 rounded-xl mx-1 transition-all duration-200"
               >
@@ -147,8 +183,28 @@ const CreateSubject = () => {
   const [department, setDepartment] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+  const [position, setPosition] = useState(null);
   const [timeSlots, setTimeSlots] = useState([{ dayOfWeek: "", startTime: "", endTime: "" }]);
   const navigate = useNavigate();
+
+  const handleGetLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setLatitude(latitude);
+          setLongitude(longitude);
+          setPosition({ lat: latitude, lng: longitude });
+          toast.success("Location retrieved successfully!");
+        },
+        (error) => {
+          toast.error("Error getting location: " + error.message);
+        }
+      );
+    } else {
+      toast.error("Geolocation is not supported by this browser.");
+    }
+  };
 
   const departmentOptions = [
     { value: "EE", label: "Electrical Engineering (EE)" },
@@ -307,7 +363,7 @@ const CreateSubject = () => {
                   <Badge className="bg-emerald-100 text-emerald-700">{getCompletionPercentage()}%</Badge>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
+                  <div
                     className="h-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 transition-all duration-500"
                     style={{ width: `${getCompletionPercentage()}%` }}
                   ></div>
@@ -345,7 +401,7 @@ const CreateSubject = () => {
                   <p className="text-white/90 mt-2">Fill in the information to create a new subject</p>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-8">
                   {/* Subject Name and Code Grid */}
@@ -394,11 +450,22 @@ const CreateSubject = () => {
 
                   {/* Location Section */}
                   <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 border-l-4 border-blue-400">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-blue-600" />
-                      Location Coordinates
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                        <MapPin className="w-5 h-5 text-blue-600" />
+                        Location Coordinates
+                      </h3>
+                      <Button
+                        type="button"
+                        onClick={handleGetLocation}
+                        className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-4 py-2 text-sm flex items-center gap-2 transition-colors"
+                      >
+                        <Target className="w-4 h-4" />
+                        Get Live Location
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <ValidatedInput
                         label="Latitude"
                         icon={MapPin}
@@ -406,7 +473,12 @@ const CreateSubject = () => {
                         step="any"
                         placeholder="e.g., 22.611522"
                         value={latitude}
-                        onChange={(e) => setLatitude(e.target.value)}
+                        onChange={(e) => {
+                          setLatitude(e.target.value);
+                          if (e.target.value && longitude) {
+                            setPosition({ lat: parseFloat(e.target.value), lng: parseFloat(longitude) });
+                          }
+                        }}
                         required
                       />
 
@@ -417,9 +489,35 @@ const CreateSubject = () => {
                         step="any"
                         placeholder="e.g., 88.420322"
                         value={longitude}
-                        onChange={(e) => setLongitude(e.target.value)}
+                        onChange={(e) => {
+                          setLongitude(e.target.value);
+                          if (latitude && e.target.value) {
+                            setPosition({ lat: parseFloat(latitude), lng: parseFloat(e.target.value) });
+                          }
+                        }}
                         required
                       />
+                    </div>
+
+                    <div className="h-64 rounded-xl overflow-hidden border-2 border-blue-200 shadow-inner z-0">
+                      <MapContainer
+                        center={position || [22.5726, 88.3639]}
+                        zoom={13}
+                        scrollWheelZoom={false}
+                        style={{ height: "100%", width: "100%", zIndex: 0 }}
+                        className="z-0"
+                      >
+                        <TileLayer
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <LocationMarker
+                          position={position}
+                          setPosition={setPosition}
+                          setLatitude={setLatitude}
+                          setLongitude={setLongitude}
+                        />
+                      </MapContainer>
                     </div>
                   </div>
 
@@ -439,7 +537,7 @@ const CreateSubject = () => {
                         Add Slot
                       </Button>
                     </div>
-                    
+
                     <div className="space-y-4">
                       {timeSlots.map((slot, index) => (
                         <div key={index} className="bg-white rounded-xl p-4 border border-purple-200">
@@ -455,7 +553,7 @@ const CreateSubject = () => {
                               </Button>
                             )}
                           </div>
-                          
+
                           <div className="space-y-4">
                             <EnhancedDropdown
                               label="Day of Week"
@@ -466,7 +564,7 @@ const CreateSubject = () => {
                               options={dayOfWeekOptions}
                               required
                             />
-                            
+
                             <div className="grid grid-cols-2 gap-4">
                               <ValidatedInput
                                 label="Start Time"
@@ -592,7 +690,7 @@ const CreateSubject = () => {
                   <p className="text-sm text-gray-600">Departments</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center">
                   <Calendar className="w-6 h-6 text-white" />

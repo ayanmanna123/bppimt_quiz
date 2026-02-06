@@ -50,12 +50,12 @@ export const giveAttandance = async (req, res) => {
       classLng
     );
 
-    if (distance > 10) {
+    if (distance > 100) {
       return res.status(403).json({
         success: false,
         message: `You are too far from the classroom (${Math.round(
           distance
-        )}m away).`,
+        )}m away). Allowed range: 100m.`,
       });
     }
 
@@ -168,7 +168,13 @@ function isTimeBetween(current, start, end) {
   const cur = toMinutes(current);
   const s = toMinutes(start);
   const e = toMinutes(end);
-  return cur >= s && cur <= e;
+  if (s <= e) {
+    return cur >= s && cur <= e;
+  } else {
+    // Cross-midnight range (e.g. 23:00 to 01:00)
+    // Current time must be >= start OR <= end
+    return cur >= s || cur <= e;
+  }
 }
 
 export const getAttandance = async (req, res) => {
