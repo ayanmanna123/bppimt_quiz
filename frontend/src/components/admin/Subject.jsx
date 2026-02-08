@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../shared/Navbar";
+
 import {
   ArrowLeft,
   Plus,
@@ -79,7 +79,7 @@ const Subject = () => {
 
   return (
     <>
-      <Navbar />
+
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100">
         {/* Header Section */}
         <div className="p-6">

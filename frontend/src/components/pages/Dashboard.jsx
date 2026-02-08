@@ -32,10 +32,9 @@ import {
   Rocket,
   Diamond
 } from "lucide-react";
-import Navbar from "../shared/Navbar";
 import Calander from "./Calander";
 
- const Dashboard = ()=> {
+const Dashboard = () => {
   // ✅ Auth0
   const { getAccessTokenSilently, isAuthenticated, loginWithRedirect, user } = useAuth0();
 
@@ -70,7 +69,7 @@ import Calander from "./Calander";
           audience: "https://bppimt-quiz-kml1.vercel.app/api/v2",
         });
 
-        const headers = { 
+        const headers = {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         };
@@ -101,16 +100,16 @@ import Calander from "./Calander";
         if (progressRes?.success && progressRes?.data) {
           setProgress(progressRes.data);
         }
-        
+
         if (subjectRes?.success && Array.isArray(subjectRes?.data)) {
           setSubjects(subjectRes.data);
-          
+
         }
-        
+
         if (badgeRes?.success && Array.isArray(badgeRes?.quizzes)) {
           setBadges(badgeRes.quizzes);
         }
-        
+
         if (streakRes?.success && Array.isArray(streakRes?.streak)) {
           const heatmapData = streakRes.streak.map(item => ({
             date: item.date,
@@ -160,7 +159,7 @@ import Calander from "./Calander";
 
     const totalAnswers = (progress.correctAnswers || 0) + (progress.wrongAnswers || 0);
     const calculatedPercentage = totalAnswers > 0 ? (progress.correctAnswers / totalAnswers) * 100 : 0;
-    
+
     const percentageAnim = animate(0, calculatedPercentage, {
       duration: 2,
       onUpdate: (v) => setPercentage(v),
@@ -232,8 +231,8 @@ import Calander from "./Calander";
           <XCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
           <p className="text-xl font-semibold mb-2">Oops! Something went wrong</p>
           <p className="text-white/80 mb-6">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={() => window.location.reload()}
             className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 font-semibold flex items-center gap-2 mx-auto"
           >
             <Rocket className="w-4 h-4" />
@@ -262,40 +261,38 @@ import Calander from "./Calander";
   return (
 
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
-      <Navbar/>
-      {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          animate={{ 
+          animate={{
             rotate: 360,
             scale: [1, 1.1, 1],
           }}
-          transition={{ 
+          transition={{
             rotate: { duration: 60, repeat: Infinity, ease: "linear" },
             scale: { duration: 8, repeat: Infinity, ease: "easeInOut" }
           }}
           className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl"
         />
         <motion.div
-          animate={{ 
+          animate={{
             rotate: -360,
             scale: [1.1, 1, 1.1],
           }}
-          transition={{ 
+          transition={{
             rotate: { duration: 45, repeat: Infinity, ease: "linear" },
             scale: { duration: 6, repeat: Infinity, ease: "easeInOut" }
           }}
           className="absolute -bottom-32 -left-32 w-96 h-96 bg-gradient-to-tr from-blue-200/30 to-cyan-200/30 rounded-full blur-3xl"
         />
         <motion.div
-          animate={{ 
+          animate={{
             y: [-20, 20, -20],
             x: [-10, 10, -10],
           }}
-          transition={{ 
-            duration: 10, 
-            repeat: Infinity, 
-            ease: "easeInOut" 
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut"
           }}
           className="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-bl from-indigo-200/20 to-purple-200/20 rounded-full blur-2xl"
         />
@@ -323,7 +320,7 @@ import Calander from "./Calander";
                 className="absolute bottom-4 left-4 w-24 h-24 border border-white rounded-full"
               />
               <motion.div
-                animate={{ 
+                animate={{
                   scale: [1, 1.2, 1],
                   opacity: [0.3, 0.6, 0.3]
                 }}
@@ -438,7 +435,7 @@ import Calander from "./Calander";
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                 className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full opacity-30"
               />
-              
+
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
@@ -491,7 +488,7 @@ import Calander from "./Calander";
                   </div>
 
                   <motion.div
-                    animate={{ 
+                    animate={{
                       boxShadow: [
                         "0 0 20px rgba(59, 130, 246, 0.3)",
                         "0 0 40px rgba(59, 130, 246, 0.5)",
@@ -549,7 +546,7 @@ import Calander from "./Calander";
                             </div>
                             <div>
                               <h3 className="font-bold text-gray-800 text-lg">{subject.subjectName}</h3>
-                               <h3 className="font-bold text-gray-800 text-sm">{subject.subjectCode}</h3>
+                              <h3 className="font-bold text-gray-800 text-sm">{subject.subjectCode}</h3>
 
                               <p className="text-gray-600 text-sm">Subject Progress</p>
                             </div>
@@ -567,9 +564,9 @@ import Calander from "./Calander";
                             <motion.div
                               className="h-4 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
                               initial={{ width: 0 }}
-                              animate={{ 
-                                width: subject.totalQuizzes > 0 
-                                  ? `${(subject.completedQuizzes / subject.totalQuizzes) * 100}%` 
+                              animate={{
+                                width: subject.totalQuizzes > 0
+                                  ? `${(subject.completedQuizzes / subject.totalQuizzes) * 100}%`
                                   : '0%'
                               }}
                               transition={{ duration: 1.5, delay: 0.5 + index * 0.2 }}
@@ -618,7 +615,7 @@ import Calander from "./Calander";
                   Achievements
                 </h2>
                 <motion.div
-                  animate={{ 
+                  animate={{
                     scale: [1, 1.2, 1],
                     rotate: [0, 5, -5, 0]
                   }}
@@ -640,11 +637,10 @@ import Calander from "./Calander";
                       whileHover={{ scale: 1.05, y: -2 }}
                       className="group cursor-pointer"
                     >
-                      <div className={`relative rounded-2xl p-5 border-2 transition-all duration-300 ${
-                        badge.isUserTopper 
-                          ? 'bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-100 border-yellow-300 shadow-lg' 
-                          : 'bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200 hover:border-purple-300'
-                      }`}>
+                      <div className={`relative rounded-2xl p-5 border-2 transition-all duration-300 ${badge.isUserTopper
+                        ? 'bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-100 border-yellow-300 shadow-lg'
+                        : 'bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200 hover:border-purple-300'
+                        }`}>
                         {/* Crown for top performers */}
                         {badge.isUserTopper && (
                           <motion.div
@@ -683,7 +679,7 @@ import Calander from "./Calander";
                               {Math.round(badge.highestPercentage || 0)}%
                             </span>
                           </div>
-                          
+
                           {badge.isUserTopper && (
                             <motion.div
                               animate={{ opacity: [0.7, 1, 0.7] }}
@@ -703,7 +699,7 @@ import Calander from "./Calander";
                 ) : (
                   <div className="text-center py-12">
                     <motion.div
-                      animate={{ 
+                      animate={{
                         scale: [1, 1.1, 1],
                         rotate: [0, 5, -5, 0]
                       }}
@@ -739,7 +735,7 @@ import Calander from "./Calander";
             {/* Animated background elements */}
             <div className="absolute inset-0 opacity-5">
               <motion.div
-                animate={{ 
+                animate={{
                   scale: [1, 1.2, 1],
                   rotate: [0, 90, 180, 270, 360]
                 }}
@@ -747,7 +743,7 @@ import Calander from "./Calander";
                 className="absolute top-4 right-4 w-32 h-32 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl"
               />
               <motion.div
-                animate={{ 
+                animate={{
                   scale: [1.2, 1, 1.2],
                   rotate: [360, 270, 180, 90, 0]
                 }}
@@ -806,8 +802,8 @@ import Calander from "./Calander";
                         return "color-empty";
                       }}
                       tooltipDataAttrs={(value) => ({
-                        "data-tip": value?.date 
-                          ? `${value.date}: ${value.count || 0} quiz${value.count !== 1 ? 'es' : ''}` 
+                        "data-tip": value?.date
+                          ? `${value.date}: ${value.count || 0} quiz${value.count !== 1 ? 'es' : ''}`
                           : "No activity",
                       })}
                       gutterSize={3}
@@ -830,7 +826,7 @@ import Calander from "./Calander";
               ) : (
                 <div className="text-center py-16">
                   <motion.div
-                    animate={{ 
+                    animate={{
                       scale: [1, 1.1, 1],
                       rotate: [0, 10, -10, 0]
                     }}
@@ -853,7 +849,7 @@ import Calander from "./Calander";
             </div>
           </div>
         </motion.div>
-        <Calander/>
+        <Calander />
       </div>
 
       {/* Enhanced Custom Styles */}

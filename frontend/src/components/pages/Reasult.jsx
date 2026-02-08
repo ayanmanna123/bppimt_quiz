@@ -4,7 +4,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Trophy, Calendar, Clock, Brain, BookOpen, Sparkles, Award, Target, Users, CheckCircle2 } from "lucide-react";
-import Navbar from "../shared/Navbar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from 'framer-motion';
@@ -105,7 +104,6 @@ const Result = () => {
 
   return (
     <>
-      <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-100">
         {/* Header Section */}
         <div className="p-6">
@@ -206,20 +204,20 @@ const Result = () => {
                     key={index}
                     initial={{ opacity: 0, y: 60, rotate: -2 }}
                     animate={{ opacity: 1, y: 0, rotate: 0 }}
-                    transition={{ 
-                      duration: 0.7, 
+                    transition={{
+                      duration: 0.7,
                       delay: index * 0.15,
                       type: "spring",
                       stiffness: 100
                     }}
                     className="group"
                   >
-                    <Card 
+                    <Card
                       className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-105 relative cursor-pointer"
                       onClick={() => navigate(`/reasult/details/${result?._id}`)}
                     >
                       {/* Creative gradient header with enhanced patterns */}
-                      <div 
+                      <div
                         className={`h-40 ${gradientClass} relative overflow-hidden`}
                         style={{ background: patternStyle }}
                       >
@@ -274,7 +272,7 @@ const Result = () => {
                               </span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                              <div 
+                              <div
                                 className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-1000"
                                 style={{ width: `${Math.min(percentage, 100)}%` }}
                               ></div>
@@ -292,7 +290,7 @@ const Result = () => {
                               <p className="text-sm font-bold text-gray-800">{result?.quiz?.subject?.subjectName}</p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-xl">
                             <Users className="w-5 h-5 text-purple-600" />
                             <div>
@@ -315,7 +313,7 @@ const Result = () => {
                               </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-xl">
                             <Brain className="w-5 h-5 text-orange-600" />
                             <div>
@@ -333,8 +331,8 @@ const Result = () => {
                             <p className="text-sm font-bold text-gray-800">
                               {new Date(result?.submittedAt).toLocaleString('en-US', {
                                 weekday: 'short',
-                                month: 'short', 
-                                day: 'numeric', 
+                                month: 'short',
+                                day: 'numeric',
                                 year: 'numeric',
                                 hour: '2-digit',
                                 minute: '2-digit'
@@ -380,7 +378,7 @@ const Result = () => {
                     <p className="text-sm text-gray-600">Completed Quizzes</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
                     <Award className="w-6 h-6 text-white" />

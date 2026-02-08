@@ -35,7 +35,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Howl } from "howler";
-import Navbar from "../shared/Navbar";
+
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -312,7 +312,7 @@ const CreateSubject = () => {
 
   return (
     <>
-      <Navbar />
+
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-100">
         {/* Header Section */}
         <div className="p-6">

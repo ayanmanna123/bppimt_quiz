@@ -26,10 +26,17 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Handle scroll effect
+  // Handle scroll effect with throttling
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -93,8 +100,8 @@ const Navbar = () => {
   return (
     <motion.div
       className={`sticky top-0 z-50 transition-all duration-300 ${scrolled
-          ? "bg-white/90 backdrop-blur-lg border-b border-slate-200/60 shadow-lg"
-          : "bg-white/80 backdrop-blur-sm"
+        ? "bg-white/90 backdrop-blur-lg border-b border-slate-200/60 shadow-lg"
+        : "bg-white/80 backdrop-blur-sm"
         }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -133,8 +140,8 @@ const Navbar = () => {
                   <Link
                     to={item.path}
                     className={`relative group flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${isActive
-                        ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg"
-                        : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                      ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg"
+                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                       }`}
                   >
                     <IconComponent className="w-4 h-4" />
@@ -208,10 +215,10 @@ const Navbar = () => {
                     >
                       <div
                         className={`w-full h-full rounded-full ${usere?.verified === "accept"
-                            ? "bg-emerald-400 animate-pulse"
-                            : usere?.verified === "pending"
-                              ? "bg-gray-300"
-                              : "bg-red-400"
+                          ? "bg-emerald-400 animate-pulse"
+                          : usere?.verified === "pending"
+                            ? "bg-gray-300"
+                            : "bg-red-400"
                           }`}
                       ></div>
                     </div>
@@ -351,8 +358,8 @@ const Navbar = () => {
                     <Link
                       to={item.path}
                       className={`flex items-center gap-3 p-4 rounded-xl font-medium transition-all duration-300 ${isActive
-                          ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg"
-                          : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                        ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg"
+                        : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                         }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >

@@ -4,7 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useParams } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import Navbar from "../shared/Navbar";
+
 import { Howl } from "howler";
 import {
   FileSpreadsheet,
@@ -275,7 +275,7 @@ const AttendanceSheet = () => {
 
   return (
     <>
-      <Navbar />
+
       <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-100">
         {/* Header */}
         <div className="relative overflow-hidden">
@@ -299,8 +299,8 @@ const AttendanceSheet = () => {
                 <button
                   onClick={handleToggleAttendance}
                   className={`px-8 py-4 rounded-xl font-bold text-lg shadow-2xl flex items-center gap-3 transition-colors ${isAttendanceEnabled
-                      ? "bg-green-500 text-white hover:bg-green-600"
-                      : "bg-red-500 text-white hover:bg-red-600"
+                    ? "bg-green-500 text-white hover:bg-green-600"
+                    : "bg-red-500 text-white hover:bg-red-600"
                     }`}
                 >
                   <div className={`w-3 h-3 rounded-full ${isAttendanceEnabled ? "bg-white animate-pulse" : "bg-white/50"}`} />

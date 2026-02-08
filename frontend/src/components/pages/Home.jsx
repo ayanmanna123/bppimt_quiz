@@ -1,5 +1,4 @@
 import { lazy, Suspense } from "react";
-import Navbar from "../shared/Navbar";
 import { Button } from "../ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
@@ -41,7 +40,6 @@ const Home = () => {
 
   return (
     <>
-      <Navbar />
       {/* Hero Section with Enhanced Background */}
       <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 overflow-hidden">
         {/* Animated Background Pattern */}
@@ -57,6 +55,7 @@ const Home = () => {
         {/* Floating Elements */}
         <motion.div
           className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-xl"
+          style={{ willChange: "transform" }}
           animate={{
             y: [0, -20, 0],
             x: [0, 10, 0],
@@ -64,11 +63,12 @@ const Home = () => {
           transition={{
             duration: 6,
             repeat: Infinity,
-            ease: "easeInOut",
+            ease: "linear",
           }}
         />
         <motion.div
           className="absolute top-40 right-20 w-32 h-32 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-full blur-xl"
+          style={{ willChange: "transform" }}
           animate={{
             y: [0, 30, 0],
             x: [0, -15, 0],
@@ -76,11 +76,12 @@ const Home = () => {
           transition={{
             duration: 8,
             repeat: Infinity,
-            ease: "easeInOut",
+            ease: "linear",
           }}
         />
         <motion.div
           className="absolute bottom-40 left-1/4 w-24 h-24 bg-gradient-to-r from-pink-400/20 to-rose-400/20 rounded-full blur-xl"
+          style={{ willChange: "transform" }}
           animate={{
             y: [0, -25, 0],
             x: [0, 20, 0],
@@ -88,7 +89,7 @@ const Home = () => {
           transition={{
             duration: 7,
             repeat: Infinity,
-            ease: "easeInOut",
+            ease: "linear",
           }}
         />
 

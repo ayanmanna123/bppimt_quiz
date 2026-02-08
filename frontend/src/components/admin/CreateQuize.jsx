@@ -5,18 +5,18 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import Navbar from "../shared/Navbar";
-import { 
-  ArrowLeft, 
-  Sparkles, 
-  Brain, 
-  Plus, 
-  Trash2, 
-  Wand2, 
-  BookOpen, 
-  Calendar, 
-  Clock, 
-  Trophy, 
+
+import {
+  ArrowLeft,
+  Sparkles,
+  Brain,
+  Plus,
+  Trash2,
+  Wand2,
+  BookOpen,
+  Calendar,
+  Clock,
+  Trophy,
   Target,
   Zap,
   CheckCircle2,
@@ -38,7 +38,7 @@ const ValidatedInput = ({
   label,
 }) => {
   const isValid = value && value.toString().trim();
-  
+
   return (
     <div className="relative group">
       {label && (
@@ -55,8 +55,8 @@ const ValidatedInput = ({
           onChange={onChange}
           className={`
             w-full px-4 py-3 rounded-2xl border-2 transition-all duration-300 text-gray-800 font-medium
-            ${isValid 
-              ? "border-green-400 bg-green-50 focus:border-green-500 focus:ring-4 focus:ring-green-100" 
+            ${isValid
+              ? "border-green-400 bg-green-50 focus:border-green-500 focus:ring-4 focus:ring-green-100"
               : "border-gray-200 bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
             }
             focus:outline-none shadow-sm hover:shadow-md
@@ -185,13 +185,13 @@ const CreateQuize = () => {
       const filledOptions = q.options.filter(Boolean).length;
       return acc + (q.questionText ? 1 : 0) + (filledOptions / 4);
     }, 0);
-    
+
     return Math.round(((basicFields + questionFields) / (5 + questions.length * 2)) * 100);
   };
 
   return (
     <>
-      <Navbar />
+
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
         {/* Header Section */}
         <div className="p-6">
@@ -242,7 +242,7 @@ const CreateQuize = () => {
                   <Badge className="bg-indigo-100 text-indigo-700">{getCompletionPercentage()}%</Badge>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
+                  <div
                     className="h-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-500"
                     style={{ width: `${getCompletionPercentage()}%` }}
                   ></div>
@@ -260,7 +260,7 @@ const CreateQuize = () => {
         {/* Main Form */}
         <div className="max-w-5xl mx-auto px-6 pb-12">
           <form onSubmit={handleSubmit} className="space-y-8">
-            
+
             {/* Basic Quiz Information Card */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
@@ -282,7 +282,7 @@ const CreateQuize = () => {
                     <p className="text-white/90 mt-2">Set up the basic details for your quiz</p>
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="p-8 space-y-6">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <ValidatedInput
@@ -292,7 +292,7 @@ const CreateQuize = () => {
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                     />
-                    
+
                     <ValidatedInput
                       label="Submission Date"
                       icon={Calendar}
@@ -300,7 +300,7 @@ const CreateQuize = () => {
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
                     />
-                    
+
                     <ValidatedInput
                       label="Duration (minutes)"
                       icon={Clock}
@@ -309,7 +309,7 @@ const CreateQuize = () => {
                       value={time}
                       onChange={(e) => setTime(e.target.value)}
                     />
-                    
+
                     <ValidatedInput
                       label="Marks per Question"
                       icon={Trophy}
@@ -319,7 +319,7 @@ const CreateQuize = () => {
                       onChange={(e) => setMarks(e.target.value)}
                     />
                   </div>
-                  
+
                   <ValidatedInput
                     label="Total Questions"
                     icon={Target}
@@ -343,7 +343,7 @@ const CreateQuize = () => {
                   <div className="absolute top-4 right-4 w-24 h-24 border border-white/30 rounded-full animate-spin-slow"></div>
                   <div className="absolute bottom-4 left-4 w-16 h-16 bg-white/10 rounded-2xl rotate-45 animate-pulse"></div>
                 </div>
-                
+
                 <CardContent className="p-8 relative z-10">
                   <div className="text-center">
                     <div className="inline-flex items-center gap-3 mb-4">
@@ -355,7 +355,7 @@ const CreateQuize = () => {
                         <p className="text-white/80">Let AI create questions for you instantly</p>
                       </div>
                     </div>
-                    
+
                     <Button
                       type="button"
                       onClick={autoGenerateQuestions}
@@ -375,7 +375,7 @@ const CreateQuize = () => {
                         </>
                       )}
                     </Button>
-                    
+
                     {!title && (
                       <div className="mt-4 flex items-center justify-center gap-2 text-white/70">
                         <AlertCircle className="w-4 h-4" />
@@ -407,7 +407,7 @@ const CreateQuize = () => {
                       </CardTitle>
                       <p className="text-white/90 mt-2">Craft your quiz questions and answers</p>
                     </div>
-                    
+
                     <Button
                       type="button"
                       onClick={addQuestion}
@@ -418,7 +418,7 @@ const CreateQuize = () => {
                     </Button>
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="p-8 space-y-8">
                   {questions.map((q, i) => (
                     <motion.div
@@ -436,7 +436,7 @@ const CreateQuize = () => {
                           </div>
                           <span className="text-lg font-bold text-gray-800">Question {i + 1}</span>
                         </div>
-                        
+
                         {questions.length > 1 && (
                           <Button
                             type="button"

@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Navbar from "../shared/Navbar";
+
 
 const CertificateVerifier = () => {
   const [resultId, setResultId] = useState("");
@@ -66,7 +66,7 @@ const CertificateVerifier = () => {
 
   return (
     <>
-        <Navbar/>
+
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100 p-6">
         {/* Header Section */}
         <div className="relative mb-12">

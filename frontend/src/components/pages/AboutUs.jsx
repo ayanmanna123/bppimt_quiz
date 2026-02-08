@@ -1,14 +1,14 @@
 import React from "react";
 import { motion } from "framer-motion";
-import Navbar from "../shared/Navbar";
-import { 
-  Target, 
-  Users, 
-  Award, 
-  BookOpen, 
-  Lightbulb, 
-  Heart, 
-  Shield, 
+
+import {
+  Target,
+  Users,
+  Award,
+  BookOpen,
+  Lightbulb,
+  Heart,
+  Shield,
   Zap,
   Globe,
   Star,
@@ -84,9 +84,8 @@ const AboutUs = () => {
 
   return (
     <>
-      <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
-        
+
         {/* Hero Section */}
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600"></div>
@@ -96,7 +95,7 @@ const AboutUs = () => {
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 border border-white/20 rounded-3xl rotate-45 animate-pulse"></div>
             <div className="absolute top-40 right-40 w-20 h-20 bg-white/20 rounded-2xl rotate-12 animate-pulse"></div>
           </div>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -117,15 +116,15 @@ const AboutUs = () => {
                   </p>
                 </div>
               </div>
-              
-              <motion.p 
+
+              <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5, duration: 0.8 }}
                 className="text-lg text-white/90 max-w-3xl mx-auto leading-relaxed"
               >
-                We believe that learning should be engaging, accessible, and effective. Our platform combines 
-                cutting-edge technology with proven educational methodologies to create an unparalleled 
+                We believe that learning should be engaging, accessible, and effective. Our platform combines
+                cutting-edge technology with proven educational methodologies to create an unparalleled
                 quiz experience for students and educators worldwide.
               </motion.p>
             </div>
@@ -169,7 +168,7 @@ const AboutUs = () => {
                 Our Mission
               </h2>
               <p className="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
-                To democratize quality education by providing innovative, interactive assessment tools 
+                To democratize quality education by providing innovative, interactive assessment tools
                 that help educators create engaging content and students achieve their full potential.
               </p>
             </motion.div>
@@ -227,11 +226,12 @@ const AboutUs = () => {
                             <div className="absolute bottom-2 left-2 w-8 h-8 bg-white/30 rounded-full"></div>
                           </div>
                         </div>
-                        
+
                         <div className="relative -mt-12 text-center pb-6">
                           <img
                             src={member.image}
                             alt={member.name}
+                            loading="lazy"
                             className="w-24 h-24 rounded-full mx-auto border-4 border-white shadow-xl object-cover"
                           />
                           <h3 className="text-lg font-bold text-gray-800 mt-4">{member.name}</h3>
@@ -266,7 +266,7 @@ const AboutUs = () => {
                     <p className="text-blue-600 font-semibold">hello@quizmaster.edu</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3 p-4 bg-green-50 rounded-2xl">
                   <Phone className="w-6 h-6 text-green-600" />
                   <div className="text-left">
@@ -274,7 +274,7 @@ const AboutUs = () => {
                     <p className="text-green-600 font-semibold">+1 (555) 123-4567</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-2xl">
                   <MapPin className="w-6 h-6 text-purple-600" />
                   <div className="text-left">

@@ -19,7 +19,7 @@ import {
   BarChart3,
   Zap
 } from "lucide-react";
-import Navbar from "../shared/Navbar";
+
 import { toast } from "sonner";
 import { Howl } from "howler";
 
@@ -153,7 +153,7 @@ const StudentAttendanceSummary = () => {
 
   return (
     <>
-      <Navbar />
+
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100">
         {/* Hero Section */}
         <div className="relative overflow-hidden">

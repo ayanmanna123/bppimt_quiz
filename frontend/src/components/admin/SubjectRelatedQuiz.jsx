@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import Navbar from "../shared/Navbar";
+
 import { ArrowLeft, Trash2, Calendar, Clock, Award, HelpCircle, Eye, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +15,7 @@ import { toast } from "sonner";
 // Creative gradient backgrounds with different styles
 const quizGradients = [
   "bg-gradient-to-br from-violet-400 via-purple-500 to-indigo-600",
-  "bg-gradient-to-br from-emerald-400 via-cyan-500 to-blue-600", 
+  "bg-gradient-to-br from-emerald-400 via-cyan-500 to-blue-600",
   "bg-gradient-to-br from-orange-400 via-red-500 to-pink-600",
   "bg-gradient-to-br from-lime-400 via-green-500 to-teal-600",
   "bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500",
@@ -51,7 +51,7 @@ const SubjectRelatedQuiz = () => {
           }
         );
         setQuizzes(res.data.allquiz || []);
-        
+
       } catch (error) {
         console.error("Error fetching quizzes:", error);
       }
@@ -89,7 +89,7 @@ const SubjectRelatedQuiz = () => {
 
   return (
     <>
-      <Navbar />
+
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
         {/* Header Section */}
         <div className="p-2">
@@ -121,7 +121,7 @@ const SubjectRelatedQuiz = () => {
                   My Quizzes
                 </h1>
               </div>
-              
+
             </motion.div>
 
             {/* Floating decorative elements */}
@@ -169,7 +169,7 @@ const SubjectRelatedQuiz = () => {
                   >
                     <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-2xl transform hover:scale-105 relative">
                       {/* Creative gradient header with pattern */}
-                      <div 
+                      <div
                         className={`h-32 ${gradientClass} relative overflow-hidden`}
                         style={{ background: patternStyle }}
                       >
@@ -229,10 +229,10 @@ const SubjectRelatedQuiz = () => {
                         <div className="bg-gray-50 rounded-lg p-3">
                           <p className="text-xs text-gray-500 font-medium">Created</p>
                           <p className="text-sm font-semibold text-gray-700">
-                            {new Date(quiz.createdAt).toLocaleDateString('en-US', { 
-                              month: 'short', 
-                              day: 'numeric', 
-                              year: 'numeric' 
+                            {new Date(quiz.createdAt).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric'
                             })}
                           </p>
                         </div>

@@ -4,7 +4,6 @@ import { Button } from "./ui/button";
 import { motion, animate } from "framer-motion";
 import { useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
-import Navbar from "./shared/Navbar";
 import UpdateProfilelog from "./UpdateProfilelog";
 import Dashboard from "./pages/Dashboard";
 import Calendar from "../components/pages/Calander";
@@ -291,8 +290,6 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
-      <Navbar />
-
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div

@@ -14,7 +14,7 @@ import {
   Eye,
   Sparkles,
 } from "lucide-react";
-import Navbar from "../shared/Navbar";
+
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -102,7 +102,7 @@ const TeacherCreateQuiz = () => {
 
   return (
     <>
-      <Navbar />
+
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         {/* Header Section */}
         <div className="p-6">

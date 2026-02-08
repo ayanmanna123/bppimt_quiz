@@ -11,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Navbar from "./shared/Navbar";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
@@ -96,9 +95,8 @@ const AllQuiz = () => {
     if (diffMs > 0) {
       return `${diffDays} day${diffDays !== 1 ? "s" : ""} left`;
     } else {
-      return `${Math.abs(diffDays)} day${
-        Math.abs(diffDays) !== 1 ? "s" : ""
-      } ago`;
+      return `${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? "s" : ""
+        } ago`;
     }
   };
 
@@ -109,7 +107,6 @@ const AllQuiz = () => {
 
   return (
     <>
-      <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-blue-100">
         {/* Header Section */}
         <div className="p-6">
@@ -246,11 +243,10 @@ const AllQuiz = () => {
                         {/* Status badge */}
                         <div className="absolute top-4 right-4">
                           <Badge
-                            className={`${
-                              isActive
-                                ? "bg-white/90 text-green-700 border-green-200"
-                                : "bg-white/90 text-red-700 border-red-200"
-                            } font-semibold shadow-lg backdrop-blur-sm`}
+                            className={`${isActive
+                              ? "bg-white/90 text-green-700 border-green-200"
+                              : "bg-white/90 text-red-700 border-red-200"
+                              } font-semibold shadow-lg backdrop-blur-sm`}
                           >
                             {getRemainingTime(quiz.date)}
                           </Badge>
@@ -328,33 +324,31 @@ const AllQuiz = () => {
                           <p className="text-sm font-bold text-gray-800">
                             {quiz.createdAt
                               ? new Date(quiz.createdAt).toLocaleDateString(
-                                  "en-US",
-                                  {
-                                    weekday: "short",
-                                    month: "short",
-                                    day: "numeric",
-                                    year: "numeric",
-                                  }
-                                )
+                                "en-US",
+                                {
+                                  weekday: "short",
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                }
+                              )
                               : "N/A"}
                           </p>
                         </div>
 
                         {/* Quiz availability status */}
                         <div
-                          className={`rounded-xl p-4 border-l-4 ${
-                            isActive
-                              ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-400"
-                              : "bg-gradient-to-r from-red-50 to-rose-50 border-red-400"
-                          }`}
+                          className={`rounded-xl p-4 border-l-4 ${isActive
+                            ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-400"
+                            : "bg-gradient-to-r from-red-50 to-rose-50 border-red-400"
+                            }`}
                         >
                           <p className="text-xs text-gray-500 font-semibold mb-1">
                             STATUS
                           </p>
                           <p
-                            className={`text-sm font-bold ${
-                              isActive ? "text-green-700" : "text-red-700"
-                            }`}
+                            className={`text-sm font-bold ${isActive ? "text-green-700" : "text-red-700"
+                              }`}
                           >
                             {isActive ? "Available to Take" : "Quiz Expired"}
                           </p>
@@ -364,11 +358,10 @@ const AllQuiz = () => {
                         <Button
                           onClick={() => navigate(`/quiz/page/${quiz._id}`)}
                           disabled={!isActive}
-                          className={`w-full font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105 ${
-                            isActive
-                              ? "bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white"
-                              : "bg-gray-300 text-gray-500 cursor-not-allowed hover:scale-100 hover:shadow-lg"
-                          }`}
+                          className={`w-full font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105 ${isActive
+                            ? "bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed hover:scale-100 hover:shadow-lg"
+                            }`}
                         >
                           <Play className="w-5 h-5" />
                           {isActive ? "Start Quiz" : "Quiz Expired"}

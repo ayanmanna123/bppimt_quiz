@@ -30,7 +30,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import Navbar from "../../shared/Navbar";
+
 
 const UnAuthorizeUser = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -180,7 +180,7 @@ const UnAuthorizeUser = () => {
 
   return (
     <>
-      <Navbar />
+
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         {/* Hero Section */}
         <div className="relative overflow-hidden">
@@ -245,13 +245,12 @@ const UnAuthorizeUser = () => {
             className="px-6 -mt-4 relative z-30"
           >
             <div
-              className={`p-4 rounded-2xl shadow-lg border-l-4 ${
-                actionFeedback.type === "success"
+              className={`p-4 rounded-2xl shadow-lg border-l-4 ${actionFeedback.type === "success"
                   ? "bg-green-50 border-green-500 text-green-800"
                   : actionFeedback.type === "error"
-                  ? "bg-red-50 border-red-500 text-red-800"
-                  : "bg-yellow-50 border-yellow-500 text-yellow-800"
-              }`}
+                    ? "bg-red-50 border-red-500 text-red-800"
+                    : "bg-yellow-50 border-yellow-500 text-yellow-800"
+                }`}
             >
               <div className="flex items-center gap-2">
                 {actionFeedback.type === "success" && (
@@ -452,18 +451,16 @@ const UnAuthorizeUser = () => {
                           <div className="space-y-2">
                             <div className="flex items-center gap-2">
                               <div
-                                className={`w-3 h-3 rounded-full ${
-                                  user.role === "student"
+                                className={`w-3 h-3 rounded-full ${user.role === "student"
                                     ? "bg-blue-400"
                                     : "bg-purple-400"
-                                }`}
+                                  }`}
                               ></div>
                               <span
-                                className={`text-sm font-bold px-3 py-1 rounded-full ${
-                                  user.role === "student"
+                                className={`text-sm font-bold px-3 py-1 rounded-full ${user.role === "student"
                                     ? "bg-blue-100 text-blue-800"
                                     : "bg-purple-100 text-purple-800"
-                                }`}
+                                  }`}
                               >
                                 {user.role?.toUpperCase()}
                               </span>

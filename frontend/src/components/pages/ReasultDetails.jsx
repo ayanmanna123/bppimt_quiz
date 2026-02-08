@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import Navbar from "../shared/Navbar";
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import jsPDF from "jspdf";
@@ -284,7 +283,6 @@ const ResultDetails = () => {
 
   return (
     <>
-      <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
         {/* Header Section */}
         <div className="p-6">
@@ -336,7 +334,7 @@ const ResultDetails = () => {
                   </div>
                   <div className="text-2xl font-bold text-indigo-600">{percentage}%</div>
                 </div>
-                
+
                 <div className={`backdrop-blur-sm rounded-2xl p-4 border border-white/50 shadow-lg ${gradeInfo.bgColor}`}>
                   <div className="flex items-center gap-2">
                     <gradeInfo.icon className={`w-5 h-5 ${gradeInfo.textColor}`} />
@@ -356,7 +354,7 @@ const ResultDetails = () => {
 
         {/* Main Content */}
         <div className="max-w-5xl mx-auto px-6 pb-12">
-          
+
           {/* Quiz Overview Card */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -380,7 +378,7 @@ const ResultDetails = () => {
                       </CardTitle>
                       <p className="text-white/90 mt-2">Quiz Performance Overview</p>
                     </div>
-                    
+
                     <Button
                       onClick={generateCertificate}
                       className="bg-white/20 hover:bg-white/30 text-white border border-white/30 hover:border-white/50 backdrop-blur-sm font-bold py-3 px-6 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:scale-105"
@@ -392,7 +390,7 @@ const ResultDetails = () => {
                   </div>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="p-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="flex items-center gap-4 p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl">
@@ -405,7 +403,7 @@ const ResultDetails = () => {
                       <p>{result.student.universityNo}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-4 p-6 bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl">
                     <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
                       <Target className="w-6 h-6 text-white" />
@@ -417,7 +415,7 @@ const ResultDetails = () => {
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-4 p-6 bg-gradient-to-br from-purple-50 to-pink-100 rounded-2xl">
                     <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
                       <Calendar className="w-6 h-6 text-white" />
@@ -452,12 +450,12 @@ const ResultDetails = () => {
                     Question Analysis ({result.details.length} Questions)
                   </CardTitle>
                   <p className="text-white/90 mt-2">
-                    Correct: {correctAnswers}/{result.details.length} • 
+                    Correct: {correctAnswers}/{result.details.length} •
                     Accuracy: {Math.round((correctAnswers / result.details.length) * 100)}%
                   </p>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="p-8 space-y-8">
                 {result.details.map((q, index) => {
                   const studentAnsIndex = q.studentAnswerIndex?.selectedOption;
@@ -469,23 +467,21 @@ const ResultDetails = () => {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.4, delay: index * 0.1 }}
-                      className={`relative p-6 rounded-3xl border-2 shadow-lg hover:shadow-xl transition-all duration-300 ${
-                        isCorrect 
-                          ? "bg-gradient-to-br from-green-50 to-emerald-100 border-green-300" 
-                          : "bg-gradient-to-br from-red-50 to-pink-100 border-red-300"
-                      }`}
+                      className={`relative p-6 rounded-3xl border-2 shadow-lg hover:shadow-xl transition-all duration-300 ${isCorrect
+                        ? "bg-gradient-to-br from-green-50 to-emerald-100 border-green-300"
+                        : "bg-gradient-to-br from-red-50 to-pink-100 border-red-300"
+                        }`}
                     >
                       {/* Question Header */}
                       <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold ${
-                            isCorrect ? "bg-gradient-to-br from-green-500 to-emerald-600" : "bg-gradient-to-br from-red-500 to-pink-600"
-                          }`}>
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold ${isCorrect ? "bg-gradient-to-br from-green-500 to-emerald-600" : "bg-gradient-to-br from-red-500 to-pink-600"
+                            }`}>
                             {index + 1}
                           </div>
                           <span className="text-lg font-bold text-gray-800">Question {index + 1}</span>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                           {isCorrect ? (
                             <>
@@ -515,30 +511,28 @@ const ResultDetails = () => {
                           return (
                             <div
                               key={i}
-                              className={`p-4 rounded-2xl border-2 transition-all duration-300 relative ${
-                                isCorrectAns && isStudentAns
-                                  ? "border-green-400 bg-green-100 shadow-lg"
-                                  : isCorrectAns
+                              className={`p-4 rounded-2xl border-2 transition-all duration-300 relative ${isCorrectAns && isStudentAns
+                                ? "border-green-400 bg-green-100 shadow-lg"
+                                : isCorrectAns
                                   ? "border-green-400 bg-green-100 shadow-md"
                                   : isStudentAns && !isCorrect
-                                  ? "border-red-400 bg-red-100 shadow-md"
-                                  : "border-gray-200 bg-white/50"
-                              }`}
+                                    ? "border-red-400 bg-red-100 shadow-md"
+                                    : "border-gray-200 bg-white/50"
+                                }`}
                             >
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold text-sm ${
-                                    isCorrectAns 
-                                      ? "bg-green-500" 
-                                      : isStudentAns && !isCorrect 
-                                      ? "bg-red-500" 
+                                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold text-sm ${isCorrectAns
+                                    ? "bg-green-500"
+                                    : isStudentAns && !isCorrect
+                                      ? "bg-red-500"
                                       : "bg-gray-400"
-                                  }`}>
+                                    }`}>
                                     {String.fromCharCode(65 + i)}
                                   </div>
                                   <span className="font-medium text-gray-800">{opt}</span>
                                 </div>
-                                
+
                                 <div className="flex gap-2">
                                   {isCorrectAns && (
                                     <Badge className="bg-green-500 text-white flex items-center gap-1">
@@ -589,7 +583,7 @@ const ResultDetails = () => {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6">
                   <div className="flex justify-center items-center gap-8">
                     <div className="text-center">

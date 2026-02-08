@@ -1,5 +1,6 @@
 import { useState, lazy, Suspense } from "react";
 import "./App.css";
+import Layout from "./components/Layout";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 // Lazy load all page components
@@ -41,145 +42,151 @@ const LoadingFallback = () => (
 function App() {
   const approute = createBrowserRouter([
     {
-      path: "/",
-      element: <Home />,
+      element: <Layout />,
+      children: [
+        {
+          path: "/",
+          element: <Home />,
+        },
+        {
+          path: "/complete/profile",
+          element: <Complete />,
+        },
+        {
+          path: "/quiz",
+          element: <Quiz />,
+        },
+        {
+          path: "/dashbord",
+          element: <Dashboard />,
+        },
+        {
+          path: "/about",
+          element: <AboutUs />,
+        },
+        {
+          path: "/profile",
+          element: <Profile />,
+        },
+        {
+          path: "/quizedetails/:subjectId",
+          element: <AllQuiz />,
+        },
+        {
+          path: "/reasult",
+          element: <Reasult />,
+        },
+        {
+          path: "/reasult/details/:resultId",
+          element: <ReasultDetails />,
+        },
+        //admin panel
+        {
+          path: "/Admin/subject",
+          element: (
+            <ProtectedRoute>
+              <Subject />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/admin/createQuize/:subjectId",
+          element: (
+            <ProtectedRoute>
+              <CreateQuize />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/admin/allquiz",
+          element: (
+            <ProtectedRoute>
+              <TeacherCreateQuiz />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/admin/reasult/:quizeId",
+          element: (
+            <ProtectedRoute>
+              <AdmineReacult />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/admin/create/subject",
+          element: (
+            <ProtectedRoute>
+              <CreateSubject />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/Admin/subject/quiz/:subjectId",
+          element: (
+            <ProtectedRoute>
+              <SubjectRelatedQuiz />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/admine/only/subject",
+          element: (
+            <ProtectedRoute>
+              <DepartmentSelector />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/subject/:depName",
+          element: (
+            <ProtectedRoute>
+              <AdminSubject />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/admin/othersubject",
+          element: (
+            <ProtectedRoute>
+              <OtherTeacher />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/notvarifieduser",
+          element: (
+            <ProtectedRoute>
+              <UnAuthorizeUser />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/notfound",
+          element: <NotFound />,
+        },
+        {
+          path: "/veryfi",
+          element: <CertificateVerifier />,
+        },
+        {
+          path: "/attandance/:subjectId",
+          element: <AttendanceSheet />,
+        },
+        {
+          path: "/StudentAttendanceSummary",
+          element: <StudentAttendanceSummary />
+        },
+      ],
     },
-    {
-      path: "/complete/profile",
-      element: <Complete />,
-    },
-    {
-      path: "/quiz",
-      element: <Quiz />,
-    },
-    {
-      path: "/dashbord",
-      element: <Dashboard />,
-    },
-    {
-      path: "/about",
-      element: <AboutUs />,
-    },
-    {
-      path: "/profile",
-      element: <Profile />,
-    },
-    {
-      path: "/quizedetails/:subjectId",
-      element: <AllQuiz />,
-    },
+    // Routes OUTSIDE the main layout (no Navbar)
     {
       path: "/quiz/page/:quizId",
       element: <FullScreen />,
     },
     {
-      path: "/reasult",
-      element: <Reasult />,
-    },
-    {
-      path: "/reasult/details/:resultId",
-      element: <ReasultDetails />,
-    },
-    //admin panel
-    {
-      path: "/Admin/subject",
-      element: (
-        <ProtectedRoute>
-          <Subject />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/admin/createQuize/:subjectId",
-      element: (
-        <ProtectedRoute>
-          <CreateQuize />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/admin/allquiz",
-      element: (
-        <ProtectedRoute>
-          <TeacherCreateQuiz />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/admin/reasult/:quizeId",
-      element: (
-        <ProtectedRoute>
-          <AdmineReacult />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/admin/create/subject",
-      element: (
-        <ProtectedRoute>
-          <CreateSubject />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/Admin/subject/quiz/:subjectId",
-      element: (
-        <ProtectedRoute>
-          <SubjectRelatedQuiz />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/admine/only/subject",
-      element: (
-        <ProtectedRoute>
-          <DepartmentSelector />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/subject/:depName",
-      element: (
-        <ProtectedRoute>
-          <AdminSubject />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/admin/othersubject",
-      element: (
-        <ProtectedRoute>
-          <OtherTeacher />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/notvarifieduser",
-      element: (
-        <ProtectedRoute>
-          <UnAuthorizeUser />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/notfound",
-      element: <NotFound />,
-    },
-    {
-      path: "/veryfi",
-      element: <CertificateVerifier />,
-    },
-    {
       path: "/enter/name",
       element: <EnterName />,
-    },
-    {
-      path: "/attandance/:subjectId",
-      element: <AttendanceSheet />,
-    },
-    {
-      path: "/StudentAttendanceSummary",
-      element: <StudentAttendanceSummary />
     },
   ]);
 

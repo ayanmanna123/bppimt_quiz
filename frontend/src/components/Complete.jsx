@@ -83,7 +83,7 @@ const Complete = () => {
 
       dispatch(setuser(res.data.createdUser));
       toast.success("Profile completed successfully! Welcome aboard! 🎉");
-      
+
       if (user?.name === user?.email) {
         navigate("/enter/name");
       } else {
@@ -121,7 +121,7 @@ const Complete = () => {
             navigate("/");
           }
         } catch (error) {
-          
+
           console.error(error);
         }
       }
@@ -189,6 +189,7 @@ const Complete = () => {
                   <img
                     src={user.picture}
                     alt={user.name}
+                    loading="lazy"
                     className="w-16 h-16 rounded-full border-4 border-white shadow-lg"
                   />
                   <div>
@@ -340,10 +341,9 @@ const Complete = () => {
                         className={semester ? "text-gray-900" : "text-gray-500"}
                       >
                         {semester
-                          ? `📚 ${
-                              semester.charAt(0).toUpperCase() +
-                              semester.slice(1)
-                            } Semester`
+                          ? `📚 ${semester.charAt(0).toUpperCase() +
+                          semester.slice(1)
+                          } Semester`
                           : "Pick your semester..."}
                       </span>
                       <Calendar className="w-5 h-5 text-gray-400" />
@@ -414,11 +414,10 @@ const Complete = () => {
               <Button
                 onClick={handelsubmite}
                 disabled={!isFormComplete || isSubmitting}
-                className={`w-full h-16 text-lg font-bold rounded-2xl transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105 ${
-                  isFormComplete
+                className={`w-full h-16 text-lg font-bold rounded-2xl transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105 ${isFormComplete
                     ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white"
                     : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                }`}
+                  }`}
               >
                 {isSubmitting ? (
                   <div className="flex items-center gap-3">
@@ -447,11 +446,10 @@ const Complete = () => {
                     (field, index) => (
                       <div
                         key={index}
-                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                          field
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${field
                             ? "bg-gradient-to-r from-indigo-500 to-purple-500"
                             : "bg-gray-200"
-                        }`}
+                          }`}
                       ></div>
                     )
                   )}

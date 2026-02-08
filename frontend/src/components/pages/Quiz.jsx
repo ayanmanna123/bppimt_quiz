@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../shared/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import useGetSubject from "../../hook/useGetSubject";
-import { Howl } from "howler";
 import {
   Card,
   CardContent,
@@ -112,6 +110,7 @@ const Quiz = () => {
 
       console.log(res.data);
       toast.success(res.data.message);
+      const { Howl } = await import("howler");
       const sound = new Howl({
         src: ["/notification.wav"],
         volume: 0.7,
@@ -209,6 +208,7 @@ const Quiz = () => {
 
           if (res.data.success) {
             toast.success(res.data.message);
+            const { Howl } = await import("howler");
             const sound = new Howl({
               src: ["/notification.wav"],
               volume: 0.7,
@@ -228,7 +228,6 @@ const Quiz = () => {
   };
   return (
     <>
-      <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100">
         {/* Hero Section */}
         <div className="relative overflow-hidden">

@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "../shared/Navbar";
+
 import { useEffect } from "react";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -154,7 +154,7 @@ const OtherTeacher = () => {
   if (loading) {
     return (
       <>
-        <Navbar />
+
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100 flex items-center justify-center">
           <div className="text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-purple-500 via-violet-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl animate-pulse mb-4">
@@ -169,7 +169,7 @@ const OtherTeacher = () => {
 
   return (
     <>
-      <Navbar />
+
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100">
         {/* Header Section */}
         <div className="p-6">
@@ -334,7 +334,7 @@ const OtherTeacher = () => {
                           </div>
 
                           {subject.otherTeachers &&
-                          subject.otherTeachers.length > 0 ? (
+                            subject.otherTeachers.length > 0 ? (
                             <div className="space-y-3 max-h-48 overflow-y-auto">
                               {subject.otherTeachers.map(
                                 (otherTeacher, teacherIndex) => (
@@ -434,13 +434,13 @@ const OtherTeacher = () => {
                                     {/* Loading indicator */}
                                     {updatingStatus ===
                                       `${subject._id}-${otherTeacher.teacher._id}` && (
-                                      <div className="flex items-center justify-center pt-3 border-t border-gray-100">
-                                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                                          <div className="w-3 h-3 border-2 border-gray-300 border-t-indigo-500 rounded-full animate-spin"></div>
-                                          Updating status...
+                                        <div className="flex items-center justify-center pt-3 border-t border-gray-100">
+                                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                                            <div className="w-3 h-3 border-2 border-gray-300 border-t-indigo-500 rounded-full animate-spin"></div>
+                                            Updating status...
+                                          </div>
                                         </div>
-                                      </div>
-                                    )}
+                                      )}
                                   </motion.div>
                                 )
                               )}
