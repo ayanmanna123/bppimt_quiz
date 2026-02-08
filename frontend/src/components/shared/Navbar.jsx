@@ -14,7 +14,7 @@ import { Button } from "../ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import path from "path";
+
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -60,7 +60,7 @@ const Navbar = () => {
     { name: "About Us", path: "/about", icon: User },
     { name: "Subject", path: "/quiz", icon: BookOpen },
     { name: "Result", path: "/reasult", icon: BarChart3 },
-    {name:"Attendance" ,path:"/StudentAttendanceSummary",icon: BookOpen},
+    { name: "Attendance", path: "/StudentAttendanceSummary", icon: BookOpen },
   ];
 
   const adminNavItems = [
@@ -68,7 +68,7 @@ const Navbar = () => {
     { name: "About Us", path: "/about", icon: User },
     { name: "Subject", path: "/Admin/subject", icon: BookOpen },
     { name: "Result", path: "/admin/allquiz", icon: BarChart3 },
-  { name: "Contributed Teacher", path: "/admin/othersubject", icon: GraduationCap }
+    { name: "Contributed Teacher", path: "/admin/othersubject", icon: GraduationCap }
   ];
   const adminNavitem = [
     { name: "Home", path: "/", icon: Home },
@@ -81,8 +81,8 @@ const Navbar = () => {
     usere?.role === "student"
       ? studentNavItems
       : usere?.role === "teacher"
-      ? adminNavItems
-      : adminNavitem;
+        ? adminNavItems
+        : adminNavitem;
 
   const isActivePath = (path) => {
     if (path === "/" && location.pathname === "/") return true;
@@ -92,11 +92,10 @@ const Navbar = () => {
 
   return (
     <motion.div
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled
+      className={`sticky top-0 z-50 transition-all duration-300 ${scrolled
           ? "bg-white/90 backdrop-blur-lg border-b border-slate-200/60 shadow-lg"
           : "bg-white/80 backdrop-blur-sm"
-      }`}
+        }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
@@ -133,11 +132,10 @@ const Navbar = () => {
                 >
                   <Link
                     to={item.path}
-                    className={`relative group flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
-                      isActive
+                    className={`relative group flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${isActive
                         ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg"
                         : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
-                    }`}
+                      }`}
                   >
                     <IconComponent className="w-4 h-4" />
                     <span>{item.name}</span>
@@ -201,22 +199,20 @@ const Navbar = () => {
                     {/* Online indicator */}
                     <div
                       className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white shadow-lg 
-                     ${
-                       usere?.verified === "accept"
-                         ? "bg-gradient-to-r from-emerald-500 to-teal-500"
-                         : usere?.verified === "pending"
-                         ? "bg-gray-400"
-                         : "bg-red-500"
-                     }`}
+                     ${usere?.verified === "accept"
+                          ? "bg-gradient-to-r from-emerald-500 to-teal-500"
+                          : usere?.verified === "pending"
+                            ? "bg-gray-400"
+                            : "bg-red-500"
+                        }`}
                     >
                       <div
-                        className={`w-full h-full rounded-full ${
-                          usere?.verified === "accept"
+                        className={`w-full h-full rounded-full ${usere?.verified === "accept"
                             ? "bg-emerald-400 animate-pulse"
                             : usere?.verified === "pending"
-                            ? "bg-gray-300"
-                            : "bg-red-400"
-                        }`}
+                              ? "bg-gray-300"
+                              : "bg-red-400"
+                          }`}
                       ></div>
                     </div>
                   </div>
@@ -354,11 +350,10 @@ const Navbar = () => {
                   >
                     <Link
                       to={item.path}
-                      className={`flex items-center gap-3 p-4 rounded-xl font-medium transition-all duration-300 ${
-                        isActive
+                      className={`flex items-center gap-3 p-4 rounded-xl font-medium transition-all duration-300 ${isActive
                           ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg"
                           : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
-                      }`}
+                        }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <IconComponent className="w-5 h-5" />

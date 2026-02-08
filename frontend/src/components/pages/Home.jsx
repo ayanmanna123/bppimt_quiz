@@ -1,18 +1,19 @@
+import { lazy, Suspense } from "react";
 import Navbar from "../shared/Navbar";
 import { Button } from "../ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
-import { Howl } from "howler";
-import SplitText from "./SplitText";
-import TextType from "./TextType";
-import Footer from "./Footer";
-import Features from "./Features";
-import Footerreal from "./Footerreal";
-import Calander from "./Calander";
+const SplitText = lazy(() => import("./SplitText"));
+const TextType = lazy(() => import("./TextType"));
+
+const Features = lazy(() => import("./Features"));
+const Footer = lazy(() => import("./Footer"));
+const Footerreal = lazy(() => import("./Footerreal"));
+const Calander = lazy(() => import("./Calander"));
 
 const Home = () => {
   const { getAccessTokenSilently } = useAuth0();
-  
+
   const updateProfile = async () => {
     try {
       const token = await getAccessTokenSilently({
@@ -24,8 +25,9 @@ const Home = () => {
       console.error(error);
     }
   };
-  
-  const playSound = () => {
+
+  const playSound = async () => {
+    const { Howl } = await import("howler");
     const sound = new Howl({
       src: ["/notification.wav"],
       volume: 0.7,
@@ -34,12 +36,12 @@ const Home = () => {
   };
 
   const handleAnimationComplete = () => {
-    
+
   };
 
   return (
     <>
-      <Navbar/>
+      <Navbar />
       {/* Hero Section with Enhanced Background */}
       <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 overflow-hidden">
         {/* Animated Background Pattern */}
@@ -51,7 +53,7 @@ const Home = () => {
                            radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)`,
           }}
         ></div>
-        
+
         {/* Floating Elements */}
         <motion.div
           className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-xl"
@@ -90,8 +92,8 @@ const Home = () => {
           }}
         />
 
-      
-        
+
+
         <div className="relative grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-10 py-20">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -106,38 +108,40 @@ const Home = () => {
                   SMART LEARNING PLATFORM
                 </span>
               </div>
-              
-              <h1 className="relative">
-                <SplitText
-                  text=" Smart Quiz App"
-                  className="text-4xl md:text-5xl font-black bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 bg-clip-text text-transparent text-center leading-tight"
-                  delay={100}
-                  duration={0.6}
-                  ease="power3.out"
-                  splitType="chars"
-                  from={{ opacity: 0, y: 40 }}
-                  to={{ opacity: 1, y: 0 }}
-                  threshold={0.1}
-                  rootMargin="-100px"
-                  textAlign="center"
-                  onLetterAnimationComplete={handleAnimationComplete}
-                />
-                <br />
-                <SplitText
-                  text="for College Mock Tests"
-                  className="text-4xl md:text-5xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent text-center leading-tight"
-                  delay={100}
-                  duration={0.6}
-                  ease="power3.out"
-                  splitType="chars"
-                  from={{ opacity: 0, y: 40 }}
-                  to={{ opacity: 1, y: 0 }}
-                  threshold={0.1}
-                  rootMargin="-100px"
-                  textAlign="center"
-                  onLetterAnimationComplete={handleAnimationComplete}
-                />
-                
+
+              <h1 className="relative min-h-[120px]">
+                <Suspense fallback={<div className="text-4xl md:text-5xl font-black text-slate-800 text-center leading-tight">Smart Quiz App<br />for College Mock Tests</div>}>
+                  <SplitText
+                    text=" Smart Quiz App"
+                    className="text-4xl md:text-5xl font-black bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 bg-clip-text text-transparent text-center leading-tight"
+                    delay={100}
+                    duration={0.6}
+                    ease="power3.out"
+                    splitType="chars"
+                    from={{ opacity: 0, y: 40 }}
+                    to={{ opacity: 1, y: 0 }}
+                    threshold={0.1}
+                    rootMargin="-100px"
+                    textAlign="center"
+                    onLetterAnimationComplete={handleAnimationComplete}
+                  />
+                  <br />
+                  <SplitText
+                    text="for College Mock Tests"
+                    className="text-4xl md:text-5xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent text-center leading-tight"
+                    delay={100}
+                    duration={0.6}
+                    ease="power3.out"
+                    splitType="chars"
+                    from={{ opacity: 0, y: 40 }}
+                    to={{ opacity: 1, y: 0 }}
+                    threshold={0.1}
+                    rootMargin="-100px"
+                    textAlign="center"
+                    onLetterAnimationComplete={handleAnimationComplete}
+                  />
+                </Suspense>
+
                 {/* Glow effect behind text */}
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 blur-3xl -z-10 opacity-30"></div>
               </h1>
@@ -145,22 +149,24 @@ const Home = () => {
 
             {/* Enhanced Description */}
             <div className="mb-8 p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-lg">
-              <TextType
-                text={[
-                  "A modern platform designed for students to practice mock tests,",
-                  "improve skills, track progress, identify weaknesses, and build confidence,",
-                  "helping them prepare effectively and achieve success in exams.",
-                ]}
-                typingSpeed={75}
-                as="span"
-                pauseDuration={1500}
-                deletingSpeed={40}
-                loop={true}
-                className="font-mono text-xl md:text-2xl text-slate-700"
-                textColors={["#334155"]}
-                cursorCharacter="|"
-                cursorClassName="text-blue-600"
-              />
+              <Suspense fallback={<p className="font-mono text-xl md:text-2xl text-slate-700">A modern platform designed for students...</p>}>
+                <TextType
+                  text={[
+                    "A modern platform designed for students to practice mock tests,",
+                    "improve skills, track progress, identify weaknesses, and build confidence,",
+                    "helping them prepare effectively and achieve success in exams.",
+                  ]}
+                  typingSpeed={75}
+                  as="span"
+                  pauseDuration={1500}
+                  deletingSpeed={40}
+                  loop={true}
+                  className="font-mono text-xl md:text-2xl text-slate-700"
+                  textColors={["#334155"]}
+                  cursorCharacter="|"
+                  cursorClassName="text-blue-600"
+                />
+              </Suspense>
             </div>
 
             {/* Enhanced Button */}
@@ -190,7 +196,7 @@ const Home = () => {
                     />
                   </motion.svg>
                 </span>
-                
+
                 {/* Button glow effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
               </Button>
@@ -209,14 +215,17 @@ const Home = () => {
               <motion.img
                 src="/img-1.webp"
                 alt="Hero Illustration"
+                width="500"
+                height="500"
+                fetchPriority="high"
                 className="w-[350px] md:w-[500px] relative z-10 drop-shadow-2xl"
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
               />
-              
+
               {/* Image glow effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-2xl opacity-0 group-hover:opacity-60 transition-opacity duration-500 rounded-3xl"></div>
-              
+
               {/* Floating particles around image */}
               <motion.div
                 className="absolute -top-4 -right-4 w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
@@ -260,10 +269,12 @@ const Home = () => {
       </div>
 
       {/* Rest of the components */}
-      <Features />
-      <Footer />
-      <Footerreal />
-      
+      <Suspense fallback={<div className="h-20" />}>
+        <Features />
+        <Footer />
+        <Footerreal />
+      </Suspense>
+
     </>
   );
 };

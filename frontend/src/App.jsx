@@ -1,34 +1,42 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from "./components/pages/Home";
-import Complete from "./components/Complete";
-import Quiz from "./components/pages/Quiz";
-import QuizDEtails from "./components/AllQuiz";
-import GiveQuiz from "./components/pages/GiveQuiz";
-import AllQuiz from "./components/AllQuiz";
-import Reasult from "./components/pages/Reasult";
-import ReasultDetails from "./components/pages/ReasultDetails";
-import Subject from "./components/admin/Subject";
-import CreateQuize from "./components/admin/CreateQuize";
-import TeacherCreateQuiz from "./components/admin/TeacherCreateQuiz";
-import AdmineReacult from "./components/admin/AdmineReacult";
-import CreateSubject from "./components/admin/CreateSubject";
-import Profile from "./components/Profile";
-import SubjectRelatedQuiz from "./components/admin/SubjectRelatedQuiz";
-import FullScreen from "./components/FullScreen";
-import Dashboard from "./components/pages/Dashboard";
-import AboutUs from "./components/pages/AboutUs";
-import DepartmentSelector from "./components/admin/admin/DepartmentSelector";
-import AdminSubject from "./components/admin/admin/AdminSubject";
-import UnAuthorizeUser from "./components/admin/admin/UnAuthorizeUser";
-import ProtectedRoute from "./components/pages/ProtectedRoute";
-import NotFound from "./components/pages/NotFound ";
-import CertificateVerifier from "./components/pages/CertificateVerifier";
-import EnterName from "./components/pages/EnterName";
-import OtherTeacher from "./components/admin/OtherTeacher";
-import AttendanceSheet from "./components/pages/AttendanceSheet";
-import StudentAttendanceSummary from "./components/pages/StudentAttendanceSummary";
+
+// Lazy load all page components
+const Home = lazy(() => import("./components/pages/Home"));
+const Complete = lazy(() => import("./components/Complete"));
+const Quiz = lazy(() => import("./components/pages/Quiz"));
+const AllQuiz = lazy(() => import("./components/AllQuiz"));
+const GiveQuiz = lazy(() => import("./components/pages/GiveQuiz")); // Assuming this was meant to be used
+const Reasult = lazy(() => import("./components/pages/Reasult"));
+const ReasultDetails = lazy(() => import("./components/pages/ReasultDetails"));
+const Subject = lazy(() => import("./components/admin/Subject"));
+const CreateQuize = lazy(() => import("./components/admin/CreateQuize"));
+const TeacherCreateQuiz = lazy(() => import("./components/admin/TeacherCreateQuiz"));
+const AdmineReacult = lazy(() => import("./components/admin/AdmineReacult"));
+const CreateSubject = lazy(() => import("./components/admin/CreateSubject"));
+const SubjectRelatedQuiz = lazy(() => import("./components/admin/SubjectRelatedQuiz"));
+const Profile = lazy(() => import("./components/Profile"));
+const FullScreen = lazy(() => import("./components/FullScreen"));
+const Dashboard = lazy(() => import("./components/pages/Dashboard"));
+const AboutUs = lazy(() => import("./components/pages/AboutUs"));
+const DepartmentSelector = lazy(() => import("./components/admin/admin/DepartmentSelector"));
+const AdminSubject = lazy(() => import("./components/admin/admin/AdminSubject"));
+const UnAuthorizeUser = lazy(() => import("./components/admin/admin/UnAuthorizeUser"));
+const ProtectedRoute = lazy(() => import("./components/pages/ProtectedRoute"));
+const NotFound = lazy(() => import("./components/pages/NotFound "));
+const CertificateVerifier = lazy(() => import("./components/pages/CertificateVerifier"));
+const EnterName = lazy(() => import("./components/pages/EnterName"));
+const OtherTeacher = lazy(() => import("./components/admin/OtherTeacher"));
+const AttendanceSheet = lazy(() => import("./components/pages/AttendanceSheet"));
+const StudentAttendanceSummary = lazy(() => import("./components/pages/StudentAttendanceSummary"));
+
+// Simple loading fallback
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen bg-slate-50">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+);
 
 function App() {
   const approute = createBrowserRouter([
@@ -170,15 +178,15 @@ function App() {
       element: <AttendanceSheet />,
     },
     {
-      path:"/StudentAttendanceSummary",
-      element:<StudentAttendanceSummary/>
-    }
+      path: "/StudentAttendanceSummary",
+      element: <StudentAttendanceSummary />
+    },
   ]);
 
   return (
-    <>
+    <Suspense fallback={<LoadingFallback />}>
       <RouterProvider router={approute} />
-    </>
+    </Suspense>
   );
 }
 
