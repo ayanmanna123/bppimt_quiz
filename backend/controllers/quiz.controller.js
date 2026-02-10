@@ -1,5 +1,6 @@
 import Quiz from "../models/Quiz.model.js";
 import User from "../models/User.model.js";
+import Result from "../models/Result.model.js";
 
 export const createQuestion = async (req, res) => {
   try {
@@ -354,6 +355,74 @@ export const getAllQuestionsBySubject = async (req, res) => {
     console.error("Error fetching question bank:", error);
     return res.status(500).json({
       message: "Server error",
+      success: false,
+    });
+  }
+};
+
+export const updateQuiz = async (req, res) => {
+  try {
+    const { quizId } = req.params;
+    const { date, time } = req.body;
+
+    if (!quizId) {
+      return res.status(400).json({
+        message: "Quiz ID is required",
+        success: false,
+      });
+    }
+
+    const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(403).json({
+        message: "You are not verified",
+        success: false,
+      });
+    }
+
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      return res.status(404).json({
+        message: "Quiz not found",
+        success: false,
+      });
+    }
+
+    // Check if the user is the creator of the quiz
+    if (quiz.createdBy.toString() !== user._id.toString()) {
+      return res.status(403).json({
+        message: "You are not authorized to update this quiz",
+        success: false,
+      });
+    }
+
+    // Update fields
+    if (date) quiz.date = date;
+    if (time) quiz.time = time;
+
+    // Delete all results associated with this quiz
+    await Result.deleteMany({ quiz: quizId });
+
+    await quiz.save();
+
+    return res.status(200).json({
+      message: "Quiz rescheduled successfully",
+      success: true,
+      quiz,
+    });
+  } catch (error) {
+    console.error("Error updating quiz:", error);
+    return res.status(500).json({
+      message: "Server error while updating quiz",
       success: false,
     });
   }

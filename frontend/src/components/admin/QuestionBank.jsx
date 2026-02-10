@@ -25,7 +25,7 @@ const QuestionBank = () => {
                 });
 
                 const res = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/quiz/questions/all/${subjectId}`,
+                    `${import.meta.env.VITE_BACKEND_URL}/quize/questions/all/${subjectId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,

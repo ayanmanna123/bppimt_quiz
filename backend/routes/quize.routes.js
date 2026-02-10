@@ -9,6 +9,7 @@ import {
   getQuizeByTeacherId,
   getquizlength,
   getAllQuestionsBySubject,
+  updateQuiz,
 } from "../controllers/quiz.controller.js";
 
 const quizeRoute = express.Router();
@@ -20,5 +21,6 @@ quizeRoute.delete("/delet/quiz", isAuthenticated, deletQuiz);
 quizeRoute.get("/getquizId/:quizId", isAuthenticated, getQuizeByQuizeId)
 quizeRoute.get("/getSubjectId/:subjectId", isAuthenticated, getquizBysubjectId)
 quizeRoute.get("/questions/all/:subjectId", isAuthenticated, getAllQuestionsBySubject);
+quizeRoute.put("/update/:quizId", isAuthenticated, updateQuiz);
 quizeRoute.get("/quiz/count", getquizlength)
 export default quizeRoute;

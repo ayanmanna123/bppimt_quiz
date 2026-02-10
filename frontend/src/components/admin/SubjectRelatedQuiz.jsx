@@ -3,9 +3,20 @@ import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 
-import { ArrowLeft, Trash2, Calendar, Clock, Award, HelpCircle, Eye, BookOpen } from "lucide-react";
+import { ArrowLeft, Trash2, Calendar, Clock, Award, HelpCircle, Eye, BookOpen, RotateCcw } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "../ui/button";
 import { Badge } from "@/components/ui/badge";
 import QuizCardSkeleton from "./QuizCardSkeleton";
@@ -37,6 +48,63 @@ const SubjectRelatedQuiz = () => {
   const [quizzes, setQuizzes] = useState([]);
   const { subjectId } = useParams();
   const navigate = useNavigate();
+
+  // Reschedule State
+  const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [newDate, setNewDate] = useState("");
+  const [newTime, setNewTime] = useState("");
+  const [isRescheduling, setIsRescheduling] = useState(false);
+
+  const handleRescheduleClick = (quiz) => {
+    setSelectedQuiz(quiz);
+    setNewDate(quiz.date);
+    setNewTime(quiz.time);
+    setIsRescheduleOpen(true);
+  };
+
+  const handleRescheduleSubmit = async () => {
+    if (!newDate || !newTime) {
+      toast.error("Please provide both date and time");
+      return;
+    }
+
+    setIsRescheduling(true);
+    try {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v2",
+      });
+
+      const res = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/quize/update/${selectedQuiz._id}`,
+        {
+          date: newDate,
+          time: newTime,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      toast.success(res.data.message);
+
+      // Update local state
+      setQuizzes((prev) =>
+        prev.map((q) =>
+          q._id === selectedQuiz._id ? { ...q, date: newDate, time: newTime } : q
+        )
+      );
+
+      setIsRescheduleOpen(false);
+    } catch (error) {
+      console.error("Error rescheduling quiz:", error);
+      toast.error(error.response?.data?.message || "Failed to reschedule quiz");
+    } finally {
+      setIsRescheduling(false);
+    }
+  };
 
   useEffect(() => {
     const fetchQuizzes = async () => {
@@ -159,6 +227,8 @@ const SubjectRelatedQuiz = () => {
                 const gradientClass = quizGradients[index % quizGradients.length];
                 const patternStyle = backgroundPatterns[index % backgroundPatterns.length];
 
+                const isQuizExpired = new Date() > new Date(quiz.date);
+
                 return (
                   <motion.div
                     key={quiz._id}
@@ -229,25 +299,40 @@ const SubjectRelatedQuiz = () => {
                         <div className="bg-gray-50 rounded-lg p-3">
                           <p className="text-xs text-gray-500 font-medium">Created</p>
                           <p className="text-sm font-semibold text-gray-700">
-                            {new Date(quiz.createdAt).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric'
+                            {new Date(quiz.createdAt).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
                             })}
                           </p>
                         </div>
 
-                        {/* Action button with gradient */}
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/admin/reasult/${quiz._id}`);
-                          }}
-                          className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl"
-                        >
-                          <Eye className="w-4 h-4" />
-                          View Results
-                        </Button>
+                        {/* Buttons Grid */}
+                        <div className={`grid ${isQuizExpired ? 'grid-cols-2' : 'grid-cols-1'} gap-2`}>
+                          {isQuizExpired && (
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRescheduleClick(quiz);
+                              }}
+                              className="w-full bg-white text-indigo-600 border-2 border-indigo-100 hover:bg-indigo-50 hover:border-indigo-200 font-semibold py-2 rounded-xl flex items-center justify-center gap-2 transition-all duration-300"
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                              Rearrange
+                            </Button>
+                          )}
+
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/admin/reasult/${quiz._id}`);
+                            }}
+                            className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold py-2 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl"
+                          >
+                            <Eye className="w-4 h-4" />
+                            View Results
+                          </Button>
+                        </div>
                       </CardContent>
                     </Card>
                   </motion.div>
@@ -256,7 +341,54 @@ const SubjectRelatedQuiz = () => {
             </motion.div>
           )}
         </div>
-      </div>
+
+        {/* Reschedule Dialog */}
+        <Dialog open={isRescheduleOpen} onOpenChange={setIsRescheduleOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Reschedule Quiz</DialogTitle>
+              <DialogDescription>
+                Update the date and duration for "{selectedQuiz?.title}".
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="date" className="text-right">
+                  Date
+                </Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={newDate}
+                  onChange={(e) => setNewDate(e.target.value)}
+                  className="col-span-3"
+                  min={new Date().toISOString().split("T")[0]}
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="time" className="text-right">
+                  Duration (min)
+                </Label>
+                <Input
+                  id="time"
+                  type="number"
+                  value={newTime}
+                  onChange={(e) => setNewTime(e.target.value)}
+                  className="col-span-3"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsRescheduleOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleRescheduleSubmit} disabled={isRescheduling}>
+                {isRescheduling ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div >
     </>
   );
 };
