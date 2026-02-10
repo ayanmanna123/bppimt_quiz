@@ -33,25 +33,15 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { setsubjectByquiry } from "../../Redux/subject.reducer";
 import axios from "axios";
 import { toast } from "sonner";
-// Student-focused gradient combinations
-const studentGradients = [
-  "bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600",
-  "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600",
-  "bg-gradient-to-br from-purple-400 via-violet-500 to-indigo-600",
-  "bg-gradient-to-br from-orange-400 via-red-500 to-pink-600",
-  "bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-600",
-  "bg-gradient-to-br from-pink-400 via-rose-500 to-red-600",
-];
-
-// Student-focused creative patterns
-const studentPatterns = [
-  "radial-gradient(circle at 25% 75%, rgba(59, 130, 246, 0.4) 0%, transparent 60%), linear-gradient(135deg, rgba(147, 197, 253, 0.3) 0%, transparent 70%)",
-  "conic-gradient(from 90deg at 70% 30%, rgba(16, 185, 129, 0.4) 0deg, transparent 120deg, rgba(52, 211, 153, 0.3) 240deg)",
-  "radial-gradient(ellipse at top right, rgba(124, 58, 237, 0.4) 0%, transparent 70%), linear-gradient(45deg, rgba(167, 139, 250, 0.3) 0%, transparent 100%)",
-  "linear-gradient(60deg, rgba(239, 68, 68, 0.3) 25%, transparent 25%), radial-gradient(circle at 75% 25%, rgba(251, 113, 133, 0.4) 0%, transparent 50%)",
-  "conic-gradient(from 0deg at 40% 60%, rgba(245, 158, 11, 0.4) 0deg, transparent 90deg, rgba(251, 191, 36, 0.3) 180deg, transparent 270deg)",
-  "radial-gradient(circle at 30% 20%, rgba(236, 72, 153, 0.4) 0%, transparent 60%), linear-gradient(120deg, rgba(244, 114, 182, 0.3) 0%, transparent 100%)",
-];
+// Redesigned constants removed or replaced inside component logic if needed
+// Or kept empty if they were unused in the new design. 
+// I will keep them but empty or remove them if not used. 
+// Ah, the new design logic (above) doesn't use 'studentGradients' anymore, it uses inline hardcoded gradients or logic.
+// Let's remove them to avoid "unused variable" warnings if I don't use them.
+// Wait, my replacement logic for the return block REMOVED the usage of `studentGradients` and `studentPatterns`.
+// So I should remove these lines.
+const studentGradients = [];
+const studentPatterns = [];
 
 const Quiz = () => {
   const { usere } = useSelector((store) => store.auth);
@@ -107,8 +97,6 @@ const Quiz = () => {
     if (selectedFilter === "favorite") {
       result = result.filter((sub) => favorites.includes(sub._id));
     } else if (selectedFilter === "recent") {
-      // Assuming 'createdAt' exists, otherwise show last 5
-      // If createdAt is missing, we might use default order which is usually insertion order for MongoDB
       result = result.slice(-5);
     }
 
@@ -117,12 +105,10 @@ const Quiz = () => {
       if (sortBy === "name") {
         return a.subjectName.localeCompare(b.subjectName);
       } else if (sortBy === "recent") {
-        // Sort by createdAt desc if available, else compare IDs (roughly time based)
         const dateA = a.createdAt ? new Date(a.createdAt) : 0;
         const dateB = b.createdAt ? new Date(b.createdAt) : 0;
         return dateB - dateA || b._id.localeCompare(a._id);
       } else if (sortBy === "popular") {
-        // Mock popularity - random or based on name length just for shuffle effect if no real metric
         return (b.subjectName.length) - (a.subjectName.length);
       }
       return 0;
@@ -292,344 +278,295 @@ const Quiz = () => {
       }
     );
   };
+
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100">
-        {/* Hero Section */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 opacity-90"></div>
-          <div className="absolute inset-0">
-            <div className="absolute top-10 left-10 w-32 h-32 border-2 border-white/20 rounded-full animate-pulse"></div>
-            <div className="absolute bottom-20 right-20 w-24 h-24 bg-white/10 rounded-full animate-bounce"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-white/20 rounded-2xl rotate-45 animate-pulse"></div>
-          </div>
+      <div className="min-h-screen bg-slate-50 relative overflow-hidden font-sans">
+        {/* Abstract Background Shapes (Similar to AttendanceSheet) */}
+        <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-500 rounded-b-[40px] shadow-2xl z-0"></div>
+        <div className="absolute top-20 right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl z-0"></div>
+        <div className="absolute top-40 left-10 w-48 h-48 bg-indigo-500/30 rounded-full blur-2xl z-0"></div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative z-10 text-center py-16 px-6"
-          >
-            <div className="inline-flex items-center gap-4 mb-6">
-              <div className="relative">
-                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-                  <BookOpen className="w-8 h-8 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                  <Star className="w-3 h-3 text-white" />
-                </div>
+        {/* Floating Decorative Elements */}
+        <div className="absolute top-32 left-32 w-24 h-24 border-4 border-white/10 rounded-full animate-spin-slow z-0"></div>
+        <div className="absolute top-10 right-40 w-16 h-16 bg-white/10 rotate-45 rounded-xl animate-pulse z-0"></div>
+
+        {/* Main Content Container */}
+        <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+          {/* Hero Section */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 mb-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="flex items-center gap-6">
+              <div className="bg-white text-indigo-600 p-4 rounded-2xl shadow-lg">
+                <BookOpen className="w-8 h-8" />
               </div>
-              <div className="text-left">
-                <h1 className="text-4xl font-bold text-white mb-2">
-                  Welcome back, {usere?.fullname?.split(" ")[0]}! 👋
+              <div>
+                <h1 className="text-4xl font-extrabold tracking-tight">
+                  Welcome back, {usere?.fullname?.split(" ")[0]}!
                 </h1>
-                <p className="text-white/90 text-lg">
-                  Ready to ace your quizzes? Let's explore your subjects!
+                <p className="text-indigo-100 mt-1 font-medium text-lg">
+                  Ready to ace your quizzes? Explore your subjects!
                 </p>
               </div>
             </div>
 
-            {/* Student Stats */}
-            <div className="flex justify-center gap-8 mt-8">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white">
-                  {processedSubjects.length}
+            {/* Stats Dashboard */}
+            <div className="flex flex-wrap gap-4 items-center">
+              <div className="flex items-center gap-3 bg-white/10 px-5 py-3 rounded-2xl border border-white/10 backdrop-blur-sm shadow-lg">
+                <BookOpen className="w-5 h-5 text-indigo-200" />
+                <div className="text-left">
+                  <p className="text-xs text-indigo-200 uppercase tracking-widest font-semibold">Subjects</p>
+                  <p className="font-bold text-xl leading-none">{processedSubjects.length}</p>
                 </div>
-                <div className="text-white/80 text-sm">Available Subjects</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white">📚</div>
-                <div className="text-white/80 text-sm">{usere?.department}</div>
+
+              <div className="flex items-center gap-3 bg-white/10 px-5 py-3 rounded-2xl border border-white/10 backdrop-blur-sm shadow-lg">
+                <Target className="w-5 h-5 text-indigo-200" />
+                <div className="text-left">
+                  <p className="text-xs text-indigo-200 uppercase tracking-widest font-semibold">Dept</p>
+                  <p className="font-bold text-xl leading-none">{usere?.department}</p>
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white">🎯</div>
-                <div className="text-white/80 text-sm">
-                  {usere?.semester} Semester
+
+              <div className="flex items-center gap-3 bg-white/10 px-5 py-3 rounded-2xl border border-white/10 backdrop-blur-sm shadow-lg">
+                <Calendar className="w-5 h-5 text-indigo-200" />
+                <div className="text-left">
+                  <p className="text-xs text-indigo-200 uppercase tracking-widest font-semibold">Sem</p>
+                  <p className="font-bold text-xl leading-none">{usere?.semester}</p>
                 </div>
               </div>
             </div>
-          </motion.div>
-        </div>
+          </div>
 
-        {/* Enhanced Filter Section */}
-        <div className="px-6 -mt-8 relative z-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6 mb-8"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Control Bar (Search & Filter) */}
+          <div className="mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 flex flex-col md:flex-row gap-4 items-center justify-between"
+            >
               {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <div className="relative w-full md:w-96 group">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
                 <input
                   type="text"
                   placeholder="Search subjects..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-blue-400 transition-all duration-300 font-medium"
+                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all duration-300 font-medium text-gray-700 placeholder:text-gray-400"
                 />
               </div>
 
-              {/* Filter */}
-              <div className="relative">
-                <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <select
-                  value={selectedFilter}
-                  onChange={(e) => setSelectedFilter(e.target.value)}
-                  className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-purple-400 transition-all duration-300 font-medium appearance-none"
-                >
-                  <option value="all">All Subjects</option>
-                  <option value="recent">Recent</option>
-                  <option value="favorite">Favorites</option>
-                </select>
-                <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-              </div>
-
-              {/* Sort */}
-              <div className="relative">
-                <Target className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-indigo-400 transition-all duration-300 font-medium appearance-none"
-                >
-                  <option value="name">Sort by Name</option>
-                  <option value="recent">Recently Added</option>
-                  <option value="popular">Most Popular</option>
-                </select>
-                <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-              </div>
-
-              {/* View Mode */}
-              <div className="relative">
-                <Grid3X3 className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <select
-                  value={viewMode}
-                  onChange={(e) => setViewMode(e.target.value)}
-                  className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-green-400 transition-all duration-300 font-medium appearance-none"
-                >
-                  <option value="card">Card View</option>
-                  <option value="list">List View</option>
-                  <option value="compact">Compact</option>
-                </select>
-                <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Subject Cards Grid */}
-        <div className="px-6 pb-12">
-          {processedSubjects.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-              className="text-center py-16"
-            >
-              <div className="w-28 h-28 bg-gradient-to-br from-blue-200 to-indigo-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
-                <BookOpen className="w-14 h-14 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-700 mb-2">
-                No subjects found
-              </h3>
-              <p className="text-gray-500 text-lg">
-                Try adjusting your search or filters
-              </p>
-            </motion.div>
-          ) : (
-            <motion.div
-              className={`grid ${getGridClass()} gap-6`} // Reduced gap for tighter layout
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6 }}
-            >
-              {processedSubjects.map((sub, index) => {
-                const gradientClass =
-                  studentGradients[index % studentGradients.length];
-                const patternStyle =
-                  studentPatterns[index % studentPatterns.length];
-
-                return (
-                  <motion.div
-                    key={sub._id}
-                    onClick={() => navigate(`/quizedetails/${sub?._id}`)}
-                    initial={{ opacity: 0, y: 60, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{
-                      duration: 0.7,
-                      delay: index * 0.1,
-                      type: "spring",
-                      stiffness: 100,
-                    }}
-                    className="group cursor-pointer"
+              <div className="flex flex-wrap gap-3 w-full md:w-auto">
+                {/* Filter */}
+                <div className="relative flex-1 md:flex-none">
+                  <select
+                    value={selectedFilter}
+                    onChange={(e) => setSelectedFilter(e.target.value)}
+                    className="w-full pl-4 pr-10 py-3 bg-gray-50 hover:bg-gray-100 rounded-xl border-none focus:ring-2 focus:ring-indigo-100 font-medium text-gray-700 cursor-pointer appearance-none transition-colors"
                   >
-                    <Card className={`overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform ${viewMode === 'list' ? 'flex flex-row items-center min-h-[180px]' : 'hover:scale-105'} relative group-hover:-translate-y-1`}>
-                      {/* Enhanced gradient header */}
-                      <div
-                        className={`${viewMode === 'list' ? 'w-1/3 h-full absolute inset-y-0 left-0' : 'h-44'} ${gradientClass} relative overflow-hidden`}
-                        style={{ background: patternStyle }}
-                      >
-                        {/* Animated background elements */}
-                        <div className="absolute inset-0 opacity-30">
-                          <div className="absolute top-4 right-4 w-20 h-20 border-2 border-white/40 rounded-full animate-pulse group-hover:animate-spin"></div>
-                          <div className="absolute bottom-4 left-4 w-12 h-12 bg-white/30 rounded-full animate-bounce"></div>
+                    <option value="all">All Subjects</option>
+                    <option value="recent">Recent</option>
+                    <option value="favorite">Favorites</option>
+                  </select>
+                  <Filter className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                </div>
+
+                {/* Sort */}
+                <div className="relative flex-1 md:flex-none">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full pl-4 pr-10 py-3 bg-gray-50 hover:bg-gray-100 rounded-xl border-none focus:ring-2 focus:ring-indigo-100 font-medium text-gray-700 cursor-pointer appearance-none transition-colors"
+                  >
+                    <option value="name">Name (A-Z)</option>
+                    <option value="recent">Newest First</option>
+                    <option value="popular">Most Popular</option>
+                  </select>
+                  <Target className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                </div>
+
+                {/* View Mode */}
+                <div className="bg-gray-50 p-1 rounded-xl flex items-center">
+                  <button
+                    onClick={() => setViewMode("card")}
+                    className={`p-2 rounded-lg transition-all ${viewMode === 'card' ? 'bg-white shadow text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}
+                  >
+                    <Grid3X3 className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white shadow text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}
+                  >
+                    <ClipboardCheck className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Subject Cards Grid */}
+          <div className="pb-12">
+            {processedSubjects.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white rounded-3xl shadow-sm border border-gray-100 p-12 text-center"
+              >
+                <div className="w-24 h-24 bg-indigo-50 rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <Search className="w-10 h-10 text-indigo-400" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">No subjects found</h3>
+                <p className="text-gray-500">Try adjusting your search criteria or clear filters.</p>
+              </motion.div>
+            ) : (
+              <motion.div
+                className={`grid ${getGridClass()} gap-6`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                {processedSubjects.map((sub, index) => {
+                  return (
+                    <motion.div
+                      key={sub._id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      onClick={() => navigate(`/quizedetails/${sub?._id}`)}
+                      className={`group relative bg-white rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-500 border border-gray-100 cursor-pointer ${viewMode === 'list' ? 'flex flex-row items-stretch min-h-[160px]' : 'flex flex-col h-full hover:-translate-y-2'}`}
+                    >
+                      {/* Card Header / Gradient Bg */}
+                      <div className={`${viewMode === 'list' ? 'w-1/4' : 'h-32'} relative overflow-hidden bg-gradient-to-br from-indigo-500 via-blue-500 to-cyan-400 p-6`}>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-xl group-hover:bg-white/20 transition-colors"></div>
+                        <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-12 -mb-12 blur-xl"></div>
+
+                        {/* ACTIVE Badge */}
+                        <div className="absolute top-4 left-4 z-10">
+                          <span className="bg-white/20 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-full border border-white/20 flex items-center gap-1 shadow-sm">
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></div> ACTIVE
+                          </span>
                         </div>
 
-                        {/* Favorite Button */}
+                        {/* Favorite Star */}
                         <button
                           onClick={(e) => toggleFavorite(e, sub._id)}
-                          className="absolute top-4 right-4 z-20 p-2 bg-white/20 backdrop-blur-md rounded-full hover:bg-white/40 transition-colors group/star"
+                          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all text-white"
                         >
-                          <Star
-                            className={`w-5 h-5 transition-all duration-300 ${favorites.includes(sub._id) ? "fill-yellow-400 text-yellow-400 scale-110" : "text-white group-hover/star:text-yellow-200"}`}
-                          />
+                          <Star className={`w-4 h-4 ${favorites.includes(sub._id) ? "fill-yellow-400 text-yellow-400" : ""}`} />
                         </button>
 
-                        {/* Subject badge */}
-                        <div className="absolute top-4 left-4">
-                          <div className="bg-white/20 backdrop-blur-md rounded-full px-3 py-1 flex items-center gap-2">
-                            <Zap className="w-4 h-4 text-gray-800" />
-                            <span className="text-xs font-semibold text-gray-800">
-                              ACTIVE
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Subject info */}
-                        <div className="absolute bottom-4 left-4 right-4 text-gray-900">
-                          <h3 className={`${viewMode === 'list' ? 'text-2xl' : 'text-xl'} font-bold drop-shadow-2xl mb-2 leading-tight text-white`}>
-                            {sub?.subjectName}
-                          </h3>
-                          <p className="text-sm opacity-90 drop-shadow mb-3 text-white">
-                            {sub?.description ||
-                              "Explore and master this subject"}
-                          </p>
-                          <div className="w-12 h-1 bg-white/60 rounded-full"></div>
+                        {/* Quick Icon */}
+                        <div className="absolute bottom-4 right-4 text-white/20 transform rotate-12 group-hover:rotate-0 group-hover:scale-110 transition-all duration-500">
+                          <BookOpen className="w-12 h-12" />
                         </div>
                       </div>
 
-                      {/* Enhanced content */}
-                      <CardContent className={`${viewMode === 'list' ? 'ml-[33%] w-2/3 py-6 pr-6 pl-8' : 'p-6'}`}>
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
-                            <User className="w-5 h-5 text-blue-600" />
-                            <div className="flex-1">
-                              <p className="text-xs text-gray-500 font-medium">
-                                INSTRUCTOR
-                              </p>
-                              <p className="text-sm font-bold text-gray-700">
-                                {sub?.createdBy?.fullname}
-                              </p>
+                      {/* Content */}
+                      <div className={`p-6 flex flex-col ${viewMode === 'list' ? 'flex-1 justify-center' : 'flex-grow'}`}>
+                        <div className="mb-4">
+                          <h3 className="text-xl font-bold text-gray-900 leading-tight group-hover:text-indigo-600 transition-colors line-clamp-2">
+                            {sub?.subjectName}
+                          </h3>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg text-xs font-mono font-bold border border-indigo-100">
+                              {sub?.subjectCode}
+                            </span>
+                            <span className="text-gray-400 text-sm truncate">{sub?.description}</span>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 mt-auto">
+                          <div className="bg-gray-50 rounded-xl p-3 border border-gray-100 group-hover:border-indigo-50 transition-colors">
+                            <p className="text-[10px] uppercase text-gray-400 font-bold tracking-wider mb-1">Instructor</p>
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-600">
+                                {sub?.createdBy?.fullname?.charAt(0)}
+                              </div>
+                              <p className="text-xs font-bold text-gray-700 truncate">{sub?.createdBy?.fullname}</p>
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl">
-                              <BookOpen className="w-4 h-4 text-purple-600" />
-                              <div>
-                                <p className="text-xs text-gray-500 font-medium">
-                                  DEPT
-                                </p>
-                                <p className="text-sm font-bold text-gray-700">
-                                  {sub?.department}
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-2 p-3 bg-green-50 rounded-xl">
-                              <Calendar className="w-4 h-4 text-green-600" />
-                              <div>
-                                <p className="text-xs text-gray-500 font-medium">
-                                  SEM
-                                </p>
-                                <p className="text-sm font-bold text-gray-700">
-                                  {sub?.semester}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 border-l-4 border-blue-400">
+                          <div className="bg-gray-50 rounded-xl p-3 border border-gray-100 group-hover:border-indigo-50 transition-colors">
+                            <p className="text-[10px] uppercase text-gray-400 font-bold tracking-wider mb-1">Details</p>
                             <div className="flex items-center justify-between">
-                              <div>
-                                <p className="text-xs text-gray-500 font-semibold mb-1">
-                                  SUBJECT CODE
-                                </p>
-                                <p className="text-sm font-mono font-bold text-gray-800 bg-transparent px-2 py-1 rounded">
-                                  {sub?.subjectCode}
-                                </p>
-                              </div>
-                              <Trophy className="w-8 h-8 text-yellow-500" />
+                              <span className="text-xs font-bold text-gray-700">{sub?.department}</span>
+                              <span className="text-[10px] bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">Sem {sub?.semester}</span>
                             </div>
                           </div>
                         </div>
-                      </CardContent>
+                      </div>
 
-                      {/* Action button */}
-                      <CardFooter className="p-6 pt-0 flex flex-col items-center gap-3">
+                      {/* Footer Actions */}
+                      <div className={`p-4 pt-0 flex gap-3 ${viewMode === 'list' ? 'w-64 flex-col justify-center border-l border-gray-100 bg-gray-50/50' : 'bg-white'}`}>
                         <Button
                           onClick={(e) => {
                             e.stopPropagation();
                             navigate(`/quizedetails/${sub?._id}`);
                           }}
-                          className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
+                          className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200 rounded-xl font-bold transition-all hover:scale-105 active:scale-95"
                         >
-                          <Target className="w-5 h-5" />
-                          Start Quiz Journey
-                          <Sparkles className="w-4 h-4" />
+                          Start
                         </Button>
                         <Button
-                          className="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
                           onClick={(e) => {
-                            e.stopPropagation(); // ✅ Prevent card click
+                            e.stopPropagation();
                             handleAttendanceClick(sub?._id);
                           }}
+                          className="flex-1 bg-white hover:bg-emerald-50 text-emerald-600 border border-gray-200 hover:border-emerald-200 shadow-sm rounded-xl font-bold transition-all hover:scale-105 active:scale-95"
                         >
-                          <ClipboardCheck className="w-5 h-5" />
-                          Give Attendance
-                          <CheckCircle2 className="w-4 h-4" />
+                          Attendance
                         </Button>
-                      </CardFooter>
-                    </Card>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* OTP Modal */}
+      {/* OTP Modal (Redesigned) */}
       {showOtpModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-2xl w-[400px] shadow-2xl">
-            <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">Enter Class OTP</h2>
-            <p className="text-center text-gray-500 mb-6">Enter the 6-digit code shared by your teacher</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowOtpModal(false)}
+          ></div>
+
+          {/* Modal Card */}
+          <div className="relative bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full transform transition-all scale-100 border border-white/20">
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <ShieldCheck className="w-10 h-10 text-indigo-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Attendance Check</h2>
+              <p className="text-gray-500 text-sm">Enter the 6-digit OTP provided by your instructor to mark attendance.</p>
+            </div>
 
             <input
               type="text"
               maxLength="6"
               value={otpInput}
               onChange={(e) => setOtpInput(e.target.value)}
-              className="w-full text-center text-3xl tracking-[1em] font-mono font-bold py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none mb-6"
               placeholder="000000"
+              className="w-full text-center text-4xl font-mono font-bold tracking-[0.5em] text-gray-800 border-b-2 border-indigo-100 focus:border-indigo-600 focus:outline-none bg-transparent pb-4 mb-8 placeholder:text-gray-200 transition-colors"
             />
 
-            <div className="flex gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => setShowOtpModal(false)}
-                className="flex-1 py-3 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 transition-colors"
+                className="py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={submitOtpAttendance}
-                className="flex-1 py-3 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
+                className="py-3 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
               >
-                Submit
+                Verify
               </button>
             </div>
           </div>

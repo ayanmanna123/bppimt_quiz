@@ -11,8 +11,16 @@ import {
   Download,
   Calendar,
   Users,
-  CheckCircle,
+  CheckCircle2,
   XCircle,
+  MoreVertical,
+  Search,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  ShieldCheck,
+  Clock,
+  AlertCircle
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -276,119 +284,132 @@ const AttendanceSheet = () => {
   return (
     <>
 
-      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-100">
-        {/* Header */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 opacity-90"></div>
-          <div className="relative z-10 py-16 px-6">
-            <div className="max-w-7xl mx-auto flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center backdrop-blur-sm shadow-2xl">
-                  <FileSpreadsheet className="w-10 h-10 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-5xl font-bold text-white">
-                    Attendance Sheet
-                  </h1>
-                  <p className="text-white/90 text-lg">
-                    Manage & update student attendance manually
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <button
-                  onClick={handleToggleAttendance}
-                  className={`px-8 py-4 rounded-xl font-bold text-lg shadow-2xl flex items-center gap-3 transition-colors ${isAttendanceEnabled
-                    ? "bg-green-500 text-white hover:bg-green-600"
-                    : "bg-red-500 text-white hover:bg-red-600"
-                    }`}
-                >
-                  <div className={`w-3 h-3 rounded-full ${isAttendanceEnabled ? "bg-white animate-pulse" : "bg-white/50"}`} />
-                  {isAttendanceEnabled ? "Attendance Enabled" : "Attendance Disabled"}
-                </button>
+      <div className="min-h-screen bg-slate-50 relative overflow-hidden font-sans">
+        {/* Abstract Background Shapes */}
+        <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-b-[40px] shadow-2xl z-0"></div>
+        <div className="absolute top-20 right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl z-0"></div>
+        <div className="absolute top-40 left-10 w-48 h-48 bg-indigo-500/30 rounded-full blur-2xl z-0"></div>
 
-                <button
-                  onClick={exportToExcel}
-                  className="bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/90 shadow-2xl flex items-center gap-3"
-                >
-                  <Download className="w-5 h-5" />
-                  Export to Excel
-                </button>
+        {/* Main Content Container */}
+        <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+          {/* Header Card */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 mb-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="flex items-center gap-6">
+              <div className="bg-white text-indigo-600 p-4 rounded-2xl shadow-lg">
+                <FileSpreadsheet className="w-8 h-8" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-extrabold tracking-tight">Attendance Dashboard</h1>
+                <p className="text-indigo-100 mt-1 font-medium text-lg">Manage & track student attendance seamlessly</p>
               </div>
             </div>
-            {/* OTP Display Banner */}
-            {generatedOtp && (
-              <div className="mt-8 bg-white/20 backdrop-blur-md rounded-2xl p-6 border border-white/30 flex items-center justify-between">
-                <div>
-                  <h3 className="text-white text-xl font-semibold mb-1">Active Class OTP</h3>
-                  <p className="text-white/80">Share this code with students. Valid until {otpExpiresAt?.toLocaleTimeString()}</p>
+
+            {/* Action Bar */}
+            <div className="flex flex-wrap gap-4 items-center">
+              <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-xl border border-white/10 backdrop-blur-sm">
+                <div className={`w-3 h-3 rounded-full shadow-inner ${isAttendanceEnabled ? "bg-green-400 animate-pulse box-shadow-green" : "bg-red-400"}`} />
+                <span className="font-semibold text-sm uppercase tracking-wider">{isAttendanceEnabled ? "Live" : "Offline"}</span>
+                <label className="relative inline-flex items-center cursor-pointer ml-2">
+                  <input type="checkbox" checked={isAttendanceEnabled} onChange={handleToggleAttendance} className="sr-only peer" />
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                </label>
+              </div>
+
+              <button
+                onClick={exportToExcel}
+                className="flex items-center gap-2 bg-white text-indigo-700 px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+              >
+                <Download className="w-5 h-5" />
+                <span>Export Data</span>
+              </button>
+            </div>
+          </div>
+
+          {/* OTP Banner - Floating Card */}
+          {generatedOtp && (
+            <div className="mb-8 transform transition-all duration-500 ease-out translate-y-0 opacity-100">
+              <div className="bg-white rounded-2xl shadow-xl border-l-8 border-indigo-500 p-6 flex items-center justify-between relative overflow-hidden group">
+                <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-indigo-50 to-transparent opacity-50 z-0 group-hover:w-full transition-all duration-700"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 text-indigo-700 mb-1">
+                    <ShieldCheck className="w-6 h-6" />
+                    <h3 className="text-lg font-bold uppercase tracking-wider">Active Session Code</h3>
+                  </div>
+                  <p className="text-gray-500 flex items-center gap-2 text-sm font-medium">
+                    <Clock className="w-4 h-4" /> Expires at {otpExpiresAt?.toLocaleTimeString()}
+                  </p>
                 </div>
-                <div className="bg-white px-8 py-4 rounded-xl">
-                  <span className="text-4xl font-mono font-bold text-purple-600 tracking-widest">{generatedOtp}</span>
+                <div className="relative z-10 bg-indigo-50 px-8 py-3 rounded-xl border border-indigo-100 shadow-inner">
+                  <span className="text-5xl font-mono font-black text-indigo-600 tracking-[0.2em]">{generatedOtp}</span>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+          )}
 
-
-        {/* Attendance Table */}
-        <div className="px-6 -mt-8 pb-12">
-          <div className="max-w-fit mx-auto">
+          {/* Data Tables Section */}
+          <div className="space-y-12">
             {months.map((month) => (
-              <div key={month.month} className="mb-10">
-                <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
-                  <div className="bg-gradient-to-r from-purple-500 via-violet-500 to-indigo-500 p-6 text-white flex justify-between">
-                    <h3 className="text-3xl font-bold">
-                      {monthNames[month.month - 1]} {new Date().getFullYear()}
+              <div key={month.month} className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                {/* Month Header */}
+                <div className="px-8 py-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50/50">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-indigo-100 text-indigo-600 p-3 rounded-xl">
+                      <Calendar className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-800">
+                      {monthNames[month.month - 1]} <span className="text-gray-400 font-medium text-xl">{new Date().getFullYear()}</span>
                     </h3>
-                    <button
-                      onClick={() =>
-                        handleDateClick(
-                          new Date(
-                            new Date().getFullYear(),
-                            month.month - 1,
-                            new Date().getDate()
-                          ).toLocaleDateString()
-                        )
-                      }
-                      className="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-white/90"
-                    >
-                      + Give Attendance
-                    </button>
                   </div>
+                  <button
+                    onClick={() =>
+                      handleDateClick(
+                        new Date(
+                          new Date().getFullYear(),
+                          month.month - 1,
+                          new Date().getDate()
+                        ).toLocaleDateString()
+                      )
+                    }
+                    className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors shadow-md shadow-indigo-200"
+                  >
+                    <span>+ Mark Attendance</span>
+                  </button>
+                </div>
 
-                  {/* Table */}
-                  <div className="overflow-auto">
-                    <table className="min-w-full">
-                      <thead>
+                {/* The Table */}
+                <div className="overflow-x-auto custom-scrollbar">
+                  <div className="inline-block min-w-full align-middle">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-4 py-3 border">Name</th>
-                          <th className="px-4 py-3 border">University No</th>
+                          <th scope="col" className="sticky left-0 z-20 bg-gray-50 px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] border-r border-gray-200 min-w-[200px]">
+                            Student Name
+                          </th>
+                          <th scope="col" className="sticky left-[200px] z-20 bg-gray-50 px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] border-r border-gray-200 min-w-[140px]">
+                            University ID
+                          </th>
                           {month.days.map((day) => (
                             <th
                               key={day.date}
                               onClick={() => handleDateClick(day.date)}
-                              className="border px-2 py-2 text-center text-sm cursor-pointer hover:bg-purple-100"
+                              className="px-2 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-indigo-50 hover:text-indigo-600 transition-colors min-w-[40px] border-r border-gray-100 last:border-r-0 group"
                             >
-                              {new Date(day.date).getDate()}
+                              <div className="flex flex-col items-center gap-1">
+                                <span>{new Date(day.date).getDate()}</span>
+                                <span className="text-[10px] text-gray-400 font-normal group-hover:text-indigo-400">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 1)}</span>
+                              </div>
                             </th>
                           ))}
-                          <th className="border border-gray-200 px-4 py-3 text-center text-sm font-bold bg-green-50 text-green-700">
-                            <div className="flex items-center justify-center gap-2">
-                              <CheckCircle className="w-4 h-4" />
-                              T.P
-                            </div>
+                          <th scope="col" className="px-4 py-3 text-center text-xs font-bold text-green-600 uppercase tracking-wider bg-green-50/30 border-l border-gray-200">
+                            Present
                           </th>
-                          <th className="border border-gray-200 px-4 py-3 text-center text-sm font-bold bg-red-50 text-red-700">
-                            <div className="flex items-center justify-center gap-2">
-                              <XCircle className="w-4 h-4" />
-                              T.A
-                            </div>
+                          <th scope="col" className="px-4 py-3 text-center text-xs font-bold text-red-600 uppercase tracking-wider bg-red-50/30 border-l border-gray-200">
+                            Absent
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white">
+                      <tbody className="bg-white divide-y divide-gray-100">
                         {students.map((student, idx) => {
                           let monthPresent = 0;
                           let monthAbsent = 0;
@@ -399,32 +420,37 @@ const AttendanceSheet = () => {
                           });
 
                           return (
-                            <tr key={idx} className="hover:bg-purple-50/50">
-                              <td className="border border-gray-200 px-4 py-3 font-medium text-gray-800">
+                            <tr key={idx} className="hover:bg-indigo-50/30 transition-colors even:bg-slate-50/30">
+                              <td className="sticky left-0 z-10 bg-white px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 border-r border-gray-200 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] group-hover:bg-indigo-50/30">
                                 {student.fullname}
                               </td>
-                              <td className="border border-gray-200 px-4 py-3 text-gray-700">
+                              <td className="sticky left-[200px] z-10 bg-white px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] font-mono group-hover:bg-indigo-50/30">
                                 {student.universityNo}
                               </td>
 
                               {month.days.map((day) => (
                                 <td
                                   key={day.date}
-                                  className={`border border-gray-200 px-2 py-2 text-center font-bold ${student[day.date] === "P"
-                                    ? "text-green-600 bg-green-50/50"
-                                    : student[day.date] === "A"
-                                      ? "text-red-600 bg-red-50/50"
-                                      : "text-gray-400"
-                                    }`}
+                                  className="px-2 py-3 whitespace-nowrap text-center text-sm font-medium border-r border-gray-50 last:border-r-0"
                                 >
-                                  {student[day.date]}
+                                  {student[day.date] === "P" ? (
+                                    <div className="flex justify-center">
+                                      <CheckCircle2 className="w-5 h-5 text-green-500 fill-green-50" />
+                                    </div>
+                                  ) : student[day.date] === "A" ? (
+                                    <div className="flex justify-center">
+                                      <XCircle className="w-5 h-5 text-red-500 fill-red-50" />
+                                    </div>
+                                  ) : (
+                                    <span className="w-2 h-2 rounded-full bg-gray-200 inline-block"></span>
+                                  )}
                                 </td>
                               ))}
 
-                              <td className="border border-gray-200 px-4 py-3 text-center font-bold text-green-700 bg-green-50">
+                              <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-bold text-green-600 bg-green-50/20 border-l border-gray-100">
                                 {monthPresent}
                               </td>
-                              <td className="border border-gray-200 px-4 py-3 text-center font-bold text-red-700 bg-red-50">
+                              <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-bold text-red-600 bg-red-50/20 border-l border-gray-100">
                                 {monthAbsent}
                               </td>
                             </tr>
@@ -441,73 +467,104 @@ const AttendanceSheet = () => {
       </div>
 
       {/* ✅ Manual Attendance Popup */}
-      {
-        showPopup && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white p-8 rounded-2xl w-[600px] shadow-2xl">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-purple-700">
-                  Mark Attendance for {selectedDate}
+      {showPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          <div
+            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowPopup(false)}
+          ></div>
+
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden transform transition-all scale-100">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50/50">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Mark Attendance
                 </h2>
-                <button
-                  onClick={() => generateOtpAuth(selectedDate)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 shadow-md text-sm"
-                >
-                  Generate OTP for this Date
-                </button>
+                <p className="text-gray-500 text-sm mt-1 flex items-center gap-2">
+                  <Calendar className="w-4 h-4" /> {selectedDate}
+                </p>
               </div>
-              <div className="max-h-[400px] overflow-y-auto border rounded-lg">
+              <button
+                onClick={() => generateOtpAuth(selectedDate)}
+                className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all text-sm"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>Generate OTP</span>
+              </button>
+            </div>
+
+            {/* Modal Body - Scrollable */}
+            <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-white">
+              <div className="space-y-3">
                 {students.map((stu) => (
                   <div
                     key={stu._id}
-                    className="flex justify-between items-center px-4 py-2 border-b hover:bg-purple-50"
+                    className="flex justify-between items-center p-4 rounded-xl border border-gray-100 hover:border-indigo-100 hover:bg-indigo-50/30 transition-all group"
                   >
-                    <div>
-                      <p className="font-semibold">{stu.fullname}</p>
-                      <p className="text-sm text-gray-500">{stu.universityNo}</p>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">
+                        {stu.fullname.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-800 group-hover:text-indigo-700 transition-colors">{stu.fullname}</p>
+                        <p className="text-xs text-gray-400 font-mono">{stu.universityNo}</p>
+                      </div>
                     </div>
-                    <div className="flex gap-3">
+
+                    <div className="flex gap-2 bg-gray-100/50 p-1 rounded-lg">
                       <button
                         onClick={() => toggleAttendance(stu._id, "P")}
-                        className={`px-4 py-1 rounded-lg font-semibold ${selectedAttendance[stu._id] === "P"
-                          ? "bg-green-600 text-white"
-                          : "bg-green-100 text-green-700"
+                        className={`flex items-center gap-2 px-4 py-2 rounded-md font-semibold text-sm transition-all ${selectedAttendance[stu._id] === "P"
+                            ? "bg-white text-green-600 shadow-sm border border-green-200"
+                            : "text-gray-500 hover:bg-gray-200/50"
                           }`}
                       >
+                        <CheckCircle2 className={`w-4 h-4 ${selectedAttendance[stu._id] === "P" ? "fill-green-100" : ""}`} />
                         Present
                       </button>
                       <button
                         onClick={() => toggleAttendance(stu._id, "A")}
-                        className={`px-4 py-1 rounded-lg font-semibold ${selectedAttendance[stu._id] === "A"
-                          ? "bg-red-600 text-white"
-                          : "bg-red-100 text-red-700"
+                        className={`flex items-center gap-2 px-4 py-2 rounded-md font-semibold text-sm transition-all ${selectedAttendance[stu._id] === "A"
+                            ? "bg-white text-red-600 shadow-sm border border-red-200"
+                            : "text-gray-500 hover:bg-gray-200/50"
                           }`}
                       >
+                        <XCircle className={`w-4 h-4 ${selectedAttendance[stu._id] === "A" ? "fill-red-100" : ""}`} />
                         Absent
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="flex justify-end mt-6 gap-4">
-                <button
-                  onClick={() => setShowPopup(false)}
-                  className="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-semibold"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSubmitAttendance}
-                  disabled={isUpdating}
-                  className="px-8 py-2 rounded-lg bg-purple-600 text-white font-bold hover:bg-purple-700"
-                >
-                  {isUpdating ? "Updating..." : "Update Attendance"}
-                </button>
-              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end items-center gap-3">
+              <button
+                onClick={() => setShowPopup(false)}
+                className="px-6 py-2.5 rounded-xl text-gray-600 font-semibold hover:bg-gray-200/50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmitAttendance}
+                disabled={isUpdating}
+                className="flex items-center gap-2 bg-indigo-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isUpdating ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <span>Save Changes</span>
+                )}
+              </button>
             </div>
           </div>
-        )
-      }
+        </div>
+      )}
     </>
   );
 };

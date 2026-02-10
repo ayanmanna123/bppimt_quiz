@@ -189,131 +189,127 @@ const Subject = () => {
                     }}
                     className="group cursor-pointer"
                   >
-                    <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-110 relative h-full">
-                      {/* Creative gradient header with enhanced patterns */}
+                    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 bg-white border border-gray-100 rounded-2xl group h-full flex flex-col">
+                      {/* Compact Colorful Header */}
                       <div
-                        className={`h-40 ${gradientClass} relative overflow-hidden`}
-                        style={{ background: patternStyle }}
+                        className={`h-24 ${gradientClass} relative overflow-hidden p-4 flex flex-col justify-end`}
                       >
-                        {/* Enhanced animated background elements */}
-                        <div className="absolute inset-0 opacity-40">
-                          <div className="absolute top-3 right-3 w-16 h-16 border-2 border-white/40 rounded-full animate-pulse"></div>
-                          <div className="absolute bottom-3 left-3 w-8 h-8 bg-white/30 rounded-full animate-bounce"></div>
-                          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 border border-white/30 rounded-2xl rotate-45 animate-pulse"></div>
-                          <div className="absolute top-4 left-4 w-4 h-4 bg-white/40 rounded-full"></div>
-                          <div className="absolute bottom-6 right-6 w-3 h-3 bg-white/50 rounded-full"></div>
-                        </div>
+                        <div
+                          className="absolute inset-0 opacity-30"
+                          style={{ background: patternStyle }}
+                        ></div>
+                        <div className="absolute inset-0 bg-black/10"></div>
 
-                        {/* Subject info overlay with enhanced styling */}
-                        <div className="absolute bottom-4 left-4 right-4 text-white">
-                          <CardTitle className="text-xl font-bold drop-shadow-2xl mb-1 leading-tight truncate text-black">
+                        <div className="relative z-10 text-white">
+                          <h3 className="font-bold text-lg leading-tight truncate">
                             {subj?.subjectName}
-                          </CardTitle>
-                          <p className="text-sm opacity-90 drop-shadow truncate">
+                          </h3>
+                          <p className="text-xs opacity-90 truncate">
                             {subj?.description || "Educational Content"}
                           </p>
-                          <div className="w-10 h-1 bg-white/60 rounded-full mt-2"></div>
                         </div>
                       </div>
 
-                      {/* Enhanced course details section */}
-                      <CardContent className="p-6 flex-grow">
-                        <div className="space-y-4 mb-6">
-                          <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
-                            <BookOpen className="w-5 h-5 text-blue-600" />
-                            <div>
-                              <p className="text-xs text-gray-500 font-medium">
-                                SUBJECT CODE
-                              </p>
-                              <p className="text-sm font-bold text-gray-700">
-                                {subj?.subjectCode}
-                              </p>
-                            </div>
+                      {/* Content Grid */}
+                      <CardContent className="p-4 flex-grow">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="col-span-1 bg-blue-50/50 p-2 rounded-lg border border-blue-100/50">
+                            <p className="text-[10px] text-blue-600 font-semibold uppercase tracking-wider">
+                              Code
+                            </p>
+                            <p className="text-sm font-bold text-gray-700 truncate">
+                              {subj?.subjectCode}
+                            </p>
                           </div>
 
-                          <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-xl">
-                            <Users className="w-5 h-5 text-purple-600" />
-                            <div>
-                              <p className="text-xs text-gray-500 font-medium">
-                                DEPARTMENT
-                              </p>
-                              <p className="text-sm font-bold text-gray-700">
-                                {subj?.department}
-                              </p>
-                            </div>
+                          <div className="col-span-1 bg-purple-50/50 p-2 rounded-lg border border-purple-100/50">
+                            <p className="text-[10px] text-purple-600 font-semibold uppercase tracking-wider">
+                              Dept
+                            </p>
+                            <p className="text-sm font-bold text-gray-700 truncate">
+                              {subj?.department}
+                            </p>
                           </div>
 
-                          <div className="flex items-center gap-3 p-3 bg-indigo-50 rounded-xl">
-                            <GraduationCap className="w-5 h-5 text-indigo-600" />
+                          <div className="col-span-2 bg-indigo-50/50 p-2 rounded-lg border border-indigo-100/50 flex items-center justify-between">
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">
-                                SEMESTER
+                              <p className="text-[10px] text-indigo-600 font-semibold uppercase tracking-wider">
+                                Semester
                               </p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-sm font-bold text-gray-700 truncate">
                                 {subj?.semester}
                               </p>
                             </div>
+                            <GraduationCap className="w-4 h-4 text-indigo-400 opacity-50" />
                           </div>
                         </div>
                       </CardContent>
 
-                      {/* Enhanced action buttons section */}
-                      <CardFooter className="p-6 pt-0 space-y-3">
-                        <div className="w-full space-y-3">
-                          <Button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/admin/createQuize/${subj._id}`);
-                            }}
-                            className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white flex items-center justify-center gap-3 transition-all duration-300 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
-                          >
-                            <Plus className="w-5 h-5" />
-                            Create Quiz
-                            <Sparkles className="w-4 h-4" />
-                          </Button>
+                      {/* Actions Footer */}
+                      <CardFooter className="p-4 pt-0 flex flex-col gap-3">
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/admin/createQuize/${subj._id}`);
+                          }}
+                          className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-300 rounded-xl font-medium"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Create Quiz
+                        </Button>
 
+                        <div className="grid grid-cols-4 gap-2 w-full">
                           <Button
+                            variant="outline"
+                            size="icon"
+                            title="View Quizzes"
+                            className="w-full h-9 rounded-lg border-gray-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
                               navigate(`/Admin/subject/quiz/${subj._id}`);
                             }}
-                            className="w-full bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 hover:from-emerald-700 hover:via-green-700 hover:to-teal-700 text-white flex items-center justify-center gap-3 transition-all duration-300 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
                           >
-                            <Eye className="w-5 h-5" />
-                            View Quizzes
+                            <Eye className="w-4 h-4 text-gray-600 hover:text-emerald-600" />
                           </Button>
+
                           <Button
+                            variant="outline"
+                            size="icon"
+                            title="View Attendance"
+                            className="w-full h-9 rounded-lg border-gray-200 hover:bg-cyan-50 hover:text-cyan-600 hover:border-cyan-200 transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
                               navigate(`/attandance/${subj._id}`);
                             }}
-                            className="w-full bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 hover:from-emerald-700 hover:via-green-700 hover:to-teal-700 text-white flex items-center justify-center gap-3 transition-all duration-300 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
                           >
-                            <Eye className="w-5 h-5" />
-                            view Attandance
+                            <Users className="w-4 h-4 text-gray-600 hover:text-cyan-600" />
                           </Button>
 
                           <Button
+                            variant="outline"
+                            size="icon"
+                            title="Edit Time Slots"
+                            className="w-full h-9 rounded-lg border-gray-200 hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200 transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedSubject(subj);
                               setIsTimeSlotModalOpen(true);
                             }}
-                            className="w-full bg-gradient-to-r from-amber-500 via-orange-600 to-red-600 hover:from-amber-600 hover:via-orange-700 hover:to-red-700 text-white flex items-center justify-center gap-3 transition-all duration-300 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
                           >
-                            <Clock className="w-5 h-5" />
-                            Edit Time Slots
+                            <Clock className="w-4 h-4 text-gray-600 hover:text-amber-600" />
                           </Button>
 
                           <Button
+                            variant="outline"
+                            size="icon"
+                            title="Question Bank"
+                            className="w-full h-9 rounded-lg border-gray-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
                               navigate(`/admin/question-bank/${subj._id}`);
                             }}
-                            className="w-full bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white flex items-center justify-center gap-3 transition-all duration-300 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
                           >
-                            <BookOpen className="w-5 h-5" />
-                            Question Bank
+                            <BookOpen className="w-4 h-4 text-gray-600 hover:text-blue-600" />
                           </Button>
                         </div>
                       </CardFooter>
