@@ -17,6 +17,7 @@ import ActivityChart from "../ui/ActivityChart";
 import RecentActivity from "../ui/RecentActivity";
 import UpcomingQuizzes from "../ui/UpcomingQuizzes";
 import Calendar from "./Calendar";
+import LearningJourney from "../ui/LearningJourney";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -212,6 +213,16 @@ const Dashboard = () => {
               }}
             />
           </div>
+
+          {/* Row 1.5: Learning Journey Heatmap (Full Width) */}
+          <motion.div
+            className="md:col-span-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            <LearningJourney streakData={dashboardData.streak} />
+          </motion.div>
 
           {/* Row 2: Main Activity Chart + Widgets */}
 
