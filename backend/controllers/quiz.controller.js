@@ -96,20 +96,43 @@ export const getQuizeBySubJectId = async (req, res) => {
         success: false,
       });
     }
-    const quizes = await Quiz.find({ subject: subjectId });
-    if (!quizes) {
+
+    // Fetch all quizzes for the subject
+    const quizzes = await Quiz.find({ subject: subjectId }).lean();
+
+    if (!quizzes) {
       return res.status(400).json({
         message: "Something went wrong while fetching quizzes",
         success: false,
       });
     }
+
+    // Fetch results for this user and these quizzes to check attempts
+    const quizIds = quizzes.map(q => q._id);
+    const results = await Result.find({
+      student: user._id,
+      quiz: { $in: quizIds }
+    }).select('quiz');
+
+    const attemptedQuizIds = new Set(results.map(r => r.quiz.toString()));
+
+    // Add isAttempted flag to each quiz
+    const quizzesWithStatus = quizzes.map(quiz => ({
+      ...quiz,
+      isAttempted: attemptedQuizIds.has(quiz._id.toString())
+    }));
+
     return res.status(200).json({
       message: "Quizzes fetched successfully",
-      quizes,
+      quizes: quizzesWithStatus,
       success: true,
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false
+    });
   }
 };
 

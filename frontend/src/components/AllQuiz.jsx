@@ -355,18 +355,28 @@ const AllQuiz = () => {
                         </div>
 
                         {/* Enhanced action button */}
-                        <Button
-                          onClick={() => navigate(`/quiz/page/${quiz._id}`)}
-                          disabled={!isActive}
-                          className={`w-full font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105 ${isActive
-                            ? "bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white"
-                            : "bg-gray-300 text-gray-500 cursor-not-allowed hover:scale-100 hover:shadow-lg"
-                            }`}
-                        >
-                          <Play className="w-5 h-5" />
-                          {isActive ? "Start Quiz" : "Quiz Expired"}
-                          {isActive && <Sparkles className="w-4 h-4" />}
-                        </Button>
+                        {quiz.isAttempted ? (
+                          <Button
+                            disabled
+                            className="w-full bg-gray-100 text-gray-500 font-bold py-4 rounded-2xl flex items-center justify-center gap-3 cursor-not-allowed border border-gray-200"
+                          >
+                            <Trophy className="w-5 h-5 text-gray-400" />
+                            Submitted
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={() => navigate(`/quiz/page/${quiz._id}`)}
+                            disabled={!isActive}
+                            className={`w-full font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105 ${isActive
+                              ? "bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white"
+                              : "bg-gray-300 text-gray-500 cursor-not-allowed hover:scale-100 hover:shadow-lg"
+                              }`}
+                          >
+                            <Play className="w-5 h-5" />
+                            {isActive ? "Start Quiz" : "Quiz Expired"}
+                            {isActive && <Sparkles className="w-4 h-4" />}
+                          </Button>
+                        )}
                       </CardContent>
                     </Card>
                   </motion.div>
