@@ -8,6 +8,10 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from 'framer-motion';
 import QuizCardSkeleton from "../QuizCardSkeleton";
+import { generateWeaknessAttackQuiz } from "../services/geminiService";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 // Unique gradient combinations for result cards
 const resultGradients = [
@@ -37,6 +41,9 @@ const Result = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [weaknessLoading, setWeaknessLoading] = useState(false);
+  const [generatedQuiz, setGeneratedQuiz] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -145,6 +152,46 @@ const Result = () => {
                   </p>
                 </div>
               </div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="mt-6"
+              >
+                <Button
+                  onClick={async () => {
+                    setWeaknessLoading(true);
+                    const result = await generateWeaknessAttackQuiz(results);
+                    setWeaknessLoading(false);
+
+                    if (result.questions && result.questions.length > 0) {
+                      setGeneratedQuiz(result);
+                      setIsModalOpen(true);
+                    } else {
+                      toast.info(result.message);
+                    }
+                  }}
+                  disabled={weaknessLoading || results.length === 0}
+                  className="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-bold py-6 px-8 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all text-lg"
+                >
+                  {weaknessLoading ? (
+                    <>
+                      <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                      Analyzing Weaknesses...
+                    </>
+                  ) : (
+                    <>
+                      <Target className="w-6 h-6 mr-2" />
+                      Launch Weakness Attack Quiz
+                      <Sparkles className="w-5 h-5 ml-2" />
+                    </>
+                  )}
+                </Button>
+                <p className="text-sm text-gray-500 mt-2 font-medium">
+                  AI analyzes your past mistakes to create a custom study plan
+                </p>
+              </motion.div>
             </motion.div>
 
             {/* Floating decorative elements with results theme */}
@@ -398,6 +445,57 @@ const Result = () => {
           </motion.div>
         )}
       </div>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-2xl bg-white/95 backdrop-blur-xl border-0 rounded-3xl shadow-2xl p-0 overflow-hidden">
+          <div className="bg-gradient-to-r from-red-500 via-rose-500 to-pink-600 p-6 text-white text-center relaltive overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-10 translate-x-10 blur-xl"></div>
+            <div className="relative z-10">
+              <DialogTitle className="text-3xl font-bold flex items-center justify-center gap-2">
+                <Target className="w-8 h-8" />
+                Weakness Attack Mode
+              </DialogTitle>
+              <DialogDescription className="text-red-100 text-lg mt-2 font-medium">
+                Targeting: {generatedQuiz?.focusTopic}
+              </DialogDescription>
+            </div>
+          </div>
+
+          <div className="p-8 text-center space-y-6">
+            <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto animate-bounce">
+              <Brain className="w-10 h-10 text-red-500" />
+            </div>
+
+            <p className="text-gray-600 text-lg leading-relaxed">
+              {generatedQuiz?.message}
+            </p>
+
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div className="p-4 bg-gray-50 rounded-xl">
+                <p className="text-sm text-gray-500 uppercase font-bold tracking-wider">Questions</p>
+                <p className="text-2xl font-bold text-gray-800">{generatedQuiz?.questions?.length}</p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-xl">
+                <p className="text-sm text-gray-500 uppercase font-bold tracking-wider">Difficulty</p>
+                <p className="text-2xl font-bold text-red-600">Adaptive Hard</p>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => {
+                // Navigate to quiz play page with generated questions passed in state
+                // Assuming you have a route like /quiz/play/custom or handle custom quiz state
+                // For now, we'll navigate to a new route that needs to be handled
+                navigate('/quiz/play-weakness', { state: { questions: generatedQuiz?.questions, topic: generatedQuiz?.focusTopic } });
+                setIsModalOpen(false);
+              }}
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl text-lg shadow-lg hover:shadow-xl transition-all"
+            >
+              Start Attack Quiz Now
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

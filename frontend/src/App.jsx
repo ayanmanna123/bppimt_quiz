@@ -32,6 +32,7 @@ const OtherTeacher = lazy(() => import("./components/admin/OtherTeacher"));
 const AttendanceSheet = lazy(() => import("./components/pages/AttendanceSheet"));
 const StudentAttendanceSummary = lazy(() => import("./components/pages/StudentAttendanceSummary"));
 const QuestionBank = lazy(() => import("./components/admin/QuestionBank"));
+const PlayWeaknessQuiz = lazy(() => import("./components/pages/PlayWeaknessQuiz"));
 
 // Simple loading fallback
 const LoadingFallback = () => (
@@ -185,6 +186,10 @@ function App() {
         {
           path: "/StudentAttendanceSummary",
           element: <StudentAttendanceSummary />
+        },
+        {
+          path: "/quiz/play-weakness",
+          element: <PlayWeaknessQuiz />,
         },
       ],
     },

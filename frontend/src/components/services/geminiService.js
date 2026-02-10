@@ -144,6 +144,39 @@ export const generateWeaknessAttackQuiz = async (results) => {
   }
 };
 
+export const generateFollowUpQuestions = async (topic, wrongQuestions) => {
+  try {
+    let promptText = "";
+    if (wrongQuestions && wrongQuestions.length > 0) {
+      promptText = `
+            The student recently took a quiz on "${topic}" and got the following questions wrong:
+            ${JSON.stringify(wrongQuestions)}
+
+            Generate 5 NEW, rigorous multiple-choice questions that specifically target the concepts behind these mistakes.
+            Help the student understand these specific gaps.
+            Format response as pure JSON only.
+            Each question must have: "question", "options" (array of 4), "answer".
+            Do not include explanations or markdown.
+        `;
+    } else {
+      promptText = `
+            The student mastered the previous quiz on "${topic}".
+            Generate 5 NEW, ADVANCED/EXPERT level multiple-choice questions on "${topic}" to challenge them further.
+            Format response as pure JSON only.
+            Each question must have: "question", "options" (array of 4), "answer".
+            Do not include explanations or markdown.
+        `;
+    }
+
+    const text = await generateContent(promptText);
+    const cleanText = text.replace(/```json|```/g, "").trim();
+    return JSON.parse(cleanText);
+  } catch (err) {
+    console.error("Follow Up Quiz Error:", err);
+    return [];
+  }
+};
+
 // Helper for raw generation to reuse logic
 const generateContent = async (prompt) => {
   const res = await axios.post(
