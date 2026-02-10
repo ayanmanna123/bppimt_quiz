@@ -196,6 +196,14 @@ const Calendar = () => {
                   <Eye className="w-5 h-5" />
                   View Result
                 </button>
+              ) : quiz.isAttempted ? (
+                <button
+                  disabled
+                  className="flex-[2] py-3 rounded-xl bg-gray-100 text-gray-500 font-bold cursor-not-allowed border border-gray-200 flex items-center justify-center gap-2"
+                >
+                  <Target className="w-5 h-5 line-through" />
+                  Submitted
+                </button>
               ) : (
                 <button
                   onClick={() => navigate(`/quiz/page/${quiz._id}`)}

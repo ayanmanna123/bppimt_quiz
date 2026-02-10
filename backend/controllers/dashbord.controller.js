@@ -335,7 +335,7 @@ export const calender = async (req, res) => {
         message: "You are not verified",
       });
     }
-    const cacheKey = `dashbordcalender:${user._id}`;
+    const cacheKey = `dashbordcalender_v2:${user._id}`;
     const cachedUser = await redisClient.get(cacheKey);
 
     if (cachedUser) {
@@ -358,15 +358,30 @@ export const calender = async (req, res) => {
 
     const quizzes = await Quize.find({ subject: { $in: subjectIds } })
       .populate("subject", "subjectName subjectCode department semester")
-      .populate("createdBy", "fullname email");
+      .populate("createdBy", "fullname email")
+      .lean();
+
+    // Check for attempts
+    const quizIds = quizzes.map(q => q._id);
+    const results = await Result.find({
+      student: user._id,
+      quiz: { $in: quizIds }
+    }).select('quiz');
+
+    const attemptedQuizIds = new Set(results.map(r => r.quiz.toString()));
+
+    const quizzesWithStatus = quizzes.map(quiz => ({
+      ...quiz,
+      isAttempted: attemptedQuizIds.has(quiz._id.toString())
+    }));
 
     const dataToCache = {
-      total: quizzes.length,
-      quizzes,
+      total: quizzesWithStatus.length,
+      quizzes: quizzesWithStatus,
     };
     await redisClient.set(cacheKey, JSON.stringify(dataToCache), { EX: 600 });
 
-    res.status(200).json({ total: quizzes.length, quizzes });
+    res.status(200).json({ total: quizzesWithStatus.length, quizzes: quizzesWithStatus });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error", error: error.message });
