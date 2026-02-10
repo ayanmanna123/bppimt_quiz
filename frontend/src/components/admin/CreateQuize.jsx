@@ -21,7 +21,8 @@ import {
   Zap,
   CheckCircle2,
   AlertCircle,
-  Lightbulb
+  Lightbulb,
+  Upload
 } from "lucide-react";
 import { toast } from "sonner";
 import { Howl } from "howler";
@@ -177,6 +178,76 @@ const CreateQuize = () => {
     } finally {
       setLoadingAI(false);
     }
+  };
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const xmlText = e.target.result;
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+        const questionNodes = xmlDoc.getElementsByTagName("question");
+        const newQuestions = [];
+
+        for (let i = 0; i < questionNodes.length; i++) {
+          const qNode = questionNodes[i];
+
+          // Extract question text
+          let questionText = "";
+          const textNode = qNode.getElementsByTagName("text")[0];
+          if (textNode) questionText = textNode.textContent;
+          else if (qNode.getElementsByTagName("questionText")[0]) questionText = qNode.getElementsByTagName("questionText")[0].textContent;
+
+          // Extract options
+          const optionsNodes = qNode.getElementsByTagName("option");
+          const options = ["", "", "", ""]; // Initialize with 4 empty strings
+          for (let j = 0; j < Math.min(optionsNodes.length, 4); j++) {
+            options[j] = optionsNodes[j]?.textContent || "";
+          }
+
+          // Extract correct answer
+          let correctAnswerIndex = 0;
+          const correctAnswerNode = qNode.getElementsByTagName("correctAnswer")[0];
+          if (correctAnswerNode) {
+            const answerText = correctAnswerNode.textContent.trim();
+            // Check if it's an index (0-3) or text match
+            if (!isNaN(answerText) && parseInt(answerText) >= 0 && parseInt(answerText) < 4) {
+              correctAnswerIndex = parseInt(answerText);
+            } else {
+              // Try to find index by matching text
+              const idx = options.findIndex(opt => opt.trim().toLowerCase() === answerText.toLowerCase());
+              if (idx !== -1) correctAnswerIndex = idx;
+            }
+          }
+
+          if (questionText) {
+            newQuestions.push({
+              questionText,
+              options,
+              correctAnswer: correctAnswerIndex
+            });
+          }
+        }
+
+        if (newQuestions.length > 0) {
+          setQuestions(prev => [...prev, ...newQuestions]);
+          toast.success(`Imported ${newQuestions.length} questions successfully!`);
+        } else {
+          toast.warning("No valid questions found in the XML file.");
+        }
+      } catch (error) {
+        console.error("XML Parsing Error:", error);
+        toast.error("Failed to parse XML file.");
+      }
+      // Reset input
+      event.target.value = '';
+    };
+    reader.readAsText(file);
   };
 
   const getCompletionPercentage = () => {
@@ -382,6 +453,50 @@ const CreateQuize = () => {
                         <span className="text-sm">Add a quiz title to enable AI generation</span>
                       </div>
                     )}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* XML Import Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <Card className="overflow-hidden shadow-2xl bg-gradient-to-br from-blue-500 via-cyan-600 to-teal-500 border-0 rounded-3xl text-white relative">
+                <div className="absolute inset-0 opacity-20">
+                  <div className="absolute top-4 left-4 w-20 h-20 border-2 border-dashed border-white/40 rounded-xl -rotate-12"></div>
+                  <div className="absolute bottom-4 right-4 w-12 h-12 bg-white/20 rounded-full animate-bounce"></div>
+                </div>
+
+                <CardContent className="p-8 relative z-10">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                        <Upload className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold">Import Questions</h3>
+                        <p className="text-white/80">Upload XML file to bulk add questions</p>
+                      </div>
+                    </div>
+
+                    <div className="relative group">
+                      <input
+                        type="file"
+                        accept=".xml"
+                        onChange={handleFileUpload}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      />
+                      <Button
+                        type="button"
+                        className="bg-white/20 hover:bg-white/30 text-white border-2 border-white/30 hover:border-white/50 backdrop-blur-sm font-bold py-4 px-8 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl group-hover:scale-105"
+                      >
+                        <Upload className="w-5 h-5 mr-2" />
+                        Upload XML
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

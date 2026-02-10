@@ -65,18 +65,84 @@ const Quiz = () => {
   const [viewMode, setViewMode] = useState("card");
   const dispatch = useDispatch();
   // Filter and search logic
-  const lowerSearch = searchTerm?.toLowerCase() || "";
-
-  const filteredSubjects =
-    subjectByquiry?.filter(
-      (subject) =>
-        subject.subjectName?.toLowerCase()?.includes(lowerSearch) ||
-        subject.subjectCode?.toLowerCase()?.includes(lowerSearch)
-    ) || [];
   const { getAccessTokenSilently } = useAuth0();
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [targetSubjectId, setTargetSubjectId] = useState(null);
   const [otpInput, setOtpInput] = useState("");
+
+  // Favorites Logic (LocalStorage)
+  const [favorites, setFavorites] = useState(() => {
+    const saved = localStorage.getItem("quizFavorites");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("quizFavorites", JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (e, subjectId) => {
+    e.stopPropagation();
+    setFavorites((prev) =>
+      prev.includes(subjectId)
+        ? prev.filter((id) => id !== subjectId)
+        : [...prev, subjectId]
+    );
+  };
+
+  // Advanced Filtering & Sorting Logic
+  const processedSubjects = React.useMemo(() => {
+    let result = [...subjectByquiry];
+
+    // 1. Search
+    if (searchTerm) {
+      const lowerSearch = searchTerm.toLowerCase();
+      result = result.filter(
+        (sub) =>
+          sub.subjectName?.toLowerCase().includes(lowerSearch) ||
+          sub.subjectCode?.toLowerCase().includes(lowerSearch)
+      );
+    }
+
+    // 2. Filter
+    if (selectedFilter === "favorite") {
+      result = result.filter((sub) => favorites.includes(sub._id));
+    } else if (selectedFilter === "recent") {
+      // Assuming 'createdAt' exists, otherwise show last 5
+      // If createdAt is missing, we might use default order which is usually insertion order for MongoDB
+      result = result.slice(-5);
+    }
+
+    // 3. Sort
+    result.sort((a, b) => {
+      if (sortBy === "name") {
+        return a.subjectName.localeCompare(b.subjectName);
+      } else if (sortBy === "recent") {
+        // Sort by createdAt desc if available, else compare IDs (roughly time based)
+        const dateA = a.createdAt ? new Date(a.createdAt) : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt) : 0;
+        return dateB - dateA || b._id.localeCompare(a._id);
+      } else if (sortBy === "popular") {
+        // Mock popularity - random or based on name length just for shuffle effect if no real metric
+        return (b.subjectName.length) - (a.subjectName.length);
+      }
+      return 0;
+    });
+
+    return result;
+  }, [subjectByquiry, searchTerm, selectedFilter, sortBy, favorites]);
+
+  // View Mode Classes
+  const getGridClass = () => {
+    switch (viewMode) {
+      case "list":
+        return "grid-cols-1";
+      case "compact":
+        return "grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
+      case "card":
+      default:
+        return "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+    }
+  };
 
   const initiateAttendance = (subId) => {
     setTargetSubjectId(subId);
@@ -267,7 +333,7 @@ const Quiz = () => {
             <div className="flex justify-center gap-8 mt-8">
               <div className="text-center">
                 <div className="text-2xl font-bold text-white">
-                  {filteredSubjects.length}
+                  {processedSubjects.length}
                 </div>
                 <div className="text-white/80 text-sm">Available Subjects</div>
               </div>
@@ -356,7 +422,7 @@ const Quiz = () => {
 
         {/* Subject Cards Grid */}
         <div className="px-6 pb-12">
-          {filteredSubjects.length === 0 ? (
+          {processedSubjects.length === 0 ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -375,12 +441,12 @@ const Quiz = () => {
             </motion.div>
           ) : (
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+              className={`grid ${getGridClass()} gap-6`} // Reduced gap for tighter layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6 }}
             >
-              {filteredSubjects.map((sub, index) => {
+              {processedSubjects.map((sub, index) => {
                 const gradientClass =
                   studentGradients[index % studentGradients.length];
                 const patternStyle =
@@ -400,25 +466,32 @@ const Quiz = () => {
                     }}
                     className="group cursor-pointer"
                   >
-                    <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-110 relative group-hover:-translate-y-2">
+                    <Card className={`overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform ${viewMode === 'list' ? 'flex flex-row items-center min-h-[180px]' : 'hover:scale-105'} relative group-hover:-translate-y-1`}>
                       {/* Enhanced gradient header */}
                       <div
-                        className={`h-44 ${gradientClass} relative overflow-hidden`}
+                        className={`${viewMode === 'list' ? 'w-1/3 h-full absolute inset-y-0 left-0' : 'h-44'} ${gradientClass} relative overflow-hidden`}
                         style={{ background: patternStyle }}
                       >
                         {/* Animated background elements */}
                         <div className="absolute inset-0 opacity-30">
                           <div className="absolute top-4 right-4 w-20 h-20 border-2 border-white/40 rounded-full animate-pulse group-hover:animate-spin"></div>
                           <div className="absolute bottom-4 left-4 w-12 h-12 bg-white/30 rounded-full animate-bounce"></div>
-                          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-28 h-28 border border-white/30 rounded-2xl rotate-45 animate-pulse group-hover:rotate-90 transition-transform duration-1000"></div>
-                          <div className="absolute top-6 left-6 w-6 h-6 bg-white/40 rounded-full group-hover:animate-ping"></div>
-                          <div className="absolute bottom-8 right-8 w-4 h-4 bg-white/50 rounded-full"></div>
                         </div>
+
+                        {/* Favorite Button */}
+                        <button
+                          onClick={(e) => toggleFavorite(e, sub._id)}
+                          className="absolute top-4 right-4 z-20 p-2 bg-white/20 backdrop-blur-md rounded-full hover:bg-white/40 transition-colors group/star"
+                        >
+                          <Star
+                            className={`w-5 h-5 transition-all duration-300 ${favorites.includes(sub._id) ? "fill-yellow-400 text-yellow-400 scale-110" : "text-white group-hover/star:text-yellow-200"}`}
+                          />
+                        </button>
 
                         {/* Subject badge */}
                         <div className="absolute top-4 left-4">
                           <div className="bg-white/20 backdrop-blur-md rounded-full px-3 py-1 flex items-center gap-2">
-                            <Zap className="w-4 h-4 text-gray-600" />
+                            <Zap className="w-4 h-4 text-gray-800" />
                             <span className="text-xs font-semibold text-gray-800">
                               ACTIVE
                             </span>
@@ -427,10 +500,10 @@ const Quiz = () => {
 
                         {/* Subject info */}
                         <div className="absolute bottom-4 left-4 right-4 text-gray-900">
-                          <h3 className="text-xl font-bold drop-shadow-2xl mb-2 leading-tight">
+                          <h3 className={`${viewMode === 'list' ? 'text-2xl' : 'text-xl'} font-bold drop-shadow-2xl mb-2 leading-tight text-white`}>
                             {sub?.subjectName}
                           </h3>
-                          <p className="text-sm opacity-90 drop-shadow mb-3">
+                          <p className="text-sm opacity-90 drop-shadow mb-3 text-white">
                             {sub?.description ||
                               "Explore and master this subject"}
                           </p>
@@ -439,7 +512,7 @@ const Quiz = () => {
                       </div>
 
                       {/* Enhanced content */}
-                      <CardContent className="p-6">
+                      <CardContent className={`${viewMode === 'list' ? 'ml-[33%] w-2/3 py-6 pr-6 pl-8' : 'p-6'}`}>
                         <div className="space-y-4">
                           <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
                             <User className="w-5 h-5 text-blue-600" />
