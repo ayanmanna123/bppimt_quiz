@@ -170,49 +170,56 @@ const SubjectNotes = () => {
                 )}
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {notes.map((note, idx) => (
-                        <motion.div
-                            key={note._id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: idx * 0.1 }}
-                            className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group"
-                        >
-                            <div className="p-6 flex-grow">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div className="p-3 bg-indigo-50 rounded-xl text-indigo-600 group-hover:scale-110 transition-transform">
-                                        <FileText className="h-6 w-6" />
+                    {notes.map((note, idx) => {
+                        const isPdf = note.fileUrl?.endsWith(".pdf");
+                        const isImage = note.fileUrl?.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+                        const isVideo = note.fileUrl?.match(/\.(mp4|webm|ogg)$/i);
+
+                        return (
+                            <motion.div
+                                key={note._id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.1 }}
+                                className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group"
+                            >
+                                <div className="p-6 flex-grow">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className={`p-3 rounded-xl transition-transform group-hover:scale-110 ${isPdf ? "bg-red-50 text-red-600" : isImage ? "bg-blue-50 text-blue-600" : isVideo ? "bg-purple-50 text-purple-600" : "bg-gray-50 text-gray-600"}`}>
+                                            {isPdf ? <FileText className="h-6 w-6" /> : isImage ? <FileText className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
+                                        </div>
+                                        {(usere?.role === 'teacher' && usere?._id === note.uploadedBy?._id) && (
+                                            <Button variant="ghost" size="icon" onClick={() => handleDelete(note._id)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full">
+                                                <Trash2 className="h-5 w-5" />
+                                            </Button>
+                                        )}
                                     </div>
-                                    {(usere?.role === 'teacher' && usere?._id === note.uploadedBy?._id) && (
-                                        <Button variant="ghost" size="icon" onClick={() => handleDelete(note._id)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full">
-                                            <Trash2 className="h-5 w-5" />
+
+                                    <h3 className="font-bold text-xl text-gray-800 mb-2 line-clamp-2" title={note.title}>{note.title}</h3>
+                                    <p className="text-gray-600 text-sm line-clamp-3 mb-4">{note.description || "No description provided."}</p>
+                                </div>
+
+                                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                                    <div className="flex flex-col">
+                                        <span className="text-xs text-gray-500 font-medium">Uploaded on</span>
+                                        <span className="text-xs text-gray-700">{new Date(note.createdAt).toLocaleDateString()}</span>
+                                    </div>
+
+                                    <a
+                                        href={note.fileUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        download // Hint to browser
+                                    >
+                                        <Button size="sm" className="bg-white hover:bg-indigo-50 text-indigo-600 border border-indigo-200 shadow-sm rounded-xl">
+                                            <Download className="mr-2 h-4 w-4" />
+                                            {isPdf ? "View PDF" : "Download"}
                                         </Button>
-                                    )}
+                                    </a>
                                 </div>
-
-                                <h3 className="font-bold text-xl text-gray-800 mb-2 line-clamp-2">{note.title}</h3>
-                                <p className="text-gray-600 text-sm line-clamp-3 mb-4">{note.description || "No description provided."}</p>
-
-                            </div>
-
-                            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-                                <div className="flex flex-col">
-                                    <span className="text-xs text-gray-500 font-medium">Uploaded on</span>
-                                    <span className="text-xs text-gray-700">{new Date(note.createdAt).toLocaleDateString()}</span>
-                                </div>
-
-                                <a
-                                    href={note.fileUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <Button size="sm" className="bg-white hover:bg-indigo-50 text-indigo-600 border border-indigo-200 shadow-sm rounded-xl">
-                                        <Download className="mr-2 h-4 w-4" /> Download
-                                    </Button>
-                                </a>
-                            </div>
-                        </motion.div>
-                    ))}
+                            </motion.div>
+                        );
+                    })}
                 </div>
 
                 {notes.length === 0 && !loading && (

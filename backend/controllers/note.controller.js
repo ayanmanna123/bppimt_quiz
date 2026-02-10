@@ -41,10 +41,43 @@ export const uploadNote = async (req, res) => {
 
         // Upload file to Cloudinary
         const fileUri = getDataUri(file);
-        const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-            resource_type: "auto", // Auto-detect file type (image, video, raw/pdf)
+
+        // Determine resource type based on mimetype
+        const isImage = file.mimetype.startsWith("image/");
+        const isPdf = file.mimetype === "application/pdf";
+
+        // Setup upload options
+        const uploadOptions = {
             folder: "bppimt_quiz_notes",
-        });
+            resource_type: "auto", // Default to auto
+        };
+
+        // For PDFs and other documents, prefer 'raw' or ensure 'auto' handles filename correctly
+        // Cloudinary 'auto' often treats PDF as 'image' which is fine for viewing but sometimes causes issues with download
+        // Using 'raw' ensures the file is stored exactly as is
+        let cloudResponse;
+
+        if (!isImage) {
+            // For raw files (PDFs, docs), use upload_stream to upload the buffer directly
+            // This prevents Cloudinary from interacting with Data URI encoding for raw files
+            uploadOptions.resource_type = "raw";
+            const ext = file.originalname.split('.').pop();
+            uploadOptions.public_id = `${file.originalname.split('.')[0]}_${Date.now()}`;
+            uploadOptions.format = ext;
+
+            cloudResponse = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(uploadOptions, (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                });
+                stream.end(file.buffer);
+            });
+        } else {
+            // For images, DataURI works fine
+            cloudResponse = await cloudinary.uploader.upload(fileUri.content, uploadOptions);
+        }
+
+
 
         const newNote = await Note.create({
             title,

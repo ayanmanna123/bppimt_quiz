@@ -195,11 +195,7 @@ function App() {
         },
         {
           path: "/subject/notes/:subjectId",
-          element: (
-            <ProtectedRoute>
-              <SubjectNotes />
-            </ProtectedRoute>
-          ),
+          element: <SubjectNotes />,
         },
 
       ],

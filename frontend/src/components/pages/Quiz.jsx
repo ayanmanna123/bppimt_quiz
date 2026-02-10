@@ -26,7 +26,6 @@ import {
   ChevronDown,
   Zap,
   ClipboardCheck,
-  ClipboardCheck,
   CheckCircle2,
   FileText,
 } from "lucide-react";
