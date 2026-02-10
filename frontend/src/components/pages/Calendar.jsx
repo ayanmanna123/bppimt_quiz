@@ -404,75 +404,77 @@ const Calendar = () => {
             ))}
           </div>
 
-          <motion.div
-            key={currentDate.toString()}
-            custom={direction}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ type: "tween", duration: 0.3 }}
-            className="grid grid-cols-7 gap-4"
-          >
-            {daysInMonth.map((date, idx) => {
-              const dayQuizzes = getQuizzesForDate(date);
-              const isToday = isSameDay(date, new Date());
-              const isCurrentMonth = isSameMonth(date, currentDate);
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentDate.toString()}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ type: "tween", duration: 0.3 }}
+              className="grid grid-cols-7 gap-4"
+            >
+              {daysInMonth.map((date, idx) => {
+                const dayQuizzes = getQuizzesForDate(date);
+                const isToday = isSameDay(date, new Date());
+                const isCurrentMonth = isSameMonth(date, currentDate);
 
-              return (
-                <div
-                  key={idx}
-                  className={`min-h-[120px] rounded-2xl p-3 border transition-all duration-300 group
+                return (
+                  <div
+                    key={idx}
+                    className={`min-h-[120px] rounded-2xl p-3 border transition-all duration-300 group relative
                     ${!isCurrentMonth
-                      ? "bg-gray-50/50 border-transparent opacity-40 hover:opacity-100"
-                      : "bg-white border-gray-100 hover:border-blue-200 hover:shadow-lg hover:-translate-y-1"
-                    }
-                    ${isToday ? "ring-2 ring-blue-500 ring-offset-2 bg-blue-50/30" : ""}
+                        ? "bg-gray-50/50 border-transparent opacity-40 hover:opacity-100"
+                        : "bg-white border-gray-100 hover:border-blue-200 hover:shadow-lg hover:-translate-y-1 hover:z-20"
+                      }
+                    ${isToday ? "ring-2 ring-blue-500 ring-offset-2 bg-blue-50/30 z-10" : "z-0"}
                   `}
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <span
-                      className={`text-sm font-semibold w-7 h-7 flex items-center justify-center rounded-full
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <span
+                        className={`text-sm font-semibold w-7 h-7 flex items-center justify-center rounded-full
                         ${isToday
-                          ? "bg-blue-600 text-white shadow-blue-200 shadow-lg"
-                          : isCurrentMonth
-                            ? "text-gray-700 group-hover:bg-gray-100"
-                            : "text-gray-400"
-                        }
+                            ? "bg-blue-600 text-white shadow-blue-200 shadow-lg"
+                            : isCurrentMonth
+                              ? "text-gray-700 group-hover:bg-gray-100"
+                              : "text-gray-400"
+                          }
                       `}
-                    >
-                      {format(date, "d")}
-                    </span>
-                    {dayQuizzes.length > 0 && (
-                      <span className="flex h-2 w-2 relative">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    {dayQuizzes.map((q) => (
-                      <motion.button
-                        key={q._id}
-                        onClick={() => setSelectedQuiz(q)}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full text-left p-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg transition-all"
                       >
-                        <p className="text-[10px] font-bold truncate leading-tight">
-                          {q.title}
-                        </p>
-                        <p className="text-[9px] opacity-90 truncate">
-                          {q.time} min • {q.marks / q.totalQuestions || 0}m/q
-                        </p>
-                      </motion.button>
-                    ))}
+                        {format(date, "d")}
+                      </span>
+                      {dayQuizzes.length > 0 && (
+                        <span className="flex h-2 w-2 relative">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="space-y-1.5 max-h-[85px] overflow-y-auto pr-1 custom-scrollbar">
+                      {dayQuizzes.map((q) => (
+                        <motion.button
+                          key={q._id}
+                          onClick={() => setSelectedQuiz(q)}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="w-full text-left p-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg transition-all"
+                        >
+                          <p className="text-[10px] font-bold truncate leading-tight">
+                            {q.title}
+                          </p>
+                          <p className="text-[9px] opacity-90 truncate">
+                            {q.time} min • {q.marks / q.totalQuestions || 0}m/q
+                          </p>
+                        </motion.button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </motion.div>
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 

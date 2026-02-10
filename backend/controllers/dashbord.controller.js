@@ -387,3 +387,61 @@ export const calender = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+export const recentActivity = async (req, res) => {
+  try {
+    const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const cacheKey = `dashbordRecent:${user._id}`;
+    const cachedData = await redisClient.get(cacheKey);
+
+    if (cachedData) {
+      return res.status(200).json({
+        success: true,
+        data: JSON.parse(cachedData),
+      });
+    }
+
+    const results = await Result.find({ student: user._id })
+      .sort({ submittedAt: -1 })
+      .limit(5)
+      .populate({
+        path: "quiz",
+        select: "title totalQuestions marks subject",
+        populate: {
+          path: "subject",
+          select: "subjectName subjectCode",
+        },
+      });
+
+    const recent = results.map((result) => ({
+      _id: result._id,
+      quizTitle: result.quiz?.title || "Unknown Quiz",
+      subjectName: result.quiz?.subject?.subjectName || "Unknown Subject",
+      score: result.score,
+      totalMarks: (result.quiz?.marks || 0) * (result.quiz?.totalQuestions || 0),
+      date: result.submittedAt,
+    }));
+
+    await redisClient.set(cacheKey, JSON.stringify(recent), { EX: 300 }); // Cache for 5 mins
+
+    return res.status(200).json({
+      success: true,
+      data: recent,
+    });
+  } catch (error) {
+    console.error("Error fetching recent activity:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
