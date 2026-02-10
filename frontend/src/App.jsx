@@ -33,6 +33,8 @@ const AttendanceSheet = lazy(() => import("./components/pages/AttendanceSheet"))
 const StudentAttendanceSummary = lazy(() => import("./components/pages/StudentAttendanceSummary"));
 const QuestionBank = lazy(() => import("./components/admin/QuestionBank"));
 const PlayWeaknessQuiz = lazy(() => import("./components/pages/PlayWeaknessQuiz"));
+const SubjectNotes = lazy(() => import("./components/pages/SubjectNotes"));
+
 
 // Simple loading fallback
 const LoadingFallback = () => (
@@ -191,6 +193,15 @@ function App() {
           path: "/quiz/play-weakness",
           element: <PlayWeaknessQuiz />,
         },
+        {
+          path: "/subject/notes/:subjectId",
+          element: (
+            <ProtectedRoute>
+              <SubjectNotes />
+            </ProtectedRoute>
+          ),
+        },
+
       ],
     },
     // Routes OUTSIDE the main layout (no Navbar)

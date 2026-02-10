@@ -13,6 +13,8 @@ import adminRoute from "./routes/admin.routes.js";
 import classroomRoute from "./routes/classRoom.routes.js";
 import attendanceToggleRoutes from "./routes/attendanceToggle.routes.js";
 import weaknessRoute from "./routes/weakness.routes.js";
+import noteRoute from "./routes/note.routes.js";
+
 
 dotenv.config();
 connectToMongo();
@@ -64,6 +66,8 @@ app.use("/api/v1/admin", adminRoute);
 app.use("/api/v1/attandance", classroomRoute);
 app.use("/api/v1/attendance-toggle", attendanceToggleRoutes);
 app.use("/api/v1/weakness", weaknessRoute);
+app.use("/api/v1/note", noteRoute);
+
 
 app.get("/test-email", async (req, res) => {
   try {

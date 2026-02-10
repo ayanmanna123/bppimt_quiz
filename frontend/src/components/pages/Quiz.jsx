@@ -26,8 +26,11 @@ import {
   ChevronDown,
   Zap,
   ClipboardCheck,
+  ClipboardCheck,
   CheckCircle2,
+  FileText,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setsubjectByquiry } from "../../Redux/subject.reducer";
@@ -592,6 +595,18 @@ const Quiz = () => {
                           Give Attendance
                           <CheckCircle2 className="w-4 h-4" />
                         </Button>
+                        <Button
+                          className="w-full bg-gradient-to-r from-orange-500 via-orange-600 to-red-600 hover:from-orange-600 hover:via-orange-700 hover:to-red-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/subject/notes/${sub?._id}`);
+                          }}
+                        >
+                          <FileText className="w-5 h-5" />
+                          View Notes
+                          <BookOpen className="w-4 h-4" />
+                        </Button>
+
                       </CardFooter>
                     </Card>
                   </motion.div>

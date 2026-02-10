@@ -13,7 +13,9 @@ import {
   GraduationCap,
   Sparkles,
   Clock,
+  FileText,
 } from "lucide-react";
+
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import SchlitonSubject from "./SchlitonSubject";
@@ -258,7 +260,20 @@ const Subject = () => {
                           Create Quiz
                         </Button>
 
-                        <div className="grid grid-cols-4 gap-2 w-full">
+                        <div className="grid grid-cols-5 gap-2 w-full">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            title="Notes"
+                            className="w-full h-9 rounded-lg border-gray-200 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/subject/notes/${subj._id}`);
+                            }}
+                          >
+                            <FileText className="w-4 h-4 text-gray-600 hover:text-indigo-600" />
+                          </Button>
+
                           <Button
                             variant="outline"
                             size="icon"
