@@ -304,6 +304,17 @@ const Subject = () => {
                             <Clock className="w-5 h-5" />
                             Edit Time Slots
                           </Button>
+
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/admin/question-bank/${subj._id}`);
+                            }}
+                            className="w-full bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white flex items-center justify-center gap-3 transition-all duration-300 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
+                          >
+                            <BookOpen className="w-5 h-5" />
+                            Question Bank
+                          </Button>
                         </div>
                       </CardFooter>
                     </Card>

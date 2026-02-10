@@ -31,6 +31,7 @@ const EnterName = lazy(() => import("./components/pages/EnterName"));
 const OtherTeacher = lazy(() => import("./components/admin/OtherTeacher"));
 const AttendanceSheet = lazy(() => import("./components/pages/AttendanceSheet"));
 const StudentAttendanceSummary = lazy(() => import("./components/pages/StudentAttendanceSummary"));
+const QuestionBank = lazy(() => import("./components/admin/QuestionBank"));
 
 // Simple loading fallback
 const LoadingFallback = () => (
@@ -126,6 +127,14 @@ function App() {
           element: (
             <ProtectedRoute>
               <SubjectRelatedQuiz />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/admin/question-bank/:subjectId",
+          element: (
+            <ProtectedRoute>
+              <QuestionBank />
             </ProtectedRoute>
           ),
         },

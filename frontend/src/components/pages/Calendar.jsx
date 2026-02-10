@@ -30,6 +30,7 @@ import {
   Sparkles,
   Play,
   Eye,
+  FileText,
 } from "lucide-react";
 
 const Calendar = () => {
@@ -41,6 +42,7 @@ const Calendar = () => {
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
   const [direction, setDirection] = useState(0);
+  const [showAllQuestions, setShowAllQuestions] = useState(false);
 
   useEffect(() => {
     const fetchQuizzes = async () => {
@@ -210,6 +212,118 @@ const Calendar = () => {
     );
   };
 
+  const AllQuestionsModal = ({ onClose }) => {
+    return (
+      <AnimatePresence>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+          >
+            {/* Header */}
+            <div className="relative bg-gradient-to-r from-indigo-600 to-blue-600 p-6 text-white shrink-0">
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5 text-white" />
+              </button>
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <FileText className="w-6 h-6" />
+                All Quiz Questions
+              </h2>
+              <p className="text-blue-100 mt-1">
+                Comprehensive list of questions from all quizzes in this view
+              </p>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-gray-50">
+              {quizzes.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  <p>No quizzes found for this month.</p>
+                </div>
+              ) : (
+                quizzes.map((quiz, quizIndex) => (
+                  <div key={quiz._id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-800">{quiz.title}</h3>
+                        <p className="text-sm text-gray-500">
+                          {quiz.subject.subjectName} • {format(parseISO(quiz.date), "PPP")}
+                        </p>
+                      </div>
+                      <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">
+                        {quiz.questions?.length || 0} Questions
+                      </span>
+                    </div>
+
+                    <div className="divide-y divide-gray-100">
+                      {quiz.questions && quiz.questions.length > 0 ? (
+                        quiz.questions.map((q, qIndex) => (
+                          <div key={q._id || qIndex} className="p-6 hover:bg-gray-50/50 transition-colors">
+                            <div className="flex gap-4">
+                              <span className="flex-shrink-0 w-8 h-8 bg-gray-100 text-gray-500 rounded-lg flex items-center justify-center font-bold text-sm">
+                                {qIndex + 1}
+                              </span>
+                              <div className="flex-1 space-y-3">
+                                <p className="font-medium text-gray-900 text-lg">{q.questionText}</p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                  {q.options.map((opt, optIndex) => (
+                                    <div
+                                      key={optIndex}
+                                      className={`p-3 rounded-xl text-sm border flex items-center gap-3
+                                        ${(optIndex + 1) === q.correctAnswer
+                                          ? "bg-green-50 border-green-200 text-green-800 ring-1 ring-green-500"
+                                          : "bg-white border-gray-200 text-gray-600"
+                                        }`}
+                                    >
+                                      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border
+                                        ${(optIndex + 1) === q.correctAnswer
+                                          ? "bg-green-500 border-green-500 text-white"
+                                          : "bg-gray-50 border-gray-200 text-gray-400"
+                                        }`}
+                                      >
+                                        {String.fromCharCode(65 + optIndex)}
+                                      </span>
+                                      {opt}
+                                      {(optIndex + 1) === q.correctAnswer && (
+                                        <Sparkles className="w-4 h-4 text-green-500 ml-auto" />
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="p-6 text-center text-gray-400 italic">
+                          No questions available for this quiz.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="p-4 border-t border-gray-100 bg-white shrink-0">
+              <button
+                onClick={onClose}
+                className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors"
+              >
+                Close Question Bank
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </AnimatePresence>
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-96 space-y-4">
@@ -238,22 +352,34 @@ const Calendar = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-6 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
-            <button
-              onClick={() => navigateMonth(-1)}
-              className="p-2 hover:bg-gray-50 rounded-xl transition-colors text-gray-600 hover:text-blue-600"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <div className="text-lg font-bold text-gray-800 min-w-[140px] text-center">
-              {format(currentDate, "MMMM yyyy")}
+          <div className="flex items-center gap-4">
+            {usere?.role === "teacher" && (
+              <button
+                onClick={() => setShowAllQuestions(true)}
+                className="px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-xl font-semibold shadow-sm hover:shadow-md hover:bg-blue-50 transition-all flex items-center gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                <span className="hidden sm:inline">All Questions</span>
+              </button>
+            )}
+
+            <div className="flex items-center gap-6 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
+              <button
+                onClick={() => navigateMonth(-1)}
+                className="p-2 hover:bg-gray-50 rounded-xl transition-colors text-gray-600 hover:text-blue-600"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <div className="text-lg font-bold text-gray-800 min-w-[140px] text-center">
+                {format(currentDate, "MMMM yyyy")}
+              </div>
+              <button
+                onClick={() => navigateMonth(1)}
+                className="p-2 hover:bg-gray-50 rounded-xl transition-colors text-gray-600 hover:text-blue-600"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
             </div>
-            <button
-              onClick={() => navigateMonth(1)}
-              className="p-2 hover:bg-gray-50 rounded-xl transition-colors text-gray-600 hover:text-blue-600"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
           </div>
         </div>
 
@@ -343,6 +469,9 @@ const Calendar = () => {
       </div>
 
       <QuizModal quiz={selectedQuiz} onClose={() => setSelectedQuiz(null)} />
+      {showAllQuestions && (
+        <AllQuestionsModal onClose={() => setShowAllQuestions(false)} />
+      )}
     </div>
   );
 };

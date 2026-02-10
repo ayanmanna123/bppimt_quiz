@@ -80,7 +80,7 @@ export const getQuizeBySubJectId = async (req, res) => {
         success: false,
       });
     }
-      const userId = req.auth.sub;
+    const userId = req.auth.sub;
     const user = await User.findOne({ auth0Id: userId });
 
     if (!user) {
@@ -201,7 +201,7 @@ export const getQuizeByQuizeId = async (req, res) => {
         success: false,
       });
     }
-      const userId = req.auth.sub;
+    const userId = req.auth.sub;
     const user = await User.findOne({ auth0Id: userId });
 
     if (!user) {
@@ -242,7 +242,7 @@ export const getquizBysubjectId = async (req, res) => {
         success: false,
       });
     }
-      const userId = req.auth.sub;
+    const userId = req.auth.sub;
     const user = await User.findOne({ auth0Id: userId });
 
     if (!user) {
@@ -291,5 +291,70 @@ export const getquizlength = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const getAllQuestionsBySubject = async (req, res) => {
+  try {
+    const { subjectId } = req.params;
+    if (!subjectId) {
+      return res.status(400).json({
+        message: "Subject ID is required",
+        success: false,
+      });
+    }
+
+    const userId = req.auth.sub;
+    const user = await User.findOne({ auth0Id: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    // Allow teachers (verified) to access this
+    if (user.verified === "pending" || user.verified === "reject") {
+      return res.status(403).json({
+        message: "You are not verified",
+        success: false,
+      });
+    }
+
+    if (user.role === "student") {
+      return res.status(403).json({
+        message: "Access denied. Only teachers can view the question bank.",
+        success: false,
+      });
+    }
+
+    const quizzes = await Quiz.find({ subject: subjectId }).select("title questions");
+
+    // Aggregate questions
+    let allQuestions = [];
+    quizzes.forEach(quiz => {
+      if (quiz.questions && quiz.questions.length > 0) {
+        const quizQuestions = quiz.questions.map(q => ({
+          ...q.toObject(),
+          quizTitle: quiz.title,
+          quizId: quiz._id
+        }));
+        allQuestions = [...allQuestions, ...quizQuestions];
+      }
+    });
+
+    return res.status(200).json({
+      message: "Questions fetched successfully",
+      count: allQuestions.length,
+      questions: allQuestions,
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error fetching question bank:", error);
+    return res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
   }
 };
