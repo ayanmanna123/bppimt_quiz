@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 import UpdateProfilelog from "./UpdateProfilelog";
 import Dashboard from "./pages/Dashboard";
-import Calendar from "../components/pages/Calander";
+import Calendar from "../components/pages/Calendar";
 import {
   User,
   Mail,
@@ -256,7 +256,12 @@ const Profile = () => {
       value: usere?.semester,
       color: "text-pink-600",
     },
-  ];
+  ].filter(section => {
+    if (usere?.role === "teacher") {
+      return section.label !== "University Number" && section.label !== "Semester";
+    }
+    return true;
+  });
 
   if (loading) {
     return (
@@ -428,32 +433,36 @@ const Profile = () => {
                   </div>
 
                   {/* Dynamic Quick Stats */}
-                  <div className="grid grid-cols-2 gap-3 mb-6">
-                    {profileStats.map((stat, index) => (
-                      <motion.div
-                        key={stat.label}
-                        initial={{ scale: 0, rotate: -180 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{
-                          delay: 0.1 * index,
-                          duration: 0.6,
-                          type: "spring",
-                        }}
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        className={`${stat.bg} rounded-2xl p-4 text-center border-2 border-transparent hover:border-gray-200 transition-all duration-300`}
-                      >
-                        <stat.icon
-                          className={`w-6 h-6 ${stat.color} mx-auto mb-2`}
-                        />
-                        <div className="text-xl font-bold text-gray-800">
-                          {stat.value}
-                        </div>
-                        <div className="text-xs text-gray-600 font-medium">
-                          {stat.label}
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
+
+                  {/* Dynamic Quick Stats - Only for Students */}
+                  {usere?.role !== "teacher" && (
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                      {profileStats.map((stat, index) => (
+                        <motion.div
+                          key={stat.label}
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{
+                            delay: 0.1 * index,
+                            duration: 0.6,
+                            type: "spring",
+                          }}
+                          whileHover={{ scale: 1.05, y: -2 }}
+                          className={`${stat.bg} rounded-2xl p-4 text-center border-2 border-transparent hover:border-gray-200 transition-all duration-300`}
+                        >
+                          <stat.icon
+                            className={`w-6 h-6 ${stat.color} mx-auto mb-2`}
+                          />
+                          <div className="text-xl font-bold text-gray-800">
+                            {stat.value}
+                          </div>
+                          <div className="text-xs text-gray-600 font-medium">
+                            {stat.label}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
 
                   {/* Edit Button */}
                   <motion.div
@@ -539,7 +548,7 @@ const Profile = () => {
             </motion.div>
           </div>
         </div>
-      </div>
+      </div >
 
       <Calendar />
       <UpdateProfilelog open={open} setopen={setopen} />
@@ -581,7 +590,7 @@ const Profile = () => {
           animation: pulse 1s ease-in-out infinite;
         }
       `}</style>
-    </div>
+    </div >
   );
 };
 

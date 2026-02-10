@@ -267,20 +267,22 @@ const Navbar = () => {
                         View Profile
                       </Link>
                     </motion.div>
-                    <motion.div
-                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors duration-200 cursor-pointer group"
-                      whileHover={{ x: 5 }}
-                    >
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
-                        <User className="w-5 h-5 text-white" />
-                      </div>
-                      <Link
-                        to="/dashbord"
-                        className="font-medium text-slate-700 group-hover:text-slate-900"
+                    {usere?.role !== "teacher" && (
+                      <motion.div
+                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors duration-200 cursor-pointer group"
+                        whileHover={{ x: 5 }}
                       >
-                        Dashbord
-                      </Link>
-                    </motion.div>
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                          <User className="w-5 h-5 text-white" />
+                        </div>
+                        <Link
+                          to="/dashbord"
+                          className="font-medium text-slate-700 group-hover:text-slate-900"
+                        >
+                          Dashbord
+                        </Link>
+                      </motion.div>
+                    )}
 
                     <motion.div
                       className="flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 transition-colors duration-200 cursor-pointer group"

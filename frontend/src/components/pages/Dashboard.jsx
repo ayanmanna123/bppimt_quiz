@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { motion, animate } from "framer-motion";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -13,7 +15,7 @@ import {
   Crown,
   Star,
   Trophy,
-  Calendar,
+  Calendar as CalendarIcon,
   BookOpen,
   Brain,
   Sparkles,
@@ -32,9 +34,17 @@ import {
   Rocket,
   Diamond
 } from "lucide-react";
-import Calander from "./Calander";
+import Calendar from "./Calendar";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const { usere } = useSelector((store) => store.auth);
+
+  useEffect(() => {
+    if (usere?.role === "teacher") {
+      navigate("/");
+    }
+  }, [usere, navigate]);
   // ✅ Auth0
   const { getAccessTokenSilently, isAuthenticated, loginWithRedirect, user } = useAuth0();
 
@@ -833,7 +843,7 @@ const Dashboard = () => {
                     transition={{ duration: 4, repeat: Infinity }}
                     className="w-24 h-24 bg-gradient-to-br from-blue-200 to-purple-300 rounded-full mx-auto mb-6 flex items-center justify-center"
                   >
-                    <Calendar className="w-12 h-12 text-blue-600" />
+                    <CalendarIcon className="w-12 h-12 text-blue-600" />
                   </motion.div>
                   <p className="text-gray-500 text-xl font-semibold">Start Your Journey!</p>
                   <p className="text-gray-400 text-lg mt-2">Take your first quiz to begin tracking</p>
@@ -849,7 +859,7 @@ const Dashboard = () => {
             </div>
           </div>
         </motion.div>
-        <Calander />
+        <Calendar />
       </div>
 
       {/* Enhanced Custom Styles */}

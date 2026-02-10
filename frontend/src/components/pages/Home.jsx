@@ -8,7 +8,7 @@ const TextType = lazy(() => import("./TextType"));
 const Features = lazy(() => import("./Features"));
 const Footer = lazy(() => import("./Footer"));
 const Footerreal = lazy(() => import("./Footerreal"));
-const Calander = lazy(() => import("./Calander"));
+const Calendar = lazy(() => import("./Calendar"));
 
 const Home = () => {
   const { getAccessTokenSilently } = useAuth0();
