@@ -91,3 +91,65 @@ export const explainAnswer = async (question, userAnswer, correctAnswer) => {
   }
 };
 
+
+export const generateWeaknessAttackQuiz = async (results) => {
+  try {
+    // 1. Analyze weak areas
+    const weakAreas = results.reduce((acc, result) => {
+      const subject = result.quiz?.subject?.subjectName || "General";
+      const percentage = (result.score / (result.quiz.marks * result.quiz.totalQuestions)) * 100;
+
+      if (percentage < 60) {
+        if (!acc[subject]) acc[subject] = 0;
+        acc[subject]++;
+      }
+      return acc;
+    }, {});
+
+    const sortedWeaknesses = Object.entries(weakAreas)
+      .sort(([, a], [, b]) => b - a)
+      .map(([subject]) => subject);
+
+    if (sortedWeaknesses.length === 0) {
+      return {
+        questions: [],
+        message: "You're doing great! No specific weak areas detected."
+      };
+    }
+
+    const focusTopic = sortedWeaknesses[0]; // Target the biggest weakness
+
+    // 2. Generate detailed quiz for the weak topic
+    const text = await generateContent(`
+      Generate 5 hard-level multiple choice questions about "${focusTopic}".
+      Focus on complex concepts where students usually make mistakes.
+      Format response as pure JSON only.
+      Each question must have: "question", "options" (array of 4), "answer".
+      Do not include explanations or markdown.
+    `);
+
+    // ✅ Clean & Parse
+    const cleanText = text.replace(/```json|```/g, "").trim();
+    const questions = JSON.parse(cleanText);
+
+    return {
+      questions,
+      focusTopic,
+      message: `We noticed you've been struggling with ${focusTopic}. Here's a weakness attack quiz to help you improve!`
+    };
+
+  } catch (err) {
+    console.error("Weakness Attack Error:", err);
+    return { questions: [], message: "Failed to generate weakness quiz." };
+  }
+};
+
+// Helper for raw generation to reuse logic
+const generateContent = async (prompt) => {
+  const res = await axios.post(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
+    { contents: [{ parts: [{ text: prompt }] }] },
+    { headers: { "Content-Type": "application/json" } }
+  );
+  return res.data.candidates[0].content.parts[0].text;
+};

@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { Howl } from "howler";
 import { motion } from "framer-motion";
 import { generateQuizQuestions } from "../services/geminiService";
+import { parseFile } from "../services/fileParserService";
 
 const ValidatedInput = ({
   value,
@@ -87,6 +88,7 @@ const CreateQuize = () => {
   ]);
   const [quizContext, setQuizContext] = useState("");
   const [loadingAI, setLoadingAI] = useState(false);
+  const [processingFile, setProcessingFile] = useState(false);
 
   const handleQuestionChange = (index, field, value) => {
     const updated = [...questions];
@@ -250,6 +252,28 @@ const CreateQuize = () => {
       event.target.value = '';
     };
     reader.readAsText(file);
+  };
+
+  const handleNotesUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setProcessingFile(true);
+    try {
+      const text = await parseFile(file);
+      if (text && text.trim().length > 0) {
+        setQuizContext(prev => (prev ? prev + "\n\n" : "") + `--- Content from ${file.name} ---\n` + text);
+        toast.success(`Extracted content from ${file.name}`);
+      } else {
+        toast.warning("Could not extract text from file.");
+      }
+    } catch (error) {
+      console.error("File parsing error:", error);
+      toast.error(`Failed to parse file: ${error.message}`);
+    } finally {
+      setProcessingFile(false);
+      e.target.value = null; // Reset input
+    }
   };
 
   const getCompletionPercentage = () => {
@@ -431,10 +455,35 @@ const CreateQuize = () => {
 
                     <div className="mb-6 max-w-2xl mx-auto">
                       <div className="relative group text-left">
-                        <label className="block text-sm font-semibold text-white/90 mb-2 items-center gap-2">
-                          <BookOpen className="w-4 h-4 text-white inline mr-2" />
-                          Context / Lecture Notes (Optional)
-                        </label>
+                        <div className="flex justify-between items-center mb-2">
+                          <label className="block text-sm font-semibold text-white/90 items-center gap-2">
+                            <BookOpen className="w-4 h-4 text-white inline mr-2" />
+                            Context / Lecture Notes (Optional)
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="file"
+                              accept=".pdf,.docx,.pptx,.txt"
+                              onChange={handleNotesUpload}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                              disabled={processingFile}
+                            />
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              className="bg-white/20 hover:bg-white/30 text-white border border-white/30 hover:border-white/50 h-8 text-xs backdrop-blur-sm"
+                              disabled={processingFile}
+                            >
+                              {processingFile ? (
+                                <div className="animate-spin w-3 h-3 border-2 border-white/50 border-t-white rounded-full mr-2"></div>
+                              ) : (
+                                <Upload className="w-3 h-3 mr-2" />
+                              )}
+                              Upload Notes (PDF/Word/PPT)
+                            </Button>
+                          </div>
+                        </div>
                         <textarea
                           placeholder="Paste lecture notes or text here to generate questions from specific content..."
                           value={quizContext}
