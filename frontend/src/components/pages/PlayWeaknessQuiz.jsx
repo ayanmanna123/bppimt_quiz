@@ -1,5 +1,7 @@
+import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -26,6 +28,7 @@ import { generateFollowUpQuestions } from "../services/geminiService";
 const PlayWeaknessQuiz = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const { getAccessTokenSilently } = useAuth0();
 
     // State from navigation (generated quiz)
     const [quizData, setQuizData] = useState(null);
@@ -68,33 +71,45 @@ const PlayWeaknessQuiz = () => {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         setIsSubmitting(true);
 
-        // Calculate Score
-        let calculatedScore = 0;
-        quizData.questions.forEach((q, idx) => {
+        // Prepare Questions with answers for backend
+        const processedQuestions = quizData.questions.map((q, idx) => {
             const selected = answers[idx];
-            // Check if answer is correct. 
-            // Note: Gemini sometimes returns "answer" as index or string.
-            // We'll try to match loosely.
-            const correct = q.answer;
+            const selectedText = q.options[selected];
 
-            // If correct answer is a string (e.g., "Option A"), we might need logic.
-            // But usually our prompt asks for "answer" as the correct option text or index.
-            // Let's assume the Gemini prompt returns the index (0-3) or the exact string of the option.
+            // Determine correctness
+            const isCorrect = selectedText === q.answer || selected === q.answer || (typeof q.answer === 'number' && q.options[q.answer] === selectedText);
 
-            const selectedOptionText = q.options[selected];
-
-            // Flexible checking: match index or text
-            if (selected == correct || selectedOptionText === correct) {
-                calculatedScore++;
-            } else if (typeof correct === 'string' && q.options.findIndex(opt => opt === correct) === selected) {
-                calculatedScore++;
-            }
+            return {
+                questionText: q.question,
+                options: q.options,
+                correctAnswer: q.answer,
+                userAnswer: selectedText || selected, // Store text preferably or index
+                isCorrect
+            };
         });
 
+        const calculatedScore = processedQuestions.filter(q => q.isCorrect).length;
         setScore(calculatedScore);
+
+        // Save to Backend
+        try {
+            const token = await getAccessTokenSilently();
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/weakness/save-weakness-result`, {
+                topic: quizData.title.replace("Weakness Attack: ", ""),
+                score: calculatedScore,
+                totalQuestions: processedQuestions.length,
+                questions: processedQuestions
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            toast.success("Result saved to history!");
+        } catch (error) {
+            console.error("Save error:", error);
+            toast.error("Failed to save result, but you can see it here.");
+        }
 
         const sound = new Howl({
             src: ["/notification.wav"],
