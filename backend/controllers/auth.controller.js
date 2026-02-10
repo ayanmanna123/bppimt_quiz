@@ -21,19 +21,20 @@ export const creatuser = async (req, res) => {
       universityNo,
     } = req.body;
 
-    if (
-      !fullname ||
-      !email ||
-      !picture ||
-      !role ||
-      !department ||
-      !semester ||
-      !universityNo
-    ) {
+    if (!fullname || !email || !picture || !role) {
       return res.status(400).json({
-        message: "All fields are required",
+        message: "Fullname, Email, Picture and Role are required",
         success: false,
       });
+    }
+
+    if (role === "student") {
+      if (!department || !semester || !universityNo) {
+        return res.status(400).json({
+          message: "Department, Semester and University No are required for students",
+          success: false,
+        });
+      }
     }
 
     const exiestuser = await User.findOne({ email });
@@ -48,12 +49,12 @@ export const creatuser = async (req, res) => {
     const newuser = {
       auth0Id: userId,
       fullname,
-      universityNo,
+      universityNo: role === "student" ? universityNo : undefined,
       email,
       picture,
       role,
-      department,
-      semester,
+      department: role === "student" ? department : undefined,
+      semester: role === "student" ? semester : undefined,
       verified: isCollegeEmail(email) ? "accept" : "pending",
     };
 

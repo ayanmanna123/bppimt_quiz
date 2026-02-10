@@ -53,8 +53,13 @@ const Complete = () => {
   } = useAuth0();
 
   const handelsubmite = async () => {
-    if (!role || !department || !semester || !universityNo) {
-      toast.error("Please fill in all required fields");
+    if (!role) {
+      toast.error("Please select a role");
+      return;
+    }
+
+    if (role === "student" && (!department || !semester || !universityNo)) {
+      toast.error("Please fill in all required fields for students");
       return;
     }
 
@@ -130,7 +135,10 @@ const Complete = () => {
     checkUser();
   }, [isAuthenticated, user, getAccessTokenSilently, dispatch, navigate]);
 
-  const isFormComplete = role && department && semester && universityNo;
+  const isFormComplete =
+    role === "teacher"
+      ? role
+      : role && department && semester && universityNo;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-100 flex items-center justify-center p-6">
@@ -257,151 +265,157 @@ const Complete = () => {
                 </DropdownMenu>
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7, duration: 0.6 }}
-              >
-                <label className="block text-sm font-semibold text-gray-700 mb-3 items-center gap-2">
-                  <Building2 className="w-4 h-4 text-purple-600" />
-                  Select Department
-                </label>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full h-14 text-left justify-between bg-white/50 hover:bg-white/80 border-2 border-gray-200 hover:border-purple-300 rounded-xl shadow-sm transition-all duration-300"
-                    >
-                      <span
-                        className={
-                          department ? "text-gray-900" : "text-gray-500"
-                        }
-                      >
-                        {department
-                          ? `🏛️ ${department}`
-                          : "Choose your department..."}
-                      </span>
-                      <Building2 className="w-5 h-5 text-gray-400" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-full rounded-xl border-0 shadow-xl bg-white/95 backdrop-blur-xl">
-                    <DropdownMenuLabel className="text-purple-600 font-semibold">
-                      Department
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuRadioGroup
-                      value={department}
-                      onValueChange={setDepartment}
-                    >
-                      <DropdownMenuRadioItem
-                        value="EE"
-                        className="cursor-pointer py-3"
-                      >
-                        ⚡ Electrical Engineering (EE)
-                      </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem
-                        value="ECE"
-                        className="cursor-pointer py-3"
-                      >
-                        📡 Electronics & Communication (ECE)
-                      </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem
-                        value="CSE"
-                        className="cursor-pointer py-3"
-                      >
-                        💻 Computer Science (CSE)
-                      </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem
-                        value="IT"
-                        className="cursor-pointer py-3"
-                      >
-                        🌐 Information Technology (IT)
-                      </DropdownMenuRadioItem>
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8, duration: 0.6 }}
-              >
-                <label className="block text-sm font-semibold text-gray-700 mb-3 items-center gap-2">
-                  <Calendar className="w-4 h-4 text-pink-600" />
-                  Select Semester
-                </label>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full h-14 text-left justify-between bg-white/50 hover:bg-white/80 border-2 border-gray-200 hover:border-pink-300 rounded-xl shadow-sm transition-all duration-300"
-                    >
-                      <span
-                        className={semester ? "text-gray-900" : "text-gray-500"}
-                      >
-                        {semester
-                          ? `📚 ${semester.charAt(0).toUpperCase() +
-                          semester.slice(1)
-                          } Semester`
-                          : "Pick your semester..."}
-                      </span>
-                      <Calendar className="w-5 h-5 text-gray-400" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-full rounded-xl border-0 shadow-xl bg-white/95 backdrop-blur-xl">
-                    <DropdownMenuLabel className="text-pink-600 font-semibold">
-                      Semester
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuRadioGroup
-                      value={semester}
-                      onValueChange={setSemester}
-                    >
-                      {[
-                        { value: "first", label: "1️⃣ First Semester" },
-                        { value: "second", label: "2️⃣ Second Semester" },
-                        { value: "third", label: "3️⃣ Third Semester" },
-                        { value: "fourth", label: "4️⃣ Fourth Semester" },
-                        { value: "fifth", label: "5️⃣ Fifth Semester" },
-                        { value: "sixth", label: "6️⃣ Sixth Semester" },
-                        { value: "seventh", label: "7️⃣ Seventh Semester" },
-                        { value: "eighth", label: "8️⃣ Eighth Semester" },
-                      ].map((sem) => (
-                        <DropdownMenuRadioItem
-                          key={sem.value}
-                          value={sem.value}
-                          className="cursor-pointer py-3"
+              {role !== "teacher" && (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7, duration: 0.6 }}
+                  >
+                    <label className="block text-sm font-semibold text-gray-700 mb-3 items-center gap-2">
+                      <Building2 className="w-4 h-4 text-purple-600" />
+                      Select Department
+                    </label>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full h-14 text-left justify-between bg-white/50 hover:bg-white/80 border-2 border-gray-200 hover:border-purple-300 rounded-xl shadow-sm transition-all duration-300"
                         >
-                          {sem.label}
-                        </DropdownMenuRadioItem>
-                      ))}
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </motion.div>
+                          <span
+                            className={
+                              department ? "text-gray-900" : "text-gray-500"
+                            }
+                          >
+                            {department
+                              ? `🏛️ ${department}`
+                              : "Choose your department..."}
+                          </span>
+                          <Building2 className="w-5 h-5 text-gray-400" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-full rounded-xl border-0 shadow-xl bg-white/95 backdrop-blur-xl">
+                        <DropdownMenuLabel className="text-purple-600 font-semibold">
+                          Department
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup
+                          value={department}
+                          onValueChange={setDepartment}
+                        >
+                          <DropdownMenuRadioItem
+                            value="EE"
+                            className="cursor-pointer py-3"
+                          >
+                            ⚡ Electrical Engineering (EE)
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem
+                            value="ECE"
+                            className="cursor-pointer py-3"
+                          >
+                            📡 Electronics & Communication (ECE)
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem
+                            value="CSE"
+                            className="cursor-pointer py-3"
+                          >
+                            💻 Computer Science (CSE)
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem
+                            value="IT"
+                            className="cursor-pointer py-3"
+                          >
+                            🌐 Information Technology (IT)
+                          </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </motion.div>
 
-              {/* University Number Input Field */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.6 }}
-              >
-                <label className="block text-sm font-semibold text-gray-700 mb-3 items-center gap-2">
-                  <Hash className="w-4 h-4 text-emerald-600" />
-                  University Number
-                </label>
-                <div className="relative">
-                  <Input
-                    type="text"
-                    placeholder="Enter your university number..."
-                    value={universityNo}
-                    onChange={(e) => setuniversityNo(e.target.value)}
-                    className="w-full h-14 bg-white/50 hover:bg-white/80 border-2 border-gray-200 focus:border-emerald-300 rounded-xl shadow-sm transition-all duration-300 text-lg pl-12"
-                  />
-                  <Hash className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                </div>
-              </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8, duration: 0.6 }}
+                  >
+                    <label className="block text-sm font-semibold text-gray-700 mb-3 items-center gap-2">
+                      <Calendar className="w-4 h-4 text-pink-600" />
+                      Select Semester
+                    </label>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full h-14 text-left justify-between bg-white/50 hover:bg-white/80 border-2 border-gray-200 hover:border-pink-300 rounded-xl shadow-sm transition-all duration-300"
+                        >
+                          <span
+                            className={
+                              semester ? "text-gray-900" : "text-gray-500"
+                            }
+                          >
+                            {semester
+                              ? `📚 ${semester.charAt(0).toUpperCase() +
+                              semester.slice(1)
+                              } Semester`
+                              : "Pick your semester..."}
+                          </span>
+                          <Calendar className="w-5 h-5 text-gray-400" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-full rounded-xl border-0 shadow-xl bg-white/95 backdrop-blur-xl">
+                        <DropdownMenuLabel className="text-pink-600 font-semibold">
+                          Semester
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup
+                          value={semester}
+                          onValueChange={setSemester}
+                        >
+                          {[
+                            { value: "first", label: "1️⃣ First Semester" },
+                            { value: "second", label: "2️⃣ Second Semester" },
+                            { value: "third", label: "3️⃣ Third Semester" },
+                            { value: "fourth", label: "4️⃣ Fourth Semester" },
+                            { value: "fifth", label: "5️⃣ Fifth Semester" },
+                            { value: "sixth", label: "6️⃣ Sixth Semester" },
+                            { value: "seventh", label: "7️⃣ Seventh Semester" },
+                            { value: "eighth", label: "8️⃣ Eighth Semester" },
+                          ].map((sem) => (
+                            <DropdownMenuRadioItem
+                              key={sem.value}
+                              value={sem.value}
+                              className="cursor-pointer py-3"
+                            >
+                              {sem.label}
+                            </DropdownMenuRadioItem>
+                          ))}
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </motion.div>
+
+                  {/* University Number Input Field */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.9, duration: 0.6 }}
+                  >
+                    <label className="block text-sm font-semibold text-gray-700 mb-3 items-center gap-2">
+                      <Hash className="w-4 h-4 text-emerald-600" />
+                      University Number
+                    </label>
+                    <div className="relative">
+                      <Input
+                        type="text"
+                        placeholder="Enter your university number..."
+                        value={universityNo}
+                        onChange={(e) => setuniversityNo(e.target.value)}
+                        className="w-full h-14 bg-white/50 hover:bg-white/80 border-2 border-gray-200 focus:border-emerald-300 rounded-xl shadow-sm transition-all duration-300 text-lg pl-12"
+                      />
+                      <Hash className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    </div>
+                  </motion.div>
+                </>
+              )}
             </div>
 
             {/* Submit Button */}
@@ -415,8 +429,8 @@ const Complete = () => {
                 onClick={handelsubmite}
                 disabled={!isFormComplete || isSubmitting}
                 className={`w-full h-16 text-lg font-bold rounded-2xl transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105 ${isFormComplete
-                    ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white"
-                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white"
+                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
                   }`}
               >
                 {isSubmitting ? (
@@ -447,8 +461,8 @@ const Complete = () => {
                       <div
                         key={index}
                         className={`w-3 h-3 rounded-full transition-all duration-300 ${field
-                            ? "bg-gradient-to-r from-indigo-500 to-purple-500"
-                            : "bg-gray-200"
+                          ? "bg-gradient-to-r from-indigo-500 to-purple-500"
+                          : "bg-gray-200"
                           }`}
                       ></div>
                     )

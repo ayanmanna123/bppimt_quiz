@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema(
     universityNo: {
       type: String,
       unique: true,
+      sparse: true,
     },
     email: {
       type: String,
@@ -33,11 +34,15 @@ const userSchema = new mongoose.Schema(
     },
     department: {
       type: String,
-      required: true,
+      required: function () {
+        return this.role === "student";
+      },
     },
     semester: {
       type: String,
-      required: true,
+      required: function () {
+        return this.role === "student";
+      },
     },
     verified: {
       type: String,
