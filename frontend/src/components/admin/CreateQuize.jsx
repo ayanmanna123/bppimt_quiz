@@ -85,6 +85,7 @@ const CreateQuize = () => {
   const [questions, setQuestions] = useState([
     { questionText: "", options: ["", "", "", ""], correctAnswer: 0 },
   ]);
+  const [quizContext, setQuizContext] = useState("");
   const [loadingAI, setLoadingAI] = useState(false);
 
   const handleQuestionChange = (index, field, value) => {
@@ -162,7 +163,8 @@ const CreateQuize = () => {
     try {
       const aiQuestions = await generateQuizQuestions(
         title || "General Knowledge",
-        totalQuestions || 5
+        totalQuestions || 5,
+        quizContext
       );
 
       const formatted = transformQuestions(aiQuestions);
@@ -424,6 +426,21 @@ const CreateQuize = () => {
                       <div>
                         <h3 className="text-2xl font-bold">AI Quiz Generator</h3>
                         <p className="text-white/80">Let AI create questions for you instantly</p>
+                      </div>
+                    </div>
+
+                    <div className="mb-6 max-w-2xl mx-auto">
+                      <div className="relative group text-left">
+                        <label className="block text-sm font-semibold text-white/90 mb-2 items-center gap-2">
+                          <BookOpen className="w-4 h-4 text-white inline mr-2" />
+                          Context / Lecture Notes (Optional)
+                        </label>
+                        <textarea
+                          placeholder="Paste lecture notes or text here to generate questions from specific content..."
+                          value={quizContext}
+                          onChange={(e) => setQuizContext(e.target.value)}
+                          className="w-full px-4 py-3 rounded-2xl border-2 border-white/20 bg-white/10 text-white placeholder-white/50 focus:border-white/50 focus:ring-4 focus:ring-white/20 focus:outline-none shadow-sm transition-all duration-300 min-h-[100px]"
+                        />
                       </div>
                     </div>
 

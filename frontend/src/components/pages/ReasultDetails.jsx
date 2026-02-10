@@ -1,4 +1,5 @@
 import axios from "axios";
+import { explainAnswer } from "../services/geminiService";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -26,7 +27,9 @@ import {
   Crown,
   Zap,
   BookOpen,
-  BarChart3
+  BarChart3,
+  MessageCircleQuestion,
+  Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -36,6 +39,22 @@ const ResultDetails = () => {
   const { resultId } = useParams();
   const navigate = useNavigate();
   const [result, setResult] = useState(null);
+  const [explanation, setExplanation] = useState("");
+  const [explanationIndex, setExplanationIndex] = useState(null);
+  const [loadingExplanation, setLoadingExplanation] = useState(null);
+
+  const handleExplain = async (question, userAnswer, correctAnswer, index) => {
+    if (explanationIndex === index) {
+      setExplanationIndex(null);
+      return;
+    }
+    setLoadingExplanation(index);
+    setExplanationIndex(null);
+    const text = await explainAnswer(question, userAnswer, correctAnswer);
+    setExplanation(text);
+    setExplanationIndex(index);
+    setLoadingExplanation(null);
+  };
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -558,6 +577,51 @@ const ResultDetails = () => {
                           );
                         })}
                       </div>
+
+                      {/* AI Explain Button */}
+                      {!isCorrect && (
+                        <div className="mt-4 flex justify-end">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="bg-indigo-50 text-indigo-600 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleExplain(q.questionText, q.options[studentAnsIndex], q.options[q.correctAnswerIndex], index);
+                            }}
+                            disabled={loadingExplanation === index}
+                          >
+                            {loadingExplanation === index ? (
+                              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                            ) : (
+                              <MessageCircleQuestion className="w-4 h-4 mr-2" />
+                            )}
+                            Ask AI why this is wrong
+                          </Button>
+                        </div>
+                      )}
+
+                      {/* AI Explanation Area */}
+                      {explanationIndex === index && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="mt-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100 overflow-hidden"
+                        >
+                          <div className="flex gap-3">
+                            <div className="p-2 bg-white rounded-lg shadow-sm h-fit shrink-0">
+                              <Sparkles className="w-5 h-5 text-indigo-600" />
+                            </div>
+                            <div className="space-y-1">
+                              <h4 className="font-semibold text-indigo-900 text-sm">AI Explanation</h4>
+                              <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+                                {explanation}
+                              </p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
                     </motion.div>
                   );
                 })}
