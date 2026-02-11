@@ -42,9 +42,34 @@ export const submitHomework = async (req, res) => {
         // For now, simple create.
 
         const fileUri = getDataUri(file);
-        const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-            resource_type: "auto" // Allow pdfs, images, etc.
-        });
+        const isPdf = file.mimetype === "application/pdf";
+        const isImage = file.mimetype.startsWith("image/");
+
+        const uploadOptions = {
+            folder: "bppimt_quiz_submissions",
+            resource_type: isPdf ? "image" : "auto",
+        };
+
+        let cloudResponse;
+
+        if (isPdf) {
+            cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+                ...uploadOptions,
+                pages: true // request pages info just in case, facilitates consistent handling
+            });
+        } else if (isImage) {
+            cloudResponse = await cloudinary.uploader.upload(fileUri.content, uploadOptions);
+        } else {
+            // For other file types (zip, docx, etc.), use raw
+            // Note: 'auto' might interpret correctly, but explicit raw is safer for non-media
+            cloudResponse = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream({ ...uploadOptions, resource_type: 'raw' }, (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                });
+                stream.end(file.buffer);
+            });
+        }
 
         const submission = await Submission.create({
             assignment: assignmentId,
@@ -104,26 +129,41 @@ export const downloadAllSubmissions = async (req, res) => {
             zlib: { level: 9 },
         });
 
-        res.attachment(`submissions-${assignmentId}.zip`);
+        // Set headers before piping
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Content-Disposition', `attachment; filename="submissions-${assignmentId}.zip"`);
 
         archive.pipe(res);
 
+        archive.on('error', (err) => {
+            console.error("Archiver error:", err);
+            if (!res.headersSent) {
+                res.status(500).send({ error: err.message });
+            }
+        });
+
         for (const sub of submissions) {
             try {
-                const response = await axios.get(sub.fileUrl, { responseType: 'arraybuffer' });
-                const buffer = Buffer.from(response.data, 'binary');
-                const fileName = `${sub.student.universityNo || sub.student.fullname}_${sub.originalFileName || 'submission'}`;
-                archive.append(buffer, { name: fileName });
+                // Using stream like note.controller.js
+                const response = await axios.get(sub.fileUrl, { responseType: 'stream' });
+
+                // Construct safe filename
+                const safeName = (sub.student?.fullname || "Unknown").replace(/[^a-z0-9]/gi, '_');
+                const originalName = sub.originalFileName || `submission_${sub._id}`;
+                const fileName = `${safeName}_${originalName}`;
+
+                archive.append(response.data, { name: fileName });
             } catch (err) {
-                console.error(`Failed to download file for submission ${sub._id}:`, err);
-                // Continue with other files even if one fails
+                console.error(`Failed to download file for submission ${sub._id} (${sub.fileUrl}):`, err.message);
+                // Optionally append a text file with the error log for this specific file
+                archive.append(Buffer.from(`Failed to download: ${err.message}`), { name: `ERROR_${sub._id}.txt` });
             }
         }
 
         await archive.finalize();
 
     } catch (error) {
-        console.error(error);
+        console.error("Global Download Error:", error);
         if (!res.headersSent) {
             return res.status(500).json({
                 message: "Server error during download.",

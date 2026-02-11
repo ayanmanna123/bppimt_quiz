@@ -239,7 +239,21 @@ const Assignments = () => {
                                     <div className="flex flex-col gap-2">
                                         {submittingId === assign._id ? (
                                             <div className="flex flex-col gap-2 min-w-[200px]">
-                                                <Input type="file" onChange={e => setSubmissionFile(e.target.files[0])} />
+                                                <div className="relative">
+                                                    <input
+                                                        type="file"
+                                                        id={`file-${assign._id}`}
+                                                        className="hidden"
+                                                        onChange={e => setSubmissionFile(e.target.files[0])}
+                                                    />
+                                                    <label
+                                                        htmlFor={`file-${assign._id}`}
+                                                        className="flex items-center justify-center gap-2 w-full px-4 py-2 rounded-xl border border-dashed border-indigo-300 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 cursor-pointer transition-all text-sm font-medium"
+                                                    >
+                                                        <Upload className="w-4 h-4" />
+                                                        {submissionFile ? submissionFile.name.substring(0, 15) + "..." : "Select File"}
+                                                    </label>
+                                                </div>
                                                 <div className="flex gap-2">
                                                     <Button size="sm" onClick={() => handleSubmitHomework(assign._id)} className="flex-1 bg-green-600">Submit</Button>
                                                     <Button size="sm" variant="ghost" onClick={() => setSubmittingId(null)}>Cancel</Button>
@@ -313,13 +327,20 @@ const Assignments = () => {
                                 <p className="text-center text-gray-500">No submissions yet.</p>
                             ) : (
                                 submissions.map(sub => (
-                                    <div key={sub._id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border">
-                                        <div>
-                                            <p className="font-semibold">{sub.student?.fullname || "Unknown Student"}</p>
-                                            <p className="text-xs text-gray-500">{sub.student?.universityNo} • {new Date(sub.createdAt).toLocaleString()}</p>
+                                    <div key={sub._id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border hover:bg-white transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`p-2 rounded-lg ${sub.fileUrl?.endsWith('.pdf') ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                                                <FileText className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-gray-800">{sub.student?.fullname || "Unknown Student"}</p>
+                                                <p className="text-xs text-gray-500">{sub.student?.universityNo} • {new Date(sub.createdAt).toLocaleString()}</p>
+                                            </div>
                                         </div>
                                         <a href={sub.fileUrl} target="_blank" rel="noreferrer">
-                                            <Button size="sm" variant="outline">View File</Button>
+                                            <Button size="sm" variant="outline" className="text-gray-600 border-gray-200">
+                                                {sub.fileUrl?.endsWith('.pdf') ? "View PDF" : "View File"}
+                                            </Button>
                                         </a>
                                     </div>
                                 ))
