@@ -276,3 +276,23 @@ export const sendCode = async (req, res) => {
       .json({ success: false, message: "Failed to send code" });
   }
 };
+
+export const searchUsers = async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (!query) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    const users = await User.find({
+      fullname: { $regex: query, $options: "i" },
+    })
+      .select("fullname email picture role _id")
+      .limit(10);
+
+    return res.status(200).json(users);
+  } catch (error) {
+    console.error("Error searching users:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

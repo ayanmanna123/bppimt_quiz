@@ -8,6 +8,7 @@ import {
   sendCode,
   updatesem,
   verifycode,
+  searchUsers,
 } from "../controllers/auth.controller.js";
 import { singleUpload } from "../middlewares/multer.js";
 
@@ -21,4 +22,5 @@ userrouter.get("/teacher/all", getallteacher);
 userrouter.get("/student/count", getallstudent);
 userrouter.post("/send-code", sendCode)
 userrouter.post("/verify-code", isAuthenticated, verifycode)
+userrouter.get("/search", isAuthenticated, searchUsers);
 export default userrouter;

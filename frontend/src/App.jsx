@@ -35,6 +35,7 @@ const QuestionBank = lazy(() => import("./components/admin/QuestionBank"));
 const PlayWeaknessQuiz = lazy(() => import("./components/pages/PlayWeaknessQuiz"));
 const SubjectNotes = lazy(() => import("./components/pages/SubjectNotes"));
 const Assignments = lazy(() => import("./components/pages/Assignments"));
+const GlobalChat = lazy(() => import("./components/pages/GlobalChat"));
 
 
 // Simple loading fallback
@@ -201,6 +202,10 @@ function App() {
         {
           path: "/subject/assignments/:subjectId",
           element: <Assignments />,
+        },
+        {
+          path: "/community-chat",
+          element: <GlobalChat />,
         },
 
       ],

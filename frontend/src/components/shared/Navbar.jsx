@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap } from "lucide-react";
+import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -68,6 +68,7 @@ const Navbar = () => {
     { name: "Subject", path: "/quiz", icon: BookOpen },
     { name: "Result", path: "/reasult", icon: BarChart3 },
     { name: "Attendance", path: "/StudentAttendanceSummary", icon: BookOpen },
+    { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
   ];
 
   const adminNavItems = [
@@ -75,13 +76,15 @@ const Navbar = () => {
     { name: "About Us", path: "/about", icon: User },
     { name: "Subject", path: "/Admin/subject", icon: BookOpen },
     { name: "Result", path: "/admin/allquiz", icon: BarChart3 },
-    { name: "Contributed Teacher", path: "/admin/othersubject", icon: GraduationCap }
+    { name: "Contributed Teacher", path: "/admin/othersubject", icon: GraduationCap },
+    { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
   ];
   const adminNavitem = [
     { name: "Home", path: "/", icon: Home },
     { name: "About Us", path: "/about", icon: User },
     { name: "Subject", path: "/admine/only/subject", icon: BookOpen },
     { name: "Un authorize", path: "/notvarifieduser", icon: BarChart3 },
+    { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
   ];
 
   const navItems =

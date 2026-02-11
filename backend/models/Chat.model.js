@@ -5,7 +5,11 @@ const chatSchema = new mongoose.Schema(
         subjectId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Subject",
-            required: true,
+            default: null,
+        },
+        isGlobal: {
+            type: Boolean,
+            default: false,
         },
         sender: {
             type: mongoose.Schema.Types.ObjectId,
@@ -17,6 +21,12 @@ const chatSchema = new mongoose.Schema(
             required: true,
             trim: true,
         },
+        mentions: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
         timestamp: {
             type: Date,
             default: Date.now,

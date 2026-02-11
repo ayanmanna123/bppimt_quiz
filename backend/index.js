@@ -190,9 +190,9 @@ io.on("connection", (socket) => {
     console.log(`Client ${socket.id} joined subject ${subjectId}`);
   });
 
-  socket.on("sendMessage", async ({ subjectId, message, senderId }) => {
+  socket.on("sendMessage", async ({ subjectId, message, senderId, mentions }) => {
     // Save to database
-    const savedMessage = await saveMessage(subjectId, senderId, message);
+    const savedMessage = await saveMessage(subjectId, senderId, message, mentions);
 
     if (savedMessage) {
       // Broadcast to room
