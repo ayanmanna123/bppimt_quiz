@@ -1,6 +1,6 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Smile, Reply } from "lucide-react";
+import { Smile, Reply, Pin, Edit2, Trash2 } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,7 +14,10 @@ const MessageBubble = ({
     onReply,
     onReact,
     showAvatar,
-    showSenderName
+    showSenderName,
+    onPin,
+    onEdit,
+    onDelete
 }) => {
     // Helper to render mentions
     const renderContent = (text, mentions) => {
@@ -56,6 +59,13 @@ const MessageBubble = ({
                     <div className={`text-xs text-slate-500 mb-1 px-2 border-l-2 ${isMe ? "border-indigo-400 text-right" : "border-slate-400 text-left"}`}>
                         <span className="font-semibold">Replying to {message.replyTo.sender?.fullname}: </span>
                         <span className="italic truncate block decoration-slate-400">{message.replyTo.message?.substring(0, 30)}...</span>
+                    </div>
+                )}
+
+                {/* Pinned Indicator */}
+                {message.isPinned && (
+                    <div className="flex items-center gap-1 text-[10px] text-indigo-500 mb-1 font-semibold">
+                        <Pin className="w-3 h-3 fill-current" /> Pinned
                     </div>
                 )}
 
@@ -119,12 +129,40 @@ const MessageBubble = ({
                                     <Smile className="w-3 h-3" />
                                 </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align={isMe ? "end" : "start"} className="flex gap-1 p-1 min-w-0">
-                                {["👍", "❤️", "😂", "😮", "😢", "🔥"].map(emoji => (
-                                    <DropdownMenuItem key={emoji} onClick={() => onReact(message._id, emoji)} className="cursor-pointer justify-center px-2 py-1 text-lg hover:bg-slate-100 rounded">
-                                        {emoji}
+                            <DropdownMenuContent align={isMe ? "end" : "start"} className="flex flex-col gap-1 p-1 min-w-[120px]">
+                                <DropdownMenuItem onClick={() => onReply(message)} className="cursor-pointer gap-2">
+                                    <Reply className="w-4 h-4" /> Reply
+                                </DropdownMenuItem>
+
+                                {/* Pin Option (Teacher Only) */}
+                                {onPin && (
+                                    <DropdownMenuItem onClick={() => onPin(message._id)} className="cursor-pointer gap-2">
+                                        <span className="text-xs">📌</span> {message.isPinned ? "Unpin" : "Pin"}
                                     </DropdownMenuItem>
-                                ))}
+                                )}
+
+                                {/* Edit/Delete Options (Owner Only) */}
+                                {isMe && (
+                                    <>
+                                        <div className="h-px bg-slate-100 my-1" />
+                                        <DropdownMenuItem onClick={() => onEdit && onEdit(message)} className="cursor-pointer gap-2">
+                                            <Edit2 className="w-3 h-3" /> Edit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => onDelete && onDelete(message._id)} className="cursor-pointer gap-2 text-red-600 hover:text-red-700 hover:bg-red-50">
+                                            <Trash2 className="w-3 h-3" /> Delete
+                                        </DropdownMenuItem>
+                                    </>
+                                )}
+
+                                <div className="h-px bg-slate-100 my-1" />
+
+                                <div className="flex justify-between px-2 py-1">
+                                    {["👍", "❤️", "😂", "😮"].map(emoji => (
+                                        <button key={emoji} onClick={() => onReact(message._id, emoji)} className="hover:scale-110 transition-transform">
+                                            {emoji}
+                                        </button>
+                                    ))}
+                                </div>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>

@@ -3,7 +3,7 @@ import { useSocket } from "../../context/SocketContext";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
-import { MessageCircle, Loader2 } from "lucide-react";
+import { MessageCircle, Loader2, Pin } from "lucide-react";
 import MessageBubble from "../chat/MessageBubble";
 import ChatInput from "../chat/ChatInput";
 import TypingIndicator from "../chat/TypingIndicator";
@@ -28,6 +28,9 @@ const GlobalChat = () => {
     const [hasMore, setHasMore] = useState(true);
     const [isFetchingMore, setIsFetchingMore] = useState(false);
     const [prevScrollHeight, setPrevScrollHeight] = useState(0);
+
+    // New state for pinned messages
+    const [pinnedMessages, setPinnedMessages] = useState([]);
 
     // Fetch chat history
     const fetchHistory = async (pageNum = 1) => {
@@ -62,9 +65,24 @@ const GlobalChat = () => {
         }
     };
 
+    // Fetch pinned messages
+    const fetchPinnedMessages = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/pinned/${subjectId}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setPinnedMessages(res.data);
+        } catch (error) {
+            console.error("Failed to fetch pinned messages", error);
+        }
+    };
+
     useEffect(() => {
         if (usere) {
             fetchHistory(1);
+            fetchPinnedMessages();
         }
     }, [getAccessTokenSilently, usere]);
 
@@ -125,14 +143,20 @@ const GlobalChat = () => {
             setTypingUsers((prev) => prev.filter(u => u !== user));
         };
 
+        const handleMessageDeleted = ({ messageId }) => {
+            setMessages((prev) => prev.filter(msg => msg._id !== messageId));
+        };
+
         socket.on("receiveMessage", handleReceiveMessage);
         socket.on("messageUpdated", handleMessageUpdated);
+        socket.on("messageDeleted", handleMessageDeleted);
         socket.on("userTyping", handleUserTyping);
         socket.on("userStoppedTyping", handleUserStoppedTyping);
 
         return () => {
             socket.off("receiveMessage", handleReceiveMessage);
             socket.off("messageUpdated", handleMessageUpdated);
+            socket.off("messageDeleted", handleMessageDeleted);
             socket.off("userTyping", handleUserTyping);
             socket.off("userStoppedTyping", handleUserStoppedTyping);
         };
@@ -189,8 +213,86 @@ const GlobalChat = () => {
         }, 2000);
     };
 
+    // Edit state
+    const [editingMessage, setEditingMessage] = useState(null);
+
     const handleReaction = (messageId, emoji) => {
         socket.emit("addReaction", { messageId, userId: usere._id, emoji, subjectId });
+    };
+
+    const handlePinMessage = async (messageId) => {
+        try {
+            const token = await getAccessTokenSilently();
+            await axios.put(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/pin/${messageId}`,
+                { userId: usere._id }, // Pass userId for role check
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // Optimistically update or re-fetch
+            const updatedMessages = messages.map(msg =>
+                msg._id === messageId ? { ...msg, isPinned: !msg.isPinned } : msg
+            );
+            setMessages(updatedMessages);
+
+            // Also update pinned list locally or refetch
+            // Simple way: refetch pinned
+            fetchPinnedMessages();
+
+        } catch (error) {
+            console.error("Failed to pin message", error);
+            // Show toast error
+        }
+    };
+
+    const handleDeleteMessage = async (messageId) => {
+        try {
+            const token = await getAccessTokenSilently();
+            await axios.delete(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/${messageId}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                    data: { userId: usere._id } // Pass userId in body for delete permission check
+                }
+            );
+
+            // Remove locally immediately
+            setMessages(prev => prev.filter(msg => msg._id !== messageId));
+
+            // Emit socket event so others see it removed
+            socket.emit("messageDeleted", { messageId, subjectId });
+
+        } catch (error) {
+            console.error("Failed to delete message", error);
+        }
+    };
+
+    const onEditMessage = (message) => {
+        setEditingMessage(message);
+        // Focus input logic handled in ChatInput by prop change
+    };
+
+    const handleUpdateMessage = async (messageId, newText) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await axios.put(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/${messageId}`,
+                { userId: usere._id, message: newText },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // Update locally
+            const updatedMsg = res.data;
+            setMessages(prev => prev.map(msg => msg._id === messageId ? updatedMsg : msg));
+
+            // Emit socket event
+            socket.emit("messageUpdated", updatedMsg);
+
+            setEditingMessage(null);
+
+        } catch (error) {
+            console.error("Failed to update message", error);
+        }
     };
 
     // Group messages by date
@@ -213,6 +315,26 @@ const GlobalChat = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Pinned Messages Banner */}
+                {pinnedMessages.length > 0 && (
+                    <div className="bg-indigo-50 border-b border-indigo-100 p-2 flex items-center justify-between shrink-0">
+                        <div className="flex items-center gap-2 overflow-hidden flex-1">
+                            <Pin className="w-4 h-4 text-indigo-600 shrink-0 fill-current" />
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Pinned Message</span>
+                                <p className="text-xs text-indigo-900 truncate font-medium">
+                                    {pinnedMessages[0].message}
+                                </p>
+                            </div>
+                        </div>
+                        {pinnedMessages.length > 1 && (
+                            <span className="text-[10px] bg-indigo-200 text-indigo-700 px-1.5 py-0.5 rounded-full ml-2">
+                                +{pinnedMessages.length - 1}
+                            </span>
+                        )}
+                    </div>
+                )}
 
                 {/* Messages Area */}
                 <div className="flex-1 overflow-hidden bg-slate-50 relative flex flex-col">
@@ -276,6 +398,9 @@ const GlobalChat = () => {
                                                 showSenderName={showSenderName}
                                                 onReply={setReplyTo}
                                                 onReact={handleReaction}
+                                                onPin={usere.role === 'teacher' ? handlePinMessage : null}
+                                                onEdit={onEditMessage}
+                                                onDelete={handleDeleteMessage}
                                             />
                                         </React.Fragment>
                                     );
@@ -293,6 +418,9 @@ const GlobalChat = () => {
                     onTyping={handleTyping}
                     replyTo={replyTo}
                     onCancelReply={() => setReplyTo(null)}
+                    editingMessage={editingMessage}
+                    onUpdateMessage={handleUpdateMessage}
+                    onCancelEdit={() => setEditingMessage(null)}
                 />
             </div>
         </div>

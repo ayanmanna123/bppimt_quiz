@@ -11,6 +11,10 @@ const chatSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        isPinned: {
+            type: Boolean,
+            default: false,
+        },
         sender: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
@@ -42,6 +46,12 @@ const chatSchema = new mongoose.Schema(
                 },
                 emoji: String,
             }
+        ],
+        readBy: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
         ],
         attachments: [
             {

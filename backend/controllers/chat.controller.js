@@ -104,6 +104,7 @@ export const addReaction = async (messageId, userId, emoji) => {
     }
 };
 
+// Remove a reaction
 export const removeReaction = async (messageId, userId, emoji) => {
     try {
         const chat = await Chat.findByIdAndUpdate(
@@ -115,5 +116,176 @@ export const removeReaction = async (messageId, userId, emoji) => {
     } catch (error) {
         console.error("Error removing reaction:", error);
         return null;
+    }
+};
+
+// Delete a message
+export const deleteMessage = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const { userId } = req.body;
+
+        const chat = await Chat.findById(messageId);
+        if (!chat) return res.status(404).json({ message: "Message not found" });
+
+        const user = await User.findById(userId);
+
+        if (chat.sender.toString() !== userId && user?.role !== 'teacher') {
+            return res.status(403).json({ message: "Unauthorized to delete this message" });
+        }
+
+        await Chat.findByIdAndDelete(messageId);
+
+        res.status(200).json({ messageId, message: "Message deleted successfully" });
+
+    } catch (error) {
+        console.error("Error deleting message:", error);
+        res.status(500).json({ message: "Failed to delete message" });
+    }
+};
+
+// Update a message
+export const updateMessage = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const { userId, message } = req.body;
+
+        const chat = await Chat.findById(messageId);
+        if (!chat) return res.status(404).json({ message: "Message not found" });
+
+        if (chat.sender.toString() !== userId) {
+            return res.status(403).json({ message: "Unauthorized to edit this message" });
+        }
+
+        chat.message = message;
+        await chat.save();
+
+        const populatedChat = await chat.populate([
+            { path: "sender", select: "fullname picture role" },
+            { path: "mentions", select: "fullname _id" },
+            {
+                path: "replyTo",
+                select: "sender message attachments",
+                populate: { path: "sender", select: "fullname" }
+            }
+        ]);
+
+        res.status(200).json(populatedChat);
+
+    } catch (error) {
+        console.error("Error updating message:", error);
+        res.status(500).json({ message: "Failed to update message" });
+    }
+};
+// Toggle pin status of a message
+export const togglePinMessage = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const { userId } = req.body; // In real app, get from req.user (Auth middleware)
+
+        const chat = await Chat.findById(messageId);
+        if (!chat) return res.status(404).json({ message: "Message not found" });
+
+        // Verify user role (should be teacher or admin)
+        // Here we assume the frontend sent the userId and we blindly trust or check DB
+        const user = await User.findById(userId);
+        if (!user || user.role !== "teacher") { // Strict check: only teachers for now
+            // For Admin features, we might need to check if user is admin. 
+            // The schema has 'role': enum ['teacher', 'student']. 
+            // If there is an 'admin' role, add it here.
+            // Based on User model, only 'teacher' and 'student' exist in enum, but let's allow teachers to pin.
+            return res.status(403).json({ message: "Unauthorized to pin messages" });
+        }
+
+        chat.isPinned = !chat.isPinned;
+        await chat.save();
+
+        const populatedChat = await chat.populate("sender", "fullname picture role");
+
+        res.status(200).json(populatedChat);
+    } catch (error) {
+        console.error("Error toggling pin:", error);
+        res.status(500).json({ message: "Failed to toggle pin" });
+    }
+};
+
+// Get pinned messages for a subject
+export const getPinnedMessages = async (req, res) => {
+    try {
+        const { subjectId } = req.params;
+        let query = { isPinned: true };
+
+        if (subjectId === "global") {
+            query.isGlobal = true;
+        } else {
+            query.subjectId = subjectId;
+        }
+
+        const pinnedMessages = await Chat.find(query)
+            .sort({ timestamp: -1 })
+            .populate("sender", "fullname picture role")
+            .limit(5); // Limit to 5 pinned messages to avoid clutter
+
+        res.status(200).json(pinnedMessages);
+    } catch (error) {
+        console.error("Error fetching pinned messages:", error);
+        res.status(500).json({ message: "Failed to fetch pinned messages" });
+    }
+};
+// Get unseen message count
+export const getUnseenCount = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { subjectId } = req.query;
+
+        let query = {
+            sender: { $ne: userId },
+            readBy: { $ne: userId }
+        };
+
+        if (subjectId === "global") {
+            query.isGlobal = true;
+        } else if (subjectId) {
+            query.subjectId = subjectId;
+        } else {
+            // Default to global if no subject provided, or handle as needed
+            // For now let's assume this is for Global Chat specifically if not specified
+            query.isGlobal = true;
+        }
+
+        const count = await Chat.countDocuments(query);
+        res.status(200).json({ count });
+    } catch (error) {
+        console.error("Error fetching unseen count:", error);
+        res.status(500).json({ message: "Failed to fetch unseen count" });
+    }
+};
+
+// Mark messages as read
+export const markMessagesAsRead = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const { subjectId } = req.params;
+
+        let query = {
+            sender: { $ne: userId },
+            readBy: { $ne: userId }
+        };
+
+        if (subjectId === "global") {
+            query.isGlobal = true;
+        } else {
+            query.subjectId = subjectId;
+        }
+
+        await Chat.updateMany(
+            query,
+            { $addToSet: { readBy: userId } }
+        );
+
+        res.status(200).json({ message: "Messages marked as read" });
+    } catch (error) {
+        console.error("Error marking messages as read:", error);
+        res.status(500).json({ message: "Failed to mark messages as read" });
     }
 };

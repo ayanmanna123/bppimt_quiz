@@ -4,6 +4,8 @@ import { setuser } from "../../Redux/auth.reducer";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle } from "lucide-react";
+import { useSocket } from "../../context/SocketContext";
+import axios from "axios";
 import {
   Popover,
   PopoverContent,
@@ -25,6 +27,11 @@ const Navbar = () => {
   const { usere } = useSelector((store) => store.auth);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  // Unseen Message Count
+  const [unseenCount, setUnseenCount] = useState(0);
+  const socket = useSocket();
+  const { getAccessTokenSilently } = useAuth0();
 
   // Handle scroll effect with throttling
   useEffect(() => {
@@ -48,6 +55,68 @@ const Navbar = () => {
       localStorage.setItem("loginShown", "true");
     }
   }, [isAuthenticated, usere]);
+
+  // Fetch initial unseen count
+  useEffect(() => {
+    const fetchUnseenCount = async () => {
+      try {
+        if (!usere) {
+          return;
+        }
+        const token = await getAccessTokenSilently();
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/chat/unseen/${usere._id}?subjectId=global`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setUnseenCount(res.data.count);
+      } catch (error) {
+        console.error("Failed to fetch unseen count", error);
+      }
+    };
+    if (usere) {
+      fetchUnseenCount();
+    }
+  }, [usere, getAccessTokenSilently]);
+
+  // Listen for new messages
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleReceiveMessage = (message) => {
+      // Check if message is for global chat and not from me
+      if (
+        (message.isGlobal || message.subjectId === "global") &&
+        message.sender?._id !== usere?._id
+      ) {
+        // If not on chat page, increment
+        if (location.pathname !== "/community-chat") {
+          setUnseenCount((prev) => prev + 1);
+          toast.info(`New message from ${message.sender?.fullname || 'someone'}`);
+          const sound = new Howl({
+            src: ["/notification.mp3"] // Make sure this exists or remove
+          });
+          // sound.play(); // Play sound if you have one
+        }
+      }
+    };
+
+    socket.on("receiveMessage", handleReceiveMessage);
+
+    // Optional: listen for a "messagesRead" event to clear counter from other tabs
+    // For now, simpler: we clear it when we visit the page.
+
+    return () => {
+      socket.off("receiveMessage", handleReceiveMessage);
+    };
+  }, [socket, usere, location.pathname]);
+
+  // Clear count when entering chat
+  useEffect(() => {
+    if (location.pathname === "/community-chat") {
+      setUnseenCount(0);
+      // Actual API call to mark as read happens in GlobalChat.jsx
+    }
+  }, [location.pathname]);
 
   const handleLogin = async () => {
     if (!isAuthenticated) {
@@ -147,7 +216,15 @@ const Navbar = () => {
                       : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                       }`}
                   >
-                    <IconComponent className="w-4 h-4" />
+
+                    <div className="relative">
+                      <IconComponent className="w-4 h-4" />
+                      {item.path === "/community-chat" && unseenCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm animate-pulse">
+                          {unseenCount > 9 ? "9+" : unseenCount}
+                        </span>
+                      )}
+                    </div>
                     <span>{item.name}</span>
 
                     {!isActive && (
@@ -368,7 +445,16 @@ const Navbar = () => {
                         }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <IconComponent className="w-5 h-5" />
+                      onClick={() => setIsMobileMenuOpen(false)}
+
+                      <div className="relative">
+                        <IconComponent className="w-5 h-5" />
+                        {item.path === "/community-chat" && unseenCount > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
+                            {unseenCount > 9 ? "9+" : unseenCount}
+                          </span>
+                        )}
+                      </div>
                       <span>{item.name}</span>
                     </Link>
                   </motion.div>
