@@ -1,12 +1,13 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Smile, Reply, Pin, Edit2, Trash2 } from "lucide-react";
+import { Smile, Reply, Pin, Edit2, Trash2, Eye } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import ViewersModal from "./ViewersModal";
 
 const MessageBubble = ({
     message,
@@ -19,6 +20,7 @@ const MessageBubble = ({
     onEdit,
     onDelete
 }) => {
+    const [isViewersOpen, setIsViewersOpen] = React.useState(false);
     // Helper to render mentions
     const renderContent = (text, mentions) => {
         if (!mentions || mentions.length === 0) return text;
@@ -154,6 +156,12 @@ const MessageBubble = ({
                                     </>
                                 )}
 
+                                {isMe && (
+                                    <DropdownMenuItem onClick={() => setIsViewersOpen(true)} className="cursor-pointer gap-2">
+                                        <Eye className="w-3 h-3" /> Seen by
+                                    </DropdownMenuItem>
+                                )}
+
                                 <div className="h-px bg-slate-100 my-1" />
 
                                 <div className="flex justify-between px-2 py-1">
@@ -167,6 +175,11 @@ const MessageBubble = ({
                         </DropdownMenu>
                     </div>
                 </div>
+                <ViewersModal
+                    messageId={message._id}
+                    isOpen={isViewersOpen}
+                    onClose={() => setIsViewersOpen(false)}
+                />
             </div>
         </div>
     );

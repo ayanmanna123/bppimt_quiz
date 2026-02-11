@@ -79,10 +79,25 @@ const GlobalChat = () => {
         }
     };
 
+    // Mark messages as read
+    const markAsRead = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            await axios.put(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/read/${subjectId}`,
+                { userId: usere._id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+        } catch (error) {
+            console.error("Failed to mark messages as read", error);
+        }
+    };
+
     useEffect(() => {
         if (usere) {
             fetchHistory(1);
             fetchPinnedMessages();
+            markAsRead();
         }
     }, [getAccessTokenSilently, usere]);
 

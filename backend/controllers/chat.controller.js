@@ -289,3 +289,23 @@ export const markMessagesAsRead = async (req, res) => {
         res.status(500).json({ message: "Failed to mark messages as read" });
     }
 };
+
+// Get viewers of a specific message
+export const getMessageViewers = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+
+        const chat = await Chat.findById(messageId)
+            .populate("readBy", "fullname picture email role")
+            .lean();
+
+        if (!chat) {
+            return res.status(404).json({ message: "Message not found" });
+        }
+
+        res.status(200).json(chat.readBy || []);
+    } catch (error) {
+        console.error("Error fetching message viewers:", error);
+        res.status(500).json({ message: "Failed to fetch message viewers" });
+    }
+};

@@ -1,5 +1,5 @@
 import express from "express";
-import { getChatHistory, togglePinMessage, getPinnedMessages, updateMessage, deleteMessage, getUnseenCount, markMessagesAsRead } from "../controllers/chat.controller.js";
+import { getChatHistory, togglePinMessage, getPinnedMessages, updateMessage, deleteMessage, getUnseenCount, markMessagesAsRead, getMessageViewers } from "../controllers/chat.controller.js";
 
 const router = express.Router();
 
@@ -23,5 +23,8 @@ router.get("/unseen/:userId", getUnseenCount);
 
 // Mark messages as read
 router.put("/read/:subjectId", markMessagesAsRead);
+
+// Get message viewers
+router.get("/viewers/:messageId", getMessageViewers);
 
 export default router;
