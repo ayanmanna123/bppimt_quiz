@@ -24,6 +24,8 @@ import weaknessRoute from "./routes/weakness.routes.js";
 import noteRoute from "./routes/note.routes.js";
 import assignmentRoute from "./routes/assignment.routes.js";
 import meetingRoute from "./routes/meeting.routes.js";
+import chatRoute from "./routes/chat.routes.js";
+import { saveMessage } from "./controllers/chat.controller.js";
 
 dotenv.config();
 connectToMongo();
@@ -158,6 +160,7 @@ app.use("/api/v1/weakness", apiLimiter, jwtMiddleware, weaknessRoute);
 app.use("/api/v1/note", apiLimiter, jwtMiddleware, noteRoute);
 app.use("/api/v1/assignment", apiLimiter, jwtMiddleware, assignmentRoute);
 app.use("/api/v1/meeting", apiLimiter, jwtMiddleware, meetingRoute);
+app.use("/api/v1/chat", apiLimiter, jwtMiddleware, chatRoute);
 
 /* =========================
    ERROR HANDLING
@@ -185,6 +188,16 @@ io.on("connection", (socket) => {
   socket.on("joinSubject", (subjectId) => {
     socket.join(subjectId);
     console.log(`Client ${socket.id} joined subject ${subjectId}`);
+  });
+
+  socket.on("sendMessage", async ({ subjectId, message, senderId }) => {
+    // Save to database
+    const savedMessage = await saveMessage(subjectId, senderId, message);
+
+    if (savedMessage) {
+      // Broadcast to room
+      io.to(subjectId).emit("receiveMessage", savedMessage);
+    }
   });
 
   socket.on("disconnect", () => {

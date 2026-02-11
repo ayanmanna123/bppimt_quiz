@@ -23,6 +23,7 @@ import { motion } from "framer-motion";
 import SchlitonSubject from "./SchlitonSubject";
 import EditTimeSlotModal from "./EditTimeSlotModal";
 import CreateMeetingModal from "./CreateMeetingModal";
+import ChatWindow from "../chat/ChatWindow";
 import {
   Card,
   CardContent,
@@ -57,6 +58,7 @@ const Subject = () => {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [isTimeSlotModalOpen, setIsTimeSlotModalOpen] = useState(false);
   const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
+  const [activeChatSubject, setActiveChatSubject] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -357,6 +359,18 @@ const Subject = () => {
                           >
                             <BookOpen className="w-4 h-4 text-gray-600 hover:text-blue-600" />
                           </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            title="Chat Group"
+                            className="w-full h-9 rounded-lg border-gray-200 hover:bg-slate-50 hover:text-slate-600 hover:border-slate-200 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveChatSubject(subj);
+                            }}
+                          >
+                            <Video className="w-4 h-4 text-gray-600 hover:text-slate-600" />
+                          </Button>
                         </div>
                       </CardFooter>
                     </Card>
@@ -387,6 +401,14 @@ const Subject = () => {
         subjectId={selectedSubject?._id}
         subjectName={selectedSubject?.subjectName}
       />
+
+      {activeChatSubject && (
+        <ChatWindow
+          subjectId={activeChatSubject._id}
+          subjectName={activeChatSubject.subjectName}
+          onClose={() => setActiveChatSubject(null)}
+        />
+      )}
     </>
   );
 };

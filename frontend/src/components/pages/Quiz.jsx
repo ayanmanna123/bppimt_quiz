@@ -57,6 +57,8 @@ const studentPatterns = [
   "radial-gradient(circle at 30% 20%, rgba(236, 72, 153, 0.4) 0%, transparent 60%), linear-gradient(120deg, rgba(244, 114, 182, 0.3) 0%, transparent 100%)",
 ];
 
+import ChatWindow from "../chat/ChatWindow";
+
 const Quiz = () => {
   const { usere } = useSelector((store) => store.auth);
   const socket = useSocket();
@@ -75,6 +77,7 @@ const Quiz = () => {
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [targetSubjectId, setTargetSubjectId] = useState(null);
   const [otpInput, setOtpInput] = useState("");
+  const [activeChatSubject, setActiveChatSubject] = useState(null);
 
   // Favorites Logic (LocalStorage)
   const [favorites, setFavorites] = useState(() => {
@@ -739,7 +742,17 @@ const Quiz = () => {
                           Assignments
                           <FileText className="w-4 h-4" />
                         </Button>
-
+                        <Button
+                          className="w-full bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 hover:from-indigo-600 hover:via-indigo-700 hover:to-violet-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveChatSubject(sub);
+                          }}
+                        >
+                          <Video className="w-5 h-5" />
+                          Chat
+                          <Sparkles className="w-4 h-4" />
+                        </Button>
                       </CardFooter>
                     </Card>
                   </motion.div>
@@ -783,6 +796,15 @@ const Quiz = () => {
               </div>
             </div>
           </div>
+        )
+      }
+      {
+        activeChatSubject && (
+          <ChatWindow
+            subjectId={activeChatSubject._id}
+            subjectName={activeChatSubject.subjectName}
+            onClose={() => setActiveChatSubject(null)}
+          />
         )
       }
     </>
