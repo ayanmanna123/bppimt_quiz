@@ -13,6 +13,13 @@ const noteSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        files: [{
+            type: String
+        }],
+        contentType: {
+            type: String,
+            enum: ['image', 'pdf']
+        },
         subject: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Subject",

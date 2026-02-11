@@ -37,7 +37,15 @@ const jwtCheck = auth({
 });
 
 // enforce on all secured endpoints
-app.use(jwtCheck);
+// Conditionally apply JWT check (Skip for download route)
+const jwtMiddleware = (req, res, next) => {
+  if (req.path.includes('/download') && req.method === 'GET') {
+    return next();
+  }
+  jwtCheck(req, res, next);
+};
+
+app.use(jwtMiddleware);
 
 // ✅ Secured Test Route
 app.get("/authorized", (req, res) => {
