@@ -283,6 +283,12 @@ export const markMessagesAsRead = async (req, res) => {
             { $addToSet: { readBy: userId } }
         );
 
+        // Notify other clients via Socket
+        const io = req.app.get("io");
+        if (io) {
+            io.to(subjectId).emit("messagesRead", { subjectId, userId });
+        }
+
         res.status(200).json({ message: "Messages marked as read" });
     } catch (error) {
         console.error("Error marking messages as read:", error);
@@ -307,5 +313,52 @@ export const getMessageViewers = async (req, res) => {
     } catch (error) {
         console.error("Error fetching message viewers:", error);
         res.status(500).json({ message: "Failed to fetch message viewers" });
+    }
+};
+
+// Search messages by text or sender
+export const searchMessages = async (req, res) => {
+    try {
+        const { subjectId } = req.params;
+        const { query } = req.query;
+
+        if (!query) {
+            return res.status(200).json([]);
+        }
+
+        let searchQuery = {};
+        if (subjectId === "global") {
+            searchQuery.isGlobal = true;
+        } else {
+            searchQuery.subjectId = subjectId;
+        }
+
+        // Use regex for case-insensitive search
+        const regex = new RegExp(query, "i");
+
+        // Find users matching the query to search by sender name as well
+        const matchingUsers = await User.find({ fullname: regex }).select("_id");
+        const userIds = matchingUsers.map(u => u._id);
+
+        searchQuery.$or = [
+            { message: regex },
+            { sender: { $in: userIds } }
+        ];
+
+        const results = await Chat.find(searchQuery)
+            .sort({ timestamp: -1 })
+            .limit(50)
+            .populate("sender", "fullname picture role")
+            .populate("mentions", "fullname _id")
+            .populate({
+                path: "replyTo",
+                select: "sender message",
+                populate: { path: "sender", select: "fullname" }
+            });
+
+        res.status(200).json(results);
+    } catch (error) {
+        console.error("Error searching messages:", error);
+        res.status(500).json({ message: "Failed to search messages" });
     }
 };

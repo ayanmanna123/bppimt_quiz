@@ -1,6 +1,6 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Smile, Reply, Pin, Edit2, Trash2, Eye } from "lucide-react";
+import { Smile, Reply, Pin, Edit2, Trash2, Eye, Check, CheckCheck } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,18 +18,30 @@ const MessageBubble = ({
     showSenderName,
     onPin,
     onEdit,
-    onDelete
+    onDelete,
+    searchTerm
 }) => {
     const [isViewersOpen, setIsViewersOpen] = React.useState(false);
-    // Helper to render mentions
-    const renderContent = (text, mentions) => {
-        if (!mentions || mentions.length === 0) return text;
-
-        // Simple replacement for display (can be improved with better parsing)
+    // Helper to render mentions and search highlighting
+    const renderContent = (text, mentions, searchTerm) => {
+        if (!text) return "";
         let content = text;
-        mentions.forEach(m => {
-            content = content.replace(new RegExp(`@${m.fullname}`, 'g'), `<span class="text-indigo-600 font-bold">@${m.fullname}</span>`);
-        });
+
+        // Escape regex special chars in searchTerm
+        const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+        // Apply search highlighting first
+        if (searchTerm && searchTerm.trim()) {
+            const escapedSearch = escapeRegExp(searchTerm);
+            content = content.replace(new RegExp(`(${escapedSearch})`, 'gi'), '<mark class="bg-yellow-200 text-black rounded px-0.5">$1</mark>');
+        }
+
+        // Apply mention highlighting
+        if (mentions && mentions.length > 0) {
+            mentions.forEach(m => {
+                content = content.replace(new RegExp(`@${m.fullname}`, 'g'), `<span class="text-indigo-600 font-bold">@${m.fullname}</span>`);
+            });
+        }
 
         return <span dangerouslySetInnerHTML={{ __html: content }} />;
     };
@@ -101,13 +113,22 @@ const MessageBubble = ({
 
                     {/* Text Content */}
                     <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                        {renderContent(message.message, message.mentions)}
+                        {renderContent(message.message, message.mentions, searchTerm)}
                     </p>
 
-                    {/* Timestamp */}
-                    <span className={`text-[9px] block mt-1 text-right ${isMe ? "text-indigo-200" : "text-slate-400"}`}>
-                        {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+                    {/* Timestamp & Read Receipts */}
+                    <div className="flex items-center justify-end gap-1 mt-1">
+                        <span className={`text-[9px] block ${isMe ? "text-indigo-200" : "text-slate-400"}`}>
+                            {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                        {isMe && (
+                            message.readBy?.length > 0 ? (
+                                <CheckCheck className="w-3 h-3 text-indigo-300" />
+                            ) : (
+                                <Check className="w-3 h-3 text-indigo-300 opacity-70" />
+                            )
+                        )}
+                    </div>
 
                     {/* Reactions Display */}
                     {message.reactions && message.reactions.length > 0 && (
