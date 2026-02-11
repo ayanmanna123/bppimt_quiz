@@ -25,7 +25,8 @@ import noteRoute from "./routes/note.routes.js";
 import assignmentRoute from "./routes/assignment.routes.js";
 import meetingRoute from "./routes/meeting.routes.js";
 import chatRoute from "./routes/chat.routes.js";
-import { saveMessage } from "./controllers/chat.controller.js";
+import uploadRoute from "./routes/upload.routes.js";
+import { saveMessage, addReaction, removeReaction } from "./controllers/chat.controller.js";
 
 dotenv.config();
 connectToMongo();
@@ -161,6 +162,7 @@ app.use("/api/v1/note", apiLimiter, jwtMiddleware, noteRoute);
 app.use("/api/v1/assignment", apiLimiter, jwtMiddleware, assignmentRoute);
 app.use("/api/v1/meeting", apiLimiter, jwtMiddleware, meetingRoute);
 app.use("/api/v1/chat", apiLimiter, jwtMiddleware, chatRoute);
+app.use("/api/v1/upload", apiLimiter, jwtMiddleware, uploadRoute);
 
 /* =========================
    ERROR HANDLING
@@ -190,14 +192,36 @@ io.on("connection", (socket) => {
     console.log(`Client ${socket.id} joined subject ${subjectId}`);
   });
 
-  socket.on("sendMessage", async ({ subjectId, message, senderId, mentions }) => {
+  socket.on("sendMessage", async ({ subjectId, message, senderId, mentions, replyTo, attachments }) => {
     // Save to database
-    const savedMessage = await saveMessage(subjectId, senderId, message, mentions);
+    const savedMessage = await saveMessage(subjectId, senderId, message, mentions, replyTo, attachments);
 
     if (savedMessage) {
       // Broadcast to room
       io.to(subjectId).emit("receiveMessage", savedMessage);
     }
+  });
+
+  socket.on("addReaction", async ({ messageId, userId, emoji, subjectId }) => {
+    const updatedMessage = await addReaction(messageId, userId, emoji);
+    if (updatedMessage) {
+      io.to(subjectId).emit("messageUpdated", updatedMessage);
+    }
+  });
+
+  socket.on("removeReaction", async ({ messageId, userId, emoji, subjectId }) => {
+    const updatedMessage = await removeReaction(messageId, userId, emoji);
+    if (updatedMessage) {
+      io.to(subjectId).emit("messageUpdated", updatedMessage);
+    }
+  });
+
+  socket.on("typing", ({ subjectId, user }) => {
+    socket.to(subjectId).emit("userTyping", user);
+  });
+
+  socket.on("stopTyping", ({ subjectId, user }) => {
+    socket.to(subjectId).emit("userStoppedTyping", user);
   });
 
   socket.on("disconnect", () => {

@@ -18,7 +18,9 @@ const chatSchema = new mongoose.Schema(
         },
         message: {
             type: String,
-            required: true,
+            required: function () {
+                return this.attachments.length === 0;
+            },
             trim: true,
         },
         mentions: [
@@ -26,6 +28,27 @@ const chatSchema = new mongoose.Schema(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User",
             },
+        ],
+        replyTo: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Chat",
+            default: null,
+        },
+        reactions: [
+            {
+                user: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                },
+                emoji: String,
+            }
+        ],
+        attachments: [
+            {
+                url: { type: String, required: true },
+                type: { type: String, enum: ['image', 'video', 'file'], default: 'image' },
+                publicId: { type: String }
+            }
         ],
         timestamp: {
             type: Date,
