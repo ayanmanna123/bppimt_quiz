@@ -408,8 +408,8 @@ const GlobalChat = () => {
 
 
     return (
-        <div className="flex flex-col h-[calc(100vh-80px)] max-w-7xl mx-auto p-4">
-            <div className="bg-white w-full h-full rounded-2xl shadow-lg flex flex-col overflow-hidden border border-slate-200">
+        <div className="flex flex-col h-[calc(100vh-64px)] w-full">
+            <div className="bg-white w-full h-full flex flex-col overflow-hidden border-t border-slate-200">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex items-center justify-between text-white shrink-0 relative">
                     {!showSearch ? (

@@ -3,12 +3,14 @@ import { useSocket } from "../../context/SocketContext";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Send, X, MessageCircle, Loader2, Search, ChevronUp, ChevronDown, Clock, User as UserIcon } from "lucide-react";
+import { Send, X, MessageCircle, Loader2, Search, ChevronUp, ChevronDown, Clock, User as UserIcon, Pin, Trash, Reply, Smile, Check, CheckCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import MessageBubble from "./MessageBubble";
+import ChatInput from "./ChatInput";
+import TypingIndicator from "./TypingIndicator";
 
 const ChatWindow = ({ subjectId, subjectName, onClose }) => {
     const { usere } = useSelector((store) => store.auth);
@@ -18,6 +20,21 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
     const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(true);
     const scrollRef = useRef(null);
+    const scrollViewportRef = useRef(null);
+
+    const [replyTo, setReplyTo] = useState(null);
+    const [editingMessage, setEditingMessage] = useState(null);
+    const [typingUsers, setTypingUsers] = useState([]);
+    const typingTimeoutRef = useRef(null);
+
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [isFetchingMore, setIsFetchingMore] = useState(false);
+    const [prevScrollHeight, setPrevScrollHeight] = useState(0);
+
+    // Pinned messages
+    const [pinnedMessages, setPinnedMessages] = useState([]);
 
     // Search state
     const [showSearch, setShowSearch] = useState(false);
@@ -27,57 +44,132 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
     const [isSearching, setIsSearching] = useState(false);
     const messageRefs = useRef({});
 
-    // Fetch initial chat history and mark as read
-    useEffect(() => {
-        const fetchHistory = async () => {
-            try {
-                const token = await getAccessTokenSilently({
-                    audience: "http://localhost:5000/api/v2",
-                });
-                const res = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/chat/${subjectId}`,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
+    // Fetch chat history
+    const fetchHistory = async (pageNum = 1) => {
+        try {
+            if (pageNum === 1) setLoading(true);
+            else setIsFetchingMore(true);
+
+            const token = await getAccessTokenSilently();
+            const res = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/${subjectId}?page=${pageNum}&limit=50`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (res.data.length < 50) {
+                setHasMore(false);
+            }
+
+            if (pageNum === 1) {
                 setMessages(res.data);
-            } catch (error) {
-                console.error("Failed to fetch chat history", error);
-            } finally {
-                setLoading(false);
+                // Scroll to bottom on initial load
+                setTimeout(() => {
+                    scrollViewportRef.current?.scrollTo({ top: scrollViewportRef.current.scrollHeight });
+                }, 100);
+            } else {
+                setMessages((prev) => [...res.data, ...prev]);
             }
-        };
+        } catch (error) {
+            console.error("Failed to fetch chat history", error);
+        } finally {
+            setLoading(false);
+            setIsFetchingMore(false);
+        }
+    };
 
-        const markAsRead = async () => {
-            try {
-                const token = await getAccessTokenSilently({
-                    audience: "http://localhost:5000/api/v2",
-                });
-                await axios.put(
-                    `${import.meta.env.VITE_BACKEND_URL}/chat/read/${subjectId}`,
-                    { userId: usere._id },
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-            } catch (error) {
-                console.error("Failed to mark messages as read", error);
-            }
-        };
+    // Fetch pinned messages
+    const fetchPinnedMessages = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/pinned/${subjectId}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setPinnedMessages(res.data);
+        } catch (error) {
+            console.error("Failed to fetch pinned messages", error);
+        }
+    };
 
-        if (subjectId && usere) {
-            fetchHistory();
+    // Mark messages as read
+    const markAsRead = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            await axios.put(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/read/${subjectId}`,
+                { userId: usere._id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+        } catch (error) {
+            console.error("Failed to mark messages as read", error);
+        }
+    };
+
+    useEffect(() => {
+        if (usere && subjectId) {
+            fetchHistory(1);
+            fetchPinnedMessages();
             markAsRead();
         }
-    }, [subjectId, getAccessTokenSilently, usere]);
+    }, [subjectId, usere, getAccessTokenSilently]);
 
-    // Socket listener
+    // Handle Scroll for Pagination
+    const handleScroll = (e) => {
+        const { scrollTop, scrollHeight } = e.currentTarget;
+        if (scrollTop === 0 && hasMore && !isFetchingMore && !loading) {
+            setPrevScrollHeight(scrollHeight);
+            setPage((prev) => {
+                const nextPage = prev + 1;
+                fetchHistory(nextPage);
+                return nextPage;
+            });
+        }
+    };
+
+    // Maintain scroll position after fetching more messages
     useEffect(() => {
-        if (!socket) return;
+        if (isFetchingMore || loading) return;
+        if (page > 1 && scrollViewportRef.current) {
+            const newScrollHeight = scrollViewportRef.current.scrollHeight;
+            const scrollDiff = newScrollHeight - prevScrollHeight;
+            if (scrollDiff > 0) {
+                scrollViewportRef.current.scrollTop = scrollDiff;
+            }
+        }
+    }, [messages, page, isFetchingMore, loading, prevScrollHeight]);
 
-        // Join the subject room
+    // Socket listeners
+    useEffect(() => {
+        if (!socket || !subjectId) return;
+
         socket.emit("joinSubject", subjectId);
 
         const handleReceiveMessage = (message) => {
-            // Only append if it belongs to this subject
             if (message.subjectId === subjectId) {
                 setMessages((prev) => [...prev, message]);
+                markAsRead();
+            }
+        };
+
+        const handleMessageUpdated = (updatedMsg) => {
+            if (updatedMsg.subjectId === subjectId) {
+                setMessages(prev => prev.map(msg => msg._id === updatedMsg._id ? updatedMsg : msg));
+            }
+        };
+
+        const handleMessageDeleted = ({ messageId }) => {
+            setMessages(prev => prev.filter(msg => msg._id !== messageId));
+        };
+
+        const handleUserTyping = ({ user, subjectId: sid }) => {
+            if (sid === subjectId && user !== usere.fullname) {
+                setTypingUsers(prev => prev.includes(user) ? prev : [...prev, user]);
+            }
+        };
+
+        const handleUserStoppedTyping = ({ user, subjectId: sid }) => {
+            if (sid === subjectId) {
+                setTypingUsers(prev => prev.filter(u => u !== user));
             }
         };
 
@@ -90,14 +182,26 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
             }));
         };
 
+        const handlePinnedUpdated = () => fetchPinnedMessages();
+
         socket.on("receiveMessage", handleReceiveMessage);
+        socket.on("messageUpdated", handleMessageUpdated);
+        socket.on("messageDeleted", handleMessageDeleted);
+        socket.on("userTyping", handleUserTyping);
+        socket.on("userStoppedTyping", handleUserStoppedTyping);
         socket.on("messagesRead", handleMessagesRead);
+        socket.on("pinnedMessagesUpdated", handlePinnedUpdated);
 
         return () => {
             socket.off("receiveMessage", handleReceiveMessage);
+            socket.off("messageUpdated", handleMessageUpdated);
+            socket.off("messageDeleted", handleMessageDeleted);
+            socket.off("userTyping", handleUserTyping);
+            socket.off("userStoppedTyping", handleUserStoppedTyping);
             socket.off("messagesRead", handleMessagesRead);
+            socket.off("pinnedMessagesUpdated", handlePinnedUpdated);
         };
-    }, [socket, subjectId]);
+    }, [socket, subjectId, usere]);
 
     // Auto-scroll to bottom
     useEffect(() => {
@@ -172,28 +276,104 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
         jumpToMessage(searchResults[prevIndex]._id);
     };
 
-    const handleSendMessage = (e) => {
-        e.preventDefault();
-        if (!newMessage.trim() || !socket) return;
+    const handleSendMessage = (text, attachment) => {
+        if (!socket || !subjectId) return;
+
+        // Stop typing immediately
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        socket.emit("stopTyping", { subjectId, user: usere.fullname });
 
         const messageData = {
             subjectId,
-            message: newMessage,
+            message: text,
             senderId: usere._id,
+            isGlobal: false,
+            replyTo: replyTo ? replyTo._id : null,
+            attachments: attachment ? [attachment] : []
         };
 
-        // Optimistic update (optional, but good for UX)
-        // For now, we rely on the server broadcast to avoid duplication logic complexity
-        // or we can append it locally and rely on ID checks. 
-        // Let's just emit and wait for broadcast for simplicity and consistency.
-
         socket.emit("sendMessage", messageData);
-        setNewMessage("");
+        setReplyTo(null);
+    };
+
+    const handleTyping = () => {
+        if (!socket || !subjectId) return;
+        socket.emit("typing", { subjectId, user: usere.fullname });
+    };
+
+    const handleTogglePin = async (messageId) => {
+        try {
+            const token = await getAccessTokenSilently();
+            await axios.put(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/pin/${messageId}`,
+                { userId: usere._id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+        } catch (error) {
+            console.error("Failed to toggle pin", error);
+        }
+    };
+
+    const handleReaction = async (messageId, emoji) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await axios.put(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/react/${messageId}`,
+                { userId: usere._id, emoji },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            const updatedMsg = res.data;
+            setMessages(prev => prev.map(msg => msg._id === messageId ? updatedMsg : msg));
+            socket.emit("messageUpdated", updatedMsg);
+        } catch (error) {
+            console.error("Failed to react", error);
+        }
+    };
+
+    const onEditMessage = (message) => {
+        setEditingMessage(message);
+    };
+
+    const handleUpdateMessage = async (messageId, newText) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await axios.put(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/${messageId}`,
+                { userId: usere._id, message: newText },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            const updatedMsg = res.data;
+            setMessages(prev => prev.map(msg => msg._id === messageId ? updatedMsg : msg));
+            socket.emit("messageUpdated", updatedMsg);
+            setEditingMessage(null);
+        } catch (error) {
+            console.error("Failed to update message", error);
+        }
+    };
+
+    const handleDeleteMessage = async (messageId) => {
+        if (!window.confirm("Delete this message?")) return;
+        try {
+            const token = await getAccessTokenSilently();
+            await axios.delete(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/${messageId}`,
+                {
+                    data: { userId: usere._id },
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+
+            setMessages(prev => prev.filter(msg => msg._id !== messageId));
+            socket.emit("messageDeleted", { messageId, subjectId });
+        } catch (error) {
+            console.error("Failed to delete message", error);
+        }
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white w-full max-w-md h-[600px] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div className="fixed top-[64px] left-0 right-0 bottom-0 z-40 bg-white flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
+            <div className="w-full h-full flex flex-col overflow-hidden">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex items-center justify-between text-white shrink-0 relative">
                     {!showSearch ? (
@@ -309,72 +489,116 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
                     )}
                 </div>
 
-                {/* Messages Area */}
-                <ScrollArea className="flex-1 p-4 bg-gray-50">
-                    {loading ? (
-                        <div className="flex justify-center items-center h-full">
-                            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                {/* Pinned Messages Banner */}
+                {pinnedMessages.length > 0 && (
+                    <div className="bg-indigo-50 border-b border-indigo-100 p-2 flex items-center justify-between shrink-0">
+                        <div className="flex items-center gap-2 overflow-hidden flex-1">
+                            <Pin className="w-4 h-4 text-indigo-600 shrink-0 fill-current" />
+                            <div className="flex flex-col">
+                                <span className="text-[9px] font-bold text-indigo-600 uppercase tracking-wider">Pinned Message</span>
+                                <p className="text-[11px] text-indigo-900 truncate font-medium">
+                                    {pinnedMessages[0].message}
+                                </p>
+                            </div>
                         </div>
-                    ) : messages.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-full text-gray-400 text-sm">
-                            <MessageCircle className="w-12 h-12 mb-2 opacity-50" />
-                            <p>No messages yet. Start the conversation!</p>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col gap-1 pb-4">
-                            {messages.map((msg, idx) => {
-                                const isMe = msg.sender?._id === usere?._id;
-                                const showAvatar = idx === 0 || messages[idx - 1]?.sender?._id !== msg.sender?._id;
+                        {pinnedMessages.length > 1 && (
+                            <span className="text-[9px] bg-indigo-200 text-indigo-700 px-1.5 py-0.5 rounded-full ml-2">
+                                +{pinnedMessages.length - 1}
+                            </span>
+                        )}
+                    </div>
+                )}
 
-                                return (
-                                    <div
-                                        key={msg._id || idx}
-                                        ref={(el) => (messageRefs.current[msg._id] = el)}
-                                        className="transition-colors duration-500 rounded-lg"
-                                    >
-                                        <MessageBubble
-                                            message={msg}
-                                            isMe={isMe}
-                                            showAvatar={showAvatar}
-                                            showSenderName={showAvatar}
-                                            onReply={() => { }}
-                                            onReact={() => { }}
-                                            onPin={null}
-                                            onEdit={null}
-                                            onDelete={null}
-                                            searchTerm={searchTerm}
-                                        />
+                {/* Messages Area */}
+                <div className="flex-1 overflow-hidden bg-slate-50 relative flex flex-col">
+                    <div
+                        className="flex-1 p-4 overflow-y-auto"
+                        onScroll={handleScroll}
+                        ref={scrollViewportRef}
+                    >
+                        {loading ? (
+                            <div className="flex justify-center items-center h-full">
+                                <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                            </div>
+                        ) : messages.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center h-full text-slate-400 py-10">
+                                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                                    <MessageCircle className="w-8 h-8 text-slate-300" />
+                                </div>
+                                <p className="font-medium">No messages yet.</p>
+                                <p className="text-sm">Be the first to say hello!</p>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-1 pb-4">
+                                {isFetchingMore && (
+                                    <div className="flex justify-center py-2">
+                                        <Loader2 className="w-5 h-5 animate-spin text-indigo-400" />
                                     </div>
-                                );
-                            })}
-                            <div ref={scrollRef} />
-                        </div>
-                    )}
-                </ScrollArea>
+                                )}
+                                {messages.map((msg, idx) => {
+                                    const isMe = msg.sender?._id === usere?._id;
+                                    const showAvatar = idx === 0 || messages[idx - 1]?.sender?._id !== msg.sender?._id;
+                                    const showSenderName = showAvatar;
+
+                                    // Date Separator Logic
+                                    const currentDate = new Date(msg.timestamp).toDateString();
+                                    const prevDate = idx > 0 ? new Date(messages[idx - 1].timestamp).toDateString() : null;
+                                    const showDateSeparator = currentDate !== prevDate;
+
+                                    let dateLabel = currentDate;
+                                    const today = new Date().toDateString();
+                                    const yesterday = new Date();
+                                    yesterday.setDate(yesterday.getDate() - 1);
+
+                                    if (currentDate === today) dateLabel = "Today";
+                                    else if (currentDate === yesterday.toDateString()) dateLabel = "Yesterday";
+
+                                    return (
+                                        <React.Fragment key={msg._id || idx}>
+                                            {showDateSeparator && (
+                                                <div className="flex justify-center my-4">
+                                                    <span className="bg-slate-200 text-slate-600 text-[10px] px-3 py-1 rounded-full shadow-sm">
+                                                        {dateLabel}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            <div
+                                                ref={(el) => (messageRefs.current[msg._id] = el)}
+                                                className="transition-colors duration-500 rounded-lg"
+                                            >
+                                                <MessageBubble
+                                                    message={msg}
+                                                    isMe={isMe}
+                                                    showAvatar={showAvatar}
+                                                    showSenderName={showSenderName}
+                                                    onReply={() => setReplyTo(msg)}
+                                                    onReact={(emoji) => handleReaction(msg._id, emoji)}
+                                                    onPin={() => handleTogglePin(msg._id)}
+                                                    onEdit={() => onEditMessage(msg)}
+                                                    onDelete={() => handleDeleteMessage(msg._id)}
+                                                    searchTerm={searchTerm}
+                                                />
+                                            </div>
+                                        </React.Fragment>
+                                    );
+                                })}
+                                <TypingIndicator typingUsers={typingUsers} />
+                                <div ref={scrollRef} />
+                            </div>
+                        )}
+                    </div>
+                </div>
 
                 {/* Input Area */}
-                <div className="p-4 bg-white border-t border-gray-100 shrink-0">
-                    <form
-                        onSubmit={handleSendMessage}
-                        className="flex items-center gap-2 bg-gray-50 p-2 rounded-full border border-gray-200 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100 transition-all"
-                    >
-                        <input
-                            type="text"
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            placeholder="Type a message..."
-                            className="flex-1 bg-transparent px-4 py-1 focus:outline-none text-sm text-gray-700 placeholder:text-gray-400"
-                        />
-                        <Button
-                            type="submit"
-                            size="icon"
-                            disabled={!newMessage.trim()}
-                            className="rounded-full w-8 h-8 bg-indigo-600 hover:bg-indigo-700 text-white shadow-md disabled:opacity-50 disabled:shadow-none transition-all"
-                        >
-                            <Send className="w-4 h-4" />
-                        </Button>
-                    </form>
-                </div>
+                <ChatInput
+                    onSendMessage={handleSendMessage}
+                    onTyping={handleTyping}
+                    replyTo={replyTo}
+                    setReplyTo={setReplyTo}
+                    editingMessage={editingMessage}
+                    onUpdateMessage={handleUpdateMessage}
+                    onCancelEdit={() => setEditingMessage(null)}
+                />
             </div>
         </div>
     );
