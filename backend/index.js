@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import { auth } from "express-oauth2-jwt-bearer";
 import rateLimit from "express-rate-limit";
 import { createServer } from "http";
+import { Server } from "socket.io";
 
 // Middlewares
 import errorHandler from "./middlewares/errorHandler.js";
@@ -22,6 +23,7 @@ import attendanceToggleRoutes from "./routes/attendanceToggle.routes.js";
 import weaknessRoute from "./routes/weakness.routes.js";
 import noteRoute from "./routes/note.routes.js";
 import assignmentRoute from "./routes/assignment.routes.js";
+import meetingRoute from "./routes/meeting.routes.js";
 
 dotenv.config();
 connectToMongo();
@@ -155,6 +157,7 @@ app.use("/api/v1/attendance-toggle", apiLimiter, jwtMiddleware, attendanceToggle
 app.use("/api/v1/weakness", apiLimiter, jwtMiddleware, weaknessRoute);
 app.use("/api/v1/note", apiLimiter, jwtMiddleware, noteRoute);
 app.use("/api/v1/assignment", apiLimiter, jwtMiddleware, assignmentRoute);
+app.use("/api/v1/meeting", apiLimiter, jwtMiddleware, meetingRoute);
 
 /* =========================
    ERROR HANDLING
@@ -165,6 +168,29 @@ app.use(errorHandler);
    SERVER START
 ========================= */
 const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: ["http://localhost:5173", "https://bppimt-quiz.vercel.app"],
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+app.set("io", io);
+
+io.on("connection", (socket) => {
+  console.log("New client connected", socket.id);
+
+  socket.on("joinSubject", (subjectId) => {
+    socket.join(subjectId);
+    console.log(`Client ${socket.id} joined subject ${subjectId}`);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected", socket.id);
+  });
+});
 
 httpServer.listen(port, () => {
   console.log(`✅ HTTP Server running at http://localhost:${port}`);

@@ -15,12 +15,14 @@ import {
   FileText,
   ClipboardList,
   Sparkles,
+  Video,
 } from "lucide-react";
 
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import SchlitonSubject from "./SchlitonSubject";
 import EditTimeSlotModal from "./EditTimeSlotModal";
+import CreateMeetingModal from "./CreateMeetingModal";
 import {
   Card,
   CardContent,
@@ -54,6 +56,7 @@ const Subject = () => {
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [isTimeSlotModalOpen, setIsTimeSlotModalOpen] = useState(false);
+  const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -304,6 +307,20 @@ const Subject = () => {
                           <Button
                             variant="outline"
                             size="icon"
+                            title="Schedule Meeting"
+                            className="w-full h-9 rounded-lg border-gray-200 hover:bg-violet-50 hover:text-violet-600 hover:border-violet-200 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedSubject(subj);
+                              setIsMeetingModalOpen(true);
+                            }}
+                          >
+                            <Video className="w-4 h-4 text-gray-600 hover:text-violet-600" />
+                          </Button>
+
+                          <Button
+                            variant="outline"
+                            size="icon"
                             title="View Attendance"
                             className="w-full h-9 rounded-lg border-gray-200 hover:bg-cyan-50 hover:text-cyan-600 hover:border-cyan-200 transition-colors"
                             onClick={(e) => {
@@ -355,6 +372,16 @@ const Subject = () => {
         isOpen={isTimeSlotModalOpen}
         onClose={() => {
           setIsTimeSlotModalOpen(false);
+          setSelectedSubject(null);
+        }}
+        subjectId={selectedSubject?._id}
+        subjectName={selectedSubject?.subjectName}
+      />
+
+      <CreateMeetingModal
+        isOpen={isMeetingModalOpen}
+        onClose={() => {
+          setIsMeetingModalOpen(false);
           setSelectedSubject(null);
         }}
         subjectId={selectedSubject?._id}

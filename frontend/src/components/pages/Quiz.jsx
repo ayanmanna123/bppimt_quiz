@@ -28,6 +28,7 @@ import {
   ClipboardCheck,
   CheckCircle2,
   FileText,
+  Video,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { setsubjectByquiry } from "../../Redux/subject.reducer";
 import axios from "axios";
 import { toast } from "sonner";
+import { useSocket } from "../../context/SocketContext";
 // Student-focused gradient combinations
 const studentGradients = [
   "bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600",
@@ -57,6 +59,8 @@ const studentPatterns = [
 
 const Quiz = () => {
   const { usere } = useSelector((store) => store.auth);
+  const socket = useSocket();
+  const [upcomingMeetings, setUpcomingMeetings] = useState([]);
 
   const [subjectByquiry, setsetsubjectByquiry] = useState([]);
   const navigate = useNavigate();
@@ -151,6 +155,82 @@ const Quiz = () => {
     setShowOtpModal(true);
     setOtpInput("");
   };
+
+  const isMeetingLive = (meeting) => {
+    // Basic check: is today and time is within range?
+    // Parsing "YYYY-MM-DD" and "HH:mm"
+    try {
+      const meetingDate = new Date(meeting.date);
+      const today = new Date();
+
+      if (meetingDate.toDateString() !== today.toDateString()) return false;
+
+      const [hours, minutes] = meeting.meetingLink ? meeting.startTime.split(':') : ["00", "00"];
+      const start = new Date();
+      start.setHours(parseInt(hours), parseInt(minutes), 0);
+
+      const end = new Date(start.getTime() + (meeting.duration || 60) * 60000);
+
+      return today >= start && today <= end;
+    } catch (e) { return false; }
+  };
+
+  const isMeetingFuture = (meeting) => {
+    try {
+      const meetingDate = new Date(meeting.date);
+      const today = new Date();
+      if (meetingDate > today) return true;
+      if (meetingDate.toDateString() === today.toDateString()) {
+        const [hours, minutes] = meeting.startTime.split(':');
+        const start = new Date();
+        start.setHours(parseInt(hours), parseInt(minutes), 0);
+        return today < start;
+      }
+      return false;
+    } catch (e) { return false; }
+  }
+
+  const joinMeeting = (link) => {
+    window.open(link, '_blank');
+  };
+
+  const fetchMeetings = async () => {
+    try {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v2",
+      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/meeting/upcoming?department=${usere?.department}&semester=${usere?.semester}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.success) {
+        setUpcomingMeetings(res.data.meetings);
+      }
+    } catch (error) {
+      console.error("Error fetching meetings", error);
+    }
+  };
+
+  useEffect(() => {
+    if (usere?.department && usere?.semester) {
+      fetchMeetings();
+    }
+  }, [usere, getAccessTokenSilently]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("newMeeting", (newMeeting) => {
+        // Optimistically add if it matches user's dept/sem (checked via backend anyway usually, but here we just append)
+        // Or just refetch
+        fetchMeetings();
+        toast.info(`New meeting scheduled for ${newMeeting.subject?.subjectName || 'a subject'}`);
+      });
+
+      return () => {
+        socket.off("newMeeting");
+      }
+    }
+  }, [socket]);
 
   const submitOtpAttendance = async () => {
     try {
@@ -422,6 +502,49 @@ const Quiz = () => {
           </motion.div>
         </div>
 
+        {/* Upcoming Meetings Section */}
+        {
+          upcomingMeetings.length > 0 && (
+            <div className="px-6 mb-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <Video className="w-6 h-6 text-purple-600" />
+                Upcoming Live Classes
+              </h2>
+              <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+                {upcomingMeetings.map((meeting) => (
+                  <Card key={meeting._id} className="min-w-[300px] bg-white border-l-4 border-l-purple-500 shadow-md hover:shadow-lg transition-all">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg font-bold truncate">{meeting.title}</CardTitle>
+                      <CardDescription>{meeting.subject?.subjectName}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="pb-2 text-sm">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Calendar className="w-4 h-4 text-gray-500" />
+                        <span>{new Date(meeting.date).toDateString()}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-gray-500" />
+                        <span>{meeting.startTime} ({meeting.duration} min)</span>
+                      </div>
+                    </CardContent>
+                    <CardFooter>
+                      {isMeetingLive(meeting) ? (
+                        <Button onClick={() => joinMeeting(meeting.meetingLink)} className="w-full bg-red-600 hover:bg-red-700 animate-pulse text-white">
+                          Join Live Now
+                        </Button>
+                      ) : (
+                        <Button disabled className="w-full bg-gray-200 text-gray-500">
+                          {isMeetingFuture(meeting) ? "Scheduled" : "Ended"}
+                        </Button>
+                      )}
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )
+        }
+
         {/* Subject Cards Grid */}
         <div className="px-6 pb-12">
           {processedSubjects.length === 0 ? (
@@ -625,41 +748,43 @@ const Quiz = () => {
             </motion.div>
           )}
         </div>
-      </div>
+      </div >
 
       {/* OTP Modal */}
-      {showOtpModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-2xl w-[400px] shadow-2xl">
-            <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">Enter Class OTP</h2>
-            <p className="text-center text-gray-500 mb-6">Enter the 6-digit code shared by your teacher</p>
+      {
+        showOtpModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white p-8 rounded-2xl w-[400px] shadow-2xl">
+              <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">Enter Class OTP</h2>
+              <p className="text-center text-gray-500 mb-6">Enter the 6-digit code shared by your teacher</p>
 
-            <input
-              type="text"
-              maxLength="6"
-              value={otpInput}
-              onChange={(e) => setOtpInput(e.target.value)}
-              className="w-full text-center text-3xl tracking-[1em] font-mono font-bold py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none mb-6"
-              placeholder="000000"
-            />
+              <input
+                type="text"
+                maxLength="6"
+                value={otpInput}
+                onChange={(e) => setOtpInput(e.target.value)}
+                className="w-full text-center text-3xl tracking-[1em] font-mono font-bold py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none mb-6"
+                placeholder="000000"
+              />
 
-            <div className="flex gap-4">
-              <button
-                onClick={() => setShowOtpModal(false)}
-                className="flex-1 py-3 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={submitOtpAttendance}
-                className="flex-1 py-3 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
-              >
-                Submit
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setShowOtpModal(false)}
+                  className="flex-1 py-3 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitOtpAttendance}
+                  className="flex-1 py-3 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
+                >
+                  Submit
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </>
   );
 };

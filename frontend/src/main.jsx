@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/lib/integration/react";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { SocketProvider } from "./context/SocketContext";
 
 const persistor = persistStore(store);
 
@@ -20,11 +21,13 @@ createRoot(document.getElementById("root")).render(
           clientId="mUjG6TRByGosW1VyMpQlVIGom6UahqLq"
           authorizationParams={{
             redirect_uri: `${window.location.origin}/complete/profile`,
-            audience: "http://localhost:5000/api/v2",  
+            audience: "http://localhost:5000/api/v2",
           }}
         >
-          <App />
-          <Toaster />
+          <SocketProvider>
+            <App />
+            <Toaster />
+          </SocketProvider>
         </Auth0Provider>
       </PersistGate>
     </Provider>
