@@ -29,7 +29,16 @@ import {
   CheckCircle2,
   FileText,
   Video,
+  MoreVertical,
+  ArrowRight
 } from "lucide-react";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -55,6 +64,37 @@ const studentPatterns = [
   "linear-gradient(60deg, rgba(239, 68, 68, 0.3) 25%, transparent 25%), radial-gradient(circle at 75% 25%, rgba(251, 113, 133, 0.4) 0%, transparent 50%)",
   "conic-gradient(from 0deg at 40% 60%, rgba(245, 158, 11, 0.4) 0deg, transparent 90deg, rgba(251, 191, 36, 0.3) 180deg, transparent 270deg)",
   "radial-gradient(circle at 30% 20%, rgba(236, 72, 153, 0.4) 0%, transparent 60%), linear-gradient(120deg, rgba(244, 114, 182, 0.3) 0%, transparent 100%)",
+];
+
+const cardThemes = [
+  {
+    bg: "bg-gradient-to-br from-indigo-50 to-white",
+    headerBg: "bg-[#F5F3FF]",
+    badgeBg: "bg-[#4F46E5]",
+    btnBg: "bg-[#3B82F6]",
+    btnHover: "hover:bg-blue-700"
+  },
+  {
+    bg: "bg-gradient-to-br from-emerald-50 to-white",
+    headerBg: "bg-[#F0FDF4]",
+    badgeBg: "bg-[#10B981]",
+    btnBg: "bg-[#10B981]",
+    btnHover: "hover:bg-emerald-700"
+  },
+  {
+    bg: "bg-gradient-to-br from-amber-50 to-white",
+    headerBg: "bg-[#FFFBEB]",
+    badgeBg: "bg-[#F59E0B]",
+    btnBg: "bg-[#F59E0B]",
+    btnHover: "hover:bg-amber-700"
+  },
+  {
+    bg: "bg-gradient-to-br from-rose-50 to-white",
+    headerBg: "bg-[#FFF1F2]",
+    badgeBg: "bg-[#F43F5E]",
+    btnBg: "bg-[#F43F5E]",
+    btnHover: "hover:bg-rose-700"
+  }
 ];
 
 import ChatWindow from "../chat/ChatWindow";
@@ -575,185 +615,108 @@ const Quiz = () => {
               transition={{ duration: 0.6 }}
             >
               {processedSubjects.map((sub, index) => {
-                const gradientClass =
-                  studentGradients[index % studentGradients.length];
-                const patternStyle =
-                  studentPatterns[index % studentPatterns.length];
+                const theme = cardThemes[index % cardThemes.length];
 
                 return (
                   <motion.div
                     key={sub._id}
-                    onClick={() => navigate(`/quizedetails/${sub?._id}`)}
-                    initial={{ opacity: 0, y: 60, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      duration: 0.7,
-                      delay: index * 0.1,
-                      type: "spring",
-                      stiffness: 100,
+                      duration: 0.5,
+                      delay: index * 0.05,
                     }}
-                    className="group cursor-pointer"
+                    className="group"
                   >
-                    <Card className={`overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform ${viewMode === 'list' ? 'flex flex-row items-center min-h-[180px]' : 'hover:scale-105'} relative group-hover:-translate-y-1`}>
-                      {/* Enhanced gradient header */}
-                      <div
-                        className={`${viewMode === 'list' ? 'w-1/3 h-full absolute inset-y-0 left-0' : 'h-44'} ${gradientClass} relative overflow-hidden`}
-                        style={{ background: patternStyle }}
-                      >
-                        {/* Animated background elements */}
-                        <div className="absolute inset-0 opacity-30">
-                          <div className="absolute top-4 right-4 w-20 h-20 border-2 border-white/40 rounded-full animate-pulse group-hover:animate-spin"></div>
-                          <div className="absolute bottom-4 left-4 w-12 h-12 bg-white/30 rounded-full animate-bounce"></div>
-                        </div>
-
-                        {/* Favorite Button */}
-                        <button
-                          onClick={(e) => toggleFavorite(e, sub._id)}
-                          className="absolute top-4 right-4 z-20 p-2 bg-white/20 backdrop-blur-md rounded-full hover:bg-white/40 transition-colors group/star"
-                        >
+                    <Card className="overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white border border-gray-100 rounded-[2.5rem]">
+                      {/* Header Section */}
+                      <div className={`h-40 ${theme.headerBg} p-8 relative flex flex-col justify-between`}>
+                        <div className="flex justify-between items-start">
+                          <span className={`${theme.badgeBg} text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-wider`}>
+                            {sub?.subjectCode || "CORE"}
+                          </span>
                           <Star
-                            className={`w-5 h-5 transition-all duration-300 ${favorites.includes(sub._id) ? "fill-yellow-400 text-yellow-400 scale-110" : "text-white group-hover/star:text-yellow-200"}`}
+                            onClick={(e) => toggleFavorite(e, sub._id)}
+                            className={`w-5 h-5 cursor-pointer transition-all duration-300 ${favorites.includes(sub._id) ? "fill-yellow-400 text-yellow-400" : "text-gray-300 hover:text-yellow-200"}`}
                           />
-                        </button>
-
-                        {/* Subject badge */}
-                        <div className="absolute top-4 left-4">
-                          <div className="bg-white/20 backdrop-blur-md rounded-full px-3 py-1 flex items-center gap-2">
-                            <Zap className="w-4 h-4 text-gray-800" />
-                            <span className="text-xs font-semibold text-gray-800">
-                              ACTIVE
-                            </span>
-                          </div>
                         </div>
-
-                        {/* Subject info */}
-                        <div className="absolute bottom-4 left-4 right-4 text-gray-900">
-                          <h3 className={`${viewMode === 'list' ? 'text-2xl' : 'text-xl'} font-bold drop-shadow-2xl mb-2 leading-tight text-white`}>
-                            {sub?.subjectName}
-                          </h3>
-                          <p className="text-sm opacity-90 drop-shadow mb-3 text-white">
-                            {sub?.description ||
-                              "Explore and master this subject"}
-                          </p>
-                          <div className="w-12 h-1 bg-white/60 rounded-full"></div>
-                        </div>
+                        <h3 className="text-2xl font-bold text-gray-800 tracking-tight">
+                          {sub?.subjectName}
+                        </h3>
                       </div>
 
-                      {/* Enhanced content */}
-                      <CardContent className={`${viewMode === 'list' ? 'ml-[33%] w-2/3 py-6 pr-6 pl-8' : 'p-6'}`}>
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
-                            <User className="w-5 h-5 text-blue-600" />
-                            <div className="flex-1">
-                              <p className="text-xs text-gray-500 font-medium">
-                                INSTRUCTOR
-                              </p>
-                              <p className="text-sm font-bold text-gray-700">
-                                {sub?.createdBy?.fullname}
-                              </p>
+                      {/* Content Section */}
+                      <CardContent className="px-8 py-6">
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-full ${theme.headerBg} flex items-center justify-center`}>
+                              <User className={`w-5 h-5 ${theme.badgeBg.replace('bg-', 'text-')}`} />
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-bold text-gray-400 tracking-wider">INSTRUCTOR</p>
+                              <p className="text-sm font-semibold text-gray-700">{sub?.createdBy?.fullname || "Instructor"}</p>
                             </div>
                           </div>
-
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl">
-                              <BookOpen className="w-4 h-4 text-purple-600" />
-                              <div>
-                                <p className="text-xs text-gray-500 font-medium">
-                                  DEPT
-                                </p>
-                                <p className="text-sm font-bold text-gray-700">
-                                  {sub?.department}
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-2 p-3 bg-green-50 rounded-xl">
-                              <Calendar className="w-4 h-4 text-green-600" />
-                              <div>
-                                <p className="text-xs text-gray-500 font-medium">
-                                  SEM
-                                </p>
-                                <p className="text-sm font-bold text-gray-700">
-                                  {sub?.semester}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 border-l-4 border-blue-400">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="text-xs text-gray-500 font-semibold mb-1">
-                                  SUBJECT CODE
-                                </p>
-                                <p className="text-sm font-mono font-bold text-gray-800 bg-transparent px-2 py-1 rounded">
-                                  {sub?.subjectCode}
-                                </p>
-                              </div>
-                              <Trophy className="w-8 h-8 text-yellow-500" />
-                            </div>
+                          <div className="text-right">
+                            <p className="text-[10px] font-bold text-gray-400 tracking-wider uppercase">Semester</p>
+                            <p className="text-sm font-semibold text-gray-700">{sub?.semester || "N/A"}</p>
                           </div>
                         </div>
-                      </CardContent>
 
-                      {/* Action button */}
-                      <CardFooter className="p-6 pt-0 flex flex-col items-center gap-3">
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/quizedetails/${sub?._id}`);
-                          }}
-                          className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
-                        >
-                          <Target className="w-5 h-5" />
-                          Start Quiz Journey
-                          <Sparkles className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          className="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
-                          onClick={(e) => {
-                            e.stopPropagation(); // ✅ Prevent card click
-                            handleAttendanceClick(sub?._id);
-                          }}
-                        >
-                          <ClipboardCheck className="w-5 h-5" />
-                          Give Attendance
-                          <CheckCircle2 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          className="w-full bg-gradient-to-r from-orange-500 via-orange-600 to-red-600 hover:from-orange-600 hover:via-orange-700 hover:to-red-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/subject/notes/${sub?._id}`);
-                          }}
-                        >
-                          <FileText className="w-5 h-5" />
-                          View Notes
-                          <BookOpen className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          className="w-full bg-gradient-to-r from-pink-500 via-pink-600 to-rose-600 hover:from-pink-600 hover:via-pink-700 hover:to-rose-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/subject/assignments/${sub?._id}`);
-                          }}
-                        >
-                          <ClipboardCheck className="w-5 h-5" />
-                          Assignments
-                          <FileText className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          className="w-full bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 hover:from-indigo-600 hover:via-indigo-700 hover:to-violet-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setActiveChatSubject(sub);
-                          }}
-                        >
-                          <Video className="w-5 h-5" />
-                          Chat
-                          <Sparkles className="w-4 h-4" />
-                        </Button>
-                      </CardFooter>
+                        <div className="h-px bg-gray-100 w-full mb-6"></div>
+
+                        {/* Actions Area */}
+                        <div className="flex items-center gap-3">
+                          <Button
+                            onClick={() => navigate(`/quizedetails/${sub?._id}`)}
+                            className={`flex-1 ${theme.btnBg} ${theme.btnHover} text-white font-bold py-6 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg active:scale-[0.98]`}
+                          >
+                            Take Quiz
+                            <ArrowRight className="w-5 h-5" />
+                          </Button>
+
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="w-14 h-14 rounded-2xl border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                              >
+                                <MoreVertical className="w-5 h-5 text-gray-500" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl">
+                              <DropdownMenuItem
+                                onClick={() => handleAttendanceClick(sub?._id)}
+                                className="flex items-center gap-3 p-3 cursor-pointer rounded-xl"
+                              >
+                                <ClipboardCheck className="w-5 h-5 text-green-500" />
+                                <span className="font-semibold text-gray-700">Give Attendance</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => navigate(`/subject/notes/${sub?._id}`)}
+                                className="flex items-center gap-3 p-3 cursor-pointer rounded-xl"
+                              >
+                                <FileText className="w-5 h-5 text-orange-500" />
+                                <span className="font-semibold text-gray-700">View Notes</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => navigate(`/subject/assignments/${sub?._id}`)}
+                                className="flex items-center gap-3 p-3 cursor-pointer rounded-xl"
+                              >
+                                <ClipboardCheck className="w-5 h-5 text-pink-500" />
+                                <span className="font-semibold text-gray-700">Assignments</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => setActiveChatSubject(sub)}
+                                className="flex items-center gap-3 p-3 cursor-pointer rounded-xl"
+                              >
+                                <Video className="w-5 h-5 text-indigo-500" />
+                                <span className="font-semibold text-gray-700">Chat</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </CardContent>
                     </Card>
                   </motion.div>
                 );
