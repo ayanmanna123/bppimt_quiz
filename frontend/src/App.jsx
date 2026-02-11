@@ -34,6 +34,7 @@ const StudentAttendanceSummary = lazy(() => import("./components/pages/StudentAt
 const QuestionBank = lazy(() => import("./components/admin/QuestionBank"));
 const PlayWeaknessQuiz = lazy(() => import("./components/pages/PlayWeaknessQuiz"));
 const SubjectNotes = lazy(() => import("./components/pages/SubjectNotes"));
+const Assignments = lazy(() => import("./components/pages/Assignments"));
 
 
 // Simple loading fallback
@@ -196,6 +197,10 @@ function App() {
         {
           path: "/subject/notes/:subjectId",
           element: <SubjectNotes />,
+        },
+        {
+          path: "/subject/assignments/:subjectId",
+          element: <Assignments />,
         },
 
       ],

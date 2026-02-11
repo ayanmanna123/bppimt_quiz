@@ -605,6 +605,17 @@ const Quiz = () => {
                           View Notes
                           <BookOpen className="w-4 h-4" />
                         </Button>
+                        <Button
+                          className="w-full bg-gradient-to-r from-pink-500 via-pink-600 to-rose-600 hover:from-pink-600 hover:via-pink-700 hover:to-rose-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/subject/assignments/${sub?._id}`);
+                          }}
+                        >
+                          <ClipboardCheck className="w-5 h-5" />
+                          Assignments
+                          <FileText className="w-4 h-4" />
+                        </Button>
 
                       </CardFooter>
                     </Card>

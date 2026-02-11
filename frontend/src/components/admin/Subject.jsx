@@ -11,9 +11,10 @@ import {
   BookOpen,
   Users,
   GraduationCap,
-  Sparkles,
   Clock,
   FileText,
+  ClipboardList,
+  Sparkles,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -272,6 +273,19 @@ const Subject = () => {
                             }}
                           >
                             <FileText className="w-4 h-4 text-gray-600 hover:text-indigo-600" />
+                          </Button>
+
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            title="Assignments"
+                            className="w-full h-9 rounded-lg border-gray-200 hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/subject/assignments/${subj._id}`);
+                            }}
+                          >
+                            <ClipboardList className="w-4 h-4 text-gray-600 hover:text-pink-600" />
                           </Button>
 
                           <Button

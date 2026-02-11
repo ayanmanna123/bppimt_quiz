@@ -21,6 +21,7 @@ import classroomRoute from "./routes/classRoom.routes.js";
 import attendanceToggleRoutes from "./routes/attendanceToggle.routes.js";
 import weaknessRoute from "./routes/weakness.routes.js";
 import noteRoute from "./routes/note.routes.js";
+import assignmentRoute from "./routes/assignment.routes.js";
 
 dotenv.config();
 connectToMongo();
@@ -153,6 +154,7 @@ app.use("/api/v1/attandance", apiLimiter, jwtMiddleware, classroomRoute);
 app.use("/api/v1/attendance-toggle", apiLimiter, jwtMiddleware, attendanceToggleRoutes);
 app.use("/api/v1/weakness", apiLimiter, jwtMiddleware, weaknessRoute);
 app.use("/api/v1/note", apiLimiter, jwtMiddleware, noteRoute);
+app.use("/api/v1/assignment", apiLimiter, jwtMiddleware, assignmentRoute);
 
 /* =========================
    ERROR HANDLING
