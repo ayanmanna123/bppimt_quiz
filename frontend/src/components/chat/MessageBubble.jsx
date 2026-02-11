@@ -70,6 +70,14 @@ const MessageBubble = ({
                             {message.attachments.map((att, i) => (
                                 att.type === 'image' ? (
                                     <img key={i} src={att.url} alt="attachment" className="rounded-lg max-h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => window.open(att.url, '_blank')} />
+                                ) : att.type === 'audio' ? (
+                                    <div key={i} className="flex items-center gap-2 min-w-[200px] bg-white/10 p-1 rounded-lg">
+                                        <audio
+                                            controls
+                                            src={att.url}
+                                            className="h-8 w-full max-w-[240px] rounded"
+                                        />
+                                    </div>
                                 ) : (
                                     <a key={i} href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs underline bg-black/10 p-1 rounded">
                                         View Attachment

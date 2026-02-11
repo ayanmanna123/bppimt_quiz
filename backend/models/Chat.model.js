@@ -46,7 +46,7 @@ const chatSchema = new mongoose.Schema(
         attachments: [
             {
                 url: { type: String, required: true },
-                type: { type: String, enum: ['image', 'video', 'file'], default: 'image' },
+                type: { type: String, enum: ['image', 'video', 'file', 'audio'], default: 'image' },
                 publicId: { type: String }
             }
         ],

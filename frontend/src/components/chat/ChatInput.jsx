@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import EmojiPicker from "emoji-picker-react";
-import { Send, Paperclip, Smile, X, Loader2 } from "lucide-react";
+import { Send, Paperclip, Smile, X, Loader2, Mic, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Popover,
@@ -14,7 +14,13 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply }) => {
     const [message, setMessage] = useState("");
     const [attachment, setAttachment] = useState(null);
     const [uploading, setUploading] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
+    const [recordingDuration, setRecordingDuration] = useState(0);
+
     const fileInputRef = useRef(null);
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
+    const timerRef = useRef(null);
     const { getAccessTokenSilently } = useAuth0();
 
     const handleKeyDown = (e) => {
@@ -57,6 +63,94 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply }) => {
         } finally {
             setUploading(false);
         }
+    };
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+            audioChunksRef.current = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+                await handleUploadAudio(audioBlob);
+
+                // Stop all tracks
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            setIsRecording(true);
+            setRecordingDuration(0);
+
+            timerRef.current = setInterval(() => {
+                setRecordingDuration(prev => prev + 1);
+            }, 1000);
+
+        } catch (error) {
+            console.error("Error accessing microphone:", error);
+            alert("Could not access microphone");
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+                timerRef.current = null;
+            }
+        }
+    };
+
+    const handleUploadAudio = async (audioBlob) => {
+        setUploading(true);
+        try {
+            const token = await getAccessTokenSilently();
+            const formData = new FormData();
+            // Create a file from blob
+            const file = new File([audioBlob], "voice_message.webm", { type: "audio/webm" });
+            formData.append("file", file);
+
+            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/upload`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+
+            setAttachment({
+                url: res.data.url,
+                type: 'audio', // res.data.type should be 'audio' now from backend
+                publicId: res.data.publicId
+            });
+
+        } catch (error) {
+            console.error("Audio upload failed", error);
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    // Cleanup timer on unmount
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) clearInterval(timerRef.current);
+        };
+    }, []);
+
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
     const handleSend = () => {
@@ -108,7 +202,7 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply }) => {
                 <input
                     type="file"
                     ref={fileInputRef}
-                    className="hidden"
+                    className="hidden colour-black"
                     accept="image/*"
                     onChange={handleFileSelect}
                 />
@@ -119,8 +213,21 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply }) => {
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
                 >
-                    <Paperclip className="w-5 h-5" />
                 </Button>
+
+                {/* Mic Button */}
+                {!message.trim() && !attachment && (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className={`${isRecording ? "text-red-500 animate-pulse bg-red-50" : "text-slate-400 hover:text-indigo-600"}`}
+                        onClick={isRecording ? stopRecording : startRecording}
+                        disabled={uploading}
+                    >
+                        {isRecording ? <Square className="w-5 h-5 fill-current" /> : <Mic className="w-5 h-5" />}
+                    </Button>
+                )}
+
 
                 {/* Emoji Picker */}
                 <Popover>
@@ -138,18 +245,24 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply }) => {
                     </PopoverContent>
                 </Popover>
 
-                {/* Text Area */}
+                {/* Text Area or Recording UI */}
                 <div className="flex-1 relative">
-                    <textarea
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Type a message..."
-                        className="w-full bg-slate-50 text-slate-700 placeholder:text-slate-400 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all resize-none min-h-[48px] max-h-32"
-                        rows={1}
-                        style={{ height: "auto", minHeight: "48px" }}
-                    // Auto-resize logic could be added
-                    />
+                    {isRecording ? (
+                        <div className="flex items-center gap-2 h-full px-4 py-3 bg-red-50 rounded-xl border border-red-100 text-red-600 font-medium">
+                            <span className="animate-pulse">● Rec</span>
+                            <span>{formatTime(recordingDuration)}</span>
+                        </div>
+                    ) : (
+                        <textarea
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder="Type a message..."
+                            className="w-full bg-slate-50 text-slate-700 placeholder:text-slate-400 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all resize-none min-h-[48px] max-h-32"
+                            rows={1}
+                            style={{ height: "auto", minHeight: "48px" }}
+                        />
+                    )}
                 </div>
 
                 {/* Send Button */}
