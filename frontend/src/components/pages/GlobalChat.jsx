@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import MessageBubble from "../chat/MessageBubble";
 import ChatInput from "../chat/ChatInput";
 import TypingIndicator from "../chat/TypingIndicator";
+import OnlineUsersBar from "../chat/OnlineUsersBar";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
@@ -18,6 +19,7 @@ const GlobalChat = () => {
 
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [onlineUsers, setOnlineUsers] = useState([]);
     const messagesEndRef = useRef(null);
     const scrollViewportRef = useRef(null);
     const subjectId = "global";
@@ -172,10 +174,24 @@ const GlobalChat = () => {
         }
     };
 
+    const fetchOnlineUsers = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/online/all`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setOnlineUsers(res.data);
+        } catch (error) {
+            console.error("Failed to fetch online users", error);
+        }
+    };
+
     useEffect(() => {
         if (usere) {
             fetchHistory(1);
             fetchPinnedMessages();
+            fetchOnlineUsers();
             markAsRead();
         }
     }, [getAccessTokenSilently, usere]);
@@ -252,12 +268,39 @@ const GlobalChat = () => {
             }));
         };
 
+        const handleUpdatePresence = ({ userId, isOnline, lastSeen }) => {
+            // Update messages state for online indicator in bubbles
+            setMessages((prev) => prev.map(msg => {
+                if (msg.sender?._id === userId) {
+                    return {
+                        ...msg,
+                        sender: {
+                            ...msg.sender,
+                            isOnline,
+                            lastSeen: lastSeen || msg.sender.lastSeen
+                        }
+                    };
+                }
+                return msg;
+            }));
+
+            // Update onlineUsers bar state
+            if (isOnline) {
+                // Fetch the full user details if they connect (optional, or just add basic info if available)
+                // For simplicity, let's just refetch the whole list to ensure we have all details (picture, name)
+                fetchOnlineUsers();
+            } else {
+                setOnlineUsers(prev => prev.filter(u => u._id !== userId));
+            }
+        };
+
         socket.on("receiveMessage", handleReceiveMessage);
         socket.on("messageUpdated", handleMessageUpdated);
         socket.on("messageDeleted", handleMessageDeleted);
         socket.on("userTyping", handleUserTyping);
         socket.on("userStoppedTyping", handleUserStoppedTyping);
         socket.on("messagesRead", handleMessagesRead);
+        socket.on("updatePresence", handleUpdatePresence);
 
         return () => {
             socket.off("receiveMessage", handleReceiveMessage);
@@ -266,6 +309,7 @@ const GlobalChat = () => {
             socket.off("userTyping", handleUserTyping);
             socket.off("userStoppedTyping", handleUserStoppedTyping);
             socket.off("messagesRead", handleMessagesRead);
+            socket.off("updatePresence", handleUpdatePresence);
         };
     }, [socket, usere]);
 
@@ -519,6 +563,9 @@ const GlobalChat = () => {
                         </div>
                     )}
                 </div>
+
+                {/* Online Users Bar */}
+                <OnlineUsersBar users={onlineUsers} />
 
                 {/* Pinned Messages Banner */}
                 {pinnedMessages.length > 0 && (

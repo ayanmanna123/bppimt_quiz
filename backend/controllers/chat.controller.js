@@ -1,5 +1,6 @@
 import Chat from "../models/Chat.model.js";
 import User from "../models/User.model.js";
+import axios from "axios";
 
 // Get chat history for a specific subject or global chat
 export const getChatHistory = async (req, res) => {
@@ -360,5 +361,85 @@ export const searchMessages = async (req, res) => {
     } catch (error) {
         console.error("Error searching messages:", error);
         res.status(500).json({ message: "Failed to search messages" });
+    }
+};
+
+// Get link preview metadata
+export const getLinkPreview = async (req, res) => {
+    try {
+        const { url } = req.query;
+        if (!url) return res.status(400).json({ error: "URL is required" });
+
+        // Add protocol if missing
+        let targetUrl = url;
+        if (!/^https?:\/\//i.test(targetUrl)) {
+            targetUrl = 'https://' + targetUrl;
+        }
+
+        const response = await axios.get(targetUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8'
+            },
+            timeout: 5000,
+            validateStatus: false
+        });
+
+        if (response.status !== 200) {
+            return res.status(404).json({ error: "Link not reachable" });
+        }
+
+        const html = response.data;
+        if (typeof html !== 'string') {
+            return res.status(400).json({ error: "Invalid response from link" });
+        }
+
+        const metadata = {
+            url: targetUrl,
+            title: "",
+            description: "",
+            image: "",
+            siteName: ""
+        };
+
+        // Extract Title
+        const titleMatch = html.match(/<title>(.*?)<\/title>/i) ||
+            html.match(/<meta property="og:title" content="(.*?)"/i) ||
+            html.match(/<meta name="twitter:title" content="(.*?)"/i);
+        metadata.title = titleMatch ? titleMatch[1].trim() : "";
+
+        // Extract Description
+        const descMatch = html.match(/<meta name="description" content="(.*?)"/i) ||
+            html.match(/<meta property="og:description" content="(.*?)"/i) ||
+            html.match(/<meta name="twitter:description" content="(.*?)"/i);
+        metadata.description = descMatch ? descMatch[1].trim() : "";
+
+        // Extract Image
+        const imgMatch = html.match(/<meta property="og:image" content="(.*?)"/i) ||
+            html.match(/<meta name="twitter:image" content="(.*?)"/i) ||
+            html.match(/<link rel="image_src" href="(.*?)"/i);
+        metadata.image = imgMatch ? imgMatch[1] : "";
+
+        // Extract Site Name
+        const siteNameMatch = html.match(/<meta property="og:site_name" content="(.*?)"/i);
+        metadata.siteName = siteNameMatch ? siteNameMatch[1] : "";
+
+        res.json(metadata);
+    } catch (error) {
+        console.error("Link preview failed for URL:", req.query.url, error.message);
+        res.status(500).json({ error: "Failed to fetch link preview" });
+    }
+};
+
+// Get all online users
+export const getOnlineUsers = async (req, res) => {
+    try {
+        const users = await User.find({ isOnline: true })
+            .select("fullname picture role _id")
+            .lean();
+        res.status(200).json(users);
+    } catch (error) {
+        console.error("Error fetching online users:", error);
+        res.status(500).json({ message: "Failed to fetch online users" });
     }
 };

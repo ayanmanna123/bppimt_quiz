@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import MessageBubble from "./MessageBubble";
 import ChatInput from "./ChatInput";
 import TypingIndicator from "./TypingIndicator";
+import OnlineUsersBar from "./OnlineUsersBar";
 
 const ChatWindow = ({ subjectId, subjectName, onClose }) => {
     const { usere } = useSelector((store) => store.auth);
@@ -25,6 +26,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
     const [replyTo, setReplyTo] = useState(null);
     const [editingMessage, setEditingMessage] = useState(null);
     const [typingUsers, setTypingUsers] = useState([]);
+    const [onlineUsers, setOnlineUsers] = useState([]);
     const typingTimeoutRef = useRef(null);
 
     // Pagination state
@@ -91,6 +93,19 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
         }
     };
 
+    const fetchOnlineUsers = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/online/all`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setOnlineUsers(res.data);
+        } catch (error) {
+            console.error("Failed to fetch online users", error);
+        }
+    };
+
     // Mark messages as read
     const markAsRead = async () => {
         try {
@@ -109,6 +124,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
         if (usere && subjectId) {
             fetchHistory(1);
             fetchPinnedMessages();
+            fetchOnlineUsers();
             markAsRead();
         }
     }, [subjectId, usere, getAccessTokenSilently]);
@@ -182,6 +198,29 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
             }));
         };
 
+        const handleUpdatePresence = ({ userId, isOnline, lastSeen }) => {
+            setMessages((prev) => prev.map(msg => {
+                if (msg.sender?._id === userId) {
+                    return {
+                        ...msg,
+                        sender: {
+                            ...msg.sender,
+                            isOnline,
+                            lastSeen: lastSeen || msg.sender.lastSeen
+                        }
+                    };
+                }
+                return msg;
+            }));
+
+            // Update onlineUsers bar state
+            if (isOnline) {
+                fetchOnlineUsers();
+            } else {
+                setOnlineUsers(prev => prev.filter(u => u._id !== userId));
+            }
+        };
+
         const handlePinnedUpdated = () => fetchPinnedMessages();
 
         socket.on("receiveMessage", handleReceiveMessage);
@@ -191,6 +230,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
         socket.on("userStoppedTyping", handleUserStoppedTyping);
         socket.on("messagesRead", handleMessagesRead);
         socket.on("pinnedMessagesUpdated", handlePinnedUpdated);
+        socket.on("updatePresence", handleUpdatePresence);
 
         return () => {
             socket.off("receiveMessage", handleReceiveMessage);
@@ -200,8 +240,9 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
             socket.off("userStoppedTyping", handleUserStoppedTyping);
             socket.off("messagesRead", handleMessagesRead);
             socket.off("pinnedMessagesUpdated", handlePinnedUpdated);
+            socket.off("updatePresence", handleUpdatePresence);
         };
-    }, [socket, subjectId, usere]);
+    }, [socket, subjectId, usere, getAccessTokenSilently]);
 
     // Auto-scroll to bottom
     useEffect(() => {
@@ -488,6 +529,9 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
                         </div>
                     )}
                 </div>
+
+                {/* Online Users Bar */}
+                <OnlineUsersBar users={onlineUsers} />
 
                 {/* Pinned Messages Banner */}
                 {pinnedMessages.length > 0 && (

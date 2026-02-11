@@ -7,6 +7,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import LinkPreview from "./LinkPreview";
 import ViewersModal from "./ViewersModal";
 
 const MessageBubble = ({
@@ -22,7 +23,8 @@ const MessageBubble = ({
     searchTerm
 }) => {
     const [isViewersOpen, setIsViewersOpen] = React.useState(false);
-    // Helper to render mentions and search highlighting
+
+    // Helper to render mentions, links, and search highlighting
     const renderContent = (text, mentions, searchTerm) => {
         if (!text) return "";
         let content = text;
@@ -43,8 +45,16 @@ const MessageBubble = ({
             });
         }
 
+        // Make URLs clickable
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        content = content.replace(urlRegex, (url) => {
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="underline decoration-indigo-400 hover:text-indigo-600 transition-colors">${url}</a>`;
+        });
+
         return <span dangerouslySetInnerHTML={{ __html: content }} />;
     };
+
+    const firstUrl = (message.message?.match(/(https?:\/\/[^\s]+)/) || [])[0];
 
     return (
         <div className={`group flex gap-3 ${isMe ? "justify-end" : "justify-start"} mb-2`}>
@@ -52,10 +62,18 @@ const MessageBubble = ({
             {!isMe && (
                 <div className="w-8 shrink-0 flex flex-col justify-end">
                     {showAvatar ? (
-                        <Avatar className="w-8 h-8 border border-slate-200">
-                            <AvatarImage src={message.sender?.picture} />
-                            <AvatarFallback>{message.sender?.fullname?.[0]}</AvatarFallback>
-                        </Avatar>
+                        <div className="relative">
+                            <Avatar className="w-8 h-8 border border-slate-200">
+                                <AvatarImage src={message.sender?.picture} />
+                                <AvatarFallback>{message.sender?.fullname?.[0]}</AvatarFallback>
+                            </Avatar>
+                            {message.sender?.isOnline && (
+                                <div className="absolute right-0 bottom-0 w-2.5 h-2.5 bg-green-500 border-2 border-slate-50 rounded-full shadow-sm z-10" title="Online" />
+                            )}
+                            {!message.sender?.isOnline && message.sender?.lastSeen && (
+                                <div className="hidden" title={`Last seen: ${new Date(message.sender.lastSeen).toLocaleString()}`} />
+                            )}
+                        </div>
                     ) : <div className="w-8" />}
                 </div>
             )}
@@ -63,7 +81,10 @@ const MessageBubble = ({
             <div className={`flex flex-col max-w-[75%] ${isMe ? "items-end" : "items-start"}`}>
                 {/* Sender Name */}
                 {!isMe && showSenderName && (
-                    <span className="text-xs text-slate-500 ml-1 mb-1">
+                    <span
+                        className="text-xs text-slate-500 ml-1 mb-1 cursor-default"
+                        title={!message.sender?.isOnline && message.sender?.lastSeen ? `Last seen: ${new Date(message.sender.lastSeen).toLocaleString()}` : 'Online'}
+                    >
                         {message.sender?.fullname} {message.sender?.role === 'teacher' && <span className="text-[10px] bg-indigo-100 text-indigo-700 px-1 rounded">Teacher</span>}
                     </span>
                 )}
@@ -115,6 +136,9 @@ const MessageBubble = ({
                     <p className="text-sm leading-relaxed whitespace-pre-wrap">
                         {renderContent(message.message, message.mentions, searchTerm)}
                     </p>
+
+                    {/* Rich Link Preview */}
+                    {firstUrl && <LinkPreview url={firstUrl} />}
 
                     {/* Timestamp & Read Receipts */}
                     <div className="flex items-center justify-end gap-1 mt-1">

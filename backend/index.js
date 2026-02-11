@@ -1,4 +1,5 @@
 import connectToMongo from "./utils/db.js";
+import User from "./models/User.model.js";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -184,8 +185,26 @@ const io = new Server(httpServer, {
 
 app.set("io", io);
 
-io.on("connection", (socket) => {
-  console.log("New client connected", socket.id);
+io.on("connection", async (socket) => {
+  const auth0Id = socket.handshake.query.userId;
+  let userId = null;
+
+  if (auth0Id) {
+    try {
+      const user = await User.findOneAndUpdate(
+        { auth0Id },
+        { isOnline: true },
+        { new: true }
+      );
+      if (user) {
+        userId = user._id;
+        console.log(`User ${user.fullname} connected`);
+        io.emit("updatePresence", { userId, isOnline: true });
+      }
+    } catch (err) {
+      console.error("Error updating presence on connection:", err);
+    }
+  }
 
   socket.on("joinSubject", (subjectId) => {
     socket.join(subjectId);
@@ -217,15 +236,27 @@ io.on("connection", (socket) => {
   });
 
   socket.on("typing", ({ subjectId, user }) => {
-    socket.to(subjectId).emit("userTyping", user);
+    socket.to(subjectId).emit("userTyping", { user, subjectId });
   });
 
   socket.on("stopTyping", ({ subjectId, user }) => {
-    socket.to(subjectId).emit("userStoppedTyping", user);
+    socket.to(subjectId).emit("userStoppedTyping", { user, subjectId });
   });
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     console.log("Client disconnected", socket.id);
+    if (userId) {
+      try {
+        const lastSeen = new Date();
+        await User.findByIdAndUpdate(userId, {
+          isOnline: false,
+          lastSeen
+        });
+        io.emit("updatePresence", { userId, isOnline: false, lastSeen });
+      } catch (err) {
+        console.error("Error updating presence on disconnect:", err);
+      }
+    }
   });
 });
 
