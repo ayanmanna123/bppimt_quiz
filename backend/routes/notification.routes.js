@@ -64,9 +64,19 @@ router.post("/subscribe", async (req, res) => {
 
 // Route to send a notification (for testing/admin)
 router.post("/send", async (req, res) => {
-    const { userId, title, message } = req.body;
+    let { userId, title, message } = req.body;
 
     try {
+        // Resolve Auth0 ID to MongoDB ObjectId if needed
+        if (userId) {
+            const user = await User.findOne({ auth0Id: userId });
+            if (user) {
+                userId = user._id;
+            }
+            // If not found by Auth0 ID, maybe it's already a Mongo ID? 
+            // We'll let the find({}) below handle it or return empty.
+        }
+
         const subscriptions = await NotificationSubscription.find({ userId });
 
         if (subscriptions.length === 0) {

@@ -113,7 +113,33 @@ const PushNotificationManager = () => {
         }
     };
 
-    if (isSubscribed) return null; // Or return a button to unsubscribe
+    const sendTestNotification = async () => {
+        if (!user?.sub) return;
+        try {
+            await axios.post('http://localhost:5000/api/v1/notifications/send', {
+                userId: user.sub,
+                title: "Test Notification",
+                message: "This is a test message to verify push notifications work!"
+            });
+            toast.success("Test notification sent! Check your device.");
+        } catch (error) {
+            console.error("Error sending test notification:", error);
+            toast.error("Failed to send test notification.");
+        }
+    };
+
+    if (isSubscribed) {
+        return (
+            <div className="fixed bottom-4 right-4 z-50">
+                <button
+                    onClick={sendTestNotification}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-green-700 transition"
+                >
+                    Send Test Notification 📲
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="fixed bottom-4 right-4 z-50">
