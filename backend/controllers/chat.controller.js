@@ -1,6 +1,8 @@
 import Chat from "../models/Chat.model.js";
 import User from "../models/User.model.js";
+import NotificationSubscription from "../models/NotificationSubscription.model.js";
 import axios from "axios";
+import webpush from "web-push";
 
 // Get chat history for a specific subject or global chat
 export const getChatHistory = async (req, res) => {
@@ -58,7 +60,7 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
         await newMessage.save();
 
         // Populate details for immediate return to clients
-        return await newMessage.populate([
+        const populatedMessage = await newMessage.populate([
             { path: "sender", select: "fullname picture email role" },
             { path: "mentions", select: "fullname _id" },
             {
@@ -67,6 +69,63 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
                 populate: { path: "sender", select: "fullname" }
             }
         ]);
+
+        // --- PUSH NOTIFICATION LOGIC ---
+        try {
+            // Ensure VAPID is set (idempotent operation)
+            if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+                webpush.setVapidDetails(
+                    "mailto:example@yourdomain.org",
+                    process.env.VAPID_PUBLIC_KEY,
+                    process.env.VAPID_PRIVATE_KEY
+                );
+
+                // 1. Find all subscriptions EXCEPT the sender's
+                const subscriptions = await NotificationSubscription.find({
+                    userId: { $ne: senderId }
+                });
+
+                if (subscriptions.length > 0) {
+                    const senderName = populatedMessage.sender.fullname;
+                    const notificationTitle = `New Message from ${senderName}`;
+                    const notificationBody = messageContent.length > 50
+                        ? messageContent.substring(0, 50) + "..."
+                        : messageContent;
+
+                    // Note: Actions only work if they are defined in SW or supported by platform
+                    const payload = JSON.stringify({
+                        title: notificationTitle,
+                        body: notificationBody,
+                        icon: '/pwa-192x192.png', // Or sender's picture if available and proxied
+                        data: {
+                            url: '/', // Open chat
+                            subjectId: subjectId
+                        }
+                    });
+
+                    // 2. Send in parallel
+                    const promises = subscriptions.map(sub =>
+                        webpush.sendNotification(sub, payload).catch(err => {
+                            if (err.statusCode === 410 || err.statusCode === 404) {
+                                // Subscription expired/gone
+                                NotificationSubscription.deleteOne({ _id: sub._id }).exec();
+                            }
+                        })
+                    );
+
+                    // Don't await this if you don't want to block the socket response
+                    // But for reliability/debugging we might log errors
+                    Promise.allSettled(promises).then(results => {
+                        // Optional: Log success/failure counts
+                    });
+                }
+            }
+        } catch (notifyError) {
+            console.error("Error sending push notifications:", notifyError);
+        }
+        // -------------------------------
+
+        return populatedMessage;
     } catch (error) {
         console.error("Error saving message:", error);
         return null;
