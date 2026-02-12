@@ -80,6 +80,9 @@ export const giveAttandance = async (req, res) => {
     });
 
     if (!isWithinSlot) {
+      console.log(`[Attendance Failed] User: ${userId}, Subject: ${subjectid}`);
+      console.log(`[Attendance Failed] Server Time: ${currentWeekDay} ${currentTime}`);
+      console.log(`[Attendance Failed] Available Slots:`, JSON.stringify(classRoom.timeSlots));
       return res.status(403).json({
         success: false,
         message: "Attendance time is not active right now (wrong day or time).",
@@ -162,12 +165,36 @@ function deg2rad(deg) {
  */
 function isTimeBetween(current, start, end) {
   const toMinutes = (t) => {
-    const [h, m] = t.split(":").map(Number);
+    if (!t) return NaN;
+    const timeStr = t.trim().toLowerCase();
+
+    // Check for am/pm
+    const isPM = timeStr.includes('pm');
+    const isAM = timeStr.includes('am');
+
+    // Remove am/pm and trim
+    let cleanTime = timeStr.replace('am', '').replace('pm', '').trim();
+
+    let [h, m] = cleanTime.split(':').map(Number);
+
+    if (isNaN(h) || isNaN(m)) return NaN;
+
+    // Handle 12-hour format if AM/PM was present
+    if (isPM && h < 12) h += 12;
+    if (isAM && h === 12) h = 0;
+
     return h * 60 + m;
   };
+
   const cur = toMinutes(current);
   const s = toMinutes(start);
   const e = toMinutes(end);
+
+  if (isNaN(cur) || isNaN(s) || isNaN(e)) {
+    console.error(`Invalid time format detected: Current=${current}, Start=${start}, End=${end}`);
+    return false;
+  }
+
   if (s <= e) {
     return cur >= s && cur <= e;
   } else {
