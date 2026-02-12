@@ -164,6 +164,9 @@ app.use("/api/v1/assignment", apiLimiter, jwtMiddleware, assignmentRoute);
 app.use("/api/v1/meeting", apiLimiter, jwtMiddleware, meetingRoute);
 app.use("/api/v1/chat", apiLimiter, jwtMiddleware, chatRoute);
 app.use("/api/v1/upload", apiLimiter, jwtMiddleware, uploadRoute);
+import notificationRoute from "./routes/notification.routes.js";
+app.use("/api/v1/notifications", notificationRoute);
+
 
 /* =========================
    ERROR HANDLING
