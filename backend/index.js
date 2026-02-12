@@ -5,7 +5,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { auth } from "express-oauth2-jwt-bearer";
-import rateLimit from "express-rate-limit";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
@@ -34,43 +33,6 @@ connectToMongo();
 
 const app = express();
 const port = process.env.PORT || 8000;
-
-/* =========================
-   RATE LIMITING CONFIGURATION
-========================= */
-
-// Global rate limiter - applies to all requests
-const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: {
-    error: "Too many requests from this IP, please try again later.",
-    retryAfter: "15 minutes",
-  },
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-});
-
-// Strict rate limiter for authentication endpoints
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // Limit each IP to 20 login/signup requests per windowMs (relaxed slightly for dev)
-  message: {
-    error: "Too many authentication attempts, please try again later.",
-    retryAfter: "15 minutes",
-  },
-  skipSuccessfulRequests: true, // Don't count successful requests
-});
-
-// Moderate rate limiter for API endpoints
-const apiLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 60, // Limit each IP to 60 requests per minute
-  message: {
-    error: "Too many API requests, please slow down.",
-    retryAfter: "1 minute",
-  },
-});
 
 /* =========================
    API REQUEST LOGGING
@@ -127,11 +89,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Apply global rate limiter to all routes
-app.use(globalLimiter);
-
 /* =========================
-   API ROUTES WITH SPECIFIC RATE LIMITS
+   API ROUTES
 ========================= */
 
 // Public Test Route
@@ -150,20 +109,20 @@ app.get("/", (req, res) => {
 // Note: The original code applied `jwtMiddleware` to EVERYTHING after line 50.
 // We will apply it to the API routes.
 
-app.use("/api/v1/user", authLimiter, jwtMiddleware, userrouter);
-app.use("/api/v1/subject", apiLimiter, jwtMiddleware, SubjectRoute);
-app.use("/api/v1/quize", apiLimiter, jwtMiddleware, quizeRoute);
-app.use("/api/v1/reasult", apiLimiter, jwtMiddleware, reasultRoute);
-app.use("/api/v1/dashbord", apiLimiter, jwtMiddleware, dashBordRoute);
-app.use("/api/v1/admin", apiLimiter, jwtMiddleware, adminRoute);
-app.use("/api/v1/attandance", apiLimiter, jwtMiddleware, classroomRoute);
-app.use("/api/v1/attendance-toggle", apiLimiter, jwtMiddleware, attendanceToggleRoutes);
-app.use("/api/v1/weakness", apiLimiter, jwtMiddleware, weaknessRoute);
-app.use("/api/v1/note", apiLimiter, noteRoute);
-app.use("/api/v1/assignment", apiLimiter, jwtMiddleware, assignmentRoute);
-app.use("/api/v1/meeting", apiLimiter, jwtMiddleware, meetingRoute);
-app.use("/api/v1/chat", apiLimiter, jwtMiddleware, chatRoute);
-app.use("/api/v1/upload", apiLimiter, jwtMiddleware, uploadRoute);
+app.use("/api/v1/user", jwtMiddleware, userrouter);
+app.use("/api/v1/subject", jwtMiddleware, SubjectRoute);
+app.use("/api/v1/quize", jwtMiddleware, quizeRoute);
+app.use("/api/v1/reasult", jwtMiddleware, reasultRoute);
+app.use("/api/v1/dashbord", jwtMiddleware, dashBordRoute);
+app.use("/api/v1/admin", jwtMiddleware, adminRoute);
+app.use("/api/v1/attandance", jwtMiddleware, classroomRoute);
+app.use("/api/v1/attendance-toggle", jwtMiddleware, attendanceToggleRoutes);
+app.use("/api/v1/weakness", jwtMiddleware, weaknessRoute);
+app.use("/api/v1/note", noteRoute);
+app.use("/api/v1/assignment", jwtMiddleware, assignmentRoute);
+app.use("/api/v1/meeting", jwtMiddleware, meetingRoute);
+app.use("/api/v1/chat", jwtMiddleware, chatRoute);
+app.use("/api/v1/upload", jwtMiddleware, uploadRoute);
 import notificationRoute from "./routes/notification.routes.js";
 app.use("/api/v1/notifications", notificationRoute);
 
