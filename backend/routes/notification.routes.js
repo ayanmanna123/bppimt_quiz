@@ -1,6 +1,7 @@
 import express from "express";
 import webpush from "web-push";
 import NotificationSubscription from "../models/NotificationSubscription.model.js";
+import User from "../models/User.model.js";
 
 const router = express.Router();
 
@@ -19,43 +20,36 @@ if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
 // Subscribe functionality
 router.post("/subscribe", async (req, res) => {
     const subscription = req.body;
-    const userId = req.auth?.payload?.sub || req.body.userId; // Use Auth0 ID or passed ID
-
-    // In a real app, you'd associate this with the logged-in user
-    // For now, we'll just save it. 
-    // Ideally, you should check if this endpoint+keys combination already exists for the user.
+    let userId = req.auth?.payload?.sub || req.body.userId; // This is likely the Auth0 ID (String)
 
     try {
+        // Resolve Auth0 ID to MongoDB ObjectId
+        if (userId) {
+            const user = await User.findOne({ auth0Id: userId });
+            if (user) {
+                userId = user._id; // Use the ObjectId
+            } else {
+                // If user not found in DB but has Auth0 ID, maybe they haven't completed profile yet?
+                // For now, let's error out or handle gracefully.
+                return res.status(404).json({ error: "User not found in database." });
+            }
+        } else {
+            return res.status(400).json({ error: "User ID required for subscription" });
+        }
+
         // Basic check: if we have a userId from auth, try to find existing sub
-        // For simplicity, we just save/update based on endpoint which is unique per browser instance usually
         const existing = await NotificationSubscription.findOne({ endpoint: subscription.endpoint });
 
         if (existing) {
             // Update keys if they changed
             existing.keys = subscription.keys;
-            if (userId) existing.userId = userId; // update user association if available
+            existing.userId = userId; // Ensure it's associated with the correct user
             await existing.save();
             return res.status(200).json({ message: "Subscription updated." });
         }
 
-        // Creating new subscription
-        // If no userId is provided (e.g. testing), we might need to handle that. 
-        // But schema requires userId. For now, assuming user is logged in or we pass a placeholder.
-        // If you are testing without auth, you might need to relax the model's required userId or pass a fake one.
-
-        // Let's assume the frontend sends userId if available or we extract from token
-        // If userId is missing, we can't save due to schema. 
-        // Let's make it optional in schema or robust here? 
-        // Modification: I will check if userId is present.
-
-        if (!userId && !req.body.userId) {
-            // if completely anonymous, maybe don't save or save with dummy?
-            // For this specific app, let's assume we need a user.
-            return res.status(400).json({ error: "User ID required for subscription" });
-        }
-
         const newSubscription = new NotificationSubscription({
-            userId: userId || req.body.userId,
+            userId: userId,
             endpoint: subscription.endpoint,
             keys: subscription.keys,
         });
