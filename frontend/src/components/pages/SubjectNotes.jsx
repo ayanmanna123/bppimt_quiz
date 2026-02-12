@@ -217,15 +217,27 @@ const SubjectNotes = () => {
                                         </a>
 
                                         {(isPdf || (note.files && note.files.length > 0)) && (
-                                            <a
-                                                href={`${import.meta.env.VITE_BACKEND_URL}/note/${note._id}/download`}
-                                                download // Hint to browser
-                                            >
-                                                <Button size="sm" className="bg-white hover:bg-indigo-50 text-indigo-600 border border-indigo-200 shadow-sm rounded-xl">
-                                                    <Download className="mr-2 h-4 w-4" />
-                                                    Download ZIP
-                                                </Button>
-                                            </a>
+                                            <>
+                                                <a
+                                                    href={`${import.meta.env.VITE_BACKEND_URL}/note/${note._id}/download`}
+                                                    download // Hint to browser
+                                                >
+                                                    <Button size="sm" className="bg-white hover:bg-indigo-50 text-indigo-600 border border-indigo-200 shadow-sm rounded-xl">
+                                                        <Download className="mr-2 h-4 w-4" />
+                                                        ZIP
+                                                    </Button>
+                                                </a>
+                                                <a
+                                                    href={`${import.meta.env.VITE_BACKEND_URL}/note/${note._id}/download/pdf`}
+                                                    download // Hint to browser
+                                                    target="_blank"
+                                                >
+                                                    <Button size="sm" className="bg-white hover:bg-red-50 text-red-600 border border-red-200 shadow-sm rounded-xl">
+                                                        <FileText className="mr-2 h-4 w-4" />
+                                                        PDF
+                                                    </Button>
+                                                </a>
+                                            </>
                                         )}
                                     </div>
                                 </div>

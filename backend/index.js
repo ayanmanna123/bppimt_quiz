@@ -112,7 +112,7 @@ const jwtCheck = auth({
 
 // Conditionally apply JWT check (Skip for download route)
 const jwtMiddleware = (req, res, next) => {
-  if (req.path.includes('/download') && req.method === 'GET') {
+  if (req.originalUrl.includes('/download') && req.method === 'GET') {
     return next();
   }
   jwtCheck(req, res, next);
@@ -159,7 +159,7 @@ app.use("/api/v1/admin", apiLimiter, jwtMiddleware, adminRoute);
 app.use("/api/v1/attandance", apiLimiter, jwtMiddleware, classroomRoute);
 app.use("/api/v1/attendance-toggle", apiLimiter, jwtMiddleware, attendanceToggleRoutes);
 app.use("/api/v1/weakness", apiLimiter, jwtMiddleware, weaknessRoute);
-app.use("/api/v1/note", apiLimiter, jwtMiddleware, noteRoute);
+app.use("/api/v1/note", apiLimiter, noteRoute);
 app.use("/api/v1/assignment", apiLimiter, jwtMiddleware, assignmentRoute);
 app.use("/api/v1/meeting", apiLimiter, jwtMiddleware, meetingRoute);
 app.use("/api/v1/chat", apiLimiter, jwtMiddleware, chatRoute);

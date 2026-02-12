@@ -5,6 +5,7 @@ import cloudinary from "../utils/cloudinary.js";
 import getDataUri from "../utils/datauri.js";
 import axios from 'axios';
 import archiver from 'archiver';
+import PDFDocument from 'pdfkit';
 
 export const uploadNote = async (req, res) => {
     try {
@@ -277,6 +278,67 @@ export const downloadNoteZip = async (req, res) => {
         if (!res.headersSent) {
             return res.status(500).json({
                 message: "Error generating ZIP",
+                success: false,
+                error: error.message
+            });
+        }
+    }
+};
+
+export const downloadNotePdf = async (req, res) => {
+    try {
+        const { noteId } = req.params;
+        console.log(`[PDF_DOWNLOAD] Attempting to download PDF for note: ${noteId}`);
+
+        const note = await Note.findById(noteId);
+
+        if (!note) {
+            console.log(`[PDF_DOWNLOAD] Note not found: ${noteId}`);
+            return res.status(404).json({ message: "Note not found", success: false });
+        }
+
+        // Check if there are files to convert
+        if (!note.files || note.files.length === 0) {
+            // If original file is PDF, redirect to it? Or assume intent is to generate PDF from images always?
+            // If original is PDF and no split files, just redirect to original.
+            if (note.contentType === 'pdf' || note.fileUrl.endsWith('.pdf')) {
+                return res.redirect(note.fileUrl);
+            }
+            return res.status(400).json({ message: "No images found to generate PDF", success: false });
+        }
+
+        const doc = new PDFDocument({ autoFirstPage: false });
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${note.title.replace(/\s+/g, '_')}.pdf"`);
+
+        doc.pipe(res);
+
+        for (let i = 0; i < note.files.length; i++) {
+            const url = note.files[i];
+            try {
+                const response = await axios.get(url, { responseType: 'arraybuffer' });
+                const image = response.data;
+
+                const img = doc.openImage(image);
+                doc.addPage({ size: [img.width, img.height] });
+                doc.image(image, 0, 0);
+            } catch (err) {
+                console.error(`Failed to fetch/add image ${url} to PDF`, err.message);
+                // Continue to next page if one fails? or error out?
+                // Let's create a text page saying error for that page?
+                doc.addPage();
+                doc.text(`Error loading page ${i + 1}`);
+            }
+        }
+
+        doc.end();
+
+    } catch (error) {
+        console.error("[PDF_DOWNLOAD] Download PDF Error:", error);
+        if (!res.headersSent) {
+            return res.status(500).json({
+                message: "Error generating PDF",
                 success: false,
                 error: error.message
             });
