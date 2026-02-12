@@ -34,7 +34,7 @@ createRoot(document.getElementById("root")).render(
           clientId="mUjG6TRByGosW1VyMpQlVIGom6UahqLq"
           authorizationParams={{
             redirect_uri: `${window.location.origin}/complete/profile`,
-            audience: `${import.meta.env.VITE_BACKEND_URL.replace('/api/v1', '/api/v2')}`, // Correcting standard audience if needed or keep using v2
+            audience: "http://localhost:5000/api/v2",
           }}
         >
           <SocketProvider>
