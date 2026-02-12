@@ -100,6 +100,34 @@ const SubjectNotes = () => {
         }
     }
 
+    const handlePreviewPdf = async (noteId) => {
+        try {
+            const toastId = toast.loading("Generating PDF preview...");
+
+            // We can use the public endpoint directly since we made it public (or use token if we reverted that, but likely public for now based on previous steps)
+            // Using axios to fetch blob
+            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/note/${noteId}/download/pdf`, {
+                responseType: 'blob'
+            });
+
+            const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
+            const pdfUrl = window.URL.createObjectURL(pdfBlob);
+
+            toast.dismiss(toastId);
+            window.open(pdfUrl, '_blank');
+
+            // Optional: revoke URL after some time to free memory, but tricky if user keeps tab open. 
+            // Often acceptable to let it be for the session or revoke on component unmount if stored.
+            // For a simple open, we might not revoke immediately.
+            setTimeout(() => window.URL.revokeObjectURL(pdfUrl), 60000); // Revoke after 1 minute
+
+        } catch (error) {
+            console.error("PDF Preview Error:", error);
+            toast.error("Failed to load PDF preview");
+        }
+    };
+
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100 p-6">
             <motion.div
@@ -206,15 +234,7 @@ const SubjectNotes = () => {
                                     </div>
 
                                     <div className="flex gap-2">
-                                        <a
-                                            href={note.fileUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            <Button size="sm" variant="outline" className="text-gray-600 border-gray-200">
-                                                {isPdf ? "View PDF" : "View"}
-                                            </Button>
-                                        </a>
+
 
                                         {(isPdf || (note.files && note.files.length > 0)) && (
                                             <>
@@ -227,16 +247,14 @@ const SubjectNotes = () => {
                                                         ZIP
                                                     </Button>
                                                 </a>
-                                                <a
-                                                    href={`${import.meta.env.VITE_BACKEND_URL}/note/${note._id}/download/pdf`}
-                                                    download // Hint to browser
-                                                    target="_blank"
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => handlePreviewPdf(note._id)}
+                                                    className="bg-white hover:bg-red-50 text-red-600 border border-red-200 shadow-sm rounded-xl"
                                                 >
-                                                    <Button size="sm" className="bg-white hover:bg-red-50 text-red-600 border border-red-200 shadow-sm rounded-xl">
-                                                        <FileText className="mr-2 h-4 w-4" />
-                                                        PDF
-                                                    </Button>
-                                                </a>
+                                                    <FileText className="mr-2 h-4 w-4" />
+                                                    Preview PDF
+                                                </Button>
                                             </>
                                         )}
                                     </div>
