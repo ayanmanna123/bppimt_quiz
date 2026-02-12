@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import axios from 'axios';
+import { useAuth0 } from "@auth0/auth0-react";
 
 const PushNotificationManager = () => {
+    const { user } = useAuth0();
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [subscription, setSubscription] = useState(null);
+
+    // ... (existing code)
 
     // VAPID Public Key from Backend (Should be in env, but for now hardcoded or fetched)
     // REPLACEME: Use the Public Key generated earlier
@@ -84,7 +88,23 @@ const PushNotificationManager = () => {
 
             // Send subscription to backend
             console.log("6. Sending subscription to backend...");
-            await axios.post('http://localhost:5000/api/v1/notifications/subscribe', sub);
+
+            if (!user?.sub) {
+                toast.error("Please log in to enable notifications.");
+                return;
+            }
+
+            // sub is a PushSubscription object. We need to serialize it or use .toJSON() if we want just the data, 
+            // but axios will serialize the object. However, PushSubscription is special. 
+            // It's safer to explicitly use .toJSON() or construct the object.
+            // standard properties are endpoint, expirationTime, options. keys is inside toJSON().
+
+            const subscriptionData = sub.toJSON();
+
+            await axios.post('http://localhost:5000/api/v1/notifications/subscribe', {
+                ...subscriptionData,
+                userId: user.sub
+            });
 
             toast.success("Notifications enabled successfully!");
         } catch (error) {
