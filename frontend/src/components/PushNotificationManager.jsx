@@ -101,7 +101,7 @@ const PushNotificationManager = () => {
 
             const subscriptionData = sub.toJSON();
 
-            await axios.post('http://localhost:5000/api/v1/notifications/subscribe', {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/notifications/subscribe`, {
                 ...subscriptionData,
                 userId: user.sub
             });
@@ -116,7 +116,7 @@ const PushNotificationManager = () => {
     const sendTestNotification = async () => {
         if (!user?.sub) return;
         try {
-            await axios.post('http://localhost:5000/api/v1/notifications/send', {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/notifications/send`, {
                 userId: user.sub,
                 title: "Test Notification",
                 message: "This is a test message to verify push notifications work!"
