@@ -59,17 +59,24 @@ export const giveAttandance = async (req, res) => {
       });
     }
 
-    // ✅ Get current weekday (e.g., "Monday")
+    // ✅ Get current weekday (e.g., "Monday") in IST
     const currentWeekDay = new Date().toLocaleString("en-US", {
       weekday: "long",
+      timeZone: "Asia/Kolkata",
     });
 
-    // ✅ Get current time in HH:mm format
-    const now = new Date();
-    const currentTime = `${now.getHours().toString().padStart(2, "0")}:${now
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}`;
+    // ✅ Get current time in HH:mm format in IST
+    const timeOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: "Asia/Kolkata"
+    };
+    const formatter = new Intl.DateTimeFormat('en-US', timeOptions);
+    const parts = formatter.formatToParts(new Date());
+    const hour = parts.find(p => p.type === 'hour').value;
+    const minute = parts.find(p => p.type === 'minute').value;
+    const currentTime = `${hour}:${minute}`;
 
     // ✅ Check if there’s a time slot that matches both weekday and time
     const isWithinSlot = classRoom.timeSlots.some((slot) => {
