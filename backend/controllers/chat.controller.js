@@ -92,13 +92,15 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
                         ? messageContent.substring(0, 50) + "..."
                         : messageContent;
 
+                    const url = subjectId === 'global' ? '/community-chat' : `/dashboard/subject/${subjectId}`;
+
                     // Note: Actions only work if they are defined in SW or supported by platform
                     const payload = JSON.stringify({
                         title: notificationTitle,
                         body: notificationBody,
                         icon: '/pwa-192x192.png', // Or sender's picture if available and proxied
                         data: {
-                            url: '/', // Open chat
+                            url: url,
                             subjectId: subjectId
                         }
                     });

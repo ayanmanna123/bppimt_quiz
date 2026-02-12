@@ -83,7 +83,11 @@ router.post("/send", async (req, res) => {
             return res.status(404).json({ message: "No subscriptions found for this user." });
         }
 
-        const notificationPayload = JSON.stringify({ title, body: message });
+        const notificationPayload = JSON.stringify({
+            title,
+            body: message,
+            data: { url: '/' }
+        });
 
         const promises = subscriptions.map((sub) =>
             webpush.sendNotification(sub, notificationPayload).catch((err) => {
