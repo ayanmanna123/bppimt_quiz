@@ -234,6 +234,15 @@ const SubjectNotes = () => {
                                     </div>
 
                                     <div className="flex gap-2">
+                                        <a
+                                            href={note.fileUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <Button size="sm" variant="outline" className="text-gray-600 border-gray-200">
+                                                {isPdf ? "View PDF" : "View"}
+                                            </Button>
+                                        </a>
 
 
                                         {(isPdf || (note.files && note.files.length > 0)) && (

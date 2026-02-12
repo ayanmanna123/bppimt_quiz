@@ -18,7 +18,7 @@ const noteSchema = new mongoose.Schema(
         }],
         contentType: {
             type: String,
-            enum: ['image', 'pdf']
+            enum: ['image', 'pdf', 'other']
         },
         subject: {
             type: mongoose.Schema.Types.ObjectId,

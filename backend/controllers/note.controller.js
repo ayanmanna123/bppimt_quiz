@@ -105,8 +105,17 @@ export const uploadNote = async (req, res) => {
             files.push(cloudResponse.secure_url);
         } else {
             // Other files (raw)
+            // Ideally we want to preserve the filename and extension so it downloads correctly
+            const originalName = file.originalname?.replace(/\s+/g, '_') || 'uploaded_file';
+            // Ensure extension is part of public_id for raw files
+            const public_id = `${originalName.split('.')[0]}_${Date.now()}.${originalName.split('.').pop()}`;
+
             cloudResponse = await new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream({ ...uploadOptions, resource_type: 'raw' }, (error, result) => {
+                const stream = cloudinary.uploader.upload_stream({
+                    ...uploadOptions,
+                    resource_type: 'raw',
+                    public_id: public_id
+                }, (error, result) => {
                     if (error) reject(error);
                     else resolve(result);
                 });
