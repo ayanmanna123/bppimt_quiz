@@ -6,6 +6,7 @@ import getDataUri from "../utils/datauri.js";
 import axios from 'axios';
 import archiver from 'archiver';
 import PDFDocument from 'pdfkit';
+import { sendProjectNotification } from "../utils/notification.util.js";
 
 export const uploadNote = async (req, res) => {
     try {
@@ -133,6 +134,32 @@ export const uploadNote = async (req, res) => {
             subject: subjectId,
             uploadedBy: user._id,
         });
+
+        // Notify Students
+        try {
+            const students = await User.find({
+                role: "student",
+                department: subject.department,
+                semester: subject.semester
+            }).select("_id");
+
+            const recipientIds = students.map(s => s._id);
+
+            if (recipientIds.length > 0) {
+                const io = req.app.get("io");
+                await sendProjectNotification({
+                    recipientIds,
+                    senderId: user._id,
+                    message: `New Note: ${title} in ${subject.subjectName}`,
+                    type: "note",
+                    relatedId: newNote._id,
+                    onModel: "Note",
+                    io
+                });
+            }
+        } catch (notifyError) {
+            console.error("Error sending note upload notifications:", notifyError);
+        }
 
         return res.status(201).json({
             message: "Note uploaded successfully.",

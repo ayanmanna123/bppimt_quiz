@@ -158,9 +158,14 @@ io.on("connection", async (socket) => {
         { isOnline: true },
         { new: true }
       );
+      // ... (existing code)
       if (user) {
         userId = user._id;
         console.log(`User ${user.fullname} connected`);
+
+        // JOIN THE USER ID ROOM for personal notifications
+        socket.join(userId.toString());
+
         io.emit("updatePresence", { userId, isOnline: true });
       }
     } catch (err) {
@@ -175,7 +180,7 @@ io.on("connection", async (socket) => {
 
   socket.on("sendMessage", async ({ subjectId, message, senderId, mentions, replyTo, attachments }) => {
     // Save to database
-    const savedMessage = await saveMessage(subjectId, senderId, message, mentions, replyTo, attachments);
+    const savedMessage = await saveMessage(subjectId, senderId, message, mentions, replyTo, attachments, io);
 
     if (savedMessage) {
       // Broadcast to room

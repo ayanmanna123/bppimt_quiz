@@ -2,6 +2,7 @@ import ClassRoom from "../models/classRoom.model.js";
 import Subject from "../models/Subject.model.js";
 import User from "../models/User.model.js";
 import redisClient from "../utils/redis.js";
+import { sendProjectNotification } from "../utils/notification.util.js";
 
 export const createSubject = async (req, res) => {
   try {
@@ -139,6 +140,33 @@ export const createSubject = async (req, res) => {
         endTime: slot.endTime,
       })),
     });
+
+    // Notify Students
+    try {
+      const students = await User.find({
+        role: "student",
+        department: department,
+        semester: semester
+      }).select("_id");
+
+      const recipientIds = students.map(s => s._id);
+
+      if (recipientIds.length > 0) {
+        const io = req.app.get("io"); // Get socket.io instance
+        await sendProjectNotification({
+          recipientIds,
+          senderId: user._id,
+          message: `New Subject Created: ${subjectName} (${subjectCode})`,
+          type: "subject",
+          relatedId: createdSub._id,
+          onModel: "Subject",
+          io
+        });
+      }
+    } catch (notifyError) {
+      console.error("Error sending subject creation notifications:", notifyError);
+      // Don't fail the request if notification fails
+    }
 
     return res.status(201).json({
       message: "Subject and classroom created successfully",

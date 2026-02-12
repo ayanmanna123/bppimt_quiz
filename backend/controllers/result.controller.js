@@ -70,6 +70,25 @@ export const submitQuiz = async (req, res) => {
       answers: processedAnswers,
     });
 
+    // Notify Teacher
+    try {
+      const io = req.app.get("io");
+      const { sendProjectNotification } = await import("../utils/notification.util.js");
+
+      await sendProjectNotification({
+        recipientIds: [quiz.createdBy],
+        senderId: student._id,
+        message: `${student.fullname} submitted ${quiz.title}`,
+        type: "quiz",
+        relatedId: result._id,
+        onModel: "Result",
+        url: `/dashboard/result/${quiz._id}`, // Teacher view of results
+        io
+      });
+    } catch (notifyError) {
+      console.error("Error sending quiz submission notification:", notifyError);
+    }
+
     return res.status(201).json({
       message: " submitted successfully",
       result,
@@ -279,7 +298,7 @@ export const getAllQuizByUserId = async (req, res) => {
 
 export const veryfiReult = async (req, res) => {
   try {
-    const {resultId} = req.body;
+    const { resultId } = req.body;
     const userId = req.auth.sub;
     const user = await User.findOne({ auth0Id: userId });
 
@@ -296,7 +315,7 @@ export const veryfiReult = async (req, res) => {
       });
     }
 
-    const result = await Result.findOne({ _id: resultId }).populate({path:"student"});
+    const result = await Result.findOne({ _id: resultId }).populate({ path: "student" });
     if (!result) {
       return res.status(404).json({
         message: "cirtificat not found",

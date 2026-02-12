@@ -16,6 +16,7 @@ import { Button } from "../ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import NotificationDropdown from "./NotificationDropdown";
 
 
 const Navbar = () => {
@@ -253,6 +254,10 @@ const Navbar = () => {
 
         {/* Auth Section */}
         <div className="flex items-center gap-4">
+
+          {/* Notification Dropdown */}
+          {isAuthenticated && <NotificationDropdown />}
+
           {!isAuthenticated ? (
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
               <Button

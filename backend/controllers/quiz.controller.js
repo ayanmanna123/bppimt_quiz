@@ -1,6 +1,8 @@
 import Quiz from "../models/Quiz.model.js";
 import User from "../models/User.model.js";
 import Result from "../models/Result.model.js";
+import Subject from "../models/Subject.model.js";
+import { sendProjectNotification } from "../utils/notification.util.js";
 
 export const createQuestion = async (req, res) => {
   try {
@@ -57,6 +59,36 @@ export const createQuestion = async (req, res) => {
     };
 
     const newQuiz = await Quiz.create(tempQuiz);
+
+    // Notify Students
+    try {
+      const subjectDetails = await Subject.findById(subjectId);
+      if (subjectDetails) {
+        const students = await User.find({
+          role: "student",
+          department: subjectDetails.department,
+          semester: subjectDetails.semester
+        }).select("_id");
+
+        const recipientIds = students.map(s => s._id);
+
+        if (recipientIds.length > 0) {
+          const io = req.app.get("io");
+          await sendProjectNotification({
+            recipientIds,
+            senderId: user._id,
+            message: `New Quiz: ${title} in ${subjectDetails.subjectName}`,
+            type: "quiz",
+            relatedId: newQuiz._id,
+            onModel: "Quiz",
+            url: `/quiz/${newQuiz._id}`, // Assuming a frontend route
+            io
+          });
+        }
+      }
+    } catch (notifyError) {
+      console.error("Error sending quiz creation notifications:", notifyError);
+    }
 
     return res.status(201).json({
       message: "Quiz created successfully",
