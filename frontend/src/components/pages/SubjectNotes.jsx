@@ -234,22 +234,11 @@ const SubjectNotes = () => {
                                     </div>
 
                                     <div className="flex gap-2">
-                                        <a
-                                            href={note.fileUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            <Button size="sm" variant="outline" className="text-gray-600 border-gray-200">
-                                                {isPdf ? "View PDF" : "View"}
-                                            </Button>
-                                        </a>
-
-
-                                        {(isPdf || (note.files && note.files.length > 0)) && (
+                                        {isPdf ? (
                                             <>
                                                 <a
                                                     href={`${import.meta.env.VITE_BACKEND_URL}/note/${note._id}/download`}
-                                                    download // Hint to browser
+                                                    download
                                                 >
                                                     <Button size="sm" className="bg-white hover:bg-indigo-50 text-indigo-600 border border-indigo-200 shadow-sm rounded-xl">
                                                         <Download className="mr-2 h-4 w-4" />
@@ -265,6 +254,16 @@ const SubjectNotes = () => {
                                                     Preview PDF
                                                 </Button>
                                             </>
+                                        ) : (
+                                            <a
+                                                href={note.fileUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <Button size="sm" variant="outline" className="text-gray-600 border-gray-200">
+                                                    View
+                                                </Button>
+                                            </a>
                                         )}
                                     </div>
                                 </div>
