@@ -21,6 +21,390 @@
   },
   {
     "question": "How do I take a quiz?",
-    "answer": "To take a quiz, log in as a student, navigate to your subjects, and look for available quizzes. Click on a quiz to start it."
+    "answer": "To take a quiz, log in as a student, navigate to your subjects, and look for available quizzes. Click on a quiz to start it. Note that the quiz will open in full-screen mode and switching tabs is monitored."
+  },
+  {
+    "question": "What are the rules for taking a quiz?",
+    "answer": "Quizzes are taken in full-screen mode. Right-click, copy-paste, and DevTools are disabled. Switching tabs more than 10 times will result in automatic submission of the quiz."
+  },
+  {
+    "question": "How does attendance work?",
+    "answer": "Attendance is taken using an OTP and location verification. Teachers enable attendance (Live Mode) and provide an OTP valid for 5 minutes. Students must be within the specified classroom location and enter the correct OTP to be marked present."
+  },
+  {
+    "question": "Can teachers mark attendance manually?",
+    "answer": "Yes, teachers can manually mark students as Present or Absent using the 'Mark Attendance' popup in the Attendance Sheet. This is useful for offline attendance or correcting errors."
+  },
+  {
+    "question": "What is the difference between Live and Offline attendance?",
+    "answer": "In 'Live' mode, students can mark their own attendance using an OTP. In 'Offline' mode, the teacher must manually mark attendance for each student."
+  },
+  {
+    "question": "How do I export attendance data?",
+    "answer": "In the Attendance Sheet, click the 'Export Data' button to download the attendance records as an Excel file (.xlsx)."
+  },
+  {
+    "question": "Where can I find study materials or notes?",
+    "answer": "You can find study materials in the 'Notes' section of each subject. Teachers upload PDFs and images related to the course content there."
+  },
+  {
+    "question": "What are Study Rooms?",
+    "answer": "Study Rooms are collaborative spaces where students and teachers can interact. They can be public or private, allowing members to share resources and discuss topics."
+  },
+  {
+    "question": "How do I submit an assignment?",
+    "answer": "To submit an assignment, go to the 'Assignments' section of the relevant subject. Select the assignment, upload your file (PDF or image), and click submit."
+  },
+  {
+    "question": "What file types can I upload for assignments?",
+    "answer": "You can upload most common file types, but PDFs are recommended as they can be easily previewed within the application."
+  },
+  {
+    "question": "How do teachers view assignment submissions?",
+    "answer": "Teachers can click 'Submissions' on an assignment to view a list of student submissions. They can preview files directly or download all submissions as a ZIP file."
+  },
+  {
+    "question": "How do I join an online meeting or class?",
+    "answer": "If a teacher schedules a meeting, it will appear in the 'Meetings' section. You can join the session directly from there using the provided link."
+  },
+  {
+    "question": "Where can I see my quiz results and weakness analysis?",
+    "answer": "After completing a quiz, you can view your score in the 'Results' section. The 'Weakness Analysis' feature helps you identify which topics you need to focus on based on your performance."
+  },
+  {
+    "question": "How do I receive updates and notifications?",
+    "answer": "The platform sends notifications for new quizzes, assignments, study materials, and messages. You can check these in the 'Notifications' bell icon on your dashboard."
+  },
+  {
+    "question": "How do I know when my assignments are due?",
+    "answer": "Submission deadlines for assignments are listed in the 'Assignments' section of each subject. You can also see upcoming deadlines on your main dashboard."
+  },
+  {
+    "question": "Can multiple teachers manage a single subject?",
+    "answer": "Yes, the creator of a subject can invite other teachers. Once the invited teacher accepts, they can also manage the subject, create quizzes, and upload notes."
+  },
+  {
+    "question": "What is the difference between Teacher and Student roles?",
+    "answer": "Teachers can create subjects, quizzes, and upload notes. Students can enroll in subjects, take quizzes, download study materials, and submit assignments."
+  },
+  {
+    "question": "How do I know if my account is verified?",
+    "answer": "Your verification status (Pending, Accepted, or Rejected) is visible on your dashboard. New accounts require admin approval before full access is granted."
+  },
+  {
+    "question": "Does the website track my online status?",
+    "answer": "Yes, the platform uses real-time presence tracking to show if you are online and your 'Last Seen' time to other members of your subjects."
+  },
+  {
+    "question": "What technologies are used to build this website?",
+    "answer": "The platform is built using the MERN stack (MongoDB, Express, React, Node.js) with Auth0 for authentication and Socket.io for real-time collaboration."
+  },
+  {
+    "question": "How do the chat features work?",
+    "answer": "The real-time chat supports text messages, emoji reactions, @mentions for specific users, and live typing indicators."
+  },
+  {
+    "question": "Where can I access the live website?",
+    "answer": "You can visit the production version of the website at https://bppimt-quiz.vercel.app."
+  },
+  {
+    "question": "How do I navigate back to the home page?",
+    "answer": "You can click on the 'Back' button or the 'Home' icon in the navigation bar to return to the main dashboard."
+  },
+  {
+    "question": "What does the progress bar in the Quiz Creator Studio represent?",
+    "answer": "The progress bar shows how much of your quiz setup is complete. It factors in basic info, questions, and options to help you ensure everything is ready before submission."
+  },
+  {
+    "question": "Can I use external notes for AI quiz generation?",
+    "answer": "Yes! You can upload PDF, Word, or PPT files in the Quiz Creator Studio, and the AI will use the content from those notes to generate relevant questions."
+  },
+  {
+    "question": "What is the 'Magic' AI button for?",
+    "answer": "The 'Generate with AI' button uses the Gemini AI service to automatically create quiz questions based on your title and any provided context or uploaded notes."
+  },
+  {
+    "question": "How do I import a large number of questions at once?",
+    "answer": "Teachers can use the 'Upload XML' feature to bulk-import questions. The XML system parses question text, options, and correct answers automatically."
+  },
+  {
+    "question": "Can I remove a question I've already added to a quiz?",
+    "answer": "Yes, each question card has a 'Remove' button that allows you to delete it before you finalize and create the quiz."
+  },
+  {
+    "question": "How do I search for a specific message in the Community Chat?",
+    "answer": "Use the search icon in the chat header. You can type keywords to find past messages, and use the up/down arrows to jump between results."
+  },
+  {
+    "question": "Can I pin important messages in the chat?",
+    "answer": "Yes, teachers have the ability to pin important messages. Pinned messages appear at the top of the chat for everyone to see."
+  },
+  {
+    "question": "What are the typing indicators in the chat?",
+    "answer": "Typing indicators show you in real-time when other users are currently composing a message in the channel."
+  },
+  {
+    "question": "How do I reply to a specific message?",
+    "answer": "Hover over a message and click the 'Reply' icon. Your message will then be linked to the original one, helping keep conversations organized."
+  },
+  {
+    "question": "What do the emoji reactions in the chat do?",
+    "answer": "You can react to messages with emojis to show support, agreement, or other sentiments without typing a full response."
+  },
+  {
+    "question": "How do I download all assignment submissions?",
+    "answer": "In the 'Submissions' view of an assignment, teachers can click 'Download All ZIP' to get all student submissions in a single compressed file."
+  },
+  {
+    "question": "Where are the Previous Year Questions (PYQs) stored?",
+    "answer": "PYQs are organized in a digital archive by Academic Year, Stream, and Semester. You can find them in the 'PYQ' section of the website."
+  },
+  {
+    "question": "How do I verify a quiz certificate?",
+    "answer": "Go to the 'Certificate Verifier' page and enter the unique Result ID (e.g., QUIZ_12345). The system will check its authenticity and display the student's details."
+  },
+  {
+    "question": "What is the 'Weakness Quiz' feature?",
+    "answer": "The 'Weakness Quiz' generates a personalized quiz focusing specifically on the topics you struggled with in previous attempts to help you improve."
+  },
+  {
+    "question": "Can I see who else is online?",
+    "answer": "Yes, the 'Online Users' bar in the chat section shows all currently active members of the college community."
+  },
+  {
+    "question": "What is the 'Calendar' used for?",
+    "answer": "The 'Quiz Calendar' shows all upcoming and past quizzes. It helps you stay organized and see what evaluations are scheduled for your department and semester."
+  },
+  {
+    "question": "How do I join a Study Room?",
+    "answer": "Navigate to the 'Study Rooms' section, browse the available rooms, and click 'Join' or click on a room to see its details and participate in discussions."
+  },
+  {
+    "question": "Can I upload images as my profile picture?",
+    "answer": "Yes, the platform uses Auth0 for profile management, which supports profile pictures from your linked social accounts or directly uploaded images."
+  },
+  {
+    "question": "What department codes are supported for PYQs?",
+    "answer": "The archive currently supports CSE (Computer Science), IT (Information Technology), ECE (Electronics & Communication), and EE (Electrical Engineering)."
+  },
+  {
+    "question": "How do I download a PYQ paper?",
+    "answer": "Once you filter by year, stream, and semester, a list of subjects will appear. Click the download icon next to a subject to retrieve the PDF paper."
+  },
+  {
+    "question": "Is there a global chat for the entire college?",
+    "answer": "Yes, the 'Community Chat' serves as a global space where students and teachers from all departments can interact."
+  },
+  {
+    "question": "What happens if I miss a quiz?",
+    "answer": "Quizzes have a specific submission date. If you miss it, you should contact your subject teacher to see if a re-attempt or extension is possible."
+  },
+  {
+    "question": "How many marks is each question worth?",
+    "answer": "Teachers set the 'Marks per Question' during quiz creation. This value is displayed in the quiz details before you start."
+  },
+  {
+    "question": "What is the 'Quiz Creator Studio'?",
+    "answer": "It is a specialized tool for teachers to design quizzes, featuring manual entry, AI generation, and bulk XML imports."
+  },
+  {
+    "question": "What is the Question Bank?",
+    "answer": "The Question Bank allows teachers to view all questions associated with a subject. You can search for specific questions or filter by quiz title."
+  },
+  {
+    "question": "Can I edit my messages after sending them?",
+    "answer": "Yes, you can edit your own chat messages to fix typos or update information."
+  },
+  {
+    "question": "How are results calculated?",
+    "answer": "Results are calculated automatically based on the number of correct answers and the marks assigned per question by the teacher."
+  },
+  {
+    "question": "What is the 'Result ID'?",
+    "answer": "A 'Result ID' is a unique code generated for every quiz attempt. It is used to verify the authenticity of your completion certificate."
+  },
+  {
+    "question": "Where can I find the 'About Us' page?",
+    "answer": "The 'About Us' page is available in the navigation bar and provides information about the platform's mission and team."
+  },
+  {
+    "question": "Is the website mobile-friendly?",
+    "answer": "Yes, the BPPIMT Quiz Portal is fully responsive and optimized for use on desktops, tablets, and smartphones."
+  },
+  {
+    "question": "Can teachers see my real-time progress?",
+    "answer": "Teachers can see when you've submitted your quiz and the final result. They do not see your screen in real-time, but tab switching is monitored."
+  },
+  {
+    "question": "What is the 'Last Seen' feature for?",
+    "answer": "It helps peers and teachers know when a user was last active on the platform, fostering a more connected community."
+  },
+  {
+    "question": "Can I share my certificates on LinkedIn?",
+    "answer": "Yes, certificates are designed to be shareable achievements that you can use to boost your professional profile."
+  },
+  {
+    "question": "Does the platform use Socket.io?",
+    "answer": "Yes, Socket.io is used to enable real-time features like chat messaging, typing indicators, and presence tracking."
+  },
+  {
+    "question": "What is 'MERN' stack?",
+    "answer": "MERN stands for MongoDB, Express, React, and Node.js—the core technologies used to build this platform."
+  },
+  {
+    "question": "How do I secure my account?",
+    "answer": "The platform uses Auth0, a secure identity provider, to manage logins. Ensure you use a strong password or multi-factor authentication if available."
+  },
+  {
+    "question": "Can I delete my chat history?",
+    "answer": "You can delete individual messages you've sent, but the overall chat history remains for the community or subject group."
+  },
+  {
+    "question": "What is the 'Attendance Sheet'?",
+    "answer": "It is a record of your presence in different classes, tracked via the OTP and location system."
+  },
+  {
+    "question": "How do I find my department and semester?",
+    "answer": "This information is usually set in your profile during registration and is used to filter quizzes and subjects relevant to you."
+  },
+  {
+    "question": "Can I take a quiz twice?",
+    "answer": "Standard quizzes are usually single-attempt, but you can always use the 'Weakness Quiz' feature to practice topics multiple times."
+  },
+  {
+    "question": "What are 'Subject Notes'?",
+    "answer": "These are study materials uploaded by teachers, such as lecture slides or additional readings, found in each subject's module."
+  },
+  {
+    "question": "How do I know if an assignment is overdue?",
+    "answer": "The deadline will be highlighted, and the system may prevent further uploads or mark them as 'Late' depending on the settings."
+  },
+  {
+    "question": "Who can create Study Rooms?",
+    "answer": "Both teachers and students can create study rooms to facilitate group learning and resource sharing."
+  },
+  {
+    "question": "What is 'Personalized Recommendation' in quizzes?",
+    "answer": "Based on your previous performance, the AI suggests specific quizzes or topics you should focus on next."
+  },
+  {
+    "question": "Can I access the platform without an internet connection?",
+    "answer": "No, the BPPIMT Quiz Portal requires an active internet connection to sync your results and interact with other users."
+  },
+  {
+    "question": "Are there any notifications for upcoming quizzes?",
+    "answer": "Yes, the notification bell icon will alert you when a new quiz is scheduled for your department."
+  },
+  {
+    "question": "How do I log out of the portal?",
+    "answer": "Click on your profile avatar or the 'Logout' button in the dashboard to securely end your session."
+  },
+  {
+    "question": "What is 'Smart Suggestions'?",
+    "answer": "A feature that predicts which study materials or quizzes will be most helpful based on your current subjects and progress."
+  },
+  {
+    "question": "Where can I report a bug or technical issue?",
+    "answer": "You can contact the admin team or your teacher through the 'Support' or 'Contact Us' sections."
+  },
+  {
+    "question": "Why am I getting 'User not found' error?",
+    "answer": "This error occurs if your account does not exist or if you are not logged in properly. Please ensure you have signed up and are using the correct email address."
+  },
+  {
+    "question": "What does 'You Not Verified' mean?",
+    "answer": "It means your email address has not been verified yet. Check your inbox for a verification code or contact an admin to approve your account."
+  },
+  {
+    "question": "Why can't I create a quiz?",
+    "answer": "If you see 'You are not allowed to create quizzes', it means you are logged in as a Student. Only users with the 'Teacher' role can create quizzes. Also, ensure all required fields like title, date, time, and questions are filled."
+  },
+  {
+    "question": "I got an error 'User already exists' while signing up.",
+    "answer": "This means there is already an account registered with that email address. Please try logging in instead of signing up."
+  },
+  {
+    "question": "Why am I getting 'Geolocation is not supported'?",
+    "answer": "Your browser does not support location services, or you have denied permission. Please enable location access in your browser settings to mark attendance."
+  },
+  {
+    "question": "What does 'You are too far from the classroom' mean?",
+    "answer": "Attendance is location-based. You must be within 100 meters of the classroom's registered coordinates to mark your attendance successfully."
+  },
+  {
+    "question": "Why does it say 'Attendance time is not active'?",
+    "answer": "You can only mark attendance during the specific day and time slots scheduled by your teacher. Please check the timetable."
+  },
+  {
+    "question": "I see 'Invalid OTP' when trying to give attendance.",
+    "answer": "The OTP you entered is incorrect. Please ask your teacher for the current 6-digit code displayed on their screen."
+  },
+  {
+    "question": "What does 'OTP has expired' mean?",
+    "answer": "OTPs are valid for only 5 minutes. If it has expired, please ask your teacher to generate a new one."
+  },
+  {
+    "question": "Why can't I upload my assignment?",
+    "answer": "If the deadline has passed, or if the file type is not supported, you may face issues. Ensure you are uploading before the due date."
+  },
+  {
+    "question": "I got 'You have already attempted this quiz'.",
+    "answer": "Quizzes can usually be attempted only once. You cannot submit responses again for the same quiz."
+  },
+  {
+    "question": "Why is my certificate verification failing?",
+    "answer": "Ensure you are entering the correct 'Result ID'. If it says 'Certificate not found', the ID might be incorrect or the result does not exist."
+  },
+  {
+    "question": "Why can't I view the results?",
+    "answer": "If you are a student, you might not have permission to view everyone's results. Only teachers can view the full result list for a quiz."
+  },
+  {
+    "question": "What does 'Department and Semester are required' mean?",
+    "answer": "When signing up as a Student, you must select your valid Department and Semester so we can show you the relevant subjects and quizzes."
+  },
+  {
+    "question": "Why did my quiz auto-submit?",
+    "answer": "The system monitors tab switching. If you switch tabs more than 10 times, the quiz is automatically submitted to prevent cheating."
+  },
+  {
+    "question": "I keep getting 'Network Error'.",
+    "answer": "Please check your internet connection. If the issue persists, the server might be down or unreachable."
+  },
+  {
+    "question": "Why can't I see any subjects?",
+    "answer": "Subjects are filtered by your Department and Semester. If you don't see any, please check your profile settings to ensure they are correct."
+  },
+  {
+    "question": "What does 'Server error' mean?",
+    "answer": "This is a general error on our end. Please try again later, and if the problem continues, contact support."
+  },
+  {
+    "question": "Why is the 'Generate with AI' button disabled?",
+    "answer": "You must enter a Quiz Title first. The AI needs a topic to generate questions."
+  },
+  {
+    "question": "I can't find the 'Delete' button for a quiz.",
+    "answer": "Only the teacher who created the quiz (or an admin) can delete it. Students cannot delete quizzes."
+  },
+  {
+    "question": "Why do I see 'DevTools is not allowed'?",
+    "answer": "To prevent cheating during quizzes, opening Developer Tools is strictly prohibited."
+  },
+  {
+    "question": "What does 'You are not authorized to update this quiz' mean?",
+    "answer": "Only the teacher who created the quiz is allowed to edit or reschedule it."
+  },
+  {
+    "question": "Why do I see 'No file uploaded' when submitting homework?",
+    "answer": "You must select a valid file before clicking the submit button."
+  },
+  {
+    "question": "What does 'Another subject with the same details already exists' mean?",
+    "answer": "You are trying to create a subject that has the same name, department, semester, and code as an existing one. Please check the details or ask to be added to the existing subject."
+  },
+  {
+    "question": "Why do I see 'Attendance is currently disabled by the teacher'?",
+    "answer": "The teacher has turned off the attendance toggle for this session. Please ask them to enable it if you need to mark attendance."
   }
 ]
