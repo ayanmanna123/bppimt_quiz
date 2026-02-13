@@ -139,6 +139,7 @@ const Navbar = () => {
     { name: "Result", path: "/reasult", icon: BarChart3 },
     { name: "Attendance", path: "/StudentAttendanceSummary", icon: BookOpen },
     { name: "PYQ", path: "/pyq", icon: FileText },
+    { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
   ];
 
@@ -149,6 +150,7 @@ const Navbar = () => {
     { name: "Result", path: "/admin/allquiz", icon: BarChart3 },
     { name: "PYQ", path: "/pyq", icon: FileText },
     { name: "Contributed Teacher", path: "/admin/othersubject", icon: GraduationCap },
+    { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
   ];
   const adminNavitem = [
@@ -156,6 +158,7 @@ const Navbar = () => {
     { name: "About Us", path: "/about", icon: User },
     { name: "Subject", path: "/admine/only/subject", icon: BookOpen },
     { name: "Un authorize", path: "/notvarifieduser", icon: BarChart3 },
+    { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
   ];
 

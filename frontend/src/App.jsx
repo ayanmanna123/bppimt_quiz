@@ -45,6 +45,8 @@ const Vision = lazy(() => import("./components/pages/about/Vision"));
 const Mission = lazy(() => import("./components/pages/about/Mission"));
 const Foundation = lazy(() => import("./components/pages/about/Foundation"));
 const PYQ = lazy(() => import("./components/pages/PYQ"));
+const StudyRooms = lazy(() => import("./components/pages/StudyRooms"));
+const StudyRoomDetail = lazy(() => import("./components/pages/StudyRoomDetail"));
 
 
 // Simple loading fallback
@@ -230,6 +232,14 @@ function App() {
         {
           path: "/pyq",
           element: <PYQ />,
+        },
+        {
+          path: "/study-rooms",
+          element: <StudyRooms />,
+        },
+        {
+          path: "/study-room/:roomId",
+          element: <StudyRoomDetail />,
         },
 
       ],
