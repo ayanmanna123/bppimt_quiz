@@ -2,8 +2,24 @@ import express from "express";
 import webpush from "web-push";
 import NotificationSubscription from "../models/NotificationSubscription.model.js";
 import User from "../models/User.model.js";
+import {
+    getUserNotifications,
+    markAsRead,
+    deleteNotification,
+    getUnreadCount
+} from "../controllers/notification.controller.js";
+import { auth } from "express-oauth2-jwt-bearer";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const router = express.Router();
+
+const jwtCheck = auth({
+    audience: process.env.AUTH0_AUDIENCE,
+    issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
+    tokenSigningAlg: "RS256",
+});
 
 // Configure web-push with VAPID keys handled in utility
 if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
@@ -11,10 +27,16 @@ if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
 }
 
 
+// Notification CRUD
+router.get("/", jwtCheck, getUserNotifications);
+router.get("/unread-count", jwtCheck, getUnreadCount);
+router.put("/:id/read", jwtCheck, markAsRead);
+router.delete("/:id", jwtCheck, deleteNotification); // This handles /:id and /all
+
 // Subscribe functionality
-router.post("/subscribe", async (req, res) => {
+router.post("/subscribe", jwtCheck, async (req, res) => {
     const subscription = req.body;
-    let userId = req.auth?.payload?.sub || req.body.userId; // This is likely the Auth0 ID (String)
+    let userId = req.auth?.payload?.sub || req.body.userId;
 
     try {
         // Resolve Auth0 ID to MongoDB ObjectId

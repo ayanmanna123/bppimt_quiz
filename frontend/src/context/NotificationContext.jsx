@@ -18,23 +18,45 @@ export const NotificationProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 20,
+        total: 0,
+        hasMore: false
+    });
 
     // Sound effect
     const notificationSound = new Howl({
         src: ['/notification.mp3']
     });
 
-    const fetchNotifications = async () => {
+    const fetchNotifications = async (page = 1, append = false) => {
         if (!usere) return;
         try {
             setLoading(true);
             const token = await getAccessTokenSilently();
             const res = await axios.get(
-                `${import.meta.env.VITE_BACKEND_URL}/notifications`,
+                `${import.meta.env.VITE_BACKEND_URL}/notifications?page=${page}&limit=${pagination.limit}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            setNotifications(res.data);
-            setUnreadCount(res.data.filter(n => !n.isRead).length);
+
+            const { notifications: newNotifications, pagination: pagData } = res.data;
+
+            if (append) {
+                setNotifications(prev => [...prev, ...newNotifications]);
+            } else {
+                setNotifications(newNotifications);
+            }
+
+            setPagination(pagData);
+
+            // Fetch unread count separately for accuracy or use header/meta if backend provides it
+            const countRes = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/notifications/unread-count`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setUnreadCount(countRes.data.unreadCount);
+
         } catch (error) {
             console.error("Failed to fetch notifications:", error);
         } finally {
@@ -73,11 +95,15 @@ export const NotificationProvider = ({ children }) => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            setNotifications(prev => prev.filter(n => n._id !== id));
-            // Recalculate unread count if needed, though usually we delete read ones? 
-            // If deleting unread, decrement count
-            const isUnread = notifications.find(n => n._id === id)?.isRead === false;
-            if (isUnread) setUnreadCount(prev => Math.max(0, prev - 1));
+            if (id === 'all') {
+                setNotifications([]);
+                setUnreadCount(0);
+                toast.success("All notifications cleared");
+            } else {
+                const isUnread = notifications.find(n => n._id === id)?.isRead === false;
+                setNotifications(prev => prev.filter(n => n._id !== id));
+                if (isUnread) setUnreadCount(prev => Math.max(0, prev - 1));
+            }
 
         } catch (error) {
             console.error("Failed to delete notification:", error);
@@ -115,6 +141,7 @@ export const NotificationProvider = ({ children }) => {
             notifications,
             unreadCount,
             loading,
+            pagination,
             fetchNotifications,
             markAsRead,
             deleteNotification

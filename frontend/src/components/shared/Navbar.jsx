@@ -450,7 +450,6 @@ const Navbar = () => {
                         }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      onClick={() => setIsMobileMenuOpen(false)}
 
                       <div className="relative">
                         <IconComponent className="w-5 h-5" />

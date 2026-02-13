@@ -26,6 +26,7 @@ import assignmentRoute from "./routes/assignment.routes.js";
 import meetingRoute from "./routes/meeting.routes.js";
 import chatRoute from "./routes/chat.routes.js";
 import uploadRoute from "./routes/upload.routes.js";
+import notificationRoute from "./routes/notification.routes.js";
 import { saveMessage, addReaction, removeReaction } from "./controllers/chat.controller.js";
 
 dotenv.config();
@@ -123,7 +124,6 @@ app.use("/api/v1/assignment", jwtMiddleware, assignmentRoute);
 app.use("/api/v1/meeting", jwtMiddleware, meetingRoute);
 app.use("/api/v1/chat", jwtMiddleware, chatRoute);
 app.use("/api/v1/upload", jwtMiddleware, uploadRoute);
-import notificationRoute from "./routes/notification.routes.js";
 app.use("/api/v1/notifications", notificationRoute);
 
 

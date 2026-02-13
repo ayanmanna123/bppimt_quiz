@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNotification } from '../../context/NotificationContext';
-import { Bell, Check, Trash2, X } from 'lucide-react';
+import { Bell, Check, Trash2, X, BookOpen, GraduationCap, MessageSquare, ClipboardList, Info, AlertTriangle, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,9 +12,23 @@ import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const NotificationItem = ({ notification, onMarkRead, onDelete }) => {
     const navigate = useNavigate();
+
+    const getIcon = () => {
+        switch (notification.type) {
+            case 'quiz': return <GraduationCap className="h-4 w-4 text-purple-500" />;
+            case 'subject': return <BookOpen className="h-4 w-4 text-blue-500" />;
+            case 'chat': return <MessageSquare className="h-4 w-4 text-green-500" />;
+            case 'assignment': return <ClipboardList className="h-4 w-4 text-orange-500" />;
+            case 'success': return <CheckCircle2 className="h-4 w-4 text-emerald-500" />;
+            case 'error': return <AlertCircle className="h-4 w-4 text-rose-500" />;
+            case 'warning': return <AlertTriangle className="h-4 w-4 text-amber-500" />;
+            default: return <Info className="h-4 w-4 text-slate-500" />;
+        }
+    };
 
     const handleClick = () => {
         if (!notification.isRead) {
@@ -23,16 +37,12 @@ const NotificationItem = ({ notification, onMarkRead, onDelete }) => {
 
         // Navigate based on type
         if (notification.type === 'quiz' && notification.relatedId) {
-            // If url is provided in notification, use it, else fallback
-            if (notification.onModel === 'Quiz') navigate(`/quiz`); // Or specific quiz page if route exists like /quiz/start/:id
-            else if (notification.onModel === 'Result') navigate(`/reasult`);
+            if (notification.onModel === 'Quiz') navigate(`/quiz`);
+            else if (notification.onModel === 'Result') navigate(`/result`);
         } else if (notification.type === 'subject') {
-            navigate(`/dashbord`);
+            navigate(`/dashboard`);
         } else if (notification.type === 'note' && notification.relatedId) {
-            // navigate to notes
-            navigate(`/subject/notes/${notification.relatedId}`); // This might need subjectId, wait.
-            // If the notification doesn't have enough info for deep link, go to module root.
-            // Best effort navigation
+            navigate(`/dashboard`); // Fallback until deep link is stable
         } else if (notification.type === 'chat') {
             navigate(notification.url || '/community-chat');
         }
@@ -50,12 +60,15 @@ const NotificationItem = ({ notification, onMarkRead, onDelete }) => {
             )}
             onClick={handleClick}
         >
-            <div className="flex justify-between items-start gap-2">
+            <div className="flex justify-between items-start gap-3">
+                <div className="mt-1 flex-shrink-0">
+                    {getIcon()}
+                </div>
                 <div className="flex-1">
-                    <p className={cn("text-sm font-medium", notification.isRead ? "text-slate-700" : "text-slate-900")}>
+                    <p className={cn("text-xs leading-relaxed font-medium", notification.isRead ? "text-slate-600" : "text-slate-900")}>
                         {notification.message}
                     </p>
-                    <span className="text-xs text-slate-500 mt-1 block">
+                    <span className="text-[10px] text-slate-400 mt-1 block">
                         {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                     </span>
                 </div>
@@ -106,44 +119,102 @@ const NotificationDropdown = () => {
                     )}
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 sm:w-96 p-0 mr-4" align="end">
-                <div className="flex items-center justify-between p-4 border-b">
-                    <h4 className="font-semibold text-sm">Notifications</h4>
-                    {unreadCount > 0 && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-xs text-blue-600 hover:bg-blue-50 h-auto py-1 px-2"
-                            onClick={() => markAsRead('all')}
-                        >
-                            Mark all as read
-                        </Button>
-                    )}
-                </div>
+            <PopoverContent className="w-80 sm:w-96 p-0 mr-4 overflow-hidden border-0 shadow-2xl" align="end">
+                <div className="flex flex-col h-[500px]">
+                    <div className="p-4 border-b flex items-center justify-between bg-white sticky top-0 z-10">
+                        <div className="flex items-center gap-2">
+                            <h4 className="font-bold text-base text-slate-800">Notifications</h4>
+                            {unreadCount > 0 && (
+                                <span className="bg-red-100 text-red-600 text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                                    {unreadCount}
+                                </span>
+                            )}
+                        </div>
+                        <div className="flex gap-1">
+                            {unreadCount > 0 && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-[11px] h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                    onClick={() => markAsRead('all')}
+                                >
+                                    Mark all as read
+                                </Button>
+                            )}
+                            {notifications.length > 0 && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-[11px] h-8 text-slate-500 hover:text-red-600 hover:bg-red-50"
+                                    onClick={() => deleteNotification('all')}
+                                >
+                                    Clear all
+                                </Button>
+                            )}
+                        </div>
+                    </div>
 
-                <ScrollArea className="h-[400px] w-full p-4">
-                    {loading ? (
-                        <div className="flex justify-center items-center h-20">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                    <ScrollArea className="flex-1">
+                        <div className="p-4">
+                            {loading && notifications.length === 0 ? (
+                                <div className="space-y-3">
+                                    {[1, 2, 3, 4].map(i => (
+                                        <div key={i} className="flex gap-3 p-3">
+                                            <Skeleton className="h-8 w-8 rounded-full" />
+                                            <div className="flex-1 space-y-2">
+                                                <Skeleton className="h-4 w-3/4" />
+                                                <Skeleton className="h-3 w-1/4" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : notifications.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-20 text-center">
+                                    <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                                        <Bell className="h-8 w-8 text-slate-300" />
+                                    </div>
+                                    <h5 className="font-semibold text-slate-900">All caught up!</h5>
+                                    <p className="text-xs text-slate-500 mt-1">No new notifications for you.</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <AnimatePresence mode='popLayout'>
+                                        {notifications.map(notification => (
+                                            <NotificationItem
+                                                key={notification._id}
+                                                notification={notification}
+                                                onMarkRead={markAsRead}
+                                                onDelete={deleteNotification}
+                                            />
+                                        ))}
+                                    </AnimatePresence>
+
+                                    {pagination.hasMore && (
+                                        <Button
+                                            variant="ghost"
+                                            className="w-full mt-4 text-xs text-blue-600 hover:bg-blue-50 font-medium"
+                                            onClick={() => fetchNotifications(pagination.page + 1, true)}
+                                            disabled={loading}
+                                        >
+                                            {loading ? (
+                                                <div className="flex items-center gap-2">
+                                                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-500"></div>
+                                                    <span>Loading...</span>
+                                                </div>
+                                            ) : (
+                                                "View previous notifications"
+                                            )}
+                                        </Button>
+                                    )}
+                                </>
+                            )}
                         </div>
-                    ) : notifications.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-10 text-center text-slate-500">
-                            <Bell className="h-10 w-10 mb-2 opacity-20" />
-                            <p className="text-sm">No notifications yet</p>
-                        </div>
-                    ) : (
-                        <AnimatePresence mode='popLayout'>
-                            {notifications.map(notification => (
-                                <NotificationItem
-                                    key={notification._id}
-                                    notification={notification}
-                                    onMarkRead={markAsRead}
-                                    onDelete={deleteNotification}
-                                />
-                            ))}
-                        </AnimatePresence>
-                    )}
-                </ScrollArea>
+                    </ScrollArea>
+
+                    <div className="p-3 border-t bg-slate-50 text-center">
+                        <p className="text-[10px] text-slate-400">Stay updated with your latest activities</p>
+                    </div>
+                </div>
             </PopoverContent>
         </Popover>
     );
