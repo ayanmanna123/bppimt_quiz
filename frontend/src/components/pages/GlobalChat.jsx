@@ -241,16 +241,10 @@ const GlobalChat = () => {
             setMessages((prev) => prev.map(msg => msg._id === updatedMessage._id ? updatedMessage : msg));
         };
 
-        const handleUserTyping = (user) => {
-            if (user === usere.fullname) return; // Don't show own typing
-            setTypingUsers((prev) => {
-                if (!prev.includes(user)) return [...prev, user];
-                return prev;
-            });
-        };
-
-        const handleUserStoppedTyping = (user) => {
-            setTypingUsers((prev) => prev.filter(u => u !== user));
+        const handleTypingUpdate = ({ typingUsers: users, subjectId: sid }) => {
+            if (sid === subjectId) {
+                setTypingUsers(users.filter(u => u !== usere.fullname));
+            }
         };
 
         const handleMessageDeleted = ({ messageId }) => {
@@ -297,8 +291,7 @@ const GlobalChat = () => {
         socket.on("receiveMessage", handleReceiveMessage);
         socket.on("messageUpdated", handleMessageUpdated);
         socket.on("messageDeleted", handleMessageDeleted);
-        socket.on("userTyping", handleUserTyping);
-        socket.on("userStoppedTyping", handleUserStoppedTyping);
+        socket.on("typingUpdate", handleTypingUpdate);
         socket.on("messagesRead", handleMessagesRead);
         socket.on("updatePresence", handleUpdatePresence);
 
@@ -306,8 +299,7 @@ const GlobalChat = () => {
             socket.off("receiveMessage", handleReceiveMessage);
             socket.off("messageUpdated", handleMessageUpdated);
             socket.off("messageDeleted", handleMessageDeleted);
-            socket.off("userTyping", handleUserTyping);
-            socket.off("userStoppedTyping", handleUserStoppedTyping);
+            socket.off("typingUpdate", handleTypingUpdate);
             socket.off("messagesRead", handleMessagesRead);
             socket.off("updatePresence", handleUpdatePresence);
         };

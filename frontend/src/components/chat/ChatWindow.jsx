@@ -177,15 +177,10 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
             setMessages(prev => prev.filter(msg => msg._id !== messageId));
         };
 
-        const handleUserTyping = ({ user, subjectId: sid }) => {
-            if (sid === subjectId && user !== usere.fullname) {
-                setTypingUsers(prev => prev.includes(user) ? prev : [...prev, user]);
-            }
-        };
-
-        const handleUserStoppedTyping = ({ user, subjectId: sid }) => {
+        const handleTypingUpdate = ({ typingUsers: users, subjectId: sid }) => {
             if (sid === subjectId) {
-                setTypingUsers(prev => prev.filter(u => u !== user));
+                // Filter out current user from the typing list shown to them
+                setTypingUsers(users.filter(u => u !== usere.fullname));
             }
         };
 
@@ -226,8 +221,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
         socket.on("receiveMessage", handleReceiveMessage);
         socket.on("messageUpdated", handleMessageUpdated);
         socket.on("messageDeleted", handleMessageDeleted);
-        socket.on("userTyping", handleUserTyping);
-        socket.on("userStoppedTyping", handleUserStoppedTyping);
+        socket.on("typingUpdate", handleTypingUpdate);
         socket.on("messagesRead", handleMessagesRead);
         socket.on("pinnedMessagesUpdated", handlePinnedUpdated);
         socket.on("updatePresence", handleUpdatePresence);
@@ -236,8 +230,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
             socket.off("receiveMessage", handleReceiveMessage);
             socket.off("messageUpdated", handleMessageUpdated);
             socket.off("messageDeleted", handleMessageDeleted);
-            socket.off("userTyping", handleUserTyping);
-            socket.off("userStoppedTyping", handleUserStoppedTyping);
+            socket.off("typingUpdate", handleTypingUpdate);
             socket.off("messagesRead", handleMessagesRead);
             socket.off("pinnedMessagesUpdated", handlePinnedUpdated);
             socket.off("updatePresence", handleUpdatePresence);
@@ -339,7 +332,14 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
 
     const handleTyping = () => {
         if (!socket || !subjectId) return;
+
+        // Emit typing only if not already typing (or keep-alive)
         socket.emit("typing", { subjectId, user: usere.fullname });
+
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => {
+            socket.emit("stopTyping", { subjectId, user: usere.fullname });
+        }, 2000);
     };
 
     const handleTogglePin = async (messageId) => {

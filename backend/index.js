@@ -147,9 +147,13 @@ const io = new Server(httpServer, {
 
 app.set("io", io);
 
+// Track typing users per room: Map<subjectId, Set<username>>
+const typingUsersPerRoom = new Map();
+
 io.on("connection", async (socket) => {
   const auth0Id = socket.handshake.query.userId;
   let userId = null;
+  let username = null;
 
   if (auth0Id) {
     try {
@@ -158,10 +162,10 @@ io.on("connection", async (socket) => {
         { isOnline: true },
         { new: true }
       );
-      // ... (existing code)
       if (user) {
         userId = user._id;
-        console.log(`User ${user.fullname} connected`);
+        username = user.fullname;
+        console.log(`User ${username} connected`);
 
         // JOIN THE USER ID ROOM for personal notifications
         socket.join(userId.toString());
@@ -203,15 +207,41 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("typing", ({ subjectId, user }) => {
-    socket.to(subjectId).emit("userTyping", { user, subjectId });
+    if (!typingUsersPerRoom.has(subjectId)) {
+      typingUsersPerRoom.set(subjectId, new Set());
+    }
+    typingUsersPerRoom.get(subjectId).add(user);
+
+    io.to(subjectId).emit("typingUpdate", {
+      subjectId,
+      typingUsers: Array.from(typingUsersPerRoom.get(subjectId))
+    });
   });
 
   socket.on("stopTyping", ({ subjectId, user }) => {
-    socket.to(subjectId).emit("userStoppedTyping", { user, subjectId });
+    if (typingUsersPerRoom.has(subjectId)) {
+      typingUsersPerRoom.get(subjectId).delete(user);
+      io.to(subjectId).emit("typingUpdate", {
+        subjectId,
+        typingUsers: Array.from(typingUsersPerRoom.get(subjectId))
+      });
+    }
   });
 
   socket.on("disconnect", async () => {
     console.log("Client disconnected", socket.id);
+
+    // Clean up typing status in all rooms
+    typingUsersPerRoom.forEach((users, subjectId) => {
+      if (username && users.has(username)) {
+        users.delete(username);
+        io.to(subjectId).emit("typingUpdate", {
+          subjectId,
+          typingUsers: Array.from(users)
+        });
+      }
+    });
+
     if (userId) {
       try {
         const lastSeen = new Date();
