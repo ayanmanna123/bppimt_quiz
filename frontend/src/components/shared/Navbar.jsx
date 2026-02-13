@@ -182,7 +182,7 @@ const Navbar = () => {
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
-      <nav className="relative max-w-7xl mx-auto flex items-center justify-between px-2 lg:px-10 py-2">
+      <nav className="relative max-w-screen-2xl mx-auto flex items-center justify-between px-4 lg:px-8 py-2">
         {/* Logo Section */}
         <motion.div
           className="flex items-center gap-3"
@@ -199,7 +199,7 @@ const Navbar = () => {
         </motion.div>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-6">
           <ul className="flex items-center gap-1">
             {navItems.map((item, index) => {
               const IconComponent = item.icon;
@@ -268,7 +268,7 @@ const Navbar = () => {
                 >
                   <Link
                     to={item.path}
-                    className={`relative group flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${isActive
+                    className={`relative group flex items-center gap-1.5 px-3 py-2 rounded-xl font-medium transition-all duration-300 ${isActive
                       ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg"
                       : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                       }`}
