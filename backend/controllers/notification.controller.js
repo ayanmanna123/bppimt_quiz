@@ -3,8 +3,8 @@ import User from "../models/User.model.js";
 
 const getUserId = async (req) => {
     if (req.user && req.user._id) return req.user._id;
-    if (req.auth && req.auth.sub) {
-        const user = await User.findOne({ auth0Id: req.auth.sub });
+    if (req.auth && req.auth.payload && req.auth.payload.sub) {
+        const user = await User.findOne({ auth0Id: req.auth.payload.sub });
         return user ? user._id : null;
     }
     return null;
