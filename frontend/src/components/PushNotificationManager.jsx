@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useAuth0 } from "@auth0/auth0-react";
 
 const PushNotificationManager = () => {
-    const { user } = useAuth0();
+    const { user, getAccessTokenSilently } = useAuth0();
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [subscription, setSubscription] = useState(null);
 
@@ -100,10 +100,14 @@ const PushNotificationManager = () => {
             // standard properties are endpoint, expirationTime, options. keys is inside toJSON().
 
             const subscriptionData = sub.toJSON();
-
+            const token = await getAccessTokenSilently();
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/notifications/subscribe`, {
                 ...subscriptionData,
                 userId: user.sub
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
 
             toast.success("Notifications enabled successfully!");
@@ -116,10 +120,15 @@ const PushNotificationManager = () => {
     const sendTestNotification = async () => {
         if (!user?.sub) return;
         try {
+            const token = await getAccessTokenSilently();
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/notifications/send`, {
                 userId: user.sub,
                 title: "Test Notification",
                 message: "This is a test message to verify push notifications work!"
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
             toast.success("Test notification sent! Check your device.");
         } catch (error) {
