@@ -1,0 +1,1535 @@
+[
+  {
+    "question": "how to search a bus",
+    "answer": "Go to the Home page and choose one of the three options: (1) Enter 'From' and 'To' addresses to see the route on a map, (2) Search using the bus name for specific bookings, or (3) Enter the Bus ID to view its current location."
+  },
+  {
+    "question": "what are the different ways to search for a bus",
+    "answer": "There are three ways to search for a bus: Search by Route (enter From and To addresses), Search by Bus Name (if you know the specific bus name), or Search by Bus ID (to track the bus in real-time)."
+  },
+  {
+    "question": "how to search bus by route",
+    "answer": "On the Home page, select 'Search by Route', enter your starting location in the 'From' field and your destination in the 'To' field. A map will display showing the route, and you can adjust your selected locations directly on the map."
+  },
+  {
+    "question": "how to search bus by name",
+    "answer": "On the Home page, choose 'Search by Bus Name' and enter the specific name of the bus you want to book. This is useful when you already know which bus you need."
+  },
+  {
+    "question": "how to search bus by id",
+    "answer": "On the Home page, select 'Search by Bus ID' and enter the Bus ID. This will show you the current real-time location of that specific bus on the map."
+  },
+  {
+    "question": "how to track a bus location",
+    "answer": "You can track a bus location by using the 'Search by Bus ID' option on the Home page. Enter the Bus ID and the map will display the bus's current real-time location."
+  },
+  {
+    "question": "can i adjust my location on the map",
+    "answer": "Yes, when you search by route and the map appears, you can adjust your selected 'From' and 'To' locations directly on the map interface."
+  },
+  {
+    "question": "how to use the map option",
+    "answer": "Click on the 'Map' option in the navigation bar to view all nearby buses displayed on a map in real-time. This gives you a visual overview of buses in your vicinity."
+  },
+  {
+    "question": "what does the map section show",
+    "answer": "The Map section displays a real-time view of all nearby buses in your area, helping you quickly track and locate buses around you."
+  },
+  {
+    "question": "how to view my tickets",
+    "answer": "Navigate to the 'Ticket' section in the navigation bar. All tickets you have booked will be displayed there based on your booking history."
+  },
+  {
+    "question": "where can i see my booked tickets",
+    "answer": "Go to the 'Ticket' section from the navigation bar to see all your booked tickets listed in order of your booking history."
+  },
+  {
+    "question": "how to book a bus ticket",
+    "answer": "After selecting a bus through one of the search options, tap 'Book Now', fill in passenger details, and complete the payment using Razorpay."
+  },
+  {
+    "question": "what payment method is supported",
+    "answer": "The website uses Razorpay as the payment gateway for booking bus tickets. You can complete your payment securely through Razorpay."
+  },
+  {
+    "question": "how to cancel a ticket",
+    "answer": "Go to the 'My Tickets' section under your profile, select the ticket you wish to cancel, and tap the 'Cancel' button."
+  },
+  {
+    "question": "how to find nearby places like hospitals or schools",
+    "answer": "Go to the 'Nearby' section, select a category such as Hospital, Clinic, or School. A map will show all nearby locations. Tap on any location to see a 'Go Here' button for directions."
+  },
+  {
+    "question": "what can i find in the nearby section",
+    "answer": "The Nearby section helps you find important locations such as Hospitals, Clinics, Schools, and other essential services near you."
+  },
+  {
+    "question": "how to get directions to a nearby place",
+    "answer": "In the Nearby section, select a category (like Hospital), choose a specific location from the map, and click the 'Go Here' button to see the route and directions to reach that place."
+  },
+  {
+    "question": "what categories are available in nearby section",
+    "answer": "The Nearby section includes categories such as Hospitals, Clinics, Schools, and other essential services to help you find important locations nearby."
+  },
+  {
+    "question": "how to view or update my profile",
+    "answer": "Click on the 'Profile' section and select 'View Profile' to see your information. You can update your details from this page."
+  },
+  {
+    "question": "how to edit my profile information",
+    "answer": "Go to the Profile section, select 'View Profile', and you'll be able to update your personal information from there."
+  },
+  {
+    "question": "what options are in the profile section",
+    "answer": "The Profile section offers two options: 'View Profile' to see and update your information, and 'Logout' to securely log out of your account."
+  },
+  {
+    "question": "how to logout",
+    "answer": "Go to the 'Profile' section and select the 'Logout' option to securely log out of your account."
+  },
+  {
+    "question": "how to change the language of the website",
+    "answer": "Click on the 'Language' option in the navigation bar. Choose your preferred language from the list, and the entire website will be displayed in the selected language."
+  },
+  {
+    "question": "what languages are supported",
+    "answer": "The website supports multiple languages. Click on the Language option in the navigation bar to see the complete list of available languages and select your preference."
+  },
+  {
+    "question": "will the entire website change language",
+    "answer": "Yes, when you select a language from the Language option, the entire website interface will update and display in your selected language."
+  },
+  {
+    "question": "what is in the navigation bar",
+    "answer": "The navigation bar includes: Home, Map, Ticket, Nearby, and Language Change options. These help you access all major features of the website."
+  },
+  {
+    "question": "what are the main sections of the website",
+    "answer": "The main sections are: Home (for searching buses), Map (to view nearby buses), Ticket (to see booked tickets), Nearby (to find important locations), and Profile (to manage your account)."
+  },
+  {
+    "question": "what can i do on the home page",
+    "answer": "On the Home page, you can search for buses in three ways: by entering route addresses (From and To), by bus name, or by Bus ID to track location."
+  },
+  {
+    "question": "what to do if bus is not showing",
+    "answer": "Please ensure you have a stable internet connection and the route exists. Try refreshing the page or clearing your browser cache if the issue persists."
+  },
+  {
+    "question": "bus not appearing on map",
+    "answer": "Check your internet connection and make sure the route or bus exists. Try refreshing the page or clearing your browser cache. If the problem continues, the bus may not be available at the moment."
+  },
+  {
+    "question": "how do i know which bus to take",
+    "answer": "Use the 'Search by Route' option on the Home page. Enter your starting point and destination, and the system will show you available buses for that route on the map."
+  },
+  {
+    "question": "can i see bus routes on a map",
+    "answer": "Yes, when you search by route on the Home page, a map will display showing the route between your 'From' and 'To' locations, along with available buses."
+  },
+  {
+    "question": "how to access different features",
+    "answer": "Use the navigation bar at the top of the website to access Home, Map, Ticket, Nearby sections, and to change the language."
+  },
+  {
+    "question": "is real-time bus tracking available",
+    "answer": "Yes, you can track buses in real-time using the 'Search by Bus ID' option on the Home page, or view all nearby buses on the Map section."
+  },
+  {
+    "question": "how to find my bus id",
+    "answer": "The Bus ID is typically provided when you book a ticket or can be found in your ticket details in the Ticket section."
+  },
+  {
+    "question": "what information do i need to book a ticket",
+    "answer": "After selecting your bus, you'll need to provide passenger details and complete payment through Razorpay to book your ticket."
+  },
+  {
+    "question": "where can i see my booking history",
+    "answer": "Your booking history is available in the 'Ticket' section, which displays all tickets you have booked."
+  },
+  {
+    "question": "can i get directions from the website",
+    "answer": "Yes, in the Nearby section, select a location and click 'Go Here' to see the route and directions. The route search on the Home page also shows bus routes on the map."
+  },
+
+  {
+    "question": "why am i getting 'Please provide from and to coordinates' error",
+    "answer": "This error occurs when you try to search for a bus by route but haven't provided complete location information. Make sure you enter both 'From' and 'To' addresses with valid latitude and longitude coordinates."
+  },
+  {
+    "question": "what does 'No direct or multi-hop bus route found' mean",
+    "answer": "This means there is no available bus route between your selected locations. The system checked for both direct routes and routes with transfers but couldn't find any connection. Try selecting different locations or check if buses operate in your area."
+  },
+  {
+    "question": "why is it saying 'no device id i have'",
+    "answer": "This error appears when you try to search for a bus by ID but haven't entered any Bus ID. Please enter a valid Bus ID in the search field to track the bus location."
+  },
+  {
+    "question": "what does 'no bus found' error mean",
+    "answer": "This error occurs when the Bus ID you entered doesn't exist in the system. Double-check the Bus ID and make sure you've typed it correctly, or try searching by route or bus name instead."
+  },
+  {
+    "question": "why am i getting 'bus name is required' error",
+    "answer": "This error appears when you try to search by bus name but haven't entered any name in the search field. Please type the name of the bus you're looking for."
+  },
+  {
+    "question": "what does 'All fields including time slots are required' mean",
+    "answer": "This is a system error that occurs during bus registration. It means some required information is missing such as bus name, device ID, route details, ticket price, or time slots. This error is typically seen by bus operators, not passengers."
+  },
+  {
+    "question": "why does it say 'Login first'",
+    "answer": "This error appears when you try to perform an action that requires authentication but you're not logged into your account. Please log in to continue using this feature."
+  },
+  {
+    "question": "what does 'Bus already registered' mean",
+    "answer": "This error occurs when trying to register a bus with a device ID that already exists in the system. Each bus must have a unique device ID. This is an administrative error for bus operators."
+  },
+  {
+    "question": "why am i getting 'No bus created' error",
+    "answer": "This error means there are currently no buses registered in the system. This is typically a temporary issue - please try again later or contact support if the problem persists."
+  },
+  {
+    "question": "what does 'Missing required parameters' mean when calculating ticket price",
+    "answer": "This error occurs when trying to calculate ticket price but some information is missing. Make sure you've selected a bus, entered your starting location (From), and destination (To) with valid coordinates."
+  },
+  {
+    "question": "why does it say 'Bus not found' when booking",
+    "answer": "This error means the bus you're trying to book doesn't exist in the system. The bus may have been removed or the Bus ID might be incorrect. Try searching for buses again or select a different bus."
+  },
+  {
+    "question": "what does 'Route not found or invalid' mean",
+    "answer": "This error occurs when the selected bus doesn't have a valid route configured in the system. The bus route may not be set up properly. Try selecting a different bus or contact support."
+  },
+  {
+    "question": "why am i getting 'Missing payment fields' error",
+    "answer": "This error appears when payment information is incomplete. Make sure all required payment details from Razorpay are properly submitted including order ID, payment ID, and signature."
+  },
+  {
+    "question": "what does 'Missing ticket data' error mean",
+    "answer": "This error occurs when trying to complete a booking but ticket information is missing. This typically happens if there was an issue calculating the ticket price. Try starting the booking process again."
+  },
+  {
+    "question": "why does it say 'Unauthorized' during payment",
+    "answer": "This error means you're not logged in or your session has expired. Please log in again to complete your ticket booking and payment."
+  },
+  {
+    "question": "what does 'User not found' mean",
+    "answer": "This error occurs when the system cannot find your user account even though you're logged in. Try logging out and logging back in. If the problem persists, you may need to create a new account."
+  },
+  {
+    "question": "why am i getting 'Payment verification failed' message",
+    "answer": "This error means the payment could not be verified with Razorpay. This could happen due to incorrect payment details, a failed transaction, or a security issue. Check your payment method and try again."
+  },
+  {
+    "question": "what does 'no ticket available' mean",
+    "answer": "This error appears when you try to view your tickets but haven't booked any yet. Once you book a ticket, it will appear in the Ticket section."
+  },
+  {
+    "question": "why does it say 'Payment not found'",
+    "answer": "This error occurs when trying to view a specific ticket but the ticket ID doesn't exist or is incorrect. Check your ticket ID or go to the Ticket section to see all your bookings."
+  },
+  {
+    "question": "what does 'all fields are required' mean during user creation",
+    "answer": "This error appears when setting up your account but some required information is missing. Make sure you provide your full name, email address, and profile picture to complete registration."
+  },
+  {
+    "question": "why am i getting 'Question is required' in support chat",
+    "answer": "This error occurs when you try to submit a support query without typing any question. Please enter your question in the chat box before submitting."
+  },
+  {
+    "question": "what does 'SupportBot not initialized' mean",
+    "answer": "This is a technical error indicating the chatbot support system is not ready. This is temporary - please try again in a few moments or refresh the page."
+  },
+  {
+    "question": "why does it say 'Missing required fields' when reviewing a bus",
+    "answer": "This error appears when trying to submit a bus review without providing all necessary information. Make sure you select a bus and provide ratings before submitting your review."
+  },
+  {
+    "question": "what does 'You already reviewed this bus' mean",
+    "answer": "This error occurs when you try to review a bus you've already reviewed. Each user can only submit one review per bus. If you want to change your review, you'll need to edit your existing review."
+  },
+  {
+    "question": "why am i getting 'rating must be between 1 and 5' error",
+    "answer": "This error appears when you provide an invalid rating value. All ratings must be between 1 (lowest) and 5 (highest). Please adjust your ratings to be within this range."
+  },
+  {
+    "question": "what does 'Valid from and to coordinates are required' mean",
+    "answer": "This error occurs when planning a journey but location coordinates are invalid or missing. Make sure you've properly selected both your starting point and destination on the map."
+  },
+  {
+    "question": "why does it say 'Latitude and longitude are required'",
+    "answer": "This error appears when trying to find nearby locations or transfer points but location information is missing. Make sure location services are enabled or manually enter your location."
+  },
+  {
+    "question": "what does 'From and to coordinates are required' for walking route mean",
+    "answer": "This error occurs when trying to get walking directions but you haven't specified both the starting point and destination. Please provide both locations to get directions."
+  },
+  {
+    "question": "why is my bus search not working",
+    "answer": "Bus search may fail due to several reasons: incorrect coordinates, no internet connection, buses not available on that route, or system maintenance. Check your internet connection and try again with different locations."
+  },
+  {
+    "question": "what should i do if payment was deducted but ticket not generated",
+    "answer": "If your payment was successful but you didn't receive a ticket, check the 'My Tickets' section in your profile. If it's not there, contact support with your payment ID. The payment verification may have failed, but your money will be refunded if the ticket wasn't generated."
+  },
+  {
+    "question": "why can't i see any buses on the map",
+    "answer": "If no buses appear on the map, it could be due to: no buses operating in your area currently, location services disabled, poor internet connection, or the map not being properly loaded. Try refreshing the page or checking your location settings."
+  },
+  {
+    "question": "what does 'Server error' mean",
+    "answer": "This is a general error indicating something went wrong on the server side. It's usually temporary. Try refreshing the page, clearing your browser cache, or waiting a few minutes before trying again. If the problem persists, contact support."
+  },
+  {
+    "question": "why am i getting 'Internal server error' message",
+    "answer": "This error indicates an unexpected problem occurred on the server while processing your request. It's typically temporary. Try again after a few moments. If the error continues, please contact customer support."
+  },
+  {
+    "question": "what to do if login is not working",
+    "answer": "If you can't log in, make sure you're using the correct credentials. If you continue having issues, try clearing your browser cache and cookies, or use the password reset option. If you're a new user, make sure you've completed the registration process."
+  },
+  {
+    "question": "why does the app say my location is incorrect",
+    "answer": "Location errors can occur if: location services are disabled on your device, GPS signal is weak, you denied location permission, or you're in an area with poor connectivity. Check your device's location settings and ensure the browser has permission to access your location."
+  },
+  {
+    "question": "what does 'Failed to plan journey' mean",
+    "answer": "This error occurs when the system cannot create a route plan between your locations. This might happen if the locations are too far apart, no buses operate between them, or there's insufficient route data. Try selecting different locations or use the simple route search instead."
+  },
+  {
+    "question": "why can't i cancel my ticket",
+    "answer": "Ticket cancellation might fail if: the ticket has already been used, it's past the cancellation deadline, you're trying to cancel someone else's ticket, or there's a system error. Check the ticket details for cancellation policy. If you believe this is an error, contact support."
+  },
+  {
+    "question": "what does 'Something went wrong' error mean",
+    "answer": "This is a generic error message indicating an unexpected issue occurred. It could be due to network problems, server issues, or invalid data. Try refreshing the page, checking your internet connection, and attempting the action again. If it persists, contact support."
+  },
+  {
+    "question": "why is payment taking too long to process",
+    "answer": "Payment processing delays can occur due to: slow internet connection, issues with Razorpay payment gateway, bank server delays, or high traffic. Wait a few moments and don't refresh the page. If payment is deducted but ticket not received, check 'My Tickets' or contact support."
+  },
+  {
+    "question": "what to do if my ticket is not showing after payment",
+    "answer": "If your ticket doesn't appear after successful payment: 1) Wait a few moments and refresh the page, 2) Check the 'Ticket' section in the navigation bar, 3) Log out and log back in, 4) If still not visible, contact support with your payment details - they can retrieve your ticket."
+  },
+  {
+    "question": "why does it say 'route exists' when no buses showing",
+    "answer": "This error message seems contradictory and might indicate a temporary sync issue between the database and the display. Try refreshing the page or clearing your cache. If the route should have buses but none are showing, they might be temporarily offline or not in service."
+  },
+  {
+    "question": "why am i getting 'Please provide from and to coordinates' error",
+    "answer": "This error occurs when you try to search for a bus by route but haven't provided complete location information. Make sure you enter both 'From' and 'To' addresses with valid latitude and longitude coordinates."
+  },
+  {
+    "question": "what does 'No direct or multi-hop bus route found' mean",
+    "answer": "This means there is no available bus route between your selected locations. The system checked for both direct routes and routes with transfers but couldn't find any connection. Try selecting different locations or check if buses operate in your area."
+  },
+  {
+    "question": "why is it saying 'no device id i have'",
+    "answer": "This error appears when you try to search for a bus by ID but haven't entered any Bus ID. Please enter a valid Bus ID in the search field to track the bus location."
+  },
+  {
+    "question": "what does 'no bus found' error mean",
+    "answer": "This error occurs when the Bus ID you entered doesn't exist in the system. Double-check the Bus ID and make sure you've typed it correctly, or try searching by route or bus name instead."
+  },
+  {
+    "question": "why am i getting 'bus name is required' error",
+    "answer": "This error appears when you try to search by bus name but haven't entered any name in the search field. Please type the name of the bus you're looking for."
+  },
+  {
+    "question": "what does 'All fields including time slots are required' mean",
+    "answer": "This is a system error that occurs during bus registration. It means some required information is missing such as bus name, device ID, route details, ticket price, or time slots. This error is typically seen by bus operators, not passengers."
+  },
+  {
+    "question": "why does it say 'Login first'",
+    "answer": "This error appears when you try to perform an action that requires authentication but you're not logged into your account. Please log in to continue using this feature."
+  },
+  {
+    "question": "what does 'Bus already registered' mean",
+    "answer": "This error occurs when trying to register a bus with a device ID that already exists in the system. Each bus must have a unique device ID. This is an administrative error for bus operators."
+  },
+  {
+    "question": "why am i getting 'No bus created' error",
+    "answer": "This error means there are currently no buses registered in the system. This is typically a temporary issue - please try again later or contact support if the problem persists."
+  },
+  {
+    "question": "what does 'Missing required parameters' mean when calculating ticket price",
+    "answer": "This error occurs when trying to calculate ticket price but some information is missing. Make sure you've selected a bus, entered your starting location (From), and destination (To) with valid coordinates."
+  },
+  {
+    "question": "why does it say 'Bus not found' when booking",
+    "answer": "This error means the bus you're trying to book doesn't exist in the system. The bus may have been removed or the Bus ID might be incorrect. Try searching for buses again or select a different bus."
+  },
+  {
+    "question": "what does 'Route not found or invalid' mean",
+    "answer": "This error occurs when the selected bus doesn't have a valid route configured in the system. The bus route may not be set up properly. Try selecting a different bus or contact support."
+  },
+  {
+    "question": "why am i getting 'Missing payment fields' error",
+    "answer": "This error appears when payment information is incomplete. Make sure all required payment details from Razorpay are properly submitted including order ID, payment ID, and signature."
+  },
+  {
+    "question": "what does 'Missing ticket data' error mean",
+    "answer": "This error occurs when trying to complete a booking but ticket information is missing. This typically happens if there was an issue calculating the ticket price. Try starting the booking process again."
+  },
+  {
+    "question": "why does it say 'Unauthorized' during payment",
+    "answer": "This error means you're not logged in or your session has expired. Please log in again to complete your ticket booking and payment."
+  },
+  {
+    "question": "what does 'User not found' mean",
+    "answer": "This error occurs when the system cannot find your user account even though you're logged in. Try logging out and logging back in. If the problem persists, you may need to create a new account."
+  },
+  {
+    "question": "why am i getting 'Payment verification failed' message",
+    "answer": "This error means the payment could not be verified with Razorpay. This could happen due to incorrect payment details, a failed transaction, or a security issue. Check your payment method and try again."
+  },
+  {
+    "question": "what does 'no ticket available' mean",
+    "answer": "This error appears when you try to view your tickets but haven't booked any yet. Once you book a ticket, it will appear in the Ticket section."
+  },
+  {
+    "question": "why does it say 'Payment not found'",
+    "answer": "This error occurs when trying to view a specific ticket but the ticket ID doesn't exist or is incorrect. Check your ticket ID or go to the Ticket section to see all your bookings."
+  },
+  {
+    "question": "what does 'all fields are required' mean during user creation",
+    "answer": "This error appears when setting up your account but some required information is missing. Make sure you provide your full name, email address, and profile picture to complete registration."
+  },
+  {
+    "question": "why am i getting 'Question is required' in support chat",
+    "answer": "This error occurs when you try to submit a support query without typing any question. Please enter your question in the chat box before submitting."
+  },
+  {
+    "question": "what does 'SupportBot not initialized' mean",
+    "answer": "This is a technical error indicating the chatbot support system is not ready. This is temporary - please try again in a few moments or refresh the page."
+  },
+  {
+    "question": "why does it say 'Missing required fields' when reviewing a bus",
+    "answer": "This error appears when trying to submit a bus review without providing all necessary information. Make sure you select a bus and provide ratings before submitting your review."
+  },
+  {
+    "question": "what does 'You already reviewed this bus' mean",
+    "answer": "This error occurs when you try to review a bus you've already reviewed. Each user can only submit one review per bus. If you want to change your review, you'll need to edit your existing review."
+  },
+  {
+    "question": "why am i getting 'rating must be between 1 and 5' error",
+    "answer": "This error appears when you provide an invalid rating value. All ratings must be between 1 (lowest) and 5 (highest). Please adjust your ratings to be within this range."
+  },
+  {
+    "question": "what does 'Valid from and to coordinates are required' mean",
+    "answer": "This error occurs when planning a journey but location coordinates are invalid or missing. Make sure you've properly selected both your starting point and destination on the map."
+  },
+  {
+    "question": "why does it say 'Latitude and longitude are required'",
+    "answer": "This error appears when trying to find nearby locations or transfer points but location information is missing. Make sure location services are enabled or manually enter your location."
+  },
+  {
+    "question": "what does 'From and to coordinates are required' for walking route mean",
+    "answer": "This error occurs when trying to get walking directions but you haven't specified both the starting point and destination. Please provide both locations to get directions."
+  },
+  {
+    "question": "why is my bus search not working",
+    "answer": "Bus search may fail due to several reasons: incorrect coordinates, no internet connection, buses not available on that route, or system maintenance. Check your internet connection and try again with different locations."
+  },
+  {
+    "question": "what should i do if payment was deducted but ticket not generated",
+    "answer": "If your payment was successful but you didn't receive a ticket, check the 'My Tickets' section in your profile. If it's not there, contact support with your payment ID. The payment verification may have failed, but your money will be refunded if the ticket wasn't generated."
+  },
+  {
+    "question": "why can't i see any buses on the map",
+    "answer": "If no buses appear on the map, it could be due to: no buses operating in your area currently, location services disabled, poor internet connection, or the map not being properly loaded. Try refreshing the page or checking your location settings."
+  },
+  {
+    "question": "what does 'Server error' mean",
+    "answer": "This is a general error indicating something went wrong on the server side. It's usually temporary. Try refreshing the page, clearing your browser cache, or waiting a few minutes before trying again. If the problem persists, contact support."
+  },
+  {
+    "question": "why am i getting 'Internal server error' message",
+    "answer": "This error indicates an unexpected problem occurred on the server while processing your request. It's typically temporary. Try again after a few moments. If the error continues, please contact customer support."
+  },
+  {
+    "question": "what to do if login is not working",
+    "answer": "If you can't log in, make sure you're using the correct credentials. If you continue having issues, try clearing your browser cache and cookies, or use the password reset option. If you're a new user, make sure you've completed the registration process."
+  },
+  {
+    "question": "why does the app say my location is incorrect",
+    "answer": "Location errors can occur if: location services are disabled on your device, GPS signal is weak, you denied location permission, or you're in an area with poor connectivity. Check your device's location settings and ensure the browser has permission to access your location."
+  },
+  {
+    "question": "what does 'Failed to plan journey' mean",
+    "answer": "This error occurs when the system cannot create a route plan between your locations. This might happen if the locations are too far apart, no buses operate between them, or there's insufficient route data. Try selecting different locations or use the simple route search instead."
+  },
+  {
+    "question": "why can't i cancel my ticket",
+    "answer": "Ticket cancellation might fail if: the ticket has already been used, it's past the cancellation deadline, you're trying to cancel someone else's ticket, or there's a system error. Check the ticket details for cancellation policy. If you believe this is an error, contact support."
+  },
+  {
+    "question": "what does 'Something went wrong' error mean",
+    "answer": "This is a generic error message indicating an unexpected issue occurred. It could be due to network problems, server issues, or invalid data. Try refreshing the page, checking your internet connection, and attempting the action again. If it persists, contact support."
+  },
+  {
+    "question": "why is payment taking too long to process",
+    "answer": "Payment processing delays can occur due to: slow internet connection, issues with Razorpay payment gateway, bank server delays, or high traffic. Wait a few moments and don't refresh the page. If payment is deducted but ticket not received, check 'My Tickets' or contact support."
+  },
+  {
+    "question": "what to do if my ticket is not showing after payment",
+    "answer": "If your ticket doesn't appear after successful payment: 1) Wait a few moments and refresh the page, 2) Check the 'Ticket' section in the navigation bar, 3) Log out and log back in, 4) If still not visible, contact support with your payment details - they can retrieve your ticket."
+  },
+  {
+    "question": "why does it say 'route exists' when no buses showing",
+    "answer": "This error message seems contradictory and might indicate a temporary sync issue between the database and the display. Try refreshing the page or clearing your cache. If the route should have buses but none are showing, they might be temporarily offline or not in service."
+  },
+  {
+    "question": "is this website secure",
+    "answer": "Yes, our website is secure. We use industry-standard security measures including encrypted connections (HTTPS), secure payment processing through Razorpay, and Auth0 authentication to protect your personal information and transactions."
+  },
+  {
+    "question": "is my payment information safe",
+    "answer": "Absolutely. All payment transactions are processed through Razorpay, a PCI-DSS compliant payment gateway. We do not store your credit card or banking details on our servers. Your payment information is encrypted and handled securely."
+  },
+  {
+    "question": "who made this website",
+    "answer": "This website was developed by a dedicated team to provide efficient bus tracking and booking services. For specific inquiries about the development team or partnerships, please contact our support team."
+  },
+  {
+    "question": "who developed this platform",
+    "answer": "This bus tracking and booking platform was created to make public transportation more accessible and convenient. For detailed information about the development team, please reach out to our support section."
+  },
+  {
+    "question": "how to give rating to a bus",
+    "answer": "To rate a bus: 1) First, search for a bus using any search method (by route, name, or ID), 2) Select the bus you want to rate, 3) Look for the 'Give Rating' or 'Review' button on the bus details page, 4) Click it and provide your ratings for different aspects like cleanliness, punctuality, driver behavior, etc., 5) Optionally add a comment, then submit your review."
+  },
+  {
+    "question": "how do i rate a bus",
+    "answer": "Start by searching for the bus you traveled on using the search options on the Home page. Once you find and select the bus, you'll see a 'Give Rating' button. Click it to open the rating form where you can rate various aspects and submit your feedback."
+  },
+  {
+    "question": "can i review multiple buses",
+    "answer": "Yes, you can review as many different buses as you want. However, you can only submit one review per bus. If you've already reviewed a specific bus, you won't be able to submit another review for that same bus."
+  },
+  {
+    "question": "what can i rate about a bus",
+    "answer": "You can rate various aspects of the bus service including cleanliness, driver behavior, punctuality, comfort, safety, and overall experience. Each aspect can be rated on a scale of 1 to 5 stars, where 1 is poor and 5 is excellent."
+  },
+  {
+    "question": "do i need to book a ticket to give a rating",
+    "answer": "While you can view bus information without booking, it's recommended to rate a bus only after you've actually traveled on it. This ensures your review is based on real experience and helps other users make informed decisions."
+  },
+  {
+    "question": "hello",
+    "answer": "Hello! Welcome to our bus tracking and booking service. How can I help you today? You can ask me about searching for buses, booking tickets, viewing your bookings, finding nearby places, or any other feature of our website."
+  },
+  {
+    "question": "hi",
+    "answer": "Hi there! I'm here to help you with bus tracking and booking. What would you like to know? Feel free to ask about routes, tickets, nearby locations, or any features of our service."
+  },
+  {
+    "question": "thank you",
+    "answer": "You're welcome! If you have any more questions about our bus service, booking tickets, or any features, feel free to ask anytime. Have a great journey!"
+  },
+  {
+    "question": "thanks",
+    "answer": "You're welcome! Happy to help. If you need anything else about bus tracking, bookings, or our services, just ask. Safe travels!"
+  },
+  {
+    "question": "what is this website for",
+    "answer": "This website is a comprehensive bus tracking and booking platform. You can search for buses by route, name, or ID, track buses in real-time, book tickets, view your booking history, find nearby places like hospitals and schools, and get directions. It's designed to make your bus travel convenient and hassle-free."
+  },
+  {
+    "question": "what services do you provide",
+    "answer": "We provide: real-time bus tracking, online ticket booking, route planning with directions, viewing all your booked tickets, finding nearby important locations (hospitals, clinics, schools), multi-language support, and customer support through our chatbot. Everything you need for a smooth bus travel experience."
+  },
+  {
+    "question": "how does this website work",
+    "answer": "It's simple! Search for your bus using route, bus name, or bus ID. The map shows you the bus location in real-time. Select your pickup and drop points, book your ticket through secure payment, and track your bus live. You can also find nearby places and get directions to them."
+  },
+  {
+    "question": "is this app free to use",
+    "answer": "Yes, using the website for searching buses, tracking them, and viewing routes is completely free. You only pay when you book a bus ticket, and the payment goes towards your bus fare."
+  },
+  {
+    "question": "do you have a mobile app",
+    "answer": "Currently, we offer a web-based platform that works on all devices including mobile phones, tablets, and computers. Simply access our website through your mobile browser for a mobile-friendly experience."
+  },
+  {
+    "question": "can i use this website on my phone",
+    "answer": "Yes, absolutely! Our website is mobile-friendly and works perfectly on smartphones. Just open it in your mobile browser and you'll have access to all features including bus tracking, booking, and navigation."
+  },
+  {
+    "question": "what payment methods do you accept",
+    "answer": "We use Razorpay as our payment gateway, which accepts various payment methods including credit cards, debit cards, net banking, UPI, and popular mobile wallets. All payments are secure and encrypted."
+  },
+  {
+    "question": "how much does a ticket cost",
+    "answer": "Ticket prices vary based on the distance you're traveling and the bus you select. The system automatically calculates the fare based on your starting point and destination. You'll see the exact price before confirming your booking."
+  },
+  {
+    "question": "is ticket price calculated automatically",
+    "answer": "Yes, ticket prices are calculated automatically based on the distance between your pickup and drop-off points. The system uses the bus route to determine the exact distance you'll travel and calculates a proportional fare."
+  },
+  {
+    "question": "can i get a refund if i cancel",
+    "answer": "Ticket cancellation and refund policies may vary. Go to 'My Tickets' section, select the ticket you want to cancel, and check the cancellation policy. Follow the cancellation process, and if eligible, your refund will be processed according to the policy."
+  },
+  {
+    "question": "how do i contact support",
+    "answer": "You can get support right here through this chatbot for most queries. For urgent issues or specific concerns that need human assistance, look for the 'Contact Support' option in the Profile section or check the website footer for contact details."
+  },
+  {
+    "question": "do you provide customer support",
+    "answer": "Yes, we provide customer support through this AI chatbot for instant help with common queries. For more complex issues, you can reach out to our support team through the contact options available on the website."
+  },
+  {
+    "question": "what if i have a complaint",
+    "answer": "For complaints or feedback, you can contact our support team through the Contact Support option. You can also leave a review for specific buses to share your experience, which helps us improve our services."
+  },
+  {
+    "question": "can i save my favorite routes",
+    "answer": "Currently, you can view your booking history in the Ticket section which shows your previously traveled routes. For saving favorite routes or frequent searches, check the upcoming features or contact support for more information."
+  },
+  {
+    "question": "how accurate is the bus tracking",
+    "answer": "Our bus tracking is real-time and updates continuously as buses move. The accuracy depends on GPS connectivity and network conditions. Generally, you can expect precise location updates within a few meters of the actual position."
+  },
+  {
+    "question": "what if the bus location is not updating",
+    "answer": "If bus location isn't updating, it could be due to: GPS signal issues on the bus, network connectivity problems, or temporary technical issues. Try refreshing the page. If the problem persists, the bus might be temporarily offline or not in service."
+  },
+  {
+    "question": "can i share my ticket with someone",
+    "answer": "Tickets are typically issued to the person who books them. Check the ticket details for transferability. If you need to share travel details, you can take a screenshot of your ticket, but make sure the ticket is valid for the traveler."
+  },
+  {
+    "question": "how do i know if my booking is confirmed",
+    "answer": "After successful payment, you'll receive a booking confirmation immediately. Your ticket will appear in the 'Ticket' section with all details. You should also get a confirmation with your payment receipt showing 'Payment verified successfully'."
+  },
+  {
+    "question": "why should i use this website",
+    "answer": "Our platform saves you time by showing real-time bus locations, eliminating guesswork about bus arrivals. You can book tickets online, avoid queues, plan your journey with multiple route options, and access it anytime from any device. It's convenient, secure, and user-friendly."
+  },
+  {
+    "question": "why am i getting 'Please provide from and to coordinates' error",
+    "answer": "This error occurs when you try to search for a bus by route but haven't provided complete location information. Make sure you enter both 'From' and 'To' addresses with valid latitude and longitude coordinates."
+  },
+  {
+    "question": "what does 'No direct or multi-hop bus route found' mean",
+    "answer": "This means there is no available bus route between your selected locations. The system checked for both direct routes and routes with transfers but couldn't find any connection. Try selecting different locations or check if buses operate in your area."
+  },
+  {
+    "question": "why is it saying 'no device id i have'",
+    "answer": "This error appears when you try to search for a bus by ID but haven't entered any Bus ID. Please enter a valid Bus ID in the search field to track the bus location."
+  },
+  {
+    "question": "what does 'no bus found' error mean",
+    "answer": "This error occurs when the Bus ID you entered doesn't exist in the system. Double-check the Bus ID and make sure you've typed it correctly, or try searching by route or bus name instead."
+  },
+  {
+    "question": "why am i getting 'bus name is required' error",
+    "answer": "This error appears when you try to search by bus name but haven't entered any name in the search field. Please type the name of the bus you're looking for."
+  },
+  {
+    "question": "what does 'All fields including time slots are required' mean",
+    "answer": "This is a system error that occurs during bus registration. It means some required information is missing such as bus name, device ID, route details, ticket price, or time slots. This error is typically seen by bus operators, not passengers."
+  },
+  {
+    "question": "why does it say 'Login first'",
+    "answer": "This error appears when you try to perform an action that requires authentication but you're not logged into your account. Please log in to continue using this feature."
+  },
+  {
+    "question": "what does 'Bus already registered' mean",
+    "answer": "This error occurs when trying to register a bus with a device ID that already exists in the system. Each bus must have a unique device ID. This is an administrative error for bus operators."
+  },
+  {
+    "question": "why am i getting 'No bus created' error",
+    "answer": "This error means there are currently no buses registered in the system. This is typically a temporary issue - please try again later or contact support if the problem persists."
+  },
+  {
+    "question": "what does 'Missing required parameters' mean when calculating ticket price",
+    "answer": "This error occurs when trying to calculate ticket price but some information is missing. Make sure you've selected a bus, entered your starting location (From), and destination (To) with valid coordinates."
+  },
+  {
+    "question": "why does it say 'Bus not found' when booking",
+    "answer": "This error means the bus you're trying to book doesn't exist in the system. The bus may have been removed or the Bus ID might be incorrect. Try searching for buses again or select a different bus."
+  },
+  {
+    "question": "what does 'Route not found or invalid' mean",
+    "answer": "This error occurs when the selected bus doesn't have a valid route configured in the system. The bus route may not be set up properly. Try selecting a different bus or contact support."
+  },
+  {
+    "question": "why am i getting 'Missing payment fields' error",
+    "answer": "This error appears when payment information is incomplete. Make sure all required payment details from Razorpay are properly submitted including order ID, payment ID, and signature."
+  },
+  {
+    "question": "what does 'Missing ticket data' error mean",
+    "answer": "This error occurs when trying to complete a booking but ticket information is missing. This typically happens if there was an issue calculating the ticket price. Try starting the booking process again."
+  },
+  {
+    "question": "why does it say 'Unauthorized' during payment",
+    "answer": "This error means you're not logged in or your session has expired. Please log in again to complete your ticket booking and payment."
+  },
+  {
+    "question": "what does 'User not found' mean",
+    "answer": "This error occurs when the system cannot find your user account even though you're logged in. Try logging out and logging back in. If the problem persists, you may need to create a new account."
+  },
+  {
+    "question": "why am i getting 'Payment verification failed' message",
+    "answer": "This error means the payment could not be verified with Razorpay. This could happen due to incorrect payment details, a failed transaction, or a security issue. Check your payment method and try again."
+  },
+  {
+    "question": "what does 'no ticket available' mean",
+    "answer": "This error appears when you try to view your tickets but haven't booked any yet. Once you book a ticket, it will appear in the Ticket section."
+  },
+  {
+    "question": "why does it say 'Payment not found'",
+    "answer": "This error occurs when trying to view a specific ticket but the ticket ID doesn't exist or is incorrect. Check your ticket ID or go to the Ticket section to see all your bookings."
+  },
+  {
+    "question": "what does 'all fields are required' mean during user creation",
+    "answer": "This error appears when setting up your account but some required information is missing. Make sure you provide your full name, email address, and profile picture to complete registration."
+  },
+  {
+    "question": "why am i getting 'Question is required' in support chat",
+    "answer": "This error occurs when you try to submit a support query without typing any question. Please enter your question in the chat box before submitting."
+  },
+  {
+    "question": "what does 'SupportBot not initialized' mean",
+    "answer": "This is a technical error indicating the chatbot support system is not ready. This is temporary - please try again in a few moments or refresh the page."
+  },
+  {
+    "question": "why does it say 'Missing required fields' when reviewing a bus",
+    "answer": "This error appears when trying to submit a bus review without providing all necessary information. Make sure you select a bus and provide ratings before submitting your review."
+  },
+  {
+    "question": "what does 'You already reviewed this bus' mean",
+    "answer": "This error occurs when you try to review a bus you've already reviewed. Each user can only submit one review per bus. If you want to change your review, you'll need to edit your existing review."
+  },
+  {
+    "question": "why am i getting 'rating must be between 1 and 5' error",
+    "answer": "This error appears when you provide an invalid rating value. All ratings must be between 1 (lowest) and 5 (highest). Please adjust your ratings to be within this range."
+  },
+  {
+    "question": "what does 'Valid from and to coordinates are required' mean",
+    "answer": "This error occurs when planning a journey but location coordinates are invalid or missing. Make sure you've properly selected both your starting point and destination on the map."
+  },
+  {
+    "question": "why does it say 'Latitude and longitude are required'",
+    "answer": "This error appears when trying to find nearby locations or transfer points but location information is missing. Make sure location services are enabled or manually enter your location."
+  },
+  {
+    "question": "what does 'From and to coordinates are required' for walking route mean",
+    "answer": "This error occurs when trying to get walking directions but you haven't specified both the starting point and destination. Please provide both locations to get directions."
+  },
+  {
+    "question": "why is my bus search not working",
+    "answer": "Bus search may fail due to several reasons: incorrect coordinates, no internet connection, buses not available on that route, or system maintenance. Check your internet connection and try again with different locations."
+  },
+  {
+    "question": "what should i do if payment was deducted but ticket not generated",
+    "answer": "If your payment was successful but you didn't receive a ticket, check the 'My Tickets' section in your profile. If it's not there, contact support with your payment ID. The payment verification may have failed, but your money will be refunded if the ticket wasn't generated."
+  },
+  {
+    "question": "why can't i see any buses on the map",
+    "answer": "If no buses appear on the map, it could be due to: no buses operating in your area currently, location services disabled, poor internet connection, or the map not being properly loaded. Try refreshing the page or checking your location settings."
+  },
+  {
+    "question": "what does 'Server error' mean",
+    "answer": "This is a general error indicating something went wrong on the server side. It's usually temporary. Try refreshing the page, clearing your browser cache, or waiting a few minutes before trying again. If the problem persists, contact support."
+  },
+  {
+    "question": "why am i getting 'Internal server error' message",
+    "answer": "This error indicates an unexpected problem occurred on the server while processing your request. It's typically temporary. Try again after a few moments. If the error continues, please contact customer support."
+  },
+  {
+    "question": "what to do if login is not working",
+    "answer": "If you can't log in, make sure you're using the correct credentials. If you continue having issues, try clearing your browser cache and cookies, or use the password reset option. If you're a new user, make sure you've completed the registration process."
+  },
+  {
+    "question": "why does the app say my location is incorrect",
+    "answer": "Location errors can occur if: location services are disabled on your device, GPS signal is weak, you denied location permission, or you're in an area with poor connectivity. Check your device's location settings and ensure the browser has permission to access your location."
+  },
+  {
+    "question": "what does 'Failed to plan journey' mean",
+    "answer": "This error occurs when the system cannot create a route plan between your locations. This might happen if the locations are too far apart, no buses operate between them, or there's insufficient route data. Try selecting different locations or use the simple route search instead."
+  },
+  {
+    "question": "why can't i cancel my ticket",
+    "answer": "Ticket cancellation might fail if: the ticket has already been used, it's past the cancellation deadline, you're trying to cancel someone else's ticket, or there's a system error. Check the ticket details for cancellation policy. If you believe this is an error, contact support."
+  },
+  {
+    "question": "what does 'Something went wrong' error mean",
+    "answer": "This is a generic error message indicating an unexpected issue occurred. It could be due to network problems, server issues, or invalid data. Try refreshing the page, checking your internet connection, and attempting the action again. If it persists, contact support."
+  },
+  {
+    "question": "why is payment taking too long to process",
+    "answer": "Payment processing delays can occur due to: slow internet connection, issues with Razorpay payment gateway, bank server delays, or high traffic. Wait a few moments and don't refresh the page. If payment is deducted but ticket not received, check 'My Tickets' or contact support."
+  },
+  {
+    "question": "what to do if my ticket is not showing after payment",
+    "answer": "If your ticket doesn't appear after successful payment: 1) Wait a few moments and refresh the page, 2) Check the 'Ticket' section in the navigation bar, 3) Log out and log back in, 4) If still not visible, contact support with your payment details - they can retrieve your ticket."
+  },
+  {
+    "question": "why does it say 'route exists' when no buses showing",
+    "answer": "This error message seems contradictory and might indicate a temporary sync issue between the database and the display. Try refreshing the page or clearing your cache. If the route should have buses but none are showing, they might be temporarily offline or not in service."
+  },
+  {
+    "question": "is this website secure",
+    "answer": "Yes, our website is secure. We use industry-standard security measures including encrypted connections (HTTPS), secure payment processing through Razorpay, and Auth0 authentication to protect your personal information and transactions."
+  },
+  {
+    "question": "is my payment information safe",
+    "answer": "Absolutely. All payment transactions are processed through Razorpay, a PCI-DSS compliant payment gateway. We do not store your credit card or banking details on our servers. Your payment information is encrypted and handled securely."
+  },
+  {
+    "question": "who made this website",
+    "answer": "This website was developed by a dedicated team to provide efficient bus tracking and booking services. For specific inquiries about the development team or partnerships, please contact our support team."
+  },
+  {
+    "question": "who developed this platform",
+    "answer": "This bus tracking and booking platform was created to make public transportation more accessible and convenient. For detailed information about the development team, please reach out to our support section."
+  },
+  {
+    "question": "how to give rating to a bus",
+    "answer": "To rate a bus: 1) First, search for a bus using any search method (by route, name, or ID), 2) Select the bus you want to rate, 3) Look for the 'Give Rating' or 'Review' button on the bus details page, 4) Click it and provide your ratings for different aspects like cleanliness, punctuality, driver behavior, etc., 5) Optionally add a comment, then submit your review."
+  },
+  {
+    "question": "how do i rate a bus",
+    "answer": "Start by searching for the bus you traveled on using the search options on the Home page. Once you find and select the bus, you'll see a 'Give Rating' button. Click it to open the rating form where you can rate various aspects and submit your feedback."
+  },
+  {
+    "question": "can i review multiple buses",
+    "answer": "Yes, you can review as many different buses as you want. However, you can only submit one review per bus. If you've already reviewed a specific bus, you won't be able to submit another review for that same bus."
+  },
+  {
+    "question": "what can i rate about a bus",
+    "answer": "You can rate various aspects of the bus service including cleanliness, driver behavior, punctuality, comfort, safety, and overall experience. Each aspect can be rated on a scale of 1 to 5 stars, where 1 is poor and 5 is excellent."
+  },
+  {
+    "question": "do i need to book a ticket to give a rating",
+    "answer": "While you can view bus information without booking, it's recommended to rate a bus only after you've actually traveled on it. This ensures your review is based on real experience and helps other users make informed decisions."
+  },
+  {
+    "question": "hello",
+    "answer": "Hello! Welcome to our bus tracking and booking service. How can I help you today? You can ask me about searching for buses, booking tickets, viewing your bookings, finding nearby places, or any other feature of our website."
+  },
+  {
+    "question": "hi",
+    "answer": "Hi there! I'm here to help you with bus tracking and booking. What would you like to know? Feel free to ask about routes, tickets, nearby locations, or any features of our service."
+  },
+  {
+    "question": "thank you",
+    "answer": "You're welcome! If you have any more questions about our bus service, booking tickets, or any features, feel free to ask anytime. Have a great journey!"
+  },
+  {
+    "question": "thanks",
+    "answer": "You're welcome! Happy to help. If you need anything else about bus tracking, bookings, or our services, just ask. Safe travels!"
+  },
+  {
+    "question": "what is this website for",
+    "answer": "This website is a comprehensive bus tracking and booking platform. You can search for buses by route, name, or ID, track buses in real-time, book tickets, view your booking history, find nearby places like hospitals and schools, and get directions. It's designed to make your bus travel convenient and hassle-free."
+  },
+  {
+    "question": "what services do you provide",
+    "answer": "We provide: real-time bus tracking, online ticket booking, route planning with directions, viewing all your booked tickets, finding nearby important locations (hospitals, clinics, schools), multi-language support, and customer support through our chatbot. Everything you need for a smooth bus travel experience."
+  },
+  {
+    "question": "how does this website work",
+    "answer": "It's simple! Search for your bus using route, bus name, or bus ID. The map shows you the bus location in real-time. Select your pickup and drop points, book your ticket through secure payment, and track your bus live. You can also find nearby places and get directions to them."
+  },
+  {
+    "question": "is this app free to use",
+    "answer": "Yes, using the website for searching buses, tracking them, and viewing routes is completely free. You only pay when you book a bus ticket, and the payment goes towards your bus fare."
+  },
+  {
+    "question": "do you have a mobile app",
+    "answer": "Currently, we offer a web-based platform that works on all devices including mobile phones, tablets, and computers. Simply access our website through your mobile browser for a mobile-friendly experience."
+  },
+  {
+    "question": "can i use this website on my phone",
+    "answer": "Yes, absolutely! Our website is mobile-friendly and works perfectly on smartphones. Just open it in your mobile browser and you'll have access to all features including bus tracking, booking, and navigation."
+  },
+  {
+    "question": "what payment methods do you accept",
+    "answer": "We use Razorpay as our payment gateway, which accepts various payment methods including credit cards, debit cards, net banking, UPI, and popular mobile wallets. All payments are secure and encrypted."
+  },
+  {
+    "question": "how much does a ticket cost",
+    "answer": "Ticket prices vary based on the distance you're traveling and the bus you select. The system automatically calculates the fare based on your starting point and destination. You'll see the exact price before confirming your booking."
+  },
+  {
+    "question": "is ticket price calculated automatically",
+    "answer": "Yes, ticket prices are calculated automatically based on the distance between your pickup and drop-off points. The system uses the bus route to determine the exact distance you'll travel and calculates a proportional fare."
+  },
+  {
+    "question": "can i get a refund if i cancel",
+    "answer": "Ticket cancellation and refund policies may vary. Go to 'My Tickets' section, select the ticket you want to cancel, and check the cancellation policy. Follow the cancellation process, and if eligible, your refund will be processed according to the policy."
+  },
+  {
+    "question": "how do i contact support",
+    "answer": "You can get support right here through this chatbot for most queries. For urgent issues or specific concerns that need human assistance, look for the 'Contact Support' option in the Profile section or check the website footer for contact details."
+  },
+  {
+    "question": "do you provide customer support",
+    "answer": "Yes, we provide customer support through this AI chatbot for instant help with common queries. For more complex issues, you can reach out to our support team through the contact options available on the website."
+  },
+  {
+    "question": "what if i have a complaint",
+    "answer": "For complaints or feedback, you can contact our support team through the Contact Support option. You can also leave a review for specific buses to share your experience, which helps us improve our services."
+  },
+  {
+    "question": "can i save my favorite routes",
+    "answer": "Currently, you can view your booking history in the Ticket section which shows your previously traveled routes. For saving favorite routes or frequent searches, check the upcoming features or contact support for more information."
+  },
+  {
+    "question": "how accurate is the bus tracking",
+    "answer": "Our bus tracking is real-time and updates continuously as buses move. The accuracy depends on GPS connectivity and network conditions. Generally, you can expect precise location updates within a few meters of the actual position."
+  },
+  {
+    "question": "what if the bus location is not updating",
+    "answer": "If bus location isn't updating, it could be due to: GPS signal issues on the bus, network connectivity problems, or temporary technical issues. Try refreshing the page. If the problem persists, the bus might be temporarily offline or not in service."
+  },
+  {
+    "question": "can i share my ticket with someone",
+    "answer": "Tickets are typically issued to the person who books them. Check the ticket details for transferability. If you need to share travel details, you can take a screenshot of your ticket, but make sure the ticket is valid for the traveler."
+  },
+  {
+    "question": "how do i know if my booking is confirmed",
+    "answer": "After successful payment, you'll receive a booking confirmation immediately. Your ticket will appear in the 'Ticket' section with all details. You should also get a confirmation with your payment receipt showing 'Payment verified successfully'."
+  },
+  {
+    "question": "why should i use this website",
+    "answer": "Our platform saves you time by showing real-time bus locations, eliminating guesswork about bus arrivals. You can book tickets online, avoid queues, plan your journey with multiple route options, and access it anytime from any device. It's convenient, secure, and user-friendly."
+  },
+  {
+    "question": "what is the weather today",
+    "answer": "I'm a bus booking and tracking assistant, so I don't have access to weather information. However, I can help you find buses, book tickets, track bus locations, or find nearby places. Is there anything related to bus services I can help you with?"
+  },
+  {
+    "question": "tell me a joke",
+    "answer": "I appreciate the lighthearted question! While I'm here primarily to help with bus bookings and tracking, I'm happy to chat. Is there anything about our bus services, routes, or bookings I can help you with today?"
+  },
+  {
+    "question": "what is the capital of france",
+    "answer": "I'm specialized in helping with bus-related queries for this platform. For general knowledge questions, you might want to use a search engine. But I'm here to help with anything related to bus tracking, booking tickets, finding routes, or nearby locations. What can I assist you with?"
+  },
+  {
+    "question": "how to cook rice",
+    "answer": "That's not related to our bus services, but I'd be happy to help you with bus bookings, tracking, route planning, or finding nearby places. Is there anything about transportation or our services I can assist you with?"
+  },
+  {
+    "question": "what is artificial intelligence",
+    "answer": "While that's an interesting topic, I'm designed specifically to help with bus-related services on this platform. I can assist you with searching buses, booking tickets, tracking locations, viewing your tickets, or finding nearby places. How can I help you today?"
+  },
+  {
+    "question": "who is the president",
+    "answer": "I'm focused on helping with bus services and bookings rather than general information. For questions about buses, routes, tickets, or nearby locations on this platform, I'm your go-to assistant! What would you like to know?"
+  },
+  {
+    "question": "tell me about cars",
+    "answer": "I specialize in bus services rather than cars. However, I can help you with everything related to buses on this platform - searching routes, booking tickets, tracking buses in real-time, and finding nearby locations. What would you like to know about our bus services?"
+  },
+  {
+    "question": "how to lose weight",
+    "answer": "That's outside my area of expertise. I'm here to help specifically with bus tracking and booking services. I can assist you with finding buses, booking tickets, checking routes, or locating nearby places. Is there anything transportation-related I can help with?"
+  },
+  {
+    "question": "what is the meaning of life",
+    "answer": "That's quite a philosophical question! I'm here to help with more practical matters related to bus services - like finding the right bus for your journey, booking tickets, or tracking buses. How can I assist you with your travel needs today?"
+  },
+  {
+    "question": "recommend me a movie",
+    "answer": "I'm not able to help with movie recommendations, but I can definitely help you find the right bus to get to the cinema! Let me know if you need help with bus routes, bookings, or finding nearby locations."
+  },
+  {
+    "question": "what is coronavirus",
+    "answer": "For health and medical information, it's best to consult official health websites or medical professionals. I'm here to help with bus-related services including searching routes, booking tickets, tracking buses, and finding nearby hospitals or clinics. Can I help you with any of these?"
+  },
+  {
+    "question": "how to make money online",
+    "answer": "That's not something I can help with, as I'm specialized in bus tracking and booking services. I can assist you with finding buses, planning routes, booking tickets, or locating nearby places. What can I help you with regarding our bus services?"
+  },
+  {
+    "question": "what is bitcoin",
+    "answer": "I don't have information about cryptocurrency. My expertise is in helping you with bus services on this platform. I can help you search for buses, book tickets, track real-time locations, or find nearby places. How can I assist your travel needs?"
+  },
+  {
+    "question": "solve this math problem",
+    "answer": "I'm not designed to solve math problems, but I can help calculate ticket prices, distances, and travel times for bus journeys! Is there anything related to bus bookings, routes, or our services I can help you with?"
+  },
+  {
+    "question": "translate this to spanish",
+    "answer": "While I don't provide translation services, our website does support multiple languages! You can change the language using the Language option in the navigation bar. I can help you with bus searches, bookings, or any other feature of our platform. What do you need?"
+  },
+  {
+    "question": "who won the cricket match",
+    "answer": "I don't have sports information, but I can help you find a bus to get to the stadium! I specialize in bus tracking, route planning, ticket booking, and finding nearby locations. How can I assist with your transportation needs?"
+  },
+  {
+    "question": "what are the symptoms of flu",
+    "answer": "For medical questions, please consult healthcare professionals or visit a medical website. However, I can help you find nearby hospitals or clinics using our Nearby section! I can also assist with bus bookings and tracking. What do you need help with?"
+  },
+  {
+    "question": "how to learn programming",
+    "answer": "That's outside my scope of knowledge. I'm here to help with bus-related queries - searching buses, booking tickets, tracking locations, finding routes, and discovering nearby places. Is there anything about our bus services I can help you with?"
+  },
+  {
+    "question": "what should i study",
+    "answer": "Career and education advice isn't my specialty, but I can help you find buses to get to schools or educational institutions! Use our Nearby section to find schools, or let me help with bus routes and bookings. What do you need?"
+  },
+  {
+    "question": "i don't understand",
+    "answer": "No problem! I'm here to help. Could you please clarify what you're trying to do? Are you looking to search for a bus, book a ticket, track a bus location, view your tickets, find nearby places, or something else? Let me know and I'll guide you through it."
+  },
+  {
+    "question": "this is confusing",
+    "answer": "I understand it might seem overwhelming at first. Let's take it step by step. What would you like to do? Book a ticket? Search for a bus? Track a bus? View your bookings? Just tell me what you need, and I'll explain it simply."
+  },
+  {
+    "question": "i need help but not with buses",
+    "answer": "I appreciate you reaching out, but I'm specifically designed to help with bus-related services on this platform. For other types of assistance, you may want to contact general customer support or use other resources. However, if there's anything at all related to bus travel, tracking, or bookings, I'm here to help!"
+  },
+  {
+    "question": "why am i getting 'Please provide from and to coordinates' error",
+    "answer": "This error occurs when you try to search for a bus by route but haven't provided complete location information. Make sure you enter both 'From' and 'To' addresses with valid latitude and longitude coordinates."
+  },
+  {
+    "question": "what does 'No direct or multi-hop bus route found' mean",
+    "answer": "This means there is no available bus route between your selected locations. The system checked for both direct routes and routes with transfers but couldn't find any connection. Try selecting different locations or check if buses operate in your area."
+  },
+  {
+    "question": "why is it saying 'no device id i have'",
+    "answer": "This error appears when you try to search for a bus by ID but haven't entered any Bus ID. Please enter a valid Bus ID in the search field to track the bus location."
+  },
+  {
+    "question": "what does 'no bus found' error mean",
+    "answer": "This error occurs when the Bus ID you entered doesn't exist in the system. Double-check the Bus ID and make sure you've typed it correctly, or try searching by route or bus name instead."
+  },
+  {
+    "question": "why am i getting 'bus name is required' error",
+    "answer": "This error appears when you try to search by bus name but haven't entered any name in the search field. Please type the name of the bus you're looking for."
+  },
+  {
+    "question": "what does 'All fields including time slots are required' mean",
+    "answer": "This is a system error that occurs during bus registration. It means some required information is missing such as bus name, device ID, route details, ticket price, or time slots. This error is typically seen by bus operators, not passengers."
+  },
+  {
+    "question": "why does it say 'Login first'",
+    "answer": "This error appears when you try to perform an action that requires authentication but you're not logged into your account. Please log in to continue using this feature."
+  },
+  {
+    "question": "what does 'Bus already registered' mean",
+    "answer": "This error occurs when trying to register a bus with a device ID that already exists in the system. Each bus must have a unique device ID. This is an administrative error for bus operators."
+  },
+  {
+    "question": "why am i getting 'No bus created' error",
+    "answer": "This error means there are currently no buses registered in the system. This is typically a temporary issue - please try again later or contact support if the problem persists."
+  },
+  {
+    "question": "what does 'Missing required parameters' mean when calculating ticket price",
+    "answer": "This error occurs when trying to calculate ticket price but some information is missing. Make sure you've selected a bus, entered your starting location (From), and destination (To) with valid coordinates."
+  },
+  {
+    "question": "why does it say 'Bus not found' when booking",
+    "answer": "This error means the bus you're trying to book doesn't exist in the system. The bus may have been removed or the Bus ID might be incorrect. Try searching for buses again or select a different bus."
+  },
+  {
+    "question": "what does 'Route not found or invalid' mean",
+    "answer": "This error occurs when the selected bus doesn't have a valid route configured in the system. The bus route may not be set up properly. Try selecting a different bus or contact support."
+  },
+  {
+    "question": "why am i getting 'Missing payment fields' error",
+    "answer": "This error appears when payment information is incomplete. Make sure all required payment details from Razorpay are properly submitted including order ID, payment ID, and signature."
+  },
+  {
+    "question": "what does 'Missing ticket data' error mean",
+    "answer": "This error occurs when trying to complete a booking but ticket information is missing. This typically happens if there was an issue calculating the ticket price. Try starting the booking process again."
+  },
+  {
+    "question": "why does it say 'Unauthorized' during payment",
+    "answer": "This error means you're not logged in or your session has expired. Please log in again to complete your ticket booking and payment."
+  },
+  {
+    "question": "what does 'User not found' mean",
+    "answer": "This error occurs when the system cannot find your user account even though you're logged in. Try logging out and logging back in. If the problem persists, you may need to create a new account."
+  },
+  {
+    "question": "why am i getting 'Payment verification failed' message",
+    "answer": "This error means the payment could not be verified with Razorpay. This could happen due to incorrect payment details, a failed transaction, or a security issue. Check your payment method and try again."
+  },
+  {
+    "question": "what does 'no ticket available' mean",
+    "answer": "This error appears when you try to view your tickets but haven't booked any yet. Once you book a ticket, it will appear in the Ticket section."
+  },
+  {
+    "question": "why does it say 'Payment not found'",
+    "answer": "This error occurs when trying to view a specific ticket but the ticket ID doesn't exist or is incorrect. Check your ticket ID or go to the Ticket section to see all your bookings."
+  },
+  {
+    "question": "what does 'all fields are required' mean during user creation",
+    "answer": "This error appears when setting up your account but some required information is missing. Make sure you provide your full name, email address, and profile picture to complete registration."
+  },
+  {
+    "question": "why am i getting 'Question is required' in support chat",
+    "answer": "This error occurs when you try to submit a support query without typing any question. Please enter your question in the chat box before submitting."
+  },
+  {
+    "question": "what does 'SupportBot not initialized' mean",
+    "answer": "This is a technical error indicating the chatbot support system is not ready. This is temporary - please try again in a few moments or refresh the page."
+  },
+  {
+    "question": "why does it say 'Missing required fields' when reviewing a bus",
+    "answer": "This error appears when trying to submit a bus review without providing all necessary information. Make sure you select a bus and provide ratings before submitting your review."
+  },
+  {
+    "question": "what does 'You already reviewed this bus' mean",
+    "answer": "This error occurs when you try to review a bus you've already reviewed. Each user can only submit one review per bus. If you want to change your review, you'll need to edit your existing review."
+  },
+  {
+    "question": "why am i getting 'rating must be between 1 and 5' error",
+    "answer": "This error appears when you provide an invalid rating value. All ratings must be between 1 (lowest) and 5 (highest). Please adjust your ratings to be within this range."
+  },
+  {
+    "question": "what does 'Valid from and to coordinates are required' mean",
+    "answer": "This error occurs when planning a journey but location coordinates are invalid or missing. Make sure you've properly selected both your starting point and destination on the map."
+  },
+  {
+    "question": "why does it say 'Latitude and longitude are required'",
+    "answer": "This error appears when trying to find nearby locations or transfer points but location information is missing. Make sure location services are enabled or manually enter your location."
+  },
+  {
+    "question": "what does 'From and to coordinates are required' for walking route mean",
+    "answer": "This error occurs when trying to get walking directions but you haven't specified both the starting point and destination. Please provide both locations to get directions."
+  },
+  {
+    "question": "why is my bus search not working",
+    "answer": "Bus search may fail due to several reasons: incorrect coordinates, no internet connection, buses not available on that route, or system maintenance. Check your internet connection and try again with different locations."
+  },
+  {
+    "question": "what should i do if payment was deducted but ticket not generated",
+    "answer": "If your payment was successful but you didn't receive a ticket, check the 'My Tickets' section in your profile. If it's not there, contact support with your payment ID. The payment verification may have failed, but your money will be refunded if the ticket wasn't generated."
+  },
+  {
+    "question": "why can't i see any buses on the map",
+    "answer": "If no buses appear on the map, it could be due to: no buses operating in your area currently, location services disabled, poor internet connection, or the map not being properly loaded. Try refreshing the page or checking your location settings."
+  },
+  {
+    "question": "what does 'Server error' mean",
+    "answer": "This is a general error indicating something went wrong on the server side. It's usually temporary. Try refreshing the page, clearing your browser cache, or waiting a few minutes before trying again. If the problem persists, contact support."
+  },
+  {
+    "question": "why am i getting 'Internal server error' message",
+    "answer": "This error indicates an unexpected problem occurred on the server while processing your request. It's typically temporary. Try again after a few moments. If the error continues, please contact customer support."
+  },
+  {
+    "question": "what to do if login is not working",
+    "answer": "If you can't log in, make sure you're using the correct credentials. If you continue having issues, try clearing your browser cache and cookies, or use the password reset option. If you're a new user, make sure you've completed the registration process."
+  },
+  {
+    "question": "why does the app say my location is incorrect",
+    "answer": "Location errors can occur if: location services are disabled on your device, GPS signal is weak, you denied location permission, or you're in an area with poor connectivity. Check your device's location settings and ensure the browser has permission to access your location."
+  },
+  {
+    "question": "what does 'Failed to plan journey' mean",
+    "answer": "This error occurs when the system cannot create a route plan between your locations. This might happen if the locations are too far apart, no buses operate between them, or there's insufficient route data. Try selecting different locations or use the simple route search instead."
+  },
+  {
+    "question": "why can't i cancel my ticket",
+    "answer": "Ticket cancellation might fail if: the ticket has already been used, it's past the cancellation deadline, you're trying to cancel someone else's ticket, or there's a system error. Check the ticket details for cancellation policy. If you believe this is an error, contact support."
+  },
+  {
+    "question": "what does 'Something went wrong' error mean",
+    "answer": "This is a generic error message indicating an unexpected issue occurred. It could be due to network problems, server issues, or invalid data. Try refreshing the page, checking your internet connection, and attempting the action again. If it persists, contact support."
+  },
+  {
+    "question": "why is payment taking too long to process",
+    "answer": "Payment processing delays can occur due to: slow internet connection, issues with Razorpay payment gateway, bank server delays, or high traffic. Wait a few moments and don't refresh the page. If payment is deducted but ticket not received, check 'My Tickets' or contact support."
+  },
+  {
+    "question": "what to do if my ticket is not showing after payment",
+    "answer": "If your ticket doesn't appear after successful payment: 1) Wait a few moments and refresh the page, 2) Check the 'Ticket' section in the navigation bar, 3) Log out and log back in, 4) If still not visible, contact support with your payment details - they can retrieve your ticket."
+  },
+  {
+    "question": "why does it say 'route exists' when no buses showing",
+    "answer": "This error message seems contradictory and might indicate a temporary sync issue between the database and the display. Try refreshing the page or clearing your cache. If the route should have buses but none are showing, they might be temporarily offline or not in service."
+  },
+  {
+    "question": "is this website secure",
+    "answer": "Yes, our website is secure. We use industry-standard security measures including encrypted connections (HTTPS), secure payment processing through Razorpay, and Auth0 authentication to protect your personal information and transactions."
+  },
+  {
+    "question": "is my payment information safe",
+    "answer": "Absolutely. All payment transactions are processed through Razorpay, a PCI-DSS compliant payment gateway. We do not store your credit card or banking details on our servers. Your payment information is encrypted and handled securely."
+  },
+  {
+    "question": "who made this website",
+    "answer": "This website was developed by a dedicated team  only, to provide efficient bus tracking and booking services. For specific inquiries about the development team or partnerships, please contact our support team."
+  },
+  {
+    "question": "who developed this platform",
+    "answer": "This bus tracking and booking platform was created by to make public transportation more accessible and convenient. For detailed information about the development team, please reach out to our support section."
+  },
+  {
+    "question": "developer Name",
+    "answer": "Ayan and Santanu 😎"
+  },
+  {
+    "question": "how much devoloper involved to make this website",
+    "answer": " only 2, Ayan and Santanu 😎🖕"
+  },
+  {
+    "question": "how to give rating to a bus",
+    "answer": "To rate a bus: 1) First, search for a bus using any search method (by route, name, or ID), 2) Select the bus you want to rate, 3) Look for the 'Give Rating' or 'Review' button on the bus details page, 4) Click it and provide your ratings for different aspects like cleanliness, punctuality, driver behavior, etc., 5) Optionally add a comment, then submit your review."
+  },
+  {
+    "question": "how do i rate a bus",
+    "answer": "Start by searching for the bus you traveled on using the search options on the Home page. Once you find and select the bus, you'll see a 'Give Rating' button. Click it to open the rating form where you can rate various aspects and submit your feedback."
+  },
+  {
+    "question": "can i review multiple buses",
+    "answer": "Yes, you can review as many different buses as you want. However, you can only submit one review per bus. If you've already reviewed a specific bus, you won't be able to submit another review for that same bus."
+  },
+  {
+    "question": "what can i rate about a bus",
+    "answer": "You can rate various aspects of the bus service including cleanliness, driver behavior, punctuality, comfort, safety, and overall experience. Each aspect can be rated on a scale of 1 to 5 stars, where 1 is poor and 5 is excellent."
+  },
+  {
+    "question": "do i need to book a ticket to give a rating",
+    "answer": "While you can view bus information without booking, it's recommended to rate a bus only after you've actually traveled on it. This ensures your review is based on real experience and helps other users make informed decisions."
+  },
+  {
+    "question": "hello",
+    "answer": "Hello! Welcome to our bus tracking and booking service. How can I help you today? You can ask me about searching for buses, booking tickets, viewing your bookings, finding nearby places, or any other feature of our website."
+  },
+  {
+    "question": "hi",
+    "answer": "Hi there! I'm here to help you with bus tracking and booking. What would you like to know? Feel free to ask about routes, tickets, nearby locations, or any features of our service."
+  },
+  {
+    "question": "thank you",
+    "answer": "You're welcome! If you have any more questions about our bus service, booking tickets, or any features, feel free to ask anytime. Have a great journey!"
+  },
+  {
+    "question": "thanks",
+    "answer": "You're welcome! Happy to help. If you need anything else about bus tracking, bookings, or our services, just ask. Safe travels!"
+  },
+  {
+    "question": "what is this website for",
+    "answer": "This website is a comprehensive bus tracking and booking platform. You can search for buses by route, name, or ID, track buses in real-time, book tickets, view your booking history, find nearby places like hospitals and schools, and get directions. It's designed to make your bus travel convenient and hassle-free."
+  },
+  {
+    "question": "what services do you provide",
+    "answer": "We provide: real-time bus tracking, online ticket booking, route planning with directions, viewing all your booked tickets, finding nearby important locations (hospitals, clinics, schools), multi-language support, and customer support through our chatbot. Everything you need for a smooth bus travel experience."
+  },
+  {
+    "question": "how does this website work",
+    "answer": "It's simple! Search for your bus using route, bus name, or bus ID. The map shows you the bus location in real-time. Select your pickup and drop points, book your ticket through secure payment, and track your bus live. You can also find nearby places and get directions to them."
+  },
+  {
+    "question": "is this app free to use",
+    "answer": "Yes, using the website for searching buses, tracking them, and viewing routes is completely free. You only pay when you book a bus ticket, and the payment goes towards your bus fare."
+  },
+  {
+    "question": "do you have a mobile app",
+    "answer": "Currently, we offer a web-based platform that works on all devices including mobile phones, tablets, and computers. Simply access our website through your mobile browser for a mobile-friendly experience."
+  },
+  {
+    "question": "can i use this website on my phone",
+    "answer": "Yes, absolutely! Our website is mobile-friendly and works perfectly on smartphones. Just open it in your mobile browser and you'll have access to all features including bus tracking, booking, and navigation."
+  },
+  {
+    "question": "what payment methods do you accept",
+    "answer": "We use Razorpay as our payment gateway, which accepts various payment methods including credit cards, debit cards, net banking, UPI, and popular mobile wallets. All payments are secure and encrypted."
+  },
+  {
+    "question": "how much does a ticket cost",
+    "answer": "Ticket prices vary based on the distance you're traveling and the bus you select. The system automatically calculates the fare based on your starting point and destination. You'll see the exact price before confirming your booking."
+  },
+  {
+    "question": "is ticket price calculated automatically",
+    "answer": "Yes, ticket prices are calculated automatically based on the distance between your pickup and drop-off points. The system uses the bus route to determine the exact distance you'll travel and calculates a proportional fare."
+  },
+  {
+    "question": "can i get a refund if i cancel",
+    "answer": "Ticket cancellation and refund policies may vary. Go to 'My Tickets' section, select the ticket you want to cancel, and check the cancellation policy. Follow the cancellation process, and if eligible, your refund will be processed according to the policy."
+  },
+  {
+    "question": "how do i contact support",
+    "answer": "You can get support right here through this chatbot for most queries. For urgent issues or specific concerns that need human assistance, look for the 'Contact Support' option in the Profile section or check the website footer for contact details."
+  },
+  {
+    "question": "do you provide customer support",
+    "answer": "Yes, we provide customer support through this AI chatbot for instant help with common queries. For more complex issues, you can reach out to our support team through the contact options available on the website."
+  },
+  {
+    "question": "what if i have a complaint",
+    "answer": "For complaints or feedback, you can contact our support team through the Contact Support option. You can also leave a review for specific buses to share your experience, which helps us improve our services."
+  },
+  {
+    "question": "can i save my favorite routes",
+    "answer": "Currently, you can view your booking history in the Ticket section which shows your previously traveled routes. For saving favorite routes or frequent searches, check the upcoming features or contact support for more information."
+  },
+  {
+    "question": "how accurate is the bus tracking",
+    "answer": "Our bus tracking is real-time and updates continuously as buses move. The accuracy depends on GPS connectivity and network conditions. Generally, you can expect precise location updates within a few meters of the actual position."
+  },
+  {
+    "question": "what if the bus location is not updating",
+    "answer": "If bus location isn't updating, it could be due to: GPS signal issues on the bus, network connectivity problems, or temporary technical issues. Try refreshing the page. If the problem persists, the bus might be temporarily offline or not in service."
+  },
+  {
+    "question": "can i share my ticket with someone",
+    "answer": "Tickets are typically issued to the person who books them. Check the ticket details for transferability. If you need to share travel details, you can take a screenshot of your ticket, but make sure the ticket is valid for the traveler."
+  },
+  {
+    "question": "how do i know if my booking is confirmed",
+    "answer": "After successful payment, you'll receive a booking confirmation immediately. Your ticket will appear in the 'Ticket' section with all details. You should also get a confirmation with your payment receipt showing 'Payment verified successfully'."
+  },
+  {
+    "question": "why should i use this website",
+    "answer": "Our platform saves you time by showing real-time bus locations, eliminating guesswork about bus arrivals. You can book tickets online, avoid queues, plan your journey with multiple route options, and access it anytime from any device. It's convenient, secure, and user-friendly."
+  },
+  {
+    "question": "what is the weather today",
+    "answer": "I'm a bus booking and tracking assistant, so I don't have access to weather information. However, I can help you find buses, book tickets, track bus locations, or find nearby places. Is there anything related to bus services I can help you with?"
+  },
+  {
+    "question": "tell me a joke",
+    "answer": "I appreciate the lighthearted question! While I'm here primarily to help with bus bookings and tracking, I'm happy to chat. Is there anything about our bus services, routes, or bookings I can help you with today?"
+  },
+  {
+    "question": "what is the capital of france",
+    "answer": "I'm specialized in helping with bus-related queries for this platform. For general knowledge questions, you might want to use a search engine. But I'm here to help with anything related to bus tracking, booking tickets, finding routes, or nearby locations. What can I assist you with?"
+  },
+  {
+    "question": "how to cook rice",
+    "answer": "That's not related to our bus services, but I'd be happy to help you with bus bookings, tracking, route planning, or finding nearby places. Is there anything about transportation or our services I can assist you with?"
+  },
+  {
+    "question": "what is artificial intelligence",
+    "answer": "While that's an interesting topic, I'm designed specifically to help with bus-related services on this platform. I can assist you with searching buses, booking tickets, tracking locations, viewing your tickets, or finding nearby places. How can I help you today?"
+  },
+  {
+    "question": "who is the president",
+    "answer": "I'm focused on helping with bus services and bookings rather than general information. For questions about buses, routes, tickets, or nearby locations on this platform, I'm your go-to assistant! What would you like to know?"
+  },
+  {
+    "question": "tell me about cars",
+    "answer": "I specialize in bus services rather than cars. However, I can help you with everything related to buses on this platform - searching routes, booking tickets, tracking buses in real-time, and finding nearby locations. What would you like to know about our bus services?"
+  },
+  {
+    "question": "how to lose weight",
+    "answer": "That's outside my area of expertise. I'm here to help specifically with bus tracking and booking services. I can assist you with finding buses, booking tickets, checking routes, or locating nearby places. Is there anything transportation-related I can help with?"
+  },
+  {
+    "question": "what is the meaning of life",
+    "answer": "That's quite a philosophical question! I'm here to help with more practical matters related to bus services - like finding the right bus for your journey, booking tickets, or tracking buses. How can I assist you with your travel needs today?"
+  },
+  {
+    "question": "recommend me a movie",
+    "answer": "I'm not able to help with movie recommendations, but I can definitely help you find the right bus to get to the cinema! Let me know if you need help with bus routes, bookings, or finding nearby locations."
+  },
+  {
+    "question": "what is coronavirus",
+    "answer": "For health and medical information, it's best to consult official health websites or medical professionals. I'm here to help with bus-related services including searching routes, booking tickets, tracking buses, and finding nearby hospitals or clinics. Can I help you with any of these?"
+  },
+  {
+    "question": "how to make money online",
+    "answer": "That's not something I can help with, as I'm specialized in bus tracking and booking services. I can assist you with finding buses, planning routes, booking tickets, or locating nearby places. What can I help you with regarding our bus services?"
+  },
+  {
+    "question": "what is bitcoin",
+    "answer": "I don't have information about cryptocurrency. My expertise is in helping you with bus services on this platform. I can help you search for buses, book tickets, track real-time locations, or find nearby places. How can I assist your travel needs?"
+  },
+  {
+    "question": "solve this math problem",
+    "answer": "I'm not designed to solve math problems, but I can help calculate ticket prices, distances, and travel times for bus journeys! Is there anything related to bus bookings, routes, or our services I can help you with?"
+  },
+  {
+    "question": "translate this to spanish",
+    "answer": "While I don't provide translation services, our website does support multiple languages! You can change the language using the Language option in the navigation bar. I can help you with bus searches, bookings, or any other feature of our platform. What do you need?"
+  },
+  {
+    "question": "who won the cricket match",
+    "answer": "I don't have sports information, but I can help you find a bus to get to the stadium! I specialize in bus tracking, route planning, ticket booking, and finding nearby locations. How can I assist with your transportation needs?"
+  },
+  {
+    "question": "what are the symptoms of flu",
+    "answer": "For medical questions, please consult healthcare professionals or visit a medical website. However, I can help you find nearby hospitals or clinics using our Nearby section! I can also assist with bus bookings and tracking. What do you need help with?"
+  },
+  {
+    "question": "how to learn programming",
+    "answer": "That's outside my scope of knowledge. I'm here to help with bus-related queries - searching buses, booking tickets, tracking locations, finding routes, and discovering nearby places. Is there anything about our bus services I can help you with?"
+  },
+  {
+    "question": "what should i study",
+    "answer": "Career and education advice isn't my specialty, but I can help you find buses to get to schools or educational institutions! Use our Nearby section to find schools, or let me help with bus routes and bookings. What do you need?"
+  },
+  {
+    "question": "i don't understand",
+    "answer": "No problem! I'm here to help. Could you please clarify what you're trying to do? Are you looking to search for a bus, book a ticket, track a bus location, view your tickets, find nearby places, or something else? Let me know and I'll guide you through it."
+  },
+  {
+    "question": "this is confusing",
+    "answer": "I understand it might seem overwhelming at first. Let's take it step by step. What would you like to do? Book a ticket? Search for a bus? Track a bus? View your bookings? Just tell me what you need, and I'll explain it simply."
+  },
+  {
+    "question": "i need help but not with buses",
+    "answer": "I appreciate you reaching out, but I'm specifically designed to help with bus-related services on this platform. For other types of assistance, you may want to contact general customer support or use other resources. However, if there's anything at all related to bus travel, tracking, or bookings, I'm here to help!"
+  },
+  {
+    "question": "what is the time now",
+    "answer": "I don't have access to current time information. However, I can help you check bus schedules and time slots! If you need to know when a specific bus departs, just search for the bus and I'll show you the available time slots."
+  },
+  {
+    "question": "how far is new york from here",
+    "answer": "I don't have information about distances to other cities. I'm specialized in helping with bus routes within our service area. I can show you available bus routes and calculate distances between pickup and drop-off points for bus journeys. Would you like to search for a bus route?"
+  },
+  {
+    "question": "what is the best restaurant nearby",
+    "answer": "While I can't recommend restaurants, I can help you find nearby locations using our Nearby section! You can find hospitals, clinics, schools, and other important places. For restaurant recommendations, you might want to use a food review app. How can I help with your bus travel needs?"
+  },
+  {
+    "question": "tell me the news",
+    "answer": "I don't have access to current news. I'm here to help with bus-related services like tracking buses, booking tickets, finding routes, and locating nearby places. Is there anything about our bus platform I can assist you with?"
+  },
+  {
+    "question": "what is my horoscope",
+    "answer": "I don't provide horoscope readings. My specialty is bus tracking and booking services. I can help you plan your journey, book tickets, track buses, or find nearby locations. What would you like to know about our services?"
+  },
+  {
+    "question": "how to fix my computer",
+    "answer": "Technical support for computers isn't my area. I'm designed to help with bus services on this platform. However, if you're having issues with our website itself, I can help troubleshoot that! Otherwise, let me know how I can assist with bus bookings or tracking."
+  },
+  {
+    "question": "what phone should i buy",
+    "answer": "I can't help with phone recommendations, but I can tell you our website works great on any smartphone! I'm here to assist with bus tracking, ticket booking, route planning, and finding nearby places. What do you need help with today?"
+  },
+  {
+    "question": "how to tie a tie",
+    "answer": "That's not something I can help with. I specialize in bus-related services including route search, ticket booking, real-time tracking, and finding nearby locations. Is there anything about our bus platform I can assist you with?"
+  },
+  {
+    "question": "what is the stock market doing",
+    "answer": "I don't have stock market information. I'm focused on helping with bus services - searching routes, booking tickets, tracking buses, and finding nearby places. How can I help with your transportation needs?"
+  },
+  {
+    "question": "who is your creator",
+    "answer": "I'm an AI assistant created to help users with bus tracking and booking services on this platform. My purpose is to make your bus travel experience easier! How can I assist you with buses, routes, tickets, or nearby locations today?"
+  },
+  {
+    "question": "are you a robot",
+    "answer": "Yes, I'm an AI chatbot designed specifically to help with bus-related queries on this platform. I can assist you with searching buses, booking tickets, tracking locations, and finding nearby places. What would you like help with?"
+  },
+  {
+    "question": "can you think",
+    "answer": "I'm an AI assistant programmed to help with bus services. While I can understand and respond to your questions about buses, routes, bookings, and tracking, my purpose is focused on making your bus travel easier. How can I help you today?"
+  },
+  {
+    "question": "do you have feelings",
+    "answer": "I'm an AI chatbot, so I don't have feelings, but I'm designed to be helpful and friendly! I'm here to assist you with all your bus-related needs - searching, booking, tracking, and navigation. What can I help you with?"
+  },
+  {
+    "question": "what is your favorite color",
+    "answer": "I don't have personal preferences as I'm an AI assistant! But I'm great at helping you with bus services - from finding the right route to booking tickets and tracking buses in real-time. What would you like help with today?"
+  },
+  {
+    "question": "sing me a song",
+    "answer": "I'm not designed to sing, but I can help make your bus journey smooth! Whether you need to search for buses, book tickets, track locations, or find nearby places, I'm here to assist. What do you need?"
+  },
+  {
+    "question": "tell me a story",
+    "answer": "While storytelling isn't my specialty, I can help you start your own journey story by finding the perfect bus route! I can assist with searching buses, booking tickets, tracking, and finding nearby locations. How can I help?"
+  },
+  {
+    "question": "what is the best hotel",
+    "answer": "Hotel recommendations aren't within my scope. I'm specialized in bus services - helping you search routes, book tickets, track buses, and find nearby important locations like hospitals and schools. Can I help with your bus travel needs?"
+  },
+  {
+    "question": "how to play guitar",
+    "answer": "That's not something I can teach you. I'm focused on bus-related services. I can help you find buses to get to music schools though! Let me know if you need help with bus routes, bookings, or tracking."
+  },
+  {
+    "question": "what is love",
+    "answer": "That's quite philosophical! I'm here for more practical travel matters. I specialize in helping with bus searches, ticket bookings, real-time tracking, and finding nearby locations. How can I assist your journey today?"
+  },
+  {
+    "question": "how to get rich",
+    "answer": "Financial advice isn't my area of expertise. I'm here to help you save time and money on bus travel though! I can assist with finding the best routes, booking tickets, and tracking buses. What do you need help with?"
+  },
+  {
+    "question": "what should i eat for dinner",
+    "answer": "I can't suggest meals, but I can help you find a bus to get to a restaurant! I specialize in bus tracking, route planning, ticket booking, and finding nearby locations. How can I assist with your travel needs?"
+  },
+  {
+    "question": "how to win at poker",
+    "answer": "Gaming strategies aren't my specialty. I'm designed to help with bus services - searching routes, booking tickets, tracking buses in real-time, and finding nearby places. What can I help you with today?"
+  },
+  {
+    "question": "what is the best car",
+    "answer": "I focus on buses rather than cars! I can help you with everything bus-related - finding routes, booking tickets, tracking bus locations, and discovering nearby places. What would you like to know about our bus services?"
+  },
+  {
+    "question": "how to start a business",
+    "answer": "Business advice isn't something I provide. My expertise is in bus tracking and booking services. I can help you plan your commute or business travel though! What bus-related assistance do you need?"
+  },
+  {
+    "question": "what is quantum physics",
+    "answer": "Scientific topics like that are outside my scope. I'm specialized in helping with bus services on this platform. I can assist with route searches, bookings, tracking, and finding nearby locations. How can I help you today?"
+  },
+  {
+    "question": "who won the election",
+    "answer": "I don't have political or election information. I'm here to help with bus services - searching routes, booking tickets, tracking buses, and finding nearby places. What can I assist you with regarding transportation?"
+  },
+  {
+    "question": "what is the best university",
+    "answer": "I can't provide university rankings, but I can help you find buses to get to educational institutions! Use our Nearby section to find schools, or let me help with bus routes and bookings. What do you need?"
+  },
+  {
+    "question": "how to build a house",
+    "answer": "Construction advice isn't my area. I'm designed to help with bus-related queries - finding routes, booking tickets, tracking buses, and locating nearby places. How can I help with your bus travel needs?"
+  },
+  {
+    "question": "what is the best workout",
+    "answer": "Fitness advice isn't something I provide. However, I can help you find buses to get to gyms or parks! I specialize in bus tracking, route planning, and ticket booking. What do you need help with?"
+  },
+  {
+    "question": "how to get a girlfriend",
+    "answer": "Relationship advice isn't my specialty. I'm here to help with bus services though - maybe help you find the right bus to meet someone! I can assist with routes, bookings, tracking, and nearby locations. What do you need?"
+  },
+  {
+    "question": "what is the recipe for pizza",
+    "answer": "I don't have cooking recipes, but I can help you find a bus to get to your favorite pizzeria! I specialize in bus tracking, route planning, ticket booking, and finding nearby locations. How can I help?"
+  },
+  {
+    "question": "how to learn a new language",
+    "answer": "Language learning tips aren't my specialty, but our website does support multiple languages! You can change the interface language from the navigation bar. I'm here to help with bus searches, bookings, and tracking. What do you need?"
+  },
+  {
+    "question": "what is the speed of light",
+    "answer": "I don't have scientific data like that. I'm specialized in bus services - helping you find routes, book tickets, track buses in real-time, and locate nearby places. What can I help you with today?"
+  },
+  {
+    "question": "how to meditate",
+    "answer": "Meditation guidance isn't something I provide. I'm focused on bus-related services. I can help you find a peaceful bus ride though! Let me know if you need help with routes, bookings, or tracking."
+  },
+  {
+    "question": "what lottery numbers should i pick",
+    "answer": "I can't predict lottery numbers! I'm here to help with bus services - searching routes, booking tickets, tracking buses, and finding nearby locations. How can I assist your travel needs today?"
+  },
+  {
+    "question": "how to become famous",
+    "answer": "Career advice isn't my area. I'm designed to help with bus-related queries on this platform. I can assist with finding buses, booking tickets, tracking, and navigation. What do you need help with?"
+  },
+  {
+    "question": "what is the best vacation spot",
+    "answer": "I can't recommend vacation destinations, but I can help you find buses to get around locally! I specialize in bus tracking, route planning, ticket booking, and finding nearby places. How can I help?"
+  },
+  {
+    "question": "how old are you",
+    "answer": "I'm an AI chatbot, so I don't have an age in the traditional sense! I'm here whenever you need help with bus services - searching routes, booking tickets, tracking buses, or finding nearby locations. What can I help you with?"
+  },
+  {
+    "question": "where do you live",
+    "answer": "I'm a digital assistant that exists to help with bus services on this platform! I'm here 24/7 to assist with route searches, ticket bookings, bus tracking, and finding nearby places. How can I help you today?"
+  }
+]
