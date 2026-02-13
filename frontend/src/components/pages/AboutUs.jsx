@@ -1,303 +1,124 @@
-import React from "react";
-import { motion } from "framer-motion";
-
-import {
-  Target,
-  Users,
-  Award,
-  BookOpen,
-  Lightbulb,
-  Heart,
-  Shield,
-  Zap,
-  Globe,
-  Star,
-  ChevronRight,
-  Mail,
-  Phone,
-  MapPin
-} from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import React, { Suspense } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ChevronRight, Home, Users, Info, Book, Shield, UserCheck, Eye, Target, GraduationCap } from 'lucide-react';
 
 const AboutUs = () => {
-  const teamMembers = [
-    {
-      name: "Dr. Sarah Johnson",
-      role: "Founder & CEO",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b17c?w=400&h=400&fit=crop&crop=face",
-      gradient: "from-blue-500 to-indigo-600"
-    },
-    {
-      name: "Michael Chen",
-      role: "Head of Technology",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
-      gradient: "from-purple-500 to-violet-600"
-    },
-    {
-      name: "Emily Rodriguez",
-      role: "Education Director",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
-      gradient: "from-green-500 to-emerald-600"
-    },
-    {
-      name: "David Kim",
-      role: "UX Design Lead",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
-      gradient: "from-orange-500 to-red-600"
-    }
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const sidebarItems = [
+    { name: "Welcome Messages", path: "/about/welcome-messages", icon: Info },
+    { name: "Our Founder", path: "/about/our-founder", icon: Users },
+    { name: "About BPPIMT", path: "/about/about-bppimt", icon: Book },
+    { name: "Board of Governors", path: "/about/board-of-governors", icon: Shield },
+    { name: "Administration", path: "/about/administration", icon: UserCheck },
+    { name: "Vision", path: "/about/vision", icon: Eye },
+    { name: "Mission", path: "/about/mission", icon: Target },
+    { name: "B. P. Poddar Foundation", path: "/about/foundation", icon: GraduationCap },
   ];
 
-  const values = [
-    {
-      icon: Target,
-      title: "Excellence",
-      description: "We strive for the highest quality in educational technology and user experience.",
-      color: "blue"
-    },
-    {
-      icon: Heart,
-      title: "Student-Centered",
-      description: "Every decision we make puts student success and learning outcomes first.",
-      color: "pink"
-    },
-    {
-      icon: Shield,
-      title: "Integrity",
-      description: "We maintain the highest standards of academic honesty and data security.",
-      color: "green"
-    },
-    {
-      icon: Lightbulb,
-      title: "Innovation",
-      description: "We continuously evolve our platform with cutting-edge educational technology.",
-      color: "purple"
-    }
-  ];
+  const getBreadcrumbs = () => {
+    const paths = currentPath.split('/').filter(p => p !== "");
+    return paths.map((path, index) => {
+      const url = `/${paths.slice(0, index + 1).join('/')}`;
+      const name = path.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      return { name, url };
+    });
+  };
 
-  const stats = [
-    { number: "50K+", label: "Active Students", icon: Users },
-    { number: "1,200+", label: "Educators", icon: BookOpen },
-    { number: "500K+", label: "Quizzes Completed", icon: Award },
-    { number: "99.9%", label: "Uptime", icon: Zap }
-  ];
+  const breadcrumbs = getBreadcrumbs();
 
   return (
-    <>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
-
-        {/* Hero Section */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600"></div>
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 left-20 w-40 h-40 border-2 border-white/30 rounded-full animate-pulse"></div>
-            <div className="absolute bottom-32 right-32 w-32 h-32 bg-white/10 rounded-full animate-bounce"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 border border-white/20 rounded-3xl rotate-45 animate-pulse"></div>
-            <div className="absolute top-40 right-40 w-20 h-20 bg-white/20 rounded-2xl rotate-12 animate-pulse"></div>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="relative z-10 text-center py-24 px-6"
-          >
-            <div className="max-w-4xl mx-auto">
-              <div className="inline-flex items-center gap-4 mb-8">
-                <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center backdrop-blur-sm">
-                  <Globe className="w-10 h-10 text-white" />
-                </div>
-                <div className="text-left">
-                  <h1 className="text-5xl font-bold text-white mb-3">
-                    About ExamEdge
-                  </h1>
-                  <p className="text-white/90 text-xl">
-                    Revolutionizing education through interactive learning
-                  </p>
-                </div>
-              </div>
-
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5, duration: 0.8 }}
-                className="text-lg text-white/90 max-w-3xl mx-auto leading-relaxed"
-              >
-                We believe that learning should be engaging, accessible, and effective. Our platform combines
-                cutting-edge technology with proven educational methodologies to create an unparalleled
-                quiz experience for students and educators worldwide.
-              </motion.p>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Stats Section */}
-        <div className="px-6 -mt-16 relative z-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="max-w-6xl mx-auto"
-          >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-              {stats.map((stat, index) => (
-                <Card key={index} className="bg-white/90 backdrop-blur-xl border-0 shadow-xl rounded-2xl text-center p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
-                  <CardContent className="p-0">
-                    <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                      <stat.icon className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="text-3xl font-bold text-gray-800 mb-2">{stat.number}</div>
-                    <div className="text-gray-600 font-medium">{stat.label}</div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Mission Section */}
-        <div className="px-6 pb-16">
-          <div className="max-w-6xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
-                Our Mission
-              </h2>
-              <p className="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
-                To democratize quality education by providing innovative, interactive assessment tools
-                that help educators create engaging content and students achieve their full potential.
-              </p>
-            </motion.div>
-
-            {/* Values Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
-              {values.map((value, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 + index * 0.1, duration: 0.6 }}
+    <div className="min-h-screen bg-slate-50/50">
+      {/* Breadcrumbs Header */}
+      <div className="bg-white border-b border-slate-200/60 py-4">
+        <div className="max-w-7xl mx-auto px-4 md:px-10">
+          <nav className="flex items-center space-x-2 text-sm text-slate-500">
+            <Link to="/" className="hover:text-blue-600 transition-colors flex items-center gap-1">
+              <Home className="w-4 h-4" />
+              <span>Home</span>
+            </Link>
+            {breadcrumbs.map((bc, index) => (
+              <React.Fragment key={bc.url}>
+                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <Link
+                  to={bc.url}
+                  className={`hover:text-blue-600 transition-colors ${index === breadcrumbs.length - 1 ? "text-slate-900 font-medium pointer-events-none" : ""}`}
                 >
-                  <Card className="bg-white/80 backdrop-blur-xl border-0 shadow-xl rounded-3xl p-6 h-full hover:shadow-2xl transition-all duration-500 transform hover:scale-105 hover:rotate-1">
-                    <CardContent className="p-0 text-center">
-                      <div className={`w-16 h-16 bg-gradient-to-br from-${value.color}-500 to-${value.color}-600 rounded-2xl mx-auto mb-6 flex items-center justify-center`}>
-                        <value.icon className="w-8 h-8 text-white" />
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-800 mb-4">{value.title}</h3>
-                      <p className="text-gray-600 leading-relaxed">{value.description}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+                  {bc.name}
+                </Link>
+              </React.Fragment>
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 md:px-10 py-10 grid grid-cols-1 lg:grid-cols-4 gap-10">
+        {/* Main Content Area */}
+        <div className="lg:col-span-3">
+          <Suspense fallback={
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>
-
-            {/* Team Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.8 }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-6">
-                Meet Our Team
-              </h2>
-              <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-12">
-                Passionate educators, technologists, and innovators working together to transform learning.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {teamMembers.map((member, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 1.1 + index * 0.1, duration: 0.6 }}
-                    className="group"
-                  >
-                    <Card className="bg-white/80 backdrop-blur-xl border-0 shadow-xl rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:scale-110 hover:rotate-2">
-                      <CardContent className="p-0">
-                        <div className={`h-32 bg-gradient-to-br ${member.gradient} relative`}>
-                          <div className="absolute inset-0 opacity-20">
-                            <div className="absolute top-2 right-2 w-12 h-12 border border-white/40 rounded-full animate-pulse"></div>
-                            <div className="absolute bottom-2 left-2 w-8 h-8 bg-white/30 rounded-full"></div>
-                          </div>
-                        </div>
-
-                        <div className="relative -mt-12 text-center pb-6">
-                          <img
-                            src={member.image}
-                            alt={member.name}
-                            loading="lazy"
-                            className="w-24 h-24 rounded-full mx-auto border-4 border-white shadow-xl object-cover"
-                          />
-                          <h3 className="text-lg font-bold text-gray-800 mt-4">{member.name}</h3>
-                          <p className="text-gray-600 font-medium">{member.role}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Contact Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.3, duration: 0.8 }}
-              className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 text-center"
-            >
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
-                Get In Touch
-              </h2>
-              <p className="text-gray-700 text-lg mb-8 max-w-2xl mx-auto">
-                Have questions about our platform? Want to partner with us? We'd love to hear from you.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-2xl">
-                  <Mail className="w-6 h-6 text-blue-600" />
-                  <div className="text-left">
-                    <p className="text-sm text-gray-500 font-medium">EMAIL</p>
-                    <p className="text-blue-600 font-semibold">hello@quizmaster.edu</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-4 bg-green-50 rounded-2xl">
-                  <Phone className="w-6 h-6 text-green-600" />
-                  <div className="text-left">
-                    <p className="text-sm text-gray-500 font-medium">PHONE</p>
-                    <p className="text-green-600 font-semibold">+1 (555) 123-4567</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-2xl">
-                  <MapPin className="w-6 h-6 text-purple-600" />
-                  <div className="text-left">
-                    <p className="text-sm text-gray-500 font-medium">LOCATION</p>
-                    <p className="text-purple-600 font-semibold">San Francisco, CA</p>
-                  </div>
-                </div>
-              </div>
-
-              <Button className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-2xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                Contact Us Today
-                <ChevronRight className="w-5 h-5 ml-2" />
-              </Button>
-            </motion.div>
-          </div>
+          }>
+            <Outlet />
+          </Suspense>
         </div>
 
-        {/* Floating decorative elements */}
-        <div className="fixed top-1/4 left-10 w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full opacity-10 blur-xl animate-pulse"></div>
-        <div className="fixed bottom-1/4 right-10 w-32 h-32 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full opacity-10 blur-2xl animate-pulse"></div>
-        <div className="fixed top-1/2 right-1/4 w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full opacity-10 blur-lg animate-pulse"></div>
+        {/* Sidebar */}
+        <div className="lg:col-span-1">
+          <div className="sticky top-24 space-y-6">
+            <div className="bg-slate-100/50 rounded-2xl border border-slate-200/40 shadow-sm overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-2xl font-black text-slate-800 tracking-tight">Related Pages</h3>
+                  <div className="h-px flex-1 bg-rose-500/30"></div>
+                  <div className="h-0.5 w-8 bg-rose-500"></div>
+                </div>
+              </div>
+
+              <div className="p-2 space-y-1">
+                <div className="bg-[#1A1A4E] text-white px-4 py-3 rounded-lg mb-2 font-bold flex items-center gap-3 shadow-lg">
+                  <Info className="w-5 h-5 shrink-0" />
+                  <span className="text-lg">About Us</span>
+                </div>
+
+                <nav className="space-y-0.5">
+                  {sidebarItems.map((item) => {
+                    const isActive = currentPath === item.path || (currentPath === "/about" && item.path === "/about/welcome-messages");
+                    return (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        className={`group flex items-center gap-3 px-4 py-2.5 transition-all duration-200 border-l-2 ${isActive
+                          ? "text-[#5E17EB] bg-white border-[#5E17EB] font-bold shadow-sm"
+                          : "text-slate-600 hover:text-slate-900 border-transparent hover:bg-white/50"
+                          }`}
+                      >
+                        <span className="text-[15px]">{item.name}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
+            </div>
+
+            {/* Support Card */}
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                <Users className="w-24 h-24" />
+              </div>
+              <h4 className="text-lg font-bold mb-2">Need Help?</h4>
+              <p className="text-blue-100 text-sm mb-4">Feel free to contact our administrative office for any queries.</p>
+              <button className="bg-white text-blue-700 px-4 py-2 rounded-xl text-sm font-bold hover:shadow-lg transition-all w-full">
+                Contact Us
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

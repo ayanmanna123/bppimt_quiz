@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle } from "lucide-react";
+import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target } from "lucide-react";
 import { useSocket } from "../../context/SocketContext";
 import axios from "axios";
 import {
@@ -188,11 +188,11 @@ const Navbar = () => {
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
           <div className="relative">
-            <img src="/img-2.png" alt="Shield Logo" className="h-10 w-10" />
+            <img src="/bppimt.svg" alt="Shield Logo" className="h-10 w-10" />
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-lg opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
           </div>
           <span className="font-black text-2xl bg-gradient-to-r from-[#03045E] via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            ExamEdge
+            Bppimt Quiz
           </span>
         </motion.div>
 
@@ -202,6 +202,60 @@ const Navbar = () => {
             {navItems.map((item, index) => {
               const IconComponent = item.icon;
               const isActive = isActivePath(item.path);
+
+              if (item.name === "About Us") {
+                return (
+                  <motion.li
+                    key={item.name}
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                  >
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          className={`relative group flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 cursor-pointer ${isActive
+                            ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg"
+                            : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                            }`}
+                        >
+                          <div className="relative">
+                            <IconComponent className="w-4 h-4" />
+                          </div>
+                          <span>{item.name}</span>
+                          <ChevronDown className={`w-3 h-3 transition-transform duration-300 group-hover:rotate-180`} />
+                          {!isActive && (
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          )}
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 bg-white/95 backdrop-blur-lg border border-slate-200/60 shadow-2xl rounded-2xl p-2 z-[60]">
+                        <div className="grid gap-1">
+                          {[
+                            { name: "Welcome Messages", path: "/about/welcome-messages", icon: Info },
+                            { name: "Our Founder", path: "/about/our-founder", icon: Users },
+                            { name: "About BPPIMT", path: "/about/about-bppimt", icon: Book },
+                            { name: "Board of Governors", path: "/about/board-of-governors", icon: Shield },
+                            { name: "Administration", path: "/about/administration", icon: UserCheck },
+                            { name: "Vision", path: "/about/vision", icon: Eye },
+                            { name: "Mission", path: "/about/mission", icon: Target },
+                            { name: "B. P. Poddar Foundation", path: "/about/foundation", icon: GraduationCap },
+                          ].map((subItem) => (
+                            <Link
+                              key={subItem.path}
+                              to={subItem.path}
+                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors group"
+                            >
+                              <subItem.icon className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-colors" />
+                              <span className="text-sm font-medium text-slate-700">{subItem.name}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </motion.li>
+                );
+              }
 
               return (
                 <motion.li

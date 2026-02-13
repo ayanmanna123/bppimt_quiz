@@ -36,6 +36,14 @@ const PlayWeaknessQuiz = lazy(() => import("./components/pages/PlayWeaknessQuiz"
 const SubjectNotes = lazy(() => import("./components/pages/SubjectNotes"));
 const Assignments = lazy(() => import("./components/pages/Assignments"));
 const GlobalChat = lazy(() => import("./components/pages/GlobalChat"));
+const WelcomeMessages = lazy(() => import("./components/pages/about/WelcomeMessages"));
+const OurFounder = lazy(() => import("./components/pages/about/OurFounder"));
+const AboutBPPIMT = lazy(() => import("./components/pages/about/AboutBPPIMT"));
+const BoardOfGovernors = lazy(() => import("./components/pages/about/BoardOfGovernors"));
+const Administration = lazy(() => import("./components/pages/about/Administration"));
+const Vision = lazy(() => import("./components/pages/about/Vision"));
+const Mission = lazy(() => import("./components/pages/about/Mission"));
+const Foundation = lazy(() => import("./components/pages/about/Foundation"));
 
 
 // Simple loading fallback
@@ -69,6 +77,17 @@ function App() {
         {
           path: "/about",
           element: <AboutUs />,
+          children: [
+            { path: "", element: <WelcomeMessages /> },
+            { path: "welcome-messages", element: <WelcomeMessages /> },
+            { path: "our-founder", element: <OurFounder /> },
+            { path: "about-bppimt", element: <AboutBPPIMT /> },
+            { path: "board-of-governors", element: <BoardOfGovernors /> },
+            { path: "administration", element: <Administration /> },
+            { path: "vision", element: <Vision /> },
+            { path: "mission", element: <Mission /> },
+            { path: "foundation", element: <Foundation /> },
+          ],
         },
         {
           path: "/profile",
