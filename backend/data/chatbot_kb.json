@@ -1,0 +1,26 @@
+[
+  {
+    "question": "How to create a subject?",
+    "answer": "To create a subject, go to the Admin panel and click on 'Create Subject'. You will need to provide the Subject Name, Subject Code, Department (EE, ECE, CSE, IT), Semester (1st to 8th), Location (Latitude and Longitude), and any Time Slots for the classes."
+  },
+  {
+    "question": "How to create a quiz?",
+    "answer": "To create a quiz, navigate to a specific subject in the Admin panel. Click on 'Create Quiz' for that subject. Enter the Quiz Title, Submission Date, Duration in minutes, Marks per Question, and the Total number of Questions. You can then manually add questions, generate them using AI, or import them from an XML file."
+  },
+  {
+    "question": "What departments are supported?",
+    "answer": "The website currently supports Electrical Engineering (EE), Electronics & Communication (ECE), Computer Science (CSE), and Information Technology (IT)."
+  },
+  {
+    "question": "Can I use AI to generate questions?",
+    "answer": "Yes! When creating a quiz, you can use the 'Generate with AI' button. You can even upload lecture notes or paste text to provide context for the AI to generate relevant questions."
+  },
+  {
+    "question": "How do I import questions from a file?",
+    "answer": "You can import questions using the 'Upload XML' button in the Quiz Creator Studio. The XML should follow a specific format with 'question', 'text', 'option', and 'correctAnswer' tags."
+  },
+  {
+    "question": "How do I take a quiz?",
+    "answer": "To take a quiz, log in as a student, navigate to your subjects, and look for available quizzes. Click on a quiz to start it."
+  }
+]

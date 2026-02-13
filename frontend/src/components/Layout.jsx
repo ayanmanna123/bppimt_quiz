@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "./shared/Navbar";
 import PushNotificationManager from "./PushNotificationManager";
+import ChatBot from "./ChatBot";
 
 const Layout = () => {
     return (
@@ -11,6 +12,7 @@ const Layout = () => {
             <Suspense fallback={null}>
                 <Outlet />
             </Suspense>
+            <ChatBot />
         </>
     );
 };

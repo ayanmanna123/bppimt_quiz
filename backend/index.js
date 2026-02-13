@@ -28,6 +28,7 @@ import chatRoute from "./routes/chat.routes.js";
 import uploadRoute from "./routes/upload.routes.js";
 import notificationRoute from "./routes/notification.routes.js";
 import studyRoomRoute from "./routes/studyRoom.routes.js";
+import chatbotRoute from "./routes/chatbot.route.js";
 import { saveMessage, addReaction, removeReaction } from "./controllers/chat.controller.js";
 
 dotenv.config();
@@ -127,6 +128,7 @@ app.use("/api/v1/chat", jwtMiddleware, chatRoute);
 app.use("/api/v1/upload", jwtMiddleware, uploadRoute);
 app.use("/api/v1/notifications", jwtMiddleware, notificationRoute);
 app.use("/api/v1/study-room", jwtMiddleware, studyRoomRoute);
+app.use("/api/v1/chatbot", jwtMiddleware, chatbotRoute);
 
 
 /* =========================
