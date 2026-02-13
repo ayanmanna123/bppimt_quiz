@@ -25,7 +25,7 @@ const notificationSchema = new mongoose.Schema(
         onModel: {
             type: String,
             required: false,
-            enum: ['Subject', 'Quiz', 'User', 'Note', 'Assignment', 'Chat']
+            enum: ['Subject', 'Quiz', 'User', 'Note', 'Assignment', 'Chat', 'Result']
         },
         message: {
             type: String,

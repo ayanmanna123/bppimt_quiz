@@ -2,6 +2,8 @@ import Quize from "../models/Quiz.model.js";
 import Result from "../models/Result.model.js";
 import Reasult from "../models/Result.model.js";
 import User from "../models/User.model.js";
+import { sendProjectNotification } from "../utils/notification.util.js";
+
 export const submitQuiz = async (req, res) => {
   try {
     const { quizId, answers } = req.body;
@@ -73,7 +75,6 @@ export const submitQuiz = async (req, res) => {
     // Notify Teacher
     try {
       const io = req.app.get("io");
-      const { sendProjectNotification } = await import("../utils/notification.util.js");
 
       await sendProjectNotification({
         recipientIds: [quiz.createdBy],

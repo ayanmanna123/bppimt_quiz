@@ -64,7 +64,7 @@ export const sendNotification = async ({
 
         if (subscriptions.length > 0) {
             const payload = JSON.stringify({
-                title: type === "quiz" ? "New Quiz Available" : type === "subject" ? "New Subject Added" : "New Notification",
+                title: type === "quiz" && onModel === "Result" ? "Quiz Submission Received" : type === "quiz" ? "New Quiz Available" : type === "subject" ? "New Subject Added" : "New Notification",
                 body: message,
                 icon: "/pwa-192x192.png",
                 badge: "/pwa-192x192.png",
