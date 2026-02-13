@@ -30,6 +30,7 @@ import notificationRoute from "./routes/notification.routes.js";
 import studyRoomRoute from "./routes/studyRoom.routes.js";
 import chatbotRoute from "./routes/chatbot.route.js";
 import { saveMessage, addReaction, removeReaction } from "./controllers/chat.controller.js";
+import { initSupportBot } from "./controllers/chatbot.controller.js";
 
 dotenv.config();
 connectToMongo();
@@ -261,6 +262,7 @@ io.on("connection", async (socket) => {
   });
 });
 
-httpServer.listen(port, () => {
+httpServer.listen(port, async () => {
+  await initSupportBot();
   console.log(`✅ HTTP Server running at http://localhost:${port}`);
 });
