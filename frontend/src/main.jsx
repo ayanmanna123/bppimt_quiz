@@ -10,6 +10,7 @@ import { PersistGate } from "redux-persist/lib/integration/react";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { SocketProvider } from "./context/SocketContext";
 import { NotificationProvider } from "./context/NotificationContext";
+import CubeLoader from "./components/shared/CubeLoader";
 
 const persistor = persistStore(store);
 
@@ -38,8 +39,6 @@ createRoot(document.getElementById("root")).render(
             audience: "http://localhost:5000/api/v2",
           }}
         >
-
-
           <SocketProvider>
             <NotificationProvider>
               <App />

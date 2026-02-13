@@ -1,8 +1,7 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense, useEffect } from "react";
 import "./App.css";
 import Layout from "./components/Layout";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
 // Lazy load all page components
 const Home = lazy(() => import("./components/pages/Home"));
 const Complete = lazy(() => import("./components/Complete"));
@@ -49,14 +48,23 @@ const StudyRooms = lazy(() => import("./components/pages/StudyRooms"));
 const StudyRoomDetail = lazy(() => import("./components/pages/StudyRoomDetail"));
 
 
+import CubeLoader from "./components/shared/CubeLoader";
+
 // Simple loading fallback
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center min-h-screen bg-slate-50">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-  </div>
-);
+const LoadingFallback = () => null;
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showSplash) {
+    return <CubeLoader />;
+  }
+
   const approute = createBrowserRouter([
     {
       element: <Layout />,
@@ -256,7 +264,7 @@ function App() {
   ]);
 
   return (
-    <Suspense fallback={<LoadingFallback />}>
+    <Suspense fallback={null}>
       <RouterProvider router={approute} />
     </Suspense>
   );

@@ -57,11 +57,7 @@ const AboutUs = () => {
       <div className="max-w-7xl mx-auto px-4 md:px-10 py-10 grid grid-cols-1 lg:grid-cols-4 gap-10">
         {/* Main Content Area */}
         <div className="lg:col-span-3">
-          <Suspense fallback={
-            <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
-          }>
+          <Suspense fallback={null}>
             <Outlet />
           </Suspense>
         </div>
