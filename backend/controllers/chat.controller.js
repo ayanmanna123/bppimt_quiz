@@ -39,7 +39,7 @@ export const getChatHistory = async (req, res) => {
 };
 
 // Helper function to save message (intended for Socket use)
-export const saveMessage = async (subjectId, senderId, messageContent, mentions = [], replyTo = null, attachments = [], io = null) => {
+export const saveMessage = async (subjectId, senderId, messageContent, mentions = [], replyTo = null, attachments = []) => {
     try {
         let newMessage;
         const chatData = {
@@ -70,80 +70,60 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
             }
         ]);
 
-        // --- NOTIFICATION LOGIC ---
+        // --- PUSH NOTIFICATION LOGIC ---
         try {
-            if (!chatData.isGlobal && io) {
-                // Fetch Subject to find recipients
-                const Subject = (await import("../models/Subject.model.js")).default;
-                const subject = await Subject.findById(subjectId);
+            // Ensure VAPID is set (idempotent operation)
+            if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+                webpush.setVapidDetails(
+                    "mailto:example@yourdomain.org",
+                    process.env.VAPID_PUBLIC_KEY,
+                    process.env.VAPID_PRIVATE_KEY
+                );
 
-                if (subject) {
-                    let recipientIds = [];
+                // 1. Find all subscriptions EXCEPT the sender's
+                const subscriptions = await NotificationSubscription.find({
+                    userId: { $ne: senderId }
+                });
 
-                    // 1. Add Creator
-                    if (subject.createdBy.toString() !== senderId.toString()) {
-                        recipientIds.push(subject.createdBy);
-                    }
+                if (subscriptions.length > 0) {
+                    const senderName = populatedMessage.sender.fullname;
+                    const notificationTitle = `New Message from ${senderName}`;
+                    const notificationBody = messageContent.length > 50
+                        ? messageContent.substring(0, 50) + "..."
+                        : messageContent;
 
-                    // 2. Add Other Teachers
-                    if (subject.otherTeachers) {
-                        subject.otherTeachers.forEach(t => {
-                            if (t.teacher.toString() !== senderId.toString()) {
-                                recipientIds.push(t.teacher);
+                    const url = subjectId === 'global' ? '/community-chat' : `/dashboard/subject/${subjectId}`;
+
+                    // Note: Actions only work if they are defined in SW or supported by platform
+                    const payload = JSON.stringify({
+                        title: notificationTitle,
+                        body: notificationBody,
+                        icon: '/pwa-192x192.png', // Or sender's picture if available and proxied
+                        data: {
+                            url: url,
+                            subjectId: subjectId
+                        }
+                    });
+
+                    // 2. Send in parallel
+                    const promises = subscriptions.map(sub =>
+                        webpush.sendNotification(sub, payload).catch(err => {
+                            if (err.statusCode === 410 || err.statusCode === 404) {
+                                // Subscription expired/gone
+                                NotificationSubscription.deleteOne({ _id: sub._id }).exec();
                             }
-                        });
-                    }
+                        })
+                    );
 
-                    // 3. Add Students
-                    // Find students in that dept/sem
-                    // (Optimization: In a huge system, we wouldn't fetch all, but relying on dept/sem is the current design)
-                    const students = await User.find({
-                        role: "student",
-                        department: subject.department,
-                        semester: subject.semester,
-                        _id: { $ne: senderId }
-                    }).select("_id");
-
-                    students.forEach(s => recipientIds.push(s._id));
-
-                    // Deduplicate
-                    recipientIds = [...new Set(recipientIds.map(id => id.toString()))];
-
-                    if (recipientIds.length > 0) {
-                        const { sendProjectNotification } = await import("../utils/notification.util.js");
-
-                        await sendProjectNotification({
-                            recipientIds,
-                            senderId,
-                            message: `New Message from ${populatedMessage.sender.fullname}`,
-                            type: "chat",
-                            relatedId: newMessage._id,
-                            onModel: "Chat",
-                            url: `/dashboard/subject/${subjectId}`,
-                            io
-                        });
-                    }
-                }
-            } else if (chatData.isGlobal && io) {
-                // For Global Chat, maybe only notify mentions? 
-                // Notifying ALL users for every global msg is bad practice.
-                // Let's stick to mentions for global, or just skip persistent for now.
-                if (mentions && mentions.length > 0) {
-                    const { sendProjectNotification } = await import("../utils/notification.util.js");
-                    await sendProjectNotification({
-                        recipientIds: mentions,
-                        senderId,
-                        message: `You were mentioned by ${populatedMessage.sender.fullname}`,
-                        type: "chat",
-                        relatedId: newMessage._id,
-                        onModel: "Chat",
-                        url: '/community-chat',
-                        io
+                    // Don't await this if you don't want to block the socket response
+                    // But for reliability/debugging we might log errors
+                    Promise.allSettled(promises).then(results => {
+                        // Optional: Log success/failure counts
                     });
                 }
             }
         } catch (notifyError) {
-            console.error("Error sending chat notifications:", notifyError);
+            console.error("Error sending push notifications:", notifyError);
         }
         // -------------------------------
 

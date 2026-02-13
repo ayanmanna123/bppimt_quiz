@@ -2,15 +2,8 @@ import express from "express";
 import webpush from "web-push";
 import NotificationSubscription from "../models/NotificationSubscription.model.js";
 import User from "../models/User.model.js";
-import { getUserNotifications, markAsRead, deleteNotification } from "../controllers/notification.controller.js";
 
 const router = express.Router();
-
-// New routes for notification management
-router.get("/", getUserNotifications);
-router.put("/:id/read", markAsRead);
-router.delete("/:id", deleteNotification);
-
 
 // Configure web-push with VAPID keys
 // Note: In a real app, ensure these are loaded from process.env
