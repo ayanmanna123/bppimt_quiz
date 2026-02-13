@@ -406,5 +406,113 @@
   {
     "question": "Why do I see 'Attendance is currently disabled by the teacher'?",
     "answer": "The teacher has turned off the attendance toggle for this session. Please ask them to enable it if you need to mark attendance."
+  },
+  {
+    "question": "How to create study room?",
+    "answer": "Both teachers and students can create study rooms to facilitate group learning and resource sharing."
+  },
+  {
+    "question": "What is 'Hard Mode' in weakness quiz?",
+    "answer": "It's a challenging mode in the Weakness Attack quiz where you face tougher questions on your weak topics."
+  },
+  {
+    "question": "How do I retry a specific topic attack?",
+    "answer": "After completing a weakness quiz, click the 'Retry Attack' button to generate new follow-up questions on the same topic."
+  },
+  {
+    "question": "Does the weakness quiz save my result?",
+    "answer": "Yes, your performance in the weakness quiz is saved to your history to track improvement."
+  },
+  {
+    "question": "How to upload study notes?",
+    "answer": "Teachers can navigate to a subject, click 'Upload New Material', enter a title, select a file, and click Upload."
+  },
+  {
+    "question": "Can students upload study notes?",
+    "answer": "No, only teachers can upload study materials to the subject."
+  },
+  {
+    "question": "How can I preview a PDF note?",
+    "answer": "Click the 'Preview PDF' button on the note card to open it directly in your browser."
+  },
+  {
+    "question": "Can I download all notes at once?",
+    "answer": "Currently, you can download individual notes. Some sections may offer bulk download options."
+  },
+  {
+    "question": "Does the study room have video chat?",
+    "answer": "Yes, study rooms support embedded video calls powered by Jitsi without needing external apps."
+  },
+  {
+    "question": "Can I open the study room video in a separate tab?",
+    "answer": "Yes, click 'Open in New Tab' to view the video conference in a full-screen independent window."
+  },
+  {
+    "question": "How do I leave a study room?",
+    "answer": "Click the 'Leave Room' button in the sidebar to exit the session."
+  },
+  {
+    "question": "What happens if I switch tabs during a quiz?",
+    "answer": "You will receive warnings. If you switch tabs 10 times, the quiz will be automatically submitted."
+  },
+  {
+    "question": "What happens when the quiz timer runs out?",
+    "answer": "The quiz is automatically submitted with your current answers."
+  },
+  {
+    "question": "Can I jump to specific questions in a quiz?",
+    "answer": "Yes, use the 'Quick Navigation' panel on the right or bottom to jump to any question number."
+  },
+  {
+    "question": "How do I verify a certificate?",
+    "answer": "Go to the Certificate Verifier page and enter the unique Result ID (e.g., QUIZ_12345) to check its authenticity."
+  },
+  {
+    "question": "What information does verification show?",
+    "answer": "It displays the student's name, university number, department, semester, score, and the date of submission."
+  },
+  {
+    "question": "What does 'Certificate Not Verified' mean?",
+    "answer": "It means the Result ID is invalid or the certificate record does not exist in our system."
+  },
+  {
+    "question": "How do I set the location for a subject?",
+    "answer": "In the Subject Builder, you can use the 'Get Live Location' button or click on the interactive map to set coordinates."
+  },
+  {
+    "question": "What is required to create a subject?",
+    "answer": "You need a Subject Name, Code, Department, Semester, Location, and at least one Time Slot."
+  },
+  {
+    "question": "How do I use AI to generate quiz questions?",
+    "answer": "In the Quiz Creator Studio, enter a topic or upload lecture notes, then click 'Generate with AI'."
+  },
+  {
+    "question": "What files can I use for AI quiz generation?",
+    "answer": "You can upload PDF, Word (.docx), PowerPoint (.pptx), or text (.txt) files as context for the AI."
+  },
+  {
+    "question": "How do I import questions from XML?",
+    "answer": "Click the 'Upload XML' button in the Quiz Creator Studio and select a properly formatted XML file."
+  },
+  {
+    "question": "Can I manually add questions to a quiz?",
+    "answer": "Yes, you can manually type in questions, options, and select the correct answer in the editor."
+  },
+  {
+    "question": "How do I search for questions in the Question Bank?",
+    "answer": "Use the search bar in the Question Bank to find questions by text or by the quiz title they belong to."
+  },
+  {
+    "question": "Can I view all questions for a subject?",
+    "answer": "Yes, the Question Bank displays all questions ever created for a specific subject."
+  },
+  {
+    "question": "How do I submit an assignment?",
+    "answer": "Go to the Assignments section, find the assignment, click 'Upload Work', select your file, and click 'Submit'."
+  },
+  {
+    "question": "How can teachers download all submissions?",
+    "answer": "Teachers can view submissions for an assignment and click 'Download All ZIP' to get everyone's work at once."
   }
 ]
