@@ -28,13 +28,13 @@ if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
 
 
 // Notification CRUD
-router.get("/", jwtCheck, getUserNotifications);
-router.get("/unread-count", jwtCheck, getUnreadCount);
-router.put("/:id/read", jwtCheck, markAsRead);
-router.delete("/:id", jwtCheck, deleteNotification); // This handles /:id and /all
+router.get("/", getUserNotifications);
+router.get("/unread-count", getUnreadCount);
+router.put("/:id/read", markAsRead);
+router.delete("/:id", deleteNotification);
 
 // Subscribe functionality
-router.post("/subscribe", jwtCheck, async (req, res) => {
+router.post("/subscribe", async (req, res) => {
     const subscription = req.body;
     let userId = req.auth?.payload?.sub || req.body.userId;
 

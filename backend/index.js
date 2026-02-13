@@ -124,7 +124,7 @@ app.use("/api/v1/assignment", jwtMiddleware, assignmentRoute);
 app.use("/api/v1/meeting", jwtMiddleware, meetingRoute);
 app.use("/api/v1/chat", jwtMiddleware, chatRoute);
 app.use("/api/v1/upload", jwtMiddleware, uploadRoute);
-app.use("/api/v1/notifications", notificationRoute);
+app.use("/api/v1/notifications", jwtMiddleware, notificationRoute);
 
 
 /* =========================

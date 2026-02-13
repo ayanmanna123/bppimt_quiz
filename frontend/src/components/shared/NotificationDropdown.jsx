@@ -107,7 +107,7 @@ const NotificationItem = ({ notification, onMarkRead, onDelete }) => {
 };
 
 const NotificationDropdown = () => {
-    const { notifications, unreadCount, markAsRead, deleteNotification, loading } = useNotification();
+    const { notifications, unreadCount, markAsRead, deleteNotification, loading, pagination, fetchNotifications } = useNotification();
 
     return (
         <Popover>
