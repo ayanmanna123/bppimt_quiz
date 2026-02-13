@@ -44,6 +44,7 @@ const Administration = lazy(() => import("./components/pages/about/Administratio
 const Vision = lazy(() => import("./components/pages/about/Vision"));
 const Mission = lazy(() => import("./components/pages/about/Mission"));
 const Foundation = lazy(() => import("./components/pages/about/Foundation"));
+const PYQ = lazy(() => import("./components/pages/PYQ"));
 
 
 // Simple loading fallback
@@ -225,6 +226,10 @@ function App() {
         {
           path: "/community-chat",
           element: <GlobalChat />,
+        },
+        {
+          path: "/pyq",
+          element: <PYQ />,
         },
 
       ],

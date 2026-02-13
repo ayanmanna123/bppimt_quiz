@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target } from "lucide-react";
+import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target, FileText } from "lucide-react";
 import { useSocket } from "../../context/SocketContext";
 import axios from "axios";
 import {
@@ -138,6 +138,7 @@ const Navbar = () => {
     { name: "Subject", path: "/quiz", icon: BookOpen },
     { name: "Result", path: "/reasult", icon: BarChart3 },
     { name: "Attendance", path: "/StudentAttendanceSummary", icon: BookOpen },
+    { name: "PYQ", path: "/pyq", icon: FileText },
     { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
   ];
 
@@ -146,6 +147,7 @@ const Navbar = () => {
     { name: "About Us", path: "/about", icon: User },
     { name: "Subject", path: "/Admin/subject", icon: BookOpen },
     { name: "Result", path: "/admin/allquiz", icon: BarChart3 },
+    { name: "PYQ", path: "/pyq", icon: FileText },
     { name: "Contributed Teacher", path: "/admin/othersubject", icon: GraduationCap },
     { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
   ];
