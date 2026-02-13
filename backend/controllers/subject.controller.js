@@ -160,8 +160,10 @@ export const createSubject = async (req, res) => {
           type: "subject",
           relatedId: createdSub._id,
           onModel: "Subject",
+          url: `/dashboard/subjects`, // Adjust this to the actual student view URL
           io
         });
+
       }
     } catch (notifyError) {
       console.error("Error sending subject creation notifications:", notifyError);

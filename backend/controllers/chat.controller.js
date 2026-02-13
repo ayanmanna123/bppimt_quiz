@@ -72,57 +72,50 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
 
         // --- PUSH NOTIFICATION LOGIC ---
         try {
-            // Ensure VAPID is set (idempotent operation)
-            if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
-                webpush.setVapidDetails(
-                    "mailto:example@yourdomain.org",
-                    process.env.VAPID_PUBLIC_KEY,
-                    process.env.VAPID_PRIVATE_KEY
-                );
+            // 1. Find all subscriptions EXCEPT the sender's
+            const subscriptions = await NotificationSubscription.find({
+                userId: { $ne: senderId }
+            });
 
-                // 1. Find all subscriptions EXCEPT the sender's
-                const subscriptions = await NotificationSubscription.find({
-                    userId: { $ne: senderId }
+            if (subscriptions.length > 0) {
+
+                const senderName = populatedMessage.sender.fullname;
+                const notificationTitle = `New Message from ${senderName}`;
+                const notificationBody = messageContent.length > 50
+                    ? messageContent.substring(0, 50) + "..."
+                    : messageContent;
+
+                const url = subjectId === 'global' ? '/community-chat' : `/dashboard/subject/${subjectId}`;
+
+                // Note: Actions only work if they are defined in SW or supported by platform
+                const payload = JSON.stringify({
+                    title: notificationTitle,
+                    body: notificationBody,
+                    icon: '/pwa-192x192.png', // Or sender's picture if available and proxied
+                    data: {
+                        url: url,
+                        subjectId: subjectId
+                    }
                 });
 
-                if (subscriptions.length > 0) {
-                    const senderName = populatedMessage.sender.fullname;
-                    const notificationTitle = `New Message from ${senderName}`;
-                    const notificationBody = messageContent.length > 50
-                        ? messageContent.substring(0, 50) + "..."
-                        : messageContent;
-
-                    const url = subjectId === 'global' ? '/community-chat' : `/dashboard/subject/${subjectId}`;
-
-                    // Note: Actions only work if they are defined in SW or supported by platform
-                    const payload = JSON.stringify({
-                        title: notificationTitle,
-                        body: notificationBody,
-                        icon: '/pwa-192x192.png', // Or sender's picture if available and proxied
-                        data: {
-                            url: url,
-                            subjectId: subjectId
+                // 2. Send in parallel
+                const promises = subscriptions.map(sub =>
+                    webpush.sendNotification(sub, payload).catch(err => {
+                        if (err.statusCode === 410 || err.statusCode === 404) {
+                            // Subscription expired/gone
+                            NotificationSubscription.deleteOne({ _id: sub._id }).exec();
                         }
-                    });
+                    })
+                );
 
-                    // 2. Send in parallel
-                    const promises = subscriptions.map(sub =>
-                        webpush.sendNotification(sub, payload).catch(err => {
-                            if (err.statusCode === 410 || err.statusCode === 404) {
-                                // Subscription expired/gone
-                                NotificationSubscription.deleteOne({ _id: sub._id }).exec();
-                            }
-                        })
-                    );
-
-                    // Don't await this if you don't want to block the socket response
-                    // But for reliability/debugging we might log errors
-                    Promise.allSettled(promises).then(results => {
-                        // Optional: Log success/failure counts
-                    });
-                }
+                // Don't await this if you don't want to block the socket response
+                // But for reliability/debugging we might log errors
+                Promise.allSettled(promises).then(results => {
+                    // Optional: Log success/failure counts
+                });
             }
         } catch (notifyError) {
+
             console.error("Error sending push notifications:", notifyError);
         }
         // -------------------------------

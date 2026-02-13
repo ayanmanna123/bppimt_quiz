@@ -1,6 +1,21 @@
 import Notification from "../models/Notification.model.js";
 import NotificationSubscription from "../models/NotificationSubscription.model.js";
 import webpush from "web-push";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// Configure web-push with VAPID keys
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    webpush.setVapidDetails(
+        "mailto:example@yourdomain.org",
+        process.env.VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+    );
+} else {
+    console.warn("VAPID keys are missing! Push notifications will not work reliably.");
+}
+
 
 /**
  * Sends a notification to a specific user.
@@ -49,9 +64,15 @@ export const sendNotification = async ({
 
         if (subscriptions.length > 0) {
             const payload = JSON.stringify({
-                title: "New Notification",
+                title: type === "quiz" ? "New Quiz Available" : type === "subject" ? "New Subject Added" : "New Notification",
                 body: message,
-                data: { url }
+                icon: "/pwa-192x192.png",
+                badge: "/pwa-192x192.png",
+                data: {
+                    url,
+                    type,
+                    relatedId
+                }
             });
 
             const promises = subscriptions.map((sub) =>
@@ -66,6 +87,7 @@ export const sendNotification = async ({
 
             await Promise.all(promises);
         }
+
 
         return notification;
 

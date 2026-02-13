@@ -5,17 +5,11 @@ import User from "../models/User.model.js";
 
 const router = express.Router();
 
-// Configure web-push with VAPID keys
-// Note: In a real app, ensure these are loaded from process.env
+// Configure web-push with VAPID keys handled in utility
 if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
-    console.error("VAPID keys are missing! Push notifications will not work.");
-} else {
-    webpush.setVapidDetails(
-        "mailto:example@yourdomain.org",
-        process.env.VAPID_PUBLIC_KEY,
-        process.env.VAPID_PRIVATE_KEY
-    );
+    console.warn("VAPID keys are missing! Push notifications will not work reliably.");
 }
+
 
 // Subscribe functionality
 router.post("/subscribe", async (req, res) => {
