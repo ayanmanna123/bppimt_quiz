@@ -247,9 +247,23 @@ export const getConversations = async (req, res) => {
         })
             .populate("participants", "fullname picture")
             .populate("product", "title price images status")
-            .sort({ lastMessage: -1 });
+            .sort({ lastMessage: -1 })
+            .lean(); // Use lean to allow modification
 
-        res.status(200).json({ success: true, conversations });
+        // Fetch last message content for each conversation
+        const conversationsWithDetails = await Promise.all(conversations.map(async (conv) => {
+            const lastMsg = await StoreMessage.findOne({ conversationId: conv._id })
+                .sort({ timestamp: -1 })
+                .select("content attachments sender");
+
+            return {
+                ...conv,
+                latestMessageContent: lastMsg ? (lastMsg.content || (lastMsg.attachments?.length ? 'Attachment' : '')) : '',
+                latestMessageSender: lastMsg?.sender ? lastMsg.sender.toString() : null
+            };
+        }));
+
+        res.status(200).json({ success: true, conversations: conversationsWithDetails });
     } catch (error) {
         console.error("Error fetching conversations:", error);
         res.status(500).json({ message: "Internal server error" });

@@ -134,12 +134,9 @@ const AllChats = () => {
                     name: otherUser?.fullname || 'Unknown',
                     avatar: otherUser?.picture,
                     product: conv.product,
-                    lastMessage: conv.lastMessage, // Store endpoint returns Date usually, we need content
-                    // Store conversations might need standardization on backend or here. 
-                    // For now, let's assume store conversations sort themselves via `updatedAt` or `lastMessage` (date).
-                    // We'll use the date for sorting. Content fetching might be extra if not in list.
+                    lastMessage: conv.latestMessageContent, // Use the content fetched from backend
                     timestamp: conv.lastMessage || conv.updatedAt,
-                    unreadCount: 0, // Store specific unread count to be implemented or fetched
+                    unreadCount: 0,
                     participants: conv.participants,
                     subtitle: `Product: ${conv.product?.title || 'Item'}`
                 };
@@ -305,7 +302,7 @@ const AllChats = () => {
                     const updatedChats = [...prev];
                     updatedChats[existingIndex] = {
                         ...updatedChats[existingIndex],
-                        lastMessage: message.timestamp,
+                        lastMessage: message.content || (message.attachments?.length > 0 ? 'Attachment' : 'New Message'),
                         timestamp: message.timestamp,
                         unreadCount: activeChatId === conversationId ? 0 : (updatedChats[existingIndex].unreadCount || 0) + 1
                     };
@@ -319,7 +316,7 @@ const AllChats = () => {
                         name: otherUser?.fullname || 'Unknown',
                         avatar: otherUser?.picture,
                         product: conversation.product,
-                        lastMessage: conversation.lastMessage,
+                        lastMessage: message.content || (message.attachments?.length > 0 ? 'Attachment' : 'New Message'),
                         timestamp: conversation.lastMessage,
                         unreadCount: 1,
                         participants: conversation.participants
