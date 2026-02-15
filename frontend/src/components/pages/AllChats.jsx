@@ -134,19 +134,56 @@ const AllChats = () => {
                     name: otherUser?.fullname || 'Unknown',
                     avatar: otherUser?.picture,
                     product: conv.product,
-                    lastMessage: conv.lastMessage, // Store endpoint might return this
-                    timestamp: conv.lastMessage, // Store endpoint returns ISO string
-                    unreadCount: 0,
-                    participants: conv.participants
+                    lastMessage: conv.lastMessage, // Store endpoint returns Date usually, we need content
+                    // Store conversations might need standardization on backend or here. 
+                    // For now, let's assume store conversations sort themselves via `updatedAt` or `lastMessage` (date).
+                    // We'll use the date for sorting. Content fetching might be extra if not in list.
+                    timestamp: conv.lastMessage || conv.updatedAt,
+                    unreadCount: 0, // Store specific unread count to be implemented or fetched
+                    participants: conv.participants,
+                    subtitle: `Product: ${conv.product?.title || 'Item'}`
+                };
+            });
+
+            // 5. Fetch Metadata for Standard Chats (Global, Subjects, StudyRooms)
+            // Store chats usually have their own structure, but we can try to fetch meta if they share Chat model?
+            // No, Store uses StoreMessage/StoreConversation. The new endpoint is for standard Chat model.
+
+            const standardChatIds = ['global', ...subjects.map(s => s._id), ...studyRooms.map(r => r._id)];
+
+            let metadata = {};
+            try {
+                const metaRes = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/chat/meta`,
+                    { targetIds: standardChatIds },
+                    { headers }
+                );
+                metadata = metaRes.data;
+            } catch (err) {
+                console.error("Failed to fetch chat metadata", err);
+            }
+
+            // Merge Metadata
+            const mergedStandardChats = [globalChat, ...subjectChats, ...studyRooms].map(chat => {
+                const meta = metadata[chat._id];
+                return {
+                    ...chat,
+                    lastMessage: meta?.lastMessage || null,
+                    timestamp: meta?.timestamp || chat.timestamp, // Use message time if available
+                    unreadCount: meta?.unreadCount || 0,
+                    senderName: meta?.sender || null
                 };
             });
 
             // Combine all
-            const all = [globalChat, ...storeChats, ...subjectChats, ...studyRooms];
-            // Sort by latest (mock sort for now, ideally backend provides lastMessageTime for all)
-            // For now, we put Store chats first as they have real timestamps, others distinct.
-            // In a real app, we'd need to fetch last message for subjects/global too. 
-            // We'll skip complex lastMessage fetching for this iteration and just list them.
+            const all = [...storeChats, ...mergedStandardChats];
+
+            // Sort by latest (Newest timestamp first)
+            all.sort((a, b) => {
+                const timeA = new Date(a.timestamp || 0);
+                const timeB = new Date(b.timestamp || 0);
+                return timeB - timeA;
+            });
+
             setChats(all);
 
         } catch (error) {
@@ -207,11 +244,6 @@ const AllChats = () => {
 
         const handleReceiveMessage = (msg) => {
             // Check if message belongs to current chat
-            // Fix activeChatId reference inside effect
-            /* Due to closure staleness, we rely on checking against 'selectedChat' from dependency or
-               using functional state updates if ID matches.
-               Here selectedChat is in dependency array so it updates.
-            */
             const currentChatId = selectedChat?._id;
 
             if (currentChatId) {
@@ -229,7 +261,29 @@ const AllChats = () => {
                 scrollToBottom();
             }
 
-            // Update Chat List Preview (timestamp etc) - Optional enhancement
+            // Real-time Chat List Update (Sorting & Preview)
+            setChats(prev => {
+                const targetId = msg.isGlobal ? 'global' : (msg.subjectId || msg.conversationId);
+                const existingIndex = prev.findIndex(c => c._id === targetId);
+
+                if (existingIndex > -1) {
+                    const updatedChats = [...prev];
+                    const existingChat = updatedChats[existingIndex];
+
+                    // Update metadata
+                    updatedChats[existingIndex] = {
+                        ...existingChat,
+                        lastMessage: msg.message || (msg.isStore ? msg.content : 'New Message'),
+                        timestamp: msg.timestamp || new Date().toISOString(),
+                        unreadCount: currentChatId === targetId ? 0 : (existingChat.unreadCount || 0) + 1,
+                        senderName: msg.sender?.fullname || 'Someone'
+                    };
+
+                    // Re-sort: Newest first
+                    return updatedChats.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                }
+                return prev;
+            });
         };
 
         const handleStoreMessage = (data) => {
@@ -442,15 +496,49 @@ const AllChats = () => {
     };
 
     const getChatSubtitle = (chat) => {
+        if (chat.lastMessage) {
+            const prefix = chat.senderName && chat.type !== 'store' ? `${chat.senderName}: ` : '';
+            return (
+                <span className="text-slate-500">
+                    {prefix}{chat.lastMessage}
+                </span>
+            );
+        }
+
+        // Fallback subtitles
         if (chat.type === 'store') return `Product: ${chat.product?.title || 'Item'}`;
         if (chat.type === 'subject') return chat.code || 'Course';
         if (chat.type === 'study-room') return `${chat.members || 0} Members`;
         return 'All Community';
     };
 
-    const filteredChats = chats.filter(chat =>
-        chat.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const formatChatTime = (isoString) => {
+        if (!isoString) return '';
+        const date = new Date(isoString);
+        const now = new Date();
+        const isToday = date.getDate() === now.getDate() &&
+            date.getMonth() === now.getMonth() &&
+            date.getFullYear() === now.getFullYear();
+
+        return isToday ? format(date, 'h:mm a') : format(date, 'MMM d');
+    };
+
+    const filteredChats = chats.filter(chat => {
+        // 1. Search Filter
+        const matchesSearch = chat.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+        // 2. Tab Filter
+        let matchesTab = true;
+        if (activeTab === 'unread') {
+            matchesTab = chat.unreadCount > 0;
+        } else if (activeTab === 'groups') {
+            matchesTab = ['subject', 'study-room', 'global'].includes(chat.type);
+        } else if (activeTab === 'store') {
+            matchesTab = chat.type === 'store';
+        }
+
+        return matchesSearch && matchesTab;
+    });
 
     return (
         <div className="flex h-[calc(100vh-64px)] w-full bg-white overflow-hidden">
@@ -485,6 +573,7 @@ const AllChats = () => {
                     {['All', 'Unread', 'Groups', 'Store'].map(tab => (
                         <button
                             key={tab}
+                            onClick={() => setActiveTab(tab.toLowerCase())}
                             className={`px-3 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap
                                 ${activeTab === tab.toLowerCase() || (activeTab === 'all' && tab === 'All')
                                     ? 'bg-indigo-100 text-indigo-700'
@@ -530,8 +619,8 @@ const AllChats = () => {
                                         <div className="flex justify-between items-baseline mb-0.5">
                                             <h3 className="font-semibold text-slate-900 truncate pr-2">{chat.name}</h3>
                                             {chat.timestamp && (
-                                                <span className="text-[10px] text-slate-400 shrink-0">
-                                                    {format(new Date(chat.timestamp), 'MMM d')}
+                                                <span className={`text-[10px] shrink-0 ${chat.unreadCount > 0 ? 'text-emerald-500 font-bold' : 'text-slate-400'}`}>
+                                                    {formatChatTime(chat.timestamp)}
                                                 </span>
                                             )}
                                         </div>

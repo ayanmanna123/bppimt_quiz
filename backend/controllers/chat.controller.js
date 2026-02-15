@@ -484,6 +484,7 @@ export const getLinkPreview = async (req, res) => {
 };
 
 // Get all online users
+// Get all online users
 export const getOnlineUsers = async (req, res) => {
     try {
         const users = await User.find({ isOnline: true })
@@ -493,5 +494,61 @@ export const getOnlineUsers = async (req, res) => {
     } catch (error) {
         console.error("Error fetching online users:", error);
         res.status(500).json({ message: "Failed to fetch online users" });
+    }
+};
+
+// Get Metadata (Last Message & Unread Count) for list of chats
+export const getChatMetadata = async (req, res) => {
+    try {
+        const { targetIds } = req.body; // Array of subjectIds or 'global'
+        const userId = req.auth.payload.sub;
+        const user = await User.findOne({ auth0Id: userId });
+
+        if (!user || !targetIds || !Array.isArray(targetIds)) {
+            return res.status(400).json({ message: "Invalid request" });
+        }
+
+        const metadata = {};
+
+        // Helper to get meta for one target
+        const getMeta = async (targetId) => {
+            let query = {};
+            if (targetId === "global") {
+                query = { isGlobal: true };
+            } else {
+                query = { subjectId: targetId };
+            }
+
+            // 1. Last Message
+            const lastMsg = await Chat.findOne(query)
+                .sort({ timestamp: -1 })
+                .select("message timestamp sender attachments")
+                .populate("sender", "fullname")
+                .lean();
+
+            // 2. Unread Count
+            const unreadCount = await Chat.countDocuments({
+                ...query,
+                sender: { $ne: user._id },
+                readBy: { $ne: user._id }
+            });
+
+            return {
+                lastMessage: lastMsg ? (lastMsg.attachments?.length > 0 ? (lastMsg.message || 'Attachment') : lastMsg.message) : null,
+                timestamp: lastMsg?.timestamp || null,
+                sender: lastMsg?.sender?.fullname || null,
+                unreadCount
+            };
+        };
+
+        // Run in parallel
+        await Promise.all(targetIds.map(async (id) => {
+            metadata[id] = await getMeta(id);
+        }));
+
+        res.status(200).json(metadata);
+    } catch (error) {
+        console.error("Error fetching chat metadata:", error);
+        res.status(500).json({ message: "Failed to fetch chat metadata" });
     }
 };

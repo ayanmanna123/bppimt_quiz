@@ -1,10 +1,13 @@
 import express from "express";
-import { getChatHistory, togglePinMessage, getPinnedMessages, updateMessage, deleteMessage, getUnseenCount, markMessagesAsRead, getMessageViewers, searchMessages, getLinkPreview, getOnlineUsers } from "../controllers/chat.controller.js";
+import { getChatHistory, togglePinMessage, getPinnedMessages, updateMessage, deleteMessage, getUnseenCount, markMessagesAsRead, getMessageViewers, searchMessages, getLinkPreview, getOnlineUsers, getChatMetadata } from "../controllers/chat.controller.js";
 
 const router = express.Router();
 
 // Get online users - MUST be before /:subjectId
 router.get("/online/all", getOnlineUsers);
+
+// Get chat metadata (last message, unread count)
+router.post("/meta", getChatMetadata);
 
 // Get chat history for a subject
 router.get("/:subjectId", getChatHistory);
