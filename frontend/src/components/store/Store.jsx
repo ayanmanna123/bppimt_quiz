@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 
 const Store = () => {
-    const { getAccessTokenSilently } = useAuth0();
+    const { getAccessTokenSilently, user } = useAuth0();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [viewMode, setViewMode] = useState('all'); // 'all' or 'my_listings'
     const [filters, setFilters] = useState({
         category: 'all',
         search: '',
@@ -23,21 +24,29 @@ const Store = () => {
     const fetchProducts = async () => {
         setLoading(true);
         try {
-            // Build query string
-            const queryParams = new URLSearchParams();
-            if (filters.category && filters.category !== 'all') queryParams.append('category', filters.category);
-            if (filters.search) queryParams.append('search', filters.search);
-            if (filters.minPrice) queryParams.append('minPrice', filters.minPrice);
-            if (filters.maxPrice) queryParams.append('maxPrice', filters.maxPrice);
-            if (filters.sortBy) queryParams.append('sortBy', filters.sortBy);
-
             const token = await getAccessTokenSilently({
                 audience: "http://localhost:5000/api/v2",
             });
 
-            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/store/all?${queryParams.toString()}`, {
+            let url = `${import.meta.env.VITE_BACKEND_URL}/store/all`;
+
+            if (viewMode === 'my_listings') {
+                url = `${import.meta.env.VITE_BACKEND_URL}/store/my-products`;
+            } else {
+                // Build query string only for public store
+                const queryParams = new URLSearchParams();
+                if (filters.category && filters.category !== 'all') queryParams.append('category', filters.category);
+                if (filters.search) queryParams.append('search', filters.search);
+                if (filters.minPrice) queryParams.append('minPrice', filters.minPrice);
+                if (filters.maxPrice) queryParams.append('maxPrice', filters.maxPrice);
+                if (filters.sortBy) queryParams.append('sortBy', filters.sortBy);
+                url = `${url}?${queryParams.toString()}`;
+            }
+
+            const { data } = await axios.get(url, {
                 headers: { Authorization: `Bearer ${token}` }
             });
+
             if (data.success) {
                 setProducts(data.products);
             }
@@ -50,7 +59,31 @@ const Store = () => {
 
     useEffect(() => {
         fetchProducts();
-    }, [filters]); // Refetch when filters change
+    }, [filters, viewMode]);
+
+    const handleMarkSold = async (productId, e) => {
+        e.preventDefault(); // Prevent link navigation
+        e.stopPropagation();
+
+        try {
+            const token = await getAccessTokenSilently({
+                audience: "http://localhost:5000/api/v2",
+            });
+
+            const { data } = await axios.put(
+                `${import.meta.env.VITE_BACKEND_URL}/store/product/${productId}/sold`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (data.success) {
+                // Refresh list
+                fetchProducts();
+            }
+        } catch (error) {
+            console.error("Error marking as sold:", error);
+        }
+    };
 
     const handleFilterChange = (key, value) => {
         setFilters(prev => ({ ...prev, [key]: value }));
@@ -153,6 +186,13 @@ const Store = () => {
                     </div>
 
                     <div className="flex gap-3">
+                        <Button
+                            variant={viewMode === 'my_listings' ? "secondary" : "ghost"}
+                            className="font-semibold"
+                            onClick={() => setViewMode(viewMode === 'all' ? 'my_listings' : 'all')}
+                        >
+                            {viewMode === 'all' ? 'My Ads' : 'Browse Store'}
+                        </Button>
                         <Link to="/store/sell">
                             <Button className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700 text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 font-bold">
                                 <Plus className="w-4 h-4 mr-2" /> Sell Product
@@ -199,9 +239,24 @@ const Store = () => {
                                             <h3 className="font-bold text-lg text-slate-800 truncate">{product.title}</h3>
                                             <div className="flex justify-between items-center mt-1">
                                                 <span className="text-xl font-black text-primary">₹{product.price}</span>
-                                                <Badge variant="outline" className="text-xs border-primary/20 text-primary bg-primary/5 uppercase font-bold tracking-wider">
-                                                    {product.condition}
-                                                </Badge>
+                                                {product.status === 'Sold' ? (
+                                                    <Badge variant="destructive" className="uppercase font-bold tracking-wider">
+                                                        SOLD OUT
+                                                    </Badge>
+                                                ) : viewMode === 'my_listings' ? (
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="h-7 text-xs border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                                        onClick={(e) => handleMarkSold(product._id, e)}
+                                                    >
+                                                        Mark Sold
+                                                    </Button>
+                                                ) : (
+                                                    <Badge variant="outline" className="text-xs border-primary/20 text-primary bg-primary/5 uppercase font-bold tracking-wider">
+                                                        {product.condition}
+                                                    </Badge>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500 font-medium">

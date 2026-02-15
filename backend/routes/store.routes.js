@@ -3,6 +3,7 @@ import multer from "multer";
 import {
     createProduct,
     getAllProducts,
+    getUserProducts,
     getProductById,
     deleteProduct,
     markAsSold,
@@ -35,6 +36,7 @@ const upload = multer({
 
 // Product Routes
 router.post("/create", upload.array("images", 5), createProduct);
+router.get("/my-products", getUserProducts);
 router.get("/all", getAllProducts);
 router.get("/product/:id", getProductById);
 router.delete("/product/:id", deleteProduct);

@@ -60,6 +60,26 @@ export const createProduct = async (req, res) => {
     }
 };
 
+export const getUserProducts = async (req, res) => {
+    try {
+        const auth0Id = req.auth.payload.sub;
+        const user = await User.findOne({ auth0Id });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const products = await Product.find({ seller: user._id })
+            .populate("seller", "fullname picture universityNo")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({ success: true, count: products.length, products });
+    } catch (error) {
+        console.error("Error fetching user products:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 export const getAllProducts = async (req, res) => {
     try {
         const { category, search, minPrice, maxPrice, sortBy, condition } = req.query;
