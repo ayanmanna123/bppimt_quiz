@@ -73,12 +73,18 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
             // But wait, I didn't import Conversation in chat.controller.js yet. I will need to add it.
             const Conversation = (await import("../models/Conversation.model.js")).default;
 
-            await Conversation.findByIdAndUpdate(subjectId, {
-                lastMessage: messageContent || (attachments.length ? 'Attachment' : 'New Message'),
-                lastMessageId: newMessage._id,
-                lastMessageTimestamp: new Date(),
-                $inc: { [`unreadCounts.${getOtherParticipantId(subjectId, senderId)}`]: 1 } // Complex... skip precise unread count for now or handle later
-            });
+            const conversation = await Conversation.findById(subjectId);
+            if (conversation) {
+                const otherParticipantId = conversation.participants.find(p => p.toString() !== senderId.toString());
+                if (otherParticipantId) {
+                    await Conversation.findByIdAndUpdate(subjectId, {
+                        lastMessage: messageContent || (attachments.length ? 'Attachment' : 'New Message'),
+                        lastMessageId: newMessage._id,
+                        lastMessageTimestamp: new Date(),
+                        $inc: { [`unreadCounts.${otherParticipantId}`]: 1 }
+                    });
+                }
+            }
         }
 
         // Populate details for immediate return to clients
@@ -334,7 +340,10 @@ export const getUnseenCount = async (req, res) => {
         if (subjectId === "global") {
             query.isGlobal = true;
         } else if (subjectId) {
-            query.subjectId = subjectId;
+            query.$or = [
+                { subjectId: subjectId },
+                { conversationId: subjectId }
+            ];
         } else {
             // Default to global if no subject provided, or handle as needed
             // For now let's assume this is for Global Chat specifically if not specified
@@ -352,8 +361,17 @@ export const getUnseenCount = async (req, res) => {
 // Mark messages as read
 export const markMessagesAsRead = async (req, res) => {
     try {
-        const { userId } = req.body;
         const { subjectId } = req.params;
+
+        // [FIX] Securely get user from Auth0 token instead of req.body
+        const auth0Id = req.auth.payload.sub;
+        const user = await User.findOne({ auth0Id });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const userId = user._id; // This is an ObjectId
 
         let query = {
             sender: { $ne: userId },
@@ -363,13 +381,32 @@ export const markMessagesAsRead = async (req, res) => {
         if (subjectId === "global") {
             query.isGlobal = true;
         } else {
-            query.subjectId = subjectId;
+            query.$or = [
+                { subjectId: subjectId },
+                { conversationId: subjectId }
+            ];
         }
 
+        // Update messages
         await Chat.updateMany(
             query,
             { $addToSet: { readBy: userId } }
         );
+
+        // Also update Conversation unreadCounts if it's a DM
+        // We only need to check if subjectId is a valid ObjectId (conversation ID)
+        // This handles cases where the chat is a DM conversation
+        if (subjectId !== "global") {
+            const Conversation = (await import("../models/Conversation.model.js")).default;
+            // Reset unread count for this user in the conversation
+            await Conversation.findByIdAndUpdate(
+                subjectId,
+                { $set: { [`unreadCounts.${userId}`]: 0 } }
+            ).catch(err => {
+                // Ignore error if it's not a conversation or ID is invalid for conversation
+                // valid subjectId might not be a conversationId (it could be a subject)
+            });
+        }
 
         // [NEW] Mark Notifications as Read
         try {
@@ -383,10 +420,29 @@ export const markMessagesAsRead = async (req, res) => {
             if (subjectId === "global") {
                 notificationQuery.url = "/community-chat";
             } else {
-                notificationQuery.url = `/dashboard/subject/${subjectId}`;
+                notificationQuery.url = `/dashboard/subject/${subjectId}`; // For subjects
+                // For DMs, the URL might differ, but let's try to match generic pattern or add OR
+                // Ideally we should match exactly what saveMessage does.
             }
 
-            await Notification.updateMany(notificationQuery, { $set: { isRead: true } });
+            // For DMs, we might need a more broad check or specific URL pattern since saveMessage uses /chat/dm/:id
+            // Let's broaden the query to include DM urls if subjectId is not global
+            if (subjectId !== "global") {
+                // We update notifications that point to this subject/conversation
+                // This might need refinement if URLs are strictly unique
+                await Notification.updateMany({
+                    recipient: userId,
+                    type: "chat",
+                    isRead: false,
+                    $or: [
+                        { url: `/dashboard/subject/${subjectId}` },
+                        { url: `/chat/dm/${subjectId}` }
+                    ]
+                }, { $set: { isRead: true } });
+            } else {
+                await Notification.updateMany(notificationQuery, { $set: { isRead: true } });
+            }
+
 
         } catch (notifError) {
             console.error("Error syncing notifications in markAsRead:", notifError);
@@ -398,11 +454,7 @@ export const markMessagesAsRead = async (req, res) => {
             io.to(subjectId).emit("messagesRead", { subjectId, userId });
 
             // [NEW] Notify the user to refresh their notification dropdown
-            // We need to send to the specific user's socket. 
-            // Assuming io.to(userId) works if they joined a room with their ID (common pattern)
-            // Or we check how `sendNotification` does it.
-            // sendNotification uses `io.to(recipientId.toString()).emit("newNotification", ...)`
-            io.to(userId).emit("notificationsUpdated", { countOnly: false });
+            io.to(userId.toString()).emit("notificationsUpdated", { countOnly: false });
         }
 
         res.status(200).json({ message: "Messages marked as read" });

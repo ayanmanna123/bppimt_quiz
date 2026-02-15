@@ -1,597 +1,57 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { useAuth0 } from "@auth0/auth0-react";
-import axios from 'axios';
-import { useSocket } from "../../context/SocketContext";
 import {
-    MessageCircle, Search, Pin, ChevronLeft, MoreVertical,
-    Phone, Video, Info, User, Hash, ShoppingBag, Users,
-    ArrowLeft, Loader2
+    MessageCircle, Search, MoreVertical,
+    Users, Hash, ShoppingBag, Loader2
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "sonner";
-import { format } from "date-fns";
-import ReactMarkdown from 'react-markdown';
-import { useLocation } from 'react-router-dom';
-
-// Reuse existing chat components
-import MessageBubble from '../chat/MessageBubble';
-import ChatInput from '../chat/ChatInput';
-import TypingIndicator from '../chat/TypingIndicator';
-import OnlineUsersBar from '../chat/OnlineUsersBar';
-import ChatWindow from '../chat/ChatWindow';
 import NotificationDropdown from '../shared/NotificationDropdown';
+import { format } from "date-fns";
+
+// Custom Hook
+import useAllChats from '../../hooks/useAllChats';
+
+// Sub Components
+import ProductChat from './chats/ProductChat';
+import DMChat from './chats/DMChat';
+import CommunityChat from './chats/CommunityChat';
+import SubjectChat from './chats/SubjectChat';
+import StudyRoomChat from './chats/StudyRoomChat';
 
 const AllChats = () => {
     const { usere: user } = useSelector(state => state.auth);
-    const { getAccessTokenSilently } = useAuth0();
-    const socket = useSocket();
-
-    // UI State
-    const [activeTab, setActiveTab] = useState('all'); // all, unread, groups
-    const [selectedChat, setSelectedChat] = useState(null);
-    const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
-
-    // Data State
-    const [chats, setChats] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [messages, setMessages] = useState([]);
-    const [loadingMessages, setLoadingMessages] = useState(false);
-    const [onlineUsers, setOnlineUsers] = useState([]); // [NEW]
-
-    // Message Actions
-    const [replyTo, setReplyTo] = useState(null);
-    const [editingMessage, setEditingMessage] = useState(null);
-    const [typingUsers, setTypingUsers] = useState([]);
-    const typingTimeoutRef = useRef(null);
-    const messagesEndRef = useRef(null);
-    const messageRefs = useRef({});
-
-    // --- 1. Subscriptions & Data Fetching ---
-
-    useEffect(() => {
-        fetchAllChats();
-        fetchOnlineUsers();
-    }, [user]);
-
-    // Handle URL Params for DM (e.g., coming from Profile)
-    const location = useLocation();
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const dmId = params.get('dm');
-        if (dmId && chats.length > 0) {
-            const chat = chats.find(c => c._id === dmId);
-            if (chat) {
-                handleSelectChat(chat);
-            }
-        }
-    }, [location.search, chats.length]);
-
-    const fetchOnlineUsers = async () => {
-        try {
-            const token = await getAccessTokenSilently();
-            // Note: Route fixed in backend to be /chat/online/all
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/chat/online/all`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setOnlineUsers(res.data);
-        } catch (error) {
-            console.error("Failed to fetch online users", error);
-        }
-    };
-
-    const fetchAllChats = async (background = false) => {
-        if (!user) return;
-        if (!background) setLoading(true);
-        try {
-            const token = await getAccessTokenSilently();
-            const headers = { Authorization: `Bearer ${token}` };
-
-            // 1. Global/Community Chat (Always there)
-            const globalChat = {
-                _id: 'global',
-                type: 'global',
-                name: 'Community Chat',
-                avatar: '/bppimt.svg',
-                lastMessage: null, // Will fetch or socket will update
-                timestamp: new Date().toISOString(),
-                unreadCount: 0
-            };
-
-            // 2. Subjects
-            let subjects = [];
-            if (user.role === 'teacher') {
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/subject/teacher/subject`, { headers });
-                subjects = res.data.subjects || [];
-            } else {
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/subject/subjectByQuery?department=${user.department}&semester=${user.semester}`, { headers });
-                subjects = res.data.subjects || [];
-            }
-
-            const subjectChats = subjects.map(sub => ({
-                _id: sub._id,
-                type: 'subject',
-                name: sub.subjectName,
-                code: sub.subjectCode,
-                avatar: null, // Could use a generated avatar based on subject name
-                lastMessage: null,
-                timestamp: sub.createdAt || new Date().toISOString(),
-                unreadCount: 0
-            }));
-
-            // 3. Study Rooms
-            const roomsRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/study-room/all`, { headers });
-            const studyRooms = (roomsRes.data || []).map(room => ({
-                _id: room._id,
-                type: 'study-room',
-                name: room.name,
-                avatar: null,
-                lastMessage: null,
-                timestamp: room.createdAt,
-                unreadCount: 0,
-                members: room.members.length
-            }));
-
-            // 4. Store Conversations
-            const storeRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/store/conversations`, { headers });
-            const storeChats = (storeRes.data.conversations || []).map(conv => {
-                const otherUser = conv.participants.find(p => p._id !== user._id);
-                return {
-                    _id: conv._id,
-                    type: 'store',
-                    name: otherUser?.fullname || 'Unknown',
-                    avatar: otherUser?.picture,
-                    product: conv.product,
-                    lastMessage: conv.latestMessageContent, // Use the content fetched from backend
-                    timestamp: conv.lastMessage || conv.updatedAt,
-                    unreadCount: 0,
-                    participants: conv.participants,
-                    subtitle: `Product: ${conv.product?.title || 'Item'}`
-                };
-            });
-
-            // 5. Direct Messages (Friends)
-            const friendsRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/friend/list`, { headers });
-            const friendsChats = (friendsRes.data.friends || []).map(friend => ({
-                _id: friend.conversationId,
-                type: 'dm',
-                name: friend.user.fullname,
-                avatar: friend.user.picture,
-                lastMessage: null, // Will fetch metadata
-                timestamp: new Date().toISOString(), // Will fetch metadata
-                unreadCount: 0,
-                isOnline: friend.user.isOnline, // Optional: if available
-                friendId: friend.user._id
-            }));
-
-
-            const standardChatIds = ['global', ...subjects.map(s => s._id), ...studyRooms.map(r => r._id), ...friendsChats.map(f => f._id)];
-
-            let metadata = {};
-            try {
-                const metaRes = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/chat/meta`,
-                    { targetIds: standardChatIds },
-                    { headers }
-                );
-                metadata = metaRes.data;
-            } catch (err) {
-                console.error("Failed to fetch chat metadata", err);
-            }
-
-            // Merge Metadata
-            const mergedStandardChats = [globalChat, ...subjectChats, ...studyRooms, ...friendsChats].map(chat => {
-                const meta = metadata[chat._id];
-                return {
-                    ...chat,
-                    lastMessage: meta?.lastMessage || null,
-                    timestamp: meta?.timestamp || chat.timestamp, // Use message time if available
-                    unreadCount: meta?.unreadCount || 0,
-                    senderName: meta?.sender || null
-                };
-            });
-
-            // Combine all
-            const all = [...storeChats, ...mergedStandardChats];
-
-            // Sort by latest (Newest timestamp first)
-            all.sort((a, b) => {
-                const timeA = new Date(a.timestamp || 0);
-                const timeB = new Date(b.timestamp || 0);
-                return timeB - timeA;
-            });
-
-            setChats(all);
-
-        } catch (error) {
-            console.error("Failed to fetch chats", error);
-            toast.error("Failed to load chats");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // --- 2. Chat Selection & Message Fetching ---
-
-    const handleSelectChat = async (chat) => {
-        setSelectedChat(chat);
-        setIsMobileChatOpen(true);
-        setMessages([]);
-        setLoadingMessages(true);
-        setReplyTo(null);
-        setEditingMessage(null);
-        setTypingUsers([]);
-
-        // [FIX] Optimistic Update: Set unread count to 0
-        setChats(prev => prev.map(c =>
-            c._id === chat._id ? { ...c, unreadCount: 0 } : c
-        ));
-
-        try {
-            const token = await getAccessTokenSilently();
-            const headers = { Authorization: `Bearer ${token}` };
-
-            if (chat.type === 'store') {
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/store/message/${chat._id}`, { headers });
-                if (res.data.success) {
-                    // Store messages have 'content', regular have 'message'. Normalize here.
-                    const normalized = (res.data.conversation.messages || []).map(m => ({
-                        ...m,
-                        message: m.content, // Map content to message for MessageBubble
-                        isStore: true
-                    }));
-                    setMessages(normalized);
-                }
-            }
-            // For other chat types (global, subject, study-room), ChatWindow component handles fetching.
-
-            // Join Socket Room
-            if (socket) {
-                socket.emit("joinSubject", chat._id);
-            }
-
-            // [NEW] Emit read event to backend immediately (Double check provided by ChatWindow, but safe here too for list update)
-            // Actually ChatWindow calls markAsRead on mount, so we might duplicate. 
-            // But for the list, we just want the UI to reflect it instantly.
-
-        } catch (error) {
-            console.error("Failed to fetch messages", error);
-            toast.error("Could not load messages");
-        } finally {
-            setLoadingMessages(false);
-        }
-    };
-
-    // --- 3. Socket Event Handling ---
-
-    useEffect(() => {
-        if (!socket) return;
-        const activeChatId = selectedChat?._id;
-
-        const handleReceiveMessage = (msg) => {
-            // [FIX] Robust ID extraction
-            // subjectId might be populated object OR string. Safe extract.
-            const rawSubjectId = msg.subjectId?._id || msg.subjectId;
-            const msgSubjectId = (typeof rawSubjectId === 'object' && rawSubjectId !== null) ? rawSubjectId.toString() : rawSubjectId;
-            const isGlobalMsg = msg.isGlobal === true || msgSubjectId === 'global';
-
-            // Determine Target Chat ID
-            const targetId = isGlobalMsg ? 'global' : msgSubjectId;
-
-            console.log("Socket: receiveMessage", { msg, targetId, current: activeChatId }); // [DEBUG]
-
-            // 1. Append to Messages if matches active chat
-            if (activeChatId) {
-                const isMatch = (activeChatId === 'global' && isGlobalMsg) ||
-                    (activeChatId === targetId);
-
-                if (isMatch) {
-                    setMessages(prev => {
-                        // Avoid duplicates
-                        if (prev.some(m => m._id === msg._id)) return prev;
-                        return [...prev, msg];
-                    });
-                    scrollToBottom();
-                }
-            }
-
-            // 2. Update Chat List (Position & Unread)
-            setChats(prev => {
-                const targetIdStr = String(targetId);
-                const existingIndex = prev.findIndex(c => String(c._id) === targetIdStr);
-
-                console.log(`Socket: Processing ${targetIdStr}. Found Index: ${existingIndex}`);
-
-                if (existingIndex > -1) {
-                    const existingChat = prev[existingIndex];
-                    const newTimestamp = msg.timestamp || new Date().toISOString();
-
-                    // Calculate Unread
-                    const isChatActive = String(activeChatId) === targetIdStr;
-                    const currentUnread = existingChat.unreadCount || 0;
-                    const newUnread = isChatActive ? 0 : currentUnread + 1;
-
-                    console.log(`Socket: Updating ${existingChat.name}. Active: ${isChatActive}. Unread: ${newUnread}`);
-
-                    const updatedChat = {
-                        ...existingChat,
-                        lastMessage: msg.message || (msg.attachments?.length > 0 ? 'Attachment' : 'New Message'),
-                        timestamp: newTimestamp,
-                        unreadCount: newUnread,
-                        senderName: msg.sender?.fullname || 'Someone'
-                    };
-
-                    // Move to Top Strategy: Filter out old, add new to front
-                    const otherChats = prev.filter((_, idx) => idx !== existingIndex);
-                    return [updatedChat, ...otherChats];
-                } else {
-                    console.log(`Chat ${targetId} not found, fetching updates...`);
-                    fetchAllChats(true);
-                    return prev;
-                }
-            });
-        };
-
-        const handleStoreMessage = (data) => {
-            const { message, conversationId, conversation } = data;
-
-            // 1. Update Active Chat Messages
-            if (activeChatId === conversationId) {
-                const normalized = { ...message, message: message.content, isStore: true };
-                setMessages(prev => [...prev, normalized]);
-                scrollToBottom();
-            }
-
-            // 2. Update Chat List (Re-order or Add New)
-            setChats(prev => {
-                const existingIndex = prev.findIndex(c => c._id === conversationId);
-
-                if (existingIndex > -1) {
-                    // Update existing
-                    console.log("Socket: newStoreMessage update existing", message); // [DEBUG]
-                    const updatedChats = [...prev];
-                    const newTimestamp = message.timestamp || new Date().toISOString();
-
-                    updatedChats[existingIndex] = {
-                        ...updatedChats[existingIndex],
-                        lastMessage: message.content || (message.attachments?.length > 0 ? 'Attachment' : 'New Message'),
-                        timestamp: newTimestamp,
-                        unreadCount: activeChatId === conversationId ? 0 : (updatedChats[existingIndex].unreadCount || 0) + 1
-                    };
-                    return updatedChats.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
-                } else if (conversation) {
-                    // Add new store chat
-                    const otherUser = conversation.participants.find(p => p._id !== user._id);
-                    const newChat = {
-                        _id: conversation._id,
-                        type: 'store',
-                        name: otherUser?.fullname || 'Unknown',
-                        avatar: otherUser?.picture,
-                        product: conversation.product,
-                        lastMessage: message.content || (message.attachments?.length > 0 ? 'Attachment' : 'New Message'),
-                        timestamp: conversation.lastMessage || message.timestamp || new Date().toISOString(), // [FIX] Fallback timestamp
-                        unreadCount: 1,
-                        participants: conversation.participants
-                    };
-                    return [newChat, ...prev];
-                } else if (conversationId) {
-                    // Message received but no conversation details provided to create new chat entry.
-                    console.log(`Store Chat ${conversationId} not found, fetching updates in background...`); // [DEBUG]
-                    fetchAllChats(true);
-                    return prev;
-                }
-                return prev;
-            });
-        };
-
-        const handleTypingUpdate = ({ typingUsers, subjectId }) => {
-            if (activeChatId === subjectId) {
-                // Filter out self
-                const others = typingUsers.filter(u => u !== user?.fullname);
-                setTypingUsers(others);
-            }
-        };
-
-        const handleMessageUpdated = (updatedMsg) => {
-            setMessages(prev => prev.map(m => m._id === updatedMsg._id ? updatedMsg : m));
-        };
-
-        const handleMessageDeleted = ({ messageId, conversationId }) => {
-            if (activeChatId === conversationId) {
-                setMessages(prev => prev.filter(m => m._id !== messageId));
-            }
-        };
-
-        const handleUpdatePresence = ({ userId, isOnline }) => {
-            if (isOnline) {
-                // Ideally fetch user details or just simple add if we have ID.
-                // For full details we might need to refetch or just optimistcally add if we have data.
-                // Simplest: Refetch list
-                fetchOnlineUsers();
-            } else {
-                setOnlineUsers(prev => prev.filter(u => u._id !== userId));
-            }
-        };
-
-        const handleMessagesRead = ({ subjectId, userId }) => {
-            if (userId === user?._id) {
-                setChats(prev => prev.map(c =>
-                    c._id === subjectId ? { ...c, unreadCount: 0 } : c
-                ));
-            }
-        };
-
-        socket.on("receiveMessage", handleReceiveMessage); // Normal chats
-        socket.on("newStoreMessage", handleStoreMessage); // Store chats
-        socket.on("typingUpdate", handleTypingUpdate);
-        socket.on("messageUpdated", handleMessageUpdated);
-        socket.on("messageDeleted", handleMessageDeleted);
-        socket.on("updatePresence", handleUpdatePresence);
-        socket.on("messagesRead", handleMessagesRead);
-
-        return () => {
-            socket.off("receiveMessage", handleReceiveMessage);
-            socket.off("newStoreMessage", handleStoreMessage);
-            socket.off("typingUpdate", handleTypingUpdate);
-            socket.off("messageUpdated", handleMessageUpdated);
-            socket.off("messageDeleted", handleMessageDeleted);
-            socket.off("updatePresence", handleUpdatePresence);
-            socket.off("messagesRead", handleMessagesRead);
-        };
-    }, [socket, selectedChat, user]);
-
-    // --- 3b. Notification Sync ---
-    useEffect(() => {
-        const handleMarkAllRead = () => {
-            setChats(prev => prev.map(c => ({ ...c, unreadCount: 0 })));
-        };
-
-        const handleMarkSingleRead = (e) => {
-            // If we can map notification ID to chat ID, we could use this.
-            // But notification ID != Chat ID usually.
-            // Usually clicking a notification navigates to the chat, which opens it and clears unread.
-            // So 'Mark all as read' is the main one we need to sync manually.
-        };
-
-        window.addEventListener('notification:mark_all_read', handleMarkAllRead);
-
-        return () => {
-            window.removeEventListener('notification:mark_all_read', handleMarkAllRead);
-        };
-    }, []);
-
-    const scrollToBottom = () => {
-        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-    };
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
-
-    // --- 4. Sending Messages ---
-
-    const handleSendMessage = async (text, attachment) => {
-        if (!selectedChat) return;
-
-        // Stop typing immediately
-        if (socket) {
-            socket.emit("stopTyping", { subjectId: selectedChat._id, user: user.fullname });
-        }
-
-        // [FIX] Optimistic Update: Move chat to top immediately
-        setChats(prev => {
-            const targetIdStr = String(selectedChat._id);
-            const existingIndex = prev.findIndex(c => String(c._id) === targetIdStr);
-            if (existingIndex > -1) {
-                const chat = prev[existingIndex];
-                const updatedChat = {
-                    ...chat,
-                    lastMessage: text || (attachment ? 'Attachment' : 'New Message'),
-                    timestamp: new Date().toISOString(),
-                    unreadCount: 0 // I am sending, so I've read it
-                };
-                const others = prev.filter((_, i) => i !== existingIndex);
-                console.log(`Optimistic Update: Moving ${chat.name} to top.`);
-                return [updatedChat, ...others];
-            }
-            return prev;
-        });
-
-        try {
-            const token = await getAccessTokenSilently();
-            const headers = { Authorization: `Bearer ${token}` };
-
-            if (selectedChat.type === 'store') {
-                await axios.post(`${import.meta.env.VITE_BACKEND_URL}/store/message/${selectedChat._id}`,
-                    { content: text, attachments: attachment ? [attachment] : [], replyTo: replyTo?._id },
-                    { headers }
-                );
-            } else {
-                // Standard Chat
-                socket.emit("sendMessage", {
-                    subjectId: selectedChat._id,
-                    message: text,
-                    senderId: user._id,
-                    isGlobal: selectedChat.type === 'global',
-                    replyTo: replyTo?._id,
-                    attachments: attachment ? [attachment] : []
-                });
-            }
-            setReplyTo(null);
-        } catch (error) {
-            console.error("Failed to send", error);
-            toast.error("Failed to send message");
-        }
-    };
-
-    const handleTyping = () => {
-        if (!socket || !selectedChat) return;
-        socket.emit("typing", { subjectId: selectedChat._id, user: user.fullname });
-
-        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = setTimeout(() => {
-            socket.emit("stopTyping", { subjectId: selectedChat._id, user: user.fullname });
-        }, 3000);
-    };
-
-    const handleEditMessage = (msg) => {
-        setEditingMessage(msg);
-    };
-
-    const handleUpdateMessage = async (msgId, content) => {
-        try {
-            const token = await getAccessTokenSilently();
-            // Store and Standard Chat use different update endpoints?
-            // Checking chat.routes.js: router.put("/:messageId", updateMessage);
-            // This seems generic for Standard Chat. Store likely has its own.
-            // Let's assume Standard Chat for now per requirements context (Community/Subject).
-
-            if (selectedChat.type === 'store') {
-                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/store/message/${msgId}`, { content }, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-            } else {
-                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/chat/${msgId}`, {
-                    userId: user._id,
-                    message: content
-                }, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-            }
-
-            setEditingMessage(null);
-        } catch (error) {
-            console.error("Failed to update", error);
-            toast.error("Failed to update message");
-        }
-    };
-
-    const handleDeleteMessage = async (msgId) => {
-        if (!confirm("Are you sure you want to delete this message?")) return;
-        try {
-            const token = await getAccessTokenSilently();
-            if (selectedChat.type === 'store') {
-                await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/store/message/${msgId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-            } else {
-                await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/chat/${msgId}`, {
-                    data: { userId: user._id }, // Helper to pass body in delete
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-            }
-        } catch (error) {
-            console.error("Failed to delete", error);
-            toast.error("Failed to delete message");
-        }
-    };
-
-    // --- 5. Helpers ---
+    const {
+        chats,
+        loading,
+        activeTab,
+        setActiveTab,
+        searchTerm,
+        setSearchTerm,
+        onlineUsers,
+        selectedChat,
+        isMobileChatOpen,
+        setIsMobileChatOpen,
+        setSelectedChat,
+        // For ProductChat
+        messages,
+        loadingMessages,
+        replyTo,
+        setReplyTo,
+        editingMessage,
+        setEditingMessage,
+        typingUsers,
+        messagesEndRef,
+        handleSelectChat,
+        handleSendMessage,
+        handleTyping,
+        handleUpdateMessage,
+        handleDeleteMessage
+    } = useAllChats();
+
+    // --- Helpers ---
 
     const getChatIcon = (type) => {
         switch (type) {
@@ -649,6 +109,65 @@ const AllChats = () => {
         return matchesSearch && matchesTab;
     });
 
+    const renderChatContent = () => {
+        if (!selectedChat) {
+            return (
+                <div className="flex-1 flex flex-col items-center justify-center bg-slate-50/50 text-slate-400 p-8 text-center">
+                    <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-6 animate-pulse">
+                        <MessageCircle className="w-12 h-12 text-slate-300" />
+                    </div>
+                    <h2 className="text-2xl font-light text-slate-700 mb-2">BPPIMT Stats Web</h2>
+                    <p className="max-w-md text-slate-500">
+                        Select a chat to start messaging. Connect with your community, subjects, study rooms, and marketplace.
+                    </p>
+                    <div className="mt-8 flex items-center gap-2 text-xs text-slate-400">
+                        <LockIcon className="w-3 h-3" />
+                        Your personal messages are end-to-end encrypted (simulated)
+                    </div>
+                </div>
+            );
+        }
+
+        const handleClose = () => {
+            setSelectedChat(null);
+            setIsMobileChatOpen(false);
+        };
+
+        switch (selectedChat.type) {
+            case 'global':
+                return <CommunityChat chat={selectedChat} onClose={handleClose} />;
+            case 'subject':
+                return <SubjectChat chat={selectedChat} onClose={handleClose} />;
+            case 'study-room':
+                return <StudyRoomChat chat={selectedChat} onClose={handleClose} />;
+            case 'dm':
+                return <DMChat chat={selectedChat} onClose={handleClose} />;
+            case 'store':
+                return (
+                    <ProductChat
+                        chat={selectedChat}
+                        messages={messages}
+                        loadingMessages={loadingMessages}
+                        user={user}
+                        replyTo={replyTo}
+                        setReplyTo={setReplyTo}
+                        editingMessage={editingMessage}
+                        setEditingMessage={setEditingMessage}
+                        typingUsers={typingUsers}
+                        onSendMessage={handleSendMessage}
+                        onTyping={handleTyping}
+                        onUpdateMessage={handleUpdateMessage}
+                        onDeleteMessage={handleDeleteMessage}
+                        onClose={handleClose}
+                        messagesEndRef={messagesEndRef}
+                    />
+                );
+            default:
+                // Fallback to Community or Generic if unknown
+                return <CommunityChat chat={selectedChat} onClose={handleClose} />;
+        }
+    };
+
     return (
         <div className="flex h-[calc(100vh-64px)] w-full bg-white overflow-hidden">
             {/* Sidebar / Chat List */}
@@ -677,7 +196,7 @@ const AllChats = () => {
                     </div>
                 </div>
 
-                {/* Filter Tabs (Optional - visually implies WhatsApp structure) */}
+                {/* Filter Tabs */}
                 <div className="flex items-center gap-2 px-4 py-2 border-b border-slate-100 overflow-x-auto no-scrollbar">
                     {['All', 'Unread', 'Groups', 'Store'].map(tab => (
                         <button
@@ -687,7 +206,6 @@ const AllChats = () => {
                                 ${activeTab === tab.toLowerCase() || (activeTab === 'all' && tab === 'All')
                                     ? 'bg-indigo-100 text-indigo-700'
                                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                        // Just visual for now except filtering could be added
                         >
                             {tab}
                         </button>
@@ -703,9 +221,7 @@ const AllChats = () => {
                     ) : (
                         <div className="divide-y divide-slate-50">
                             {filteredChats.map(chat => {
-                                // Check online status for DMs
                                 const isOnline = chat.type === 'dm' && onlineUsers.some(u => u._id === chat.friendId);
-
                                 return (
                                     <div
                                         key={chat._id}
@@ -720,7 +236,6 @@ const AllChats = () => {
                                                     {chat.name.charAt(0)}
                                                 </AvatarFallback>
                                             </Avatar>
-                                            {/* Type Icon Badge */}
                                             <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
                                                 <div className="bg-slate-100 rounded-full p-1 text-slate-600">
                                                     {getChatIcon(chat.type)}
@@ -774,142 +289,9 @@ const AllChats = () => {
 
             {/* Chat Area (Responsive) */}
             <div className={`${isMobileChatOpen ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-slate-100 relative`}>
-                {selectedChat ? (
-                    selectedChat.type !== 'store' ? (
-                        <ChatWindow
-                            subjectId={selectedChat._id}
-                            subjectName={selectedChat.name}
-                            isOverlay={false}
-                            onClose={() => {
-                                setSelectedChat(null);
-                                setIsMobileChatOpen(false);
-                            }}
-                            type={selectedChat.type} // Pass type
-                        />
-                    ) : (
-                        <>
-                            {/* Chat Header */}
-                            <div className="h-16 px-4 bg-white border-b border-slate-200 flex items-center justify-between shadow-sm z-10 shrink-0">
-                                <div className="flex items-center gap-3">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="md:hidden -ml-2"
-                                        onClick={() => setIsMobileChatOpen(false)}
-                                    >
-                                        <ArrowLeft className="w-5 h-5" />
-                                    </Button>
-                                    <Avatar className="w-10 h-10 border border-slate-100 cursor-pointer">
-                                        <AvatarImage src={selectedChat.avatar} />
-                                        <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                                            {selectedChat.name.charAt(0)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className="cursor-pointer">
-                                        <h2 className="font-bold text-slate-900 leading-tight">{selectedChat.name}</h2>
-                                        <p className="text-xs text-slate-500 capitalize">{selectedChat.type} Chat</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-1">
-                                    <Button variant="ghost" size="icon" className="text-slate-500">
-                                        <Search className="w-5 h-5" />
-                                    </Button>
-                                    {selectedChat.type === 'store' && (
-                                        <Button variant="ghost" size="icon" className="text-slate-500">
-                                            <ShoppingBag className="w-5 h-5" />
-                                        </Button>
-                                    )}
-                                    <Button variant="ghost" size="icon" className="text-slate-500">
-                                        <MoreVertical className="w-5 h-5" />
-                                    </Button>
-                                </div>
-                            </div>
-
-
-                            {/* Messages */}
-                            <div className="flex-1 overflow-hidden relative bg-[url('https://web.whatsapp.com/img/bg-chat-tile-dark_a4be512e7195b6b733d9110b408f9640.png')] bg-repeat bg-opacity-5">
-                                {/* Light overlay for custom pattern effect if image fails or for styling */}
-                                <div className="absolute inset-0 bg-slate-100/90 backdrop-blur-[1px]"></div>
-
-                                <div className="relative h-full flex flex-col">
-                                    <ScrollViewport messages={messages} loading={loadingMessages}>
-                                        {messages.map((msg, idx) => {
-                                            const isMe = msg.sender?._id === user?._id;
-                                            const showAvatar = idx === 0 || messages[idx - 1]?.sender?._id !== msg.sender?._id;
-
-                                            return (
-                                                <MessageBubble
-                                                    key={msg._id || idx}
-                                                    message={msg}
-                                                    isMe={isMe}
-                                                    showAvatar={showAvatar}
-                                                    showSenderName={selectedChat.type !== 'store' && showAvatar}
-                                                    onReply={() => setReplyTo(msg)}
-                                                    onEdit={handleEditMessage}
-                                                    onDelete={handleDeleteMessage}
-                                                // Simplified props for AllChats
-                                                />
-                                            );
-                                        })}
-                                        <TypingIndicator typingUsers={typingUsers} />
-                                        <div ref={messagesEndRef} />
-                                    </ScrollViewport>
-                                </div>
-                            </div>
-
-                            {/* Input Area */}
-
-                            <div className="bg-white p-3 border-t border-slate-200">
-                                <ChatInput
-                                    onSendMessage={handleSendMessage}
-                                    replyTo={replyTo}
-                                    onCancelReply={() => setReplyTo(null)}
-                                    // New Props
-                                    onTyping={handleTyping}
-                                    editingMessage={editingMessage}
-                                    onUpdateMessage={handleUpdateMessage}
-                                    onCancelEdit={() => setEditingMessage(null)}
-                                // Pass other props as needed
-                                />
-                            </div>
-                        </>
-                    )
-                ) : (
-                    /* Empty State */
-                    <div className="flex-1 flex flex-col items-center justify-center bg-slate-50/50 text-slate-400 p-8 text-center">
-                        <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-6 animate-pulse">
-                            <MessageCircle className="w-12 h-12 text-slate-300" />
-                        </div>
-                        <h2 className="text-2xl font-light text-slate-700 mb-2">BPPIMT Stats Web</h2>
-                        <p className="max-w-md text-slate-500">
-                            Select a chat to start messaging. Connect with your community, subjects, study rooms, and marketplace.
-                        </p>
-                        <div className="mt-8 flex items-center gap-2 text-xs text-slate-400">
-                            <LockIcon className="w-3 h-3" />
-                            Your personal messages are end-to-end encrypted (simulated)
-                        </div>
-                    </div>
-                )}
+                {renderChatContent()}
             </div>
         </div>
-    );
-};
-
-// Helper sub-component for scroll management
-const ScrollViewport = ({ children, messages, loading }) => {
-    return (
-        <ScrollArea className="h-full p-4">
-            {loading ? (
-                <div className="flex justify-center py-10">
-                    <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
-                </div>
-            ) : (
-                <div className="flex flex-col gap-1 pb-2 max-w-5xl mx-auto">
-                    {children}
-                </div>
-            )}
-        </ScrollArea>
     );
 };
 
