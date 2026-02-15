@@ -90,7 +90,7 @@ const Navbar = () => {
         message.sender?._id !== usere?._id
       ) {
         // If not on chat page, increment
-        if (location.pathname !== "/community-chat") {
+        if (location.pathname !== "/chats") {
           setUnseenCount((prev) => prev + 1);
           toast.info(`New message from ${message.sender?.fullname || 'someone'}`);
           const sound = new Howl({
@@ -113,7 +113,7 @@ const Navbar = () => {
 
   // Clear count when entering chat
   useEffect(() => {
-    if (location.pathname === "/community-chat") {
+    if (location.pathname === "/chats") {
       setUnseenCount(0);
       // Actual API call to mark as read happens in GlobalChat.jsx
     }
@@ -141,7 +141,7 @@ const Navbar = () => {
     { name: "PYQ", path: "/pyq", icon: FileText },
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Store", path: "/store", icon: ShoppingBag },
-    { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
+    { name: "Chats", path: "/chats", icon: MessageCircle },
   ];
 
   const adminNavItems = [
@@ -153,7 +153,7 @@ const Navbar = () => {
     { name: "Contributed Teacher", path: "/admin/othersubject", icon: GraduationCap },
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Store", path: "/store", icon: ShoppingBag },
-    { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
+    { name: "Chats", path: "/chats", icon: MessageCircle },
   ];
   const adminNavitem = [
     { name: "Home", path: "/", icon: Home },
@@ -162,7 +162,7 @@ const Navbar = () => {
     { name: "Un authorize", path: "/notvarifieduser", icon: BarChart3 },
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Store", path: "/store", icon: ShoppingBag },
-    { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
+    { name: "Chats", path: "/chats", icon: MessageCircle },
   ];
 
   const navItems =
@@ -282,7 +282,7 @@ const Navbar = () => {
 
                     <div className="relative">
                       <IconComponent className="w-4 h-4" />
-                      {item.path === "/community-chat" && unseenCount > 0 && (
+                      {item.path === "/chats" && unseenCount > 0 && (
                         <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm animate-pulse">
                           {unseenCount > 9 ? "9+" : unseenCount}
                         </span>
@@ -515,7 +515,7 @@ const Navbar = () => {
 
                       <div className="relative">
                         <IconComponent className="w-5 h-5" />
-                        {item.path === "/community-chat" && unseenCount > 0 && (
+                        {item.path === "/chats" && unseenCount > 0 && (
                           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
                             {unseenCount > 9 ? "9+" : unseenCount}
                           </span>

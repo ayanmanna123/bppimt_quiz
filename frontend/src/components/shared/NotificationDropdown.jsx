@@ -44,7 +44,7 @@ const NotificationItem = ({ notification, onMarkRead, onDelete }) => {
         } else if (notification.type === 'note' && notification.relatedId) {
             navigate(`/dashboard`); // Fallback until deep link is stable
         } else if (notification.type === 'chat') {
-            navigate(notification.url || '/community-chat');
+            navigate(notification.url || '/chats');
         }
     };
 

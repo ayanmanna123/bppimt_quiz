@@ -69,6 +69,7 @@ function App() {
     return <CubeLoader />;
   }
 
+  const AllChats = lazy(() => import("./components/pages/AllChats"));
   const approute = createBrowserRouter([
     {
       element: <Layout />,
@@ -76,6 +77,10 @@ function App() {
         {
           path: "/",
           element: <Home />,
+        },
+        {
+          path: "/chats",
+          element: <AllChats />,
         },
         {
           path: "/complete/profile",
