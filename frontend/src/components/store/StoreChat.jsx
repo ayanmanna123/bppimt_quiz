@@ -11,11 +11,13 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from 'react-router-dom';
 
 const StoreChat = () => {
     const { getAccessTokenSilently } = useAuth0();
     const { usere: user } = useSelector(state => state.auth);
     const socket = useSocket();
+    const [searchParams] = useSearchParams();
 
     const [conversations, setConversations] = useState([]);
     const [activeConversation, setActiveConversation] = useState(null);
@@ -57,31 +59,51 @@ const StoreChat = () => {
             });
             if (data.success) {
                 setConversations(data.conversations);
+
+                // Auto-select conversation from URL
+                const queryConvId = searchParams.get('conversationId');
+                if (queryConvId) {
+                    const targetConv = data.conversations.find(c => c._id === queryConvId);
+                    if (targetConv) {
+                        // We need to fetch messages for this conversation
+                        // fetchMessages is defined below but we can't call it easily before it's defined in scope order or hoisting
+                        // So we set it here or call a wrapped function.
+                        // Let's set active temporarily or call fetch right here.
+                        handleSelectConversation(targetConv._id, data.conversations);
+                    }
+                }
             }
         } catch (error) {
             console.error("Error fetching conversations:", error);
         }
     };
 
-    const fetchMessages = async (convId) => {
-        setLoadingMessages(true);
-        try {
-            const token = await getAccessTokenSilently();
-            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/store/message/${convId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (data.success) {
-                setMessages(data.conversation.messages || []);
-                setActiveConversation(data.conversation);
-                // Also fetch pinned if any (could filter from messages, but if pagination exists in future...)
-                const pinned = (data.conversation.messages || []).filter(m => m.isPinned);
-                setPinnedMessages(pinned);
+    const handleSelectConversation = async (convId, conversationList = conversations) => {
+        const conv = conversationList.find(c => c._id === convId);
+        if (conv) {
+            setActiveConversation(conv); // Optimistic set
+            setLoadingMessages(true);
+            try {
+                const token = await getAccessTokenSilently();
+                const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/store/message/${convId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (data.success) {
+                    setMessages(data.conversation.messages || []);
+                    setActiveConversation(data.conversation); // Full details
+                    const pinned = (data.conversation.messages || []).filter(m => m.isPinned);
+                    setPinnedMessages(pinned);
+                }
+            } catch (error) {
+                console.error("Error fetching messages:", error);
+            } finally {
+                setLoadingMessages(false);
             }
-        } catch (error) {
-            console.error("Error fetching messages:", error);
-        } finally {
-            setLoadingMessages(false);
         }
+    };
+
+    const fetchMessages = async (convId) => {
+        handleSelectConversation(convId);
     };
 
     // Join Conversation Room

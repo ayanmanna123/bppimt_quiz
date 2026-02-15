@@ -617,3 +617,60 @@ export const removeStoreReaction = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+export const markStoreMessagesAsRead = async (req, res) => {
+    try {
+        const { conversationId } = req.params;
+        const auth0Id = req.auth.payload.sub;
+        const user = await User.findOne({ auth0Id });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const userId = user._id;
+
+        // 1. Update Messages: Add user to readBy array if not already there
+        await StoreMessage.updateMany(
+            {
+                conversationId,
+                sender: { $ne: userId },
+                readBy: { $ne: userId }
+            },
+            { $addToSet: { readBy: userId } }
+        );
+
+        // 2. Update Notifications: Mark related chat notifications as read
+        // The relatedId in notification is the conversationId for store chats
+        await Notification.updateMany(
+            {
+                recipient: userId,
+                type: 'chat',
+                relatedId: conversationId,
+                isRead: false
+            },
+            { $set: { isRead: true } }
+        );
+
+        // 3. Socket Events
+        const io = req.app.get("io");
+        if (io) {
+            // Notify current user to refresh their dropdown immediately
+            io.to(userId.toString()).emit("notificationsUpdated", { countOnly: false });
+
+            // Optional: Notify other participants (e.g. for read receipts)
+            const conversation = await StoreConversation.findById(conversationId);
+            if (conversation) {
+                conversation.participants.forEach(p => {
+                    // Check if not current user (optional, but good practice to limit noise)
+                    io.to(p.toString()).emit("storeMessagesRead", { conversationId, userId });
+                });
+            }
+        }
+
+        res.status(200).json({ success: true, message: "Marked as read" });
+    } catch (error) {
+        console.error("Error marking store messages read:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};

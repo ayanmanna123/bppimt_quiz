@@ -16,7 +16,8 @@ import {
     togglePinStoreMessage,
     addStoreReaction,
     removeStoreReaction,
-    searchStoreMessages
+    searchStoreMessages,
+    markStoreMessagesAsRead
 } from "../controllers/store.controller.js";
 
 const router = express.Router();
@@ -47,6 +48,7 @@ router.post("/conversation", startConversation);
 router.get("/conversations", getConversations);
 router.post("/message/:conversationId", sendMessage);
 router.get("/message/:conversationId", getConversationMessages);
+router.put("/message/read/:conversationId", markStoreMessagesAsRead);
 router.delete("/message/:messageId", deleteStoreMessage);
 router.put("/message/:messageId", updateStoreMessage);
 router.put("/message/pin/:messageId", togglePinStoreMessage);

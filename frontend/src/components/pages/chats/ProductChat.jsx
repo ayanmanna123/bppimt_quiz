@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, MoreVertical, ShoppingBag, ArrowLeft, Loader2 } from 'lucide-react';
@@ -6,6 +6,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import MessageBubble from '../../chat/MessageBubble';
 import ChatInput from '../../chat/ChatInput';
 import TypingIndicator from '../../chat/TypingIndicator';
+import { useAuth0 } from "@auth0/auth0-react";
+import axios from 'axios';
 
 const ProductChat = ({
     chat,
@@ -24,6 +26,23 @@ const ProductChat = ({
     onClose,
     messagesEndRef
 }) => {
+    const { getAccessTokenSilently } = useAuth0();
+
+    // Mark messages as read when chat opens or new messages arrive
+    useEffect(() => {
+        const markAsRead = async () => {
+            if (!chat?._id) return;
+            try {
+                const token = await getAccessTokenSilently();
+                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/store/message/read/${chat._id}`, {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            } catch (error) {
+                console.error("Failed to mark store messages as read", error);
+            }
+        };
+        markAsRead();
+    }, [chat?._id, getAccessTokenSilently, messages]);
     return (
         <div className="flex flex-col h-full bg-slate-100 relative">
             {/* Chat Header */}
