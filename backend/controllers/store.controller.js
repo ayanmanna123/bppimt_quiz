@@ -284,20 +284,21 @@ export const sendMessage = async (req, res) => {
         // Real-time update via Socket.io
         const io = req.app.get("io");
 
-        // Create Persistent Notifications and Socket Emit
+        // 1. Emit Message to ALL participants (including sender for real-time update)
+        if (io) {
+            conversation.participants.forEach(participantId => {
+                io.to(participantId.toString()).emit("newStoreMessage", {
+                    message: populatedMessage,
+                    conversationId: conversation._id,
+                    conversation: populatedConversation
+                });
+            });
+        }
+
+        // 2. Persistent Notifications & Notification Event (Recipients Only)
         const notifications = conversation.participants
             .filter(p => p.toString() !== senderId.toString())
             .map(async (participantId) => {
-                // 1. Socket Emit
-                if (io) {
-                    io.to(participantId.toString()).emit("newStoreMessage", {
-                        message: populatedMessage,
-                        conversationId: conversation._id,
-                        conversation: populatedConversation
-                    });
-                }
-
-                // 2. Persistent Notification
                 try {
                     const notification = await Notification.create({
                         recipient: participantId,
