@@ -14,28 +14,7 @@ const storeConversationSchema = new mongoose.Schema(
             ref: "Product",
             required: true,
         },
-        messages: [
-            {
-                sender: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: "User",
-                    required: true,
-                },
-                content: {
-                    type: String,
-                },
-                attachments: [
-                    {
-                        url: { type: String },
-                        type: { type: String } // 'image', 'audio', 'file'
-                    }
-                ],
-                timestamp: {
-                    type: Date,
-                    default: Date.now,
-                },
-            },
-        ],
+
         lastMessage: {
             type: Date,
             default: Date.now,

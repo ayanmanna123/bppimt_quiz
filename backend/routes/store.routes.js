@@ -10,6 +10,12 @@ import {
     getConversations,
     sendMessage,
     getConversationMessages,
+    deleteStoreMessage,
+    updateStoreMessage,
+    togglePinStoreMessage,
+    addStoreReaction,
+    removeStoreReaction,
+    searchStoreMessages
 } from "../controllers/store.controller.js";
 
 const router = express.Router();
@@ -39,5 +45,11 @@ router.post("/conversation", startConversation);
 router.get("/conversations", getConversations);
 router.post("/message/:conversationId", sendMessage);
 router.get("/message/:conversationId", getConversationMessages);
+router.delete("/message/:messageId", deleteStoreMessage);
+router.put("/message/:messageId", updateStoreMessage);
+router.put("/message/pin/:messageId", togglePinStoreMessage);
+router.put("/message/react/:messageId", addStoreReaction);
+router.put("/message/unreact/:messageId", removeStoreReaction);
+router.get("/search/:conversationId", searchStoreMessages);
 
 export default router;

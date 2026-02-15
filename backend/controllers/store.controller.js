@@ -1,5 +1,6 @@
 import Product from "../models/Product.model.js";
 import StoreConversation from "../models/StoreConversation.model.js";
+import StoreMessage from "../models/StoreMessage.model.js";
 import cloudinary from "../utils/cloudinary.js";
 import getDataUri from "../utils/datauri.js";
 import User from "../models/User.model.js"; // For populating user details if needed
@@ -201,7 +202,6 @@ export const startConversation = async (req, res) => {
             conversation = new StoreConversation({
                 participants: [buyerId, sellerId],
                 product: productId,
-                messages: [],
             });
             await conversation.save();
         }
@@ -237,7 +237,7 @@ export const getConversations = async (req, res) => {
 export const sendMessage = async (req, res) => {
     try {
         const { conversationId } = req.params;
-        const { content, attachments } = req.body;
+        const { content, attachments, replyTo } = req.body;
         const auth0Id = req.auth.payload.sub;
         const user = await User.findOne({ auth0Id });
         if (!user) return res.status(404).json({ message: "User not found" });
@@ -253,38 +253,40 @@ export const sendMessage = async (req, res) => {
             return res.status(403).json({ message: "Not a participant in this conversation" });
         }
 
-        const newMessage = {
+        const newMessage = new StoreMessage({
+            conversationId,
             sender: senderId,
             content: content || "",
             attachments: attachments || [],
-            timestamp: new Date(),
-        };
+            replyTo: replyTo || null,
+        });
 
-        conversation.messages.push(newMessage);
+        await newMessage.save();
+
         conversation.lastMessage = new Date();
         await conversation.save();
+
+        const populatedMessage = await newMessage.populate([
+            { path: "sender", select: "fullname picture" },
+            {
+                path: "replyTo",
+                select: "sender content attachments",
+                populate: { path: "sender", select: "fullname" }
+            }
+        ]);
 
         // Real-time update via Socket.io
         const io = req.app.get("io");
         if (io) {
-            const socketMessage = {
-                ...newMessage,
-                sender: {
-                    _id: user._id,
-                    fullname: user.fullname,
-                    picture: user.picture
-                }
-            };
-
             conversation.participants.forEach(participantId => {
                 io.to(participantId.toString()).emit("newStoreMessage", {
-                    message: socketMessage,
+                    message: populatedMessage,
                     conversationId: conversation._id
                 });
             });
         }
 
-        res.status(200).json({ success: true, message: newMessage });
+        res.status(200).json({ success: true, message: populatedMessage });
     } catch (error) {
         console.error("Error sending message:", error);
         res.status(500).json({ message: "Internal server error" });
@@ -294,13 +296,13 @@ export const sendMessage = async (req, res) => {
 export const getConversationMessages = async (req, res) => {
     try {
         const { conversationId } = req.params;
+        const { page = 1, limit = 50 } = req.query;
         const auth0Id = req.auth.payload.sub;
         const user = await User.findOne({ auth0Id });
         if (!user) return res.status(404).json({ message: "User not found" });
         const userId = user._id;
 
         const conversation = await StoreConversation.findById(conversationId)
-            .populate("messages.sender", "fullname picture")
             .populate("product", "title price images status seller");
 
         if (!conversation) {
@@ -311,9 +313,244 @@ export const getConversationMessages = async (req, res) => {
             return res.status(403).json({ message: "Not authorized" });
         }
 
-        res.status(200).json({ success: true, conversation });
+        const messages = await StoreMessage.find({ conversationId })
+            .sort({ timestamp: 1 }) // Chronological order
+            // .skip((page - 1) * limit) // Implement pagination if needed
+            // .limit(parseInt(limit))
+            .populate("sender", "fullname picture")
+            .populate({
+                path: "replyTo",
+                select: "sender content attachments",
+                populate: { path: "sender", select: "fullname" }
+            })
+            .populate("reactions.user", "fullname picture");
+
+        res.status(200).json({ success: true, conversation: { ...conversation.toObject(), messages } });
     } catch (error) {
         console.error("Error fetching messages:", error);
         res.status(500).json({ message: "Internal server error" });
     }
-}
+};
+
+// ==========================
+// NEW STORE CHAT FEATURES
+// ==========================
+
+export const deleteStoreMessage = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const auth0Id = req.auth.payload.sub;
+        const user = await User.findOne({ auth0Id });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const message = await StoreMessage.findById(messageId);
+        if (!message) return res.status(404).json({ message: "Message not found" });
+
+        if (message.sender.toString() !== user._id.toString()) {
+            return res.status(403).json({ message: "Unauthorized to delete this message" });
+        }
+
+        await StoreMessage.findByIdAndDelete(messageId);
+
+        // Notify via socket
+        const conversation = await StoreConversation.findById(message.conversationId);
+        const io = req.app.get("io");
+        if (io && conversation) {
+            conversation.participants.forEach(participantId => {
+                io.to(participantId.toString()).emit("storeMessageDeleted", {
+                    messageId,
+                    conversationId: conversation._id
+                });
+            });
+        }
+
+        res.status(200).json({ success: true, messageId, message: "Message deleted" });
+    } catch (error) {
+        console.error("Error deleting store message:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const updateStoreMessage = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const { content } = req.body;
+        const auth0Id = req.auth.payload.sub;
+        const user = await User.findOne({ auth0Id });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const message = await StoreMessage.findById(messageId);
+        if (!message) return res.status(404).json({ message: "Message not found" });
+
+        if (message.sender.toString() !== user._id.toString()) {
+            return res.status(403).json({ message: "Unauthorized to edit this message" });
+        }
+
+        message.content = content;
+        await message.save();
+
+        const populatedMessage = await message.populate([
+            { path: "sender", select: "fullname picture" },
+            {
+                path: "replyTo",
+                select: "sender content attachments",
+                populate: { path: "sender", select: "fullname" }
+            },
+            { path: "reactions.user", select: "fullname picture" }
+        ]);
+
+        const conversation = await StoreConversation.findById(message.conversationId);
+        const io = req.app.get("io");
+        if (io && conversation) {
+            conversation.participants.forEach(participantId => {
+                io.to(participantId.toString()).emit("storeMessageUpdated", populatedMessage);
+            });
+        }
+
+        res.status(200).json({ success: true, message: populatedMessage });
+    } catch (error) {
+        console.error("Error updating store message:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const togglePinStoreMessage = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        // Anyone in conversation can pin? Or just seller? Let's allow both participants.
+        const auth0Id = req.auth.payload.sub;
+        const user = await User.findOne({ auth0Id });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const message = await StoreMessage.findById(messageId);
+        if (!message) return res.status(404).json({ message: "Message not found" });
+
+        const conversation = await StoreConversation.findById(message.conversationId);
+        if (!conversation.participants.includes(user._id)) {
+            return res.status(403).json({ message: "Unauthorized" });
+        }
+
+        message.isPinned = !message.isPinned;
+        await message.save();
+
+        const populatedMessage = await message.populate("sender", "fullname picture");
+
+        const io = req.app.get("io");
+        if (io) {
+            conversation.participants.forEach(participantId => {
+                io.to(participantId.toString()).emit("storeMessageUpdated", populatedMessage);
+            });
+        }
+
+        res.status(200).json({ success: true, message: populatedMessage });
+    } catch (error) {
+        console.error("Error toggling pin:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const addStoreReaction = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const { emoji } = req.body;
+        const auth0Id = req.auth.payload.sub;
+        const user = await User.findOne({ auth0Id });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const message = await StoreMessage.findById(messageId);
+        if (!message) return res.status(404).json({ message: "Message not found" });
+
+        // Check duplicates
+        if (!message.reactions.some(r => r.user.toString() === user._id.toString() && r.emoji === emoji)) {
+            message.reactions.push({ user: user._id, emoji });
+            await message.save();
+        }
+
+        const populatedMessage = await message.populate([
+            { path: "sender", select: "fullname picture" },
+            { path: "reactions.user", select: "fullname picture" },
+            {
+                path: "replyTo",
+                select: "sender content attachments",
+                populate: { path: "sender", select: "fullname" }
+            }
+        ]);
+
+        const conversation = await StoreConversation.findById(message.conversationId);
+        const io = req.app.get("io");
+        if (io && conversation) {
+            conversation.participants.forEach(participantId => {
+                io.to(participantId.toString()).emit("storeMessageUpdated", populatedMessage);
+            });
+        }
+
+        res.status(200).json({ success: true, message: populatedMessage });
+    } catch (error) {
+        console.error("Error adding reaction:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const searchStoreMessages = async (req, res) => {
+    try {
+        const { conversationId } = req.params;
+        const { query } = req.query;
+
+        if (!query) return res.status(200).json([]);
+
+        const messages = await StoreMessage.find({
+            conversationId,
+            content: { $regex: query, $options: "i" }
+        })
+            .sort({ timestamp: -1 })
+            .populate("sender", "fullname picture");
+
+        res.status(200).json({ success: true, messages });
+    } catch (error) {
+        console.error("Error searching messages:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const removeStoreReaction = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const { emoji } = req.body;
+        const auth0Id = req.auth.payload.sub;
+        const user = await User.findOne({ auth0Id });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const message = await StoreMessage.findById(messageId);
+        if (!message) return res.status(404).json({ message: "Message not found" });
+
+        const initialLength = message.reactions.length;
+        message.reactions = message.reactions.filter(r => !(r.user.toString() === user._id.toString() && r.emoji === emoji));
+
+        if (message.reactions.length !== initialLength) {
+            await message.save();
+        }
+
+        const populatedMessage = await message.populate([
+            { path: "sender", select: "fullname picture" },
+            { path: "reactions.user", select: "fullname picture" },
+            {
+                path: "replyTo",
+                select: "sender content attachments",
+                populate: { path: "sender", select: "fullname" }
+            }
+        ]);
+
+        const conversation = await StoreConversation.findById(message.conversationId);
+        const io = req.app.get("io");
+        if (io && conversation) {
+            conversation.participants.forEach(participantId => {
+                io.to(participantId.toString()).emit("storeMessageUpdated", populatedMessage);
+            });
+        }
+
+        res.status(200).json({ success: true, message: populatedMessage });
+    } catch (error) {
+        console.error("Error removing reaction:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
