@@ -24,6 +24,7 @@ import ChatInput from '../chat/ChatInput';
 import TypingIndicator from '../chat/TypingIndicator';
 import OnlineUsersBar from '../chat/OnlineUsersBar';
 import ChatWindow from '../chat/ChatWindow';
+import NotificationDropdown from '../shared/NotificationDropdown';
 
 const AllChats = () => {
     const { usere: user } = useSelector(state => state.auth);
@@ -425,6 +426,7 @@ const AllChats = () => {
                     <div className="flex items-center justify-between mb-4">
                         <h1 className="text-2xl font-bold text-slate-900">Chats</h1>
                         <div className="flex gap-2">
+                            <NotificationDropdown />
                             <Button variant="ghost" size="icon" className="rounded-full">
                                 <MoreVertical className="w-5 h-5 text-slate-600" />
                             </Button>
