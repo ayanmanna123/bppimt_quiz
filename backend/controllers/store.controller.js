@@ -5,6 +5,7 @@ import cloudinary from "../utils/cloudinary.js";
 import getDataUri from "../utils/datauri.js";
 import User from "../models/User.model.js"; // For populating user details if needed
 import Notification from "../models/Notification.model.js";
+import { sendNotification } from "../utils/notification.util.js";
 
 // ==========================
 // PRODUCT CONTROLLERS
@@ -316,25 +317,20 @@ export const sendMessage = async (req, res) => {
         }
 
         // 2. Persistent Notifications & Notification Event (Recipients Only)
+        // Using centralized utility to ensure WebPush and Real-time updates
         const notifications = conversation.participants
             .filter(p => p.toString() !== senderId.toString())
             .map(async (participantId) => {
-                try {
-                    const notification = await Notification.create({
-                        recipient: participantId,
-                        sender: senderId,
-                        type: "chat",
-                        onModel: "Chat",
-                        relatedId: conversation._id,
-                        message: `Store: New message about ${populatedConversation.product?.title || 'product'}`,
-                    });
-
-                    if (io) {
-                        io.to(participantId.toString()).emit("newNotification", notification);
-                    }
-                } catch (err) {
-                    console.error("Failed to create notification for", participantId, err);
-                }
+                await sendNotification({
+                    recipientId: participantId,
+                    senderId: senderId,
+                    message: `Store: New message from ${user.fullname}`,
+                    type: "chat",
+                    onModel: "Chat", // or create a StoreMessage model reference if needed, but 'Chat' is generic enough for now or usage in notification list
+                    relatedId: conversation._id,
+                    url: `/store/chat`, // Redirect to store chat page
+                    io
+                });
             });
 
         await Promise.all(notifications);
