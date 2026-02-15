@@ -72,9 +72,9 @@ const AllChats = () => {
         }
     };
 
-    const fetchAllChats = async () => {
+    const fetchAllChats = async (background = false) => {
         if (!user) return;
-        setLoading(true);
+        if (!background) setLoading(true);
         try {
             const token = await getAccessTokenSilently();
             const headers = { Authorization: `Bearer ${token}` };
@@ -258,28 +258,43 @@ const AllChats = () => {
                 scrollToBottom();
             }
 
-            // Real-time Chat List Update (Sorting & Preview)
             setChats(prev => {
-                const targetId = msg.isGlobal ? 'global' : (msg.subjectId || msg.conversationId);
+                console.log("Socket: receiveMessage", msg); // [DEBUG]
+                // Try multiple properties to find the ID. 
+                // Study rooms might use roomId or just _id.
+                const targetId = msg.isGlobal ? 'global' : (msg.subjectId || msg.conversationId || msg.roomId || msg._id);
                 const existingIndex = prev.findIndex(c => c._id === targetId);
 
                 if (existingIndex > -1) {
                     const updatedChats = [...prev];
                     const existingChat = updatedChats[existingIndex];
 
+                    const newTimestamp = msg.timestamp || new Date().toISOString();
+                    console.log(`Updating chat ${existingChat.name} with time ${newTimestamp}`); // [DEBUG]
+
                     // Update metadata
                     updatedChats[existingIndex] = {
                         ...existingChat,
                         lastMessage: msg.message || (msg.isStore ? msg.content : 'New Message'),
-                        timestamp: msg.timestamp || new Date().toISOString(),
+                        timestamp: newTimestamp,
                         unreadCount: currentChatId === targetId ? 0 : (existingChat.unreadCount || 0) + 1,
                         senderName: msg.sender?.fullname || 'Someone'
                     };
 
                     // Re-sort: Newest first
-                    return updatedChats.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    return updatedChats.sort((a, b) => {
+                        const timeA = new Date(a.timestamp || 0).getTime();
+                        const timeB = new Date(b.timestamp || 0).getTime();
+                        // console.log(`Comparing ${timeA} vs ${timeB}`); // [DEBUG] - Verbose
+                        return timeB - timeA;
+                    });
+                } else {
+                    // Chat not in list. It might be a new Study Room or Subject.
+                    // Trigger a background refresh to fetch the new chat.
+                    console.log(`Chat ${targetId} not found, fetching updates in background...`); // [DEBUG]
+                    fetchAllChats(true);
+                    return prev;
                 }
-                return prev;
             });
         };
 
@@ -299,14 +314,17 @@ const AllChats = () => {
 
                 if (existingIndex > -1) {
                     // Update existing
+                    console.log("Socket: newStoreMessage update existing", message); // [DEBUG]
                     const updatedChats = [...prev];
+                    const newTimestamp = message.timestamp || new Date().toISOString();
+
                     updatedChats[existingIndex] = {
                         ...updatedChats[existingIndex],
                         lastMessage: message.content || (message.attachments?.length > 0 ? 'Attachment' : 'New Message'),
-                        timestamp: message.timestamp,
+                        timestamp: newTimestamp,
                         unreadCount: activeChatId === conversationId ? 0 : (updatedChats[existingIndex].unreadCount || 0) + 1
                     };
-                    return updatedChats.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    return updatedChats.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
                 } else if (conversation) {
                     // Add new store chat
                     const otherUser = conversation.participants.find(p => p._id !== user._id);
@@ -317,11 +335,16 @@ const AllChats = () => {
                         avatar: otherUser?.picture,
                         product: conversation.product,
                         lastMessage: message.content || (message.attachments?.length > 0 ? 'Attachment' : 'New Message'),
-                        timestamp: conversation.lastMessage,
+                        timestamp: conversation.lastMessage || message.timestamp || new Date().toISOString(), // [FIX] Fallback timestamp
                         unreadCount: 1,
                         participants: conversation.participants
                     };
                     return [newChat, ...prev];
+                } else if (conversationId) {
+                    // Message received but no conversation details provided to create new chat entry.
+                    console.log(`Store Chat ${conversationId} not found, fetching updates in background...`); // [DEBUG]
+                    fetchAllChats(true);
+                    return prev;
                 }
                 return prev;
             });
@@ -371,7 +394,27 @@ const AllChats = () => {
             socket.off("messageDeleted", handleMessageDeleted);
             socket.off("updatePresence", handleUpdatePresence);
         };
-    }, [socket, selectedChat, user]); // Added user dependency
+    }, [socket, selectedChat, user]);
+
+    // --- 3b. Notification Sync ---
+    useEffect(() => {
+        const handleMarkAllRead = () => {
+            setChats(prev => prev.map(c => ({ ...c, unreadCount: 0 })));
+        };
+
+        const handleMarkSingleRead = (e) => {
+            // If we can map notification ID to chat ID, we could use this.
+            // But notification ID != Chat ID usually.
+            // Usually clicking a notification navigates to the chat, which opens it and clears unread.
+            // So 'Mark all as read' is the main one we need to sync manually.
+        };
+
+        window.addEventListener('notification:mark_all_read', handleMarkAllRead);
+
+        return () => {
+            window.removeEventListener('notification:mark_all_read', handleMarkAllRead);
+        };
+    }, []);
 
     const scrollToBottom = () => {
         setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);

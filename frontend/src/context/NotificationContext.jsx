@@ -77,9 +77,11 @@ export const NotificationProvider = ({ children }) => {
             if (id === 'all') {
                 setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
                 setUnreadCount(0);
+                window.dispatchEvent(new CustomEvent('notification:mark_all_read'));
             } else {
                 setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
                 setUnreadCount(prev => Math.max(0, prev - 1));
+                window.dispatchEvent(new CustomEvent('notification:read', { detail: { id } }));
             }
         } catch (error) {
             console.error("Failed to mark notification as read:", error);
