@@ -1,6 +1,7 @@
 import Chat from "../models/Chat.model.js";
 import User from "../models/User.model.js";
 import NotificationSubscription from "../models/NotificationSubscription.model.js";
+import Notification from "../models/Notification.model.js";
 import axios from "axios";
 import webpush from "web-push";
 import { sendNotification } from "../utils/notification.util.js";
@@ -336,10 +337,38 @@ export const markMessagesAsRead = async (req, res) => {
             { $addToSet: { readBy: userId } }
         );
 
+        // [NEW] Mark Notifications as Read
+        try {
+            let notificationQuery = {
+                recipient: userId,
+                type: "chat",
+                isRead: false
+            };
+
+            // Match the URL logic from saveMessage
+            if (subjectId === "global") {
+                notificationQuery.url = "/community-chat";
+            } else {
+                notificationQuery.url = `/dashboard/subject/${subjectId}`;
+            }
+
+            await Notification.updateMany(notificationQuery, { $set: { isRead: true } });
+
+        } catch (notifError) {
+            console.error("Error syncing notifications in markAsRead:", notifError);
+        }
+
         // Notify other clients via Socket
         const io = req.app.get("io");
         if (io) {
             io.to(subjectId).emit("messagesRead", { subjectId, userId });
+
+            // [NEW] Notify the user to refresh their notification dropdown
+            // We need to send to the specific user's socket. 
+            // Assuming io.to(userId) works if they joined a room with their ID (common pattern)
+            // Or we check how `sendNotification` does it.
+            // sendNotification uses `io.to(recipientId.toString()).emit("newNotification", ...)`
+            io.to(userId).emit("notificationsUpdated", { countOnly: false });
         }
 
         res.status(200).json({ message: "Messages marked as read" });

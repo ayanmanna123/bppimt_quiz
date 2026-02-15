@@ -131,10 +131,16 @@ export const NotificationProvider = ({ children }) => {
             toast.info(notification.message);
         };
 
+        const handleNotificationsUpdated = () => {
+            fetchNotifications(1);
+        };
+
         socket.on("newNotification", handleNewNotification);
+        socket.on("notificationsUpdated", handleNotificationsUpdated);
 
         return () => {
             socket.off("newNotification", handleNewNotification);
+            socket.off("notificationsUpdated", handleNotificationsUpdated);
         };
     }, [socket]);
 

@@ -48,7 +48,8 @@ export const sendNotification = async ({
             message,
             type,
             relatedId,
-            onModel
+            onModel,
+            url // [NEW] Save URL to DB
         });
         await notification.save();
 

@@ -202,6 +202,11 @@ const AllChats = () => {
         setEditingMessage(null);
         setTypingUsers([]);
 
+        // [FIX] Optimistic Update: Set unread count to 0
+        setChats(prev => prev.map(c =>
+            c._id === chat._id ? { ...c, unreadCount: 0 } : c
+        ));
+
         try {
             const token = await getAccessTokenSilently();
             const headers = { Authorization: `Bearer ${token}` };
@@ -225,6 +230,10 @@ const AllChats = () => {
                 socket.emit("joinSubject", chat._id);
             }
 
+            // [NEW] Emit read event to backend immediately (Double check provided by ChatWindow, but safe here too for list update)
+            // Actually ChatWindow calls markAsRead on mount, so we might duplicate. 
+            // But for the list, we just want the UI to reflect it instantly.
+
         } catch (error) {
             console.error("Failed to fetch messages", error);
             toast.error("Could not load messages");
@@ -240,58 +249,63 @@ const AllChats = () => {
         const activeChatId = selectedChat?._id;
 
         const handleReceiveMessage = (msg) => {
-            // Check if message belongs to current chat
-            const currentChatId = selectedChat?._id;
+            // [FIX] Robust ID extraction
+            // subjectId might be populated object OR string. Safe extract.
+            const rawSubjectId = msg.subjectId?._id || msg.subjectId;
+            const msgSubjectId = (typeof rawSubjectId === 'object' && rawSubjectId !== null) ? rawSubjectId.toString() : rawSubjectId;
+            const isGlobalMsg = msg.isGlobal === true || msgSubjectId === 'global';
 
-            if (currentChatId) {
-                const isGlobalMatch = currentChatId === 'global' && (msg.isGlobal || msg.subjectId === 'global');
-                const isSubjectMatch = msg.subjectId === currentChatId;
+            // Determine Target Chat ID
+            const targetId = isGlobalMsg ? 'global' : msgSubjectId;
 
-                if (isGlobalMatch || isSubjectMatch) {
-                    setMessages(prev => [...prev, msg]);
+            console.log("Socket: receiveMessage", { msg, targetId, current: activeChatId }); // [DEBUG]
+
+            // 1. Append to Messages if matches active chat
+            if (activeChatId) {
+                const isMatch = (activeChatId === 'global' && isGlobalMsg) ||
+                    (activeChatId === targetId);
+
+                if (isMatch) {
+                    setMessages(prev => {
+                        // Avoid duplicates
+                        if (prev.some(m => m._id === msg._id)) return prev;
+                        return [...prev, msg];
+                    });
                     scrollToBottom();
                 }
-            } else if (msg.conversationId && currentChatId && msg.conversationId === currentChatId) {
-                // Store message (different structure structure sometimes)
-                const normalized = { ...msg.message, message: msg.message.content, isStore: true };
-                setMessages(prev => [...prev, normalized]);
-                scrollToBottom();
             }
 
+            // 2. Update Chat List (Position & Unread)
             setChats(prev => {
-                console.log("Socket: receiveMessage", msg); // [DEBUG]
-                // Try multiple properties to find the ID. 
-                // Study rooms might use roomId or just _id.
-                const targetId = msg.isGlobal ? 'global' : (msg.subjectId || msg.conversationId || msg.roomId || msg._id);
-                const existingIndex = prev.findIndex(c => c._id === targetId);
+                const targetIdStr = String(targetId);
+                const existingIndex = prev.findIndex(c => String(c._id) === targetIdStr);
+
+                console.log(`Socket: Processing ${targetIdStr}. Found Index: ${existingIndex}`);
 
                 if (existingIndex > -1) {
-                    const updatedChats = [...prev];
-                    const existingChat = updatedChats[existingIndex];
-
+                    const existingChat = prev[existingIndex];
                     const newTimestamp = msg.timestamp || new Date().toISOString();
-                    console.log(`Updating chat ${existingChat.name} with time ${newTimestamp}`); // [DEBUG]
 
-                    // Update metadata
-                    updatedChats[existingIndex] = {
+                    // Calculate Unread
+                    const isChatActive = String(activeChatId) === targetIdStr;
+                    const currentUnread = existingChat.unreadCount || 0;
+                    const newUnread = isChatActive ? 0 : currentUnread + 1;
+
+                    console.log(`Socket: Updating ${existingChat.name}. Active: ${isChatActive}. Unread: ${newUnread}`);
+
+                    const updatedChat = {
                         ...existingChat,
-                        lastMessage: msg.message || (msg.isStore ? msg.content : 'New Message'),
+                        lastMessage: msg.message || (msg.attachments?.length > 0 ? 'Attachment' : 'New Message'),
                         timestamp: newTimestamp,
-                        unreadCount: currentChatId === targetId ? 0 : (existingChat.unreadCount || 0) + 1,
+                        unreadCount: newUnread,
                         senderName: msg.sender?.fullname || 'Someone'
                     };
 
-                    // Re-sort: Newest first
-                    return updatedChats.sort((a, b) => {
-                        const timeA = new Date(a.timestamp || 0).getTime();
-                        const timeB = new Date(b.timestamp || 0).getTime();
-                        // console.log(`Comparing ${timeA} vs ${timeB}`); // [DEBUG] - Verbose
-                        return timeB - timeA;
-                    });
+                    // Move to Top Strategy: Filter out old, add new to front
+                    const otherChats = prev.filter((_, idx) => idx !== existingIndex);
+                    return [updatedChat, ...otherChats];
                 } else {
-                    // Chat not in list. It might be a new Study Room or Subject.
-                    // Trigger a background refresh to fetch the new chat.
-                    console.log(`Chat ${targetId} not found, fetching updates in background...`); // [DEBUG]
+                    console.log(`Chat ${targetId} not found, fetching updates...`);
                     fetchAllChats(true);
                     return prev;
                 }
@@ -379,12 +393,21 @@ const AllChats = () => {
             }
         };
 
+        const handleMessagesRead = ({ subjectId, userId }) => {
+            if (userId === user?._id) {
+                setChats(prev => prev.map(c =>
+                    c._id === subjectId ? { ...c, unreadCount: 0 } : c
+                ));
+            }
+        };
+
         socket.on("receiveMessage", handleReceiveMessage); // Normal chats
         socket.on("newStoreMessage", handleStoreMessage); // Store chats
         socket.on("typingUpdate", handleTypingUpdate);
         socket.on("messageUpdated", handleMessageUpdated);
         socket.on("messageDeleted", handleMessageDeleted);
         socket.on("updatePresence", handleUpdatePresence);
+        socket.on("messagesRead", handleMessagesRead);
 
         return () => {
             socket.off("receiveMessage", handleReceiveMessage);
@@ -393,6 +416,7 @@ const AllChats = () => {
             socket.off("messageUpdated", handleMessageUpdated);
             socket.off("messageDeleted", handleMessageDeleted);
             socket.off("updatePresence", handleUpdatePresence);
+            socket.off("messagesRead", handleMessagesRead);
         };
     }, [socket, selectedChat, user]);
 
@@ -433,6 +457,25 @@ const AllChats = () => {
         if (socket) {
             socket.emit("stopTyping", { subjectId: selectedChat._id, user: user.fullname });
         }
+
+        // [FIX] Optimistic Update: Move chat to top immediately
+        setChats(prev => {
+            const targetIdStr = String(selectedChat._id);
+            const existingIndex = prev.findIndex(c => String(c._id) === targetIdStr);
+            if (existingIndex > -1) {
+                const chat = prev[existingIndex];
+                const updatedChat = {
+                    ...chat,
+                    lastMessage: text || (attachment ? 'Attachment' : 'New Message'),
+                    timestamp: new Date().toISOString(),
+                    unreadCount: 0 // I am sending, so I've read it
+                };
+                const others = prev.filter((_, i) => i !== existingIndex);
+                console.log(`Optimistic Update: Moving ${chat.name} to top.`);
+                return [updatedChat, ...others];
+            }
+            return prev;
+        });
 
         try {
             const token = await getAccessTokenSilently();
