@@ -227,6 +227,20 @@ const useAllChats = () => {
 
     // --- 3. Socket Event Handling ---
 
+    // Join all subject/group rooms to ensure we get real-time updates for the list
+    // even if we haven't selected that chat.
+    const chatIdsHash = chats.map(c => c._id).sort().join(',');
+
+    useEffect(() => {
+        if (!socket) return;
+
+        chats.forEach(c => {
+            if (['subject', 'study-room', 'global'].includes(c.type)) {
+                socket.emit("joinSubject", c._id);
+            }
+        });
+    }, [socket, chatIdsHash]);
+
     useEffect(() => {
         if (!socket) return;
         const activeChatId = selectedChat?._id;
