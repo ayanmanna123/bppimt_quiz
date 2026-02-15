@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target, FileText } from "lucide-react";
+import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target, FileText, ShoppingBag } from "lucide-react";
 import { useSocket } from "../../context/SocketContext";
 import axios from "axios";
 import {
@@ -140,6 +140,7 @@ const Navbar = () => {
     { name: "Attendance", path: "/StudentAttendanceSummary", icon: BookOpen },
     { name: "PYQ", path: "/pyq", icon: FileText },
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
+    { name: "Store", path: "/store", icon: ShoppingBag },
     { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
   ];
 
@@ -151,6 +152,7 @@ const Navbar = () => {
     { name: "PYQ", path: "/pyq", icon: FileText },
     { name: "Contributed Teacher", path: "/admin/othersubject", icon: GraduationCap },
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
+    { name: "Store", path: "/store", icon: ShoppingBag },
     { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
   ];
   const adminNavitem = [
@@ -159,6 +161,7 @@ const Navbar = () => {
     { name: "Subject", path: "/admine/only/subject", icon: BookOpen },
     { name: "Un authorize", path: "/notvarifieduser", icon: BarChart3 },
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
+    { name: "Store", path: "/store", icon: ShoppingBag },
     { name: "Community Chat", path: "/community-chat", icon: MessageCircle },
   ];
 

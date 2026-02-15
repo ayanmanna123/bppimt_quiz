@@ -37,7 +37,9 @@ const StudyRoomDetail = () => {
     const fetchRoomData = async () => {
         try {
             setLoading(true);
-            const token = await getAccessTokenSilently();
+            const token = await getAccessTokenSilently({
+                audience: "http://localhost:5000/api/v2",
+            });
 
             // Join room on backend (adds member)
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/study-room/join/${roomId}`, {}, {

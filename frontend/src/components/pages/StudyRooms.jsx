@@ -26,7 +26,9 @@ const StudyRooms = () => {
     const fetchRooms = async () => {
         try {
             setLoading(true);
-            const token = await getAccessTokenSilently();
+            const token = await getAccessTokenSilently({
+                audience: "http://localhost:5000/api/v2",
+            });
             const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/study-room/all`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -46,7 +48,9 @@ const StudyRooms = () => {
     const handleCreateRoom = async (e) => {
         e.preventDefault();
         try {
-            const token = await getAccessTokenSilently();
+            const token = await getAccessTokenSilently({
+                audience: "http://localhost:5000/api/v2",
+            });
             const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/study-room/create`, newRoom, {
                 headers: { Authorization: `Bearer ${token}` }
             });

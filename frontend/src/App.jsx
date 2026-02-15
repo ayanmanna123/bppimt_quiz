@@ -46,6 +46,10 @@ const Foundation = lazy(() => import("./components/pages/about/Foundation"));
 const PYQ = lazy(() => import("./components/pages/PYQ"));
 const StudyRooms = lazy(() => import("./components/pages/StudyRooms"));
 const StudyRoomDetail = lazy(() => import("./components/pages/StudyRoomDetail"));
+const Store = lazy(() => import("./components/store/Store"));
+const ProductDetails = lazy(() => import("./components/store/ProductDetails"));
+const SellProduct = lazy(() => import("./components/store/SellProduct"));
+const StoreChat = lazy(() => import("./components/store/StoreChat"));
 
 
 import CubeLoader from "./components/shared/CubeLoader";
@@ -248,6 +252,31 @@ function App() {
         {
           path: "/study-room/:roomId",
           element: <StudyRoomDetail />,
+        },
+        // Store Routes
+        {
+          path: "/store",
+          element: <Store />,
+        },
+        {
+          path: "/store/product/:id",
+          element: <ProductDetails />,
+        },
+        {
+          path: "/store/sell",
+          element: (
+
+            <SellProduct />
+
+          ),
+        },
+        {
+          path: "/store/chat",
+          element: (
+
+            <StoreChat />
+
+          ),
         },
 
       ],
