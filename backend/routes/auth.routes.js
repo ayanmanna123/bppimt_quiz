@@ -9,6 +9,7 @@ import {
   updatesem,
   verifycode,
   searchUsers,
+  getPublicProfile,
 } from "../controllers/auth.controller.js";
 import { singleUpload } from "../middlewares/multer.js";
 
@@ -23,4 +24,6 @@ userrouter.get("/student/count", getallstudent);
 userrouter.post("/send-code", sendCode)
 userrouter.post("/verify-code", isAuthenticated, verifycode)
 userrouter.get("/search", isAuthenticated, searchUsers);
+userrouter.get("/profile/:id", getPublicProfile);
+
 export default userrouter;

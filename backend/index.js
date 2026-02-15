@@ -114,11 +114,23 @@ app.get("/", (req, res) => {
 // Note: The original code applied `jwtMiddleware` to EVERYTHING after line 50.
 // We will apply it to the API routes.
 
-app.use("/api/v1/user", jwtMiddleware, userrouter);
+app.use("/api/v1/user", (req, res, next) => {
+  // Allow public access to profile route
+  if (req.path.startsWith("/profile/") && req.method === "GET") {
+    return next();
+  }
+  jwtMiddleware(req, res, next);
+}, userrouter);
 app.use("/api/v1/subject", jwtMiddleware, SubjectRoute);
 app.use("/api/v1/quize", jwtMiddleware, quizeRoute);
 app.use("/api/v1/reasult", jwtMiddleware, reasultRoute);
-app.use("/api/v1/dashbord", jwtMiddleware, dashBordRoute);
+app.use("/api/v1/dashbord", (req, res, next) => {
+  // Allow public access to dashboard routes if universityNo is present in query
+  if (req.method === "GET" && req.query.universityNo) {
+    return next();
+  }
+  jwtMiddleware(req, res, next);
+}, dashBordRoute);
 app.use("/api/v1/admin", jwtMiddleware, adminRoute);
 app.use("/api/v1/attandance", jwtMiddleware, classroomRoute);
 app.use("/api/v1/attendance-toggle", jwtMiddleware, attendanceToggleRoutes);

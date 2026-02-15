@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
 import { motion, animate } from "framer-motion";
@@ -25,16 +26,9 @@ import {
   Sparkles,
   Crown,
   Badge,
-  Zap,
-  Clock,
-  Heart,
-  Globe,
   Hash,
   Brain,
-  Award,
-  Flame,
-  CheckCircle2,
-  XCircle,
+
 } from "lucide-react";
 
 const Profile = () => {
@@ -57,11 +51,47 @@ const Profile = () => {
   const [percentage, setPercentage] = useState(0);
 
   // Fetch dynamic data
+  const { id } = useParams();
+  const [profileUser, setProfileUser] = useState(null);
+
+  useEffect(() => {
+    if (usere && !id) {
+      setProfileUser(usere);
+    }
+  }, [usere, id]);
+
+  // Fetch dynamic data
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
+        // --- PUBLIC PROFILE VIEW (when ID is present) ---
+        if (id) {
+          const res = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/user/profile/${id}`
+          );
+          if (!res.ok) throw new Error("Failed to fetch public profile");
+          const data = await res.json();
+
+          if (data.success) {
+            setProfileUser(data.user);
+            setProgress(data.progress);
+            setSubjects(data.subjects);
+            setBadges(data.badges);
+
+            if (data.streak) {
+              const heatmapData = data.streak.map((item) => ({
+                date: item.date,
+                count: item.count || 0,
+              }));
+              setStreak(heatmapData);
+            }
+          }
+          return; // Exit, no need to fetch auth-based data
+        }
+
+        // --- PRIVATE PROFILE VIEW (Authenticated User) ---
         if (!isAuthenticated) {
           loginWithRedirect();
           return;
@@ -136,7 +166,7 @@ const Profile = () => {
     };
 
     fetchData();
-  }, [getAccessTokenSilently, isAuthenticated, loginWithRedirect]);
+  }, [getAccessTokenSilently, isAuthenticated, loginWithRedirect, id]);
 
   // Animate numbers when progress data is available
   useEffect(() => {
@@ -223,41 +253,41 @@ const Profile = () => {
     {
       icon: User,
       label: "Full Name",
-      value: usere?.fullname,
+      value: profileUser?.fullname,
       color: "text-blue-600",
     },
     {
       icon: Mail,
       label: "Email Address",
-      value: usere?.email,
+      value: profileUser?.email,
       color: "text-green-600",
     },
     {
       icon: Hash,
       label: "University Number",
-      value: usere?.universityNo,
+      value: profileUser?.universityNo,
       color: "text-green-600",
     },
     {
       icon: Shield,
       label: "Role",
-      value: usere?.role,
+      value: profileUser?.role,
       color: "text-purple-600",
     },
     {
       icon: BookOpen,
       label: "Department",
-      value: usere?.department,
+      value: profileUser?.department,
       color: "text-orange-600",
     },
     {
       icon: GraduationCap,
       label: "Semester",
-      value: usere?.semester,
+      value: profileUser?.semester,
       color: "text-pink-600",
     },
   ].filter(section => {
-    if (usere?.role === "teacher") {
+    if (profileUser?.role === "teacher") {
       return section.label !== "University Number" && section.label !== "Semester";
     }
     return true;
@@ -387,12 +417,12 @@ const Profile = () => {
                         <AvatarImage
                           className="object-cover"
                           src={
-                            usere?.picture ||
-                            `https://api.dicebear.com/6.x/initials/svg?seed=${usere?.fullname}`
+                            profileUser?.picture ||
+                            `https://api.dicebear.com/6.x/initials/svg?seed=${profileUser?.fullname}`
                           }
                         />
                         <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                          {usere?.fullname?.[0] || "U"}
+                          {profileUser?.fullname?.[0] || "U"}
                         </AvatarFallback>
                       </Avatar>
 
@@ -413,7 +443,7 @@ const Profile = () => {
 
                     <div className="space-y-2">
                       <h2 className="text-2xl font-bold text-gray-800 flex items-center justify-center gap-2">
-                        {usere?.fullname}
+                        {profileUser?.fullname}
                         <motion.div
                           animate={{ rotate: [0, 10, -10, 0] }}
                           transition={{ duration: 2, repeat: Infinity }}
@@ -423,11 +453,11 @@ const Profile = () => {
                       </h2>
                       <p className="text-gray-600 flex items-center justify-center gap-1">
                         <Badge className="w-4 h-4" />
-                        {usere?.role}
+                        {profileUser?.role}
                       </p>
                       <p className="text-gray-600 flex items-center justify-center gap-1">
                         <Hash className="w-4 h-4" />
-                        {usere?.universityNo}
+                        {profileUser?.universityNo}
                       </p>
                     </div>
                   </div>
@@ -435,7 +465,7 @@ const Profile = () => {
                   {/* Dynamic Quick Stats */}
 
                   {/* Dynamic Quick Stats - Only for Students */}
-                  {usere?.role !== "teacher" && (
+                  {profileUser?.role !== "teacher" && (
                     <div className="grid grid-cols-2 gap-3 mb-6">
                       {profileStats.map((stat, index) => (
                         <motion.div
@@ -465,19 +495,22 @@ const Profile = () => {
                   )}
 
                   {/* Edit Button */}
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Button
-                      onClick={() => setopen(true)}
-                      className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl"
+                  {/* Edit Button - Only show if not viewing a public profile */}
+                  {!id && (
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      <Edit3 className="w-5 h-5" />
-                      Edit Profile
-                      <Sparkles className="w-4 h-4" />
-                    </Button>
-                  </motion.div>
+                      <Button
+                        onClick={() => setopen(true)}
+                        className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl"
+                      >
+                        <Edit3 className="w-5 h-5" />
+                        Edit Profile
+                        <Sparkles className="w-4 h-4" />
+                      </Button>
+                    </motion.div>
+                  )}
                 </div>
               </div>
             </motion.div>

@@ -416,7 +416,7 @@ const Navbar = () => {
                         <User className="w-5 h-5 text-white" />
                       </div>
                       <Link
-                        to="/profile"
+                        to={`/profile/${usere?.universityNo}`}
                         className="font-medium text-slate-700 group-hover:text-slate-900"
                       >
                         View Profile
