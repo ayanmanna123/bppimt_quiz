@@ -4,6 +4,7 @@ import StoreMessage from "../models/StoreMessage.model.js";
 import cloudinary from "../utils/cloudinary.js";
 import getDataUri from "../utils/datauri.js";
 import User from "../models/User.model.js"; // For populating user details if needed
+import Notification from "../models/Notification.model.js";
 
 // ==========================
 // PRODUCT CONTROLLERS
@@ -275,16 +276,47 @@ export const sendMessage = async (req, res) => {
             }
         ]);
 
+        // Re-fetch conversation with population to send to client for "New Conversation" updates
+        const populatedConversation = await StoreConversation.findById(conversationId)
+            .populate("participants", "fullname picture")
+            .populate("product", "title price images status");
+
         // Real-time update via Socket.io
         const io = req.app.get("io");
-        if (io) {
-            conversation.participants.forEach(participantId => {
-                io.to(participantId.toString()).emit("newStoreMessage", {
-                    message: populatedMessage,
-                    conversationId: conversation._id
-                });
+
+        // Create Persistent Notifications and Socket Emit
+        const notifications = conversation.participants
+            .filter(p => p.toString() !== senderId.toString())
+            .map(async (participantId) => {
+                // 1. Socket Emit
+                if (io) {
+                    io.to(participantId.toString()).emit("newStoreMessage", {
+                        message: populatedMessage,
+                        conversationId: conversation._id,
+                        conversation: populatedConversation
+                    });
+                }
+
+                // 2. Persistent Notification
+                try {
+                    const notification = await Notification.create({
+                        recipient: participantId,
+                        sender: senderId,
+                        type: "chat",
+                        onModel: "Chat",
+                        relatedId: conversation._id,
+                        message: `Store: New message about ${populatedConversation.product?.title || 'product'}`,
+                    });
+
+                    if (io) {
+                        io.to(participantId.toString()).emit("newNotification", notification);
+                    }
+                } catch (err) {
+                    console.error("Failed to create notification for", participantId, err);
+                }
             });
-        }
+
+        await Promise.all(notifications);
 
         res.status(200).json({ success: true, message: populatedMessage });
     } catch (error) {

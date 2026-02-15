@@ -96,7 +96,7 @@ const StoreChat = () => {
         if (!socket || !user) return;
 
         const handleNewMessage = (data) => {
-            const { message, conversationId } = data;
+            const { message, conversationId, conversation } = data;
 
             // If active conversation, append message
             if (activeConversation?._id === conversationId) {
@@ -105,16 +105,24 @@ const StoreChat = () => {
 
             // Update conversation list
             setConversations((prev) => {
-                const updated = prev.map(conv => {
-                    if (conv._id === conversationId) {
-                        return {
-                            ...conv,
-                            lastMessage: message.timestamp,
-                        };
-                    }
-                    return conv;
-                });
-                return updated.sort((a, b) => new Date(b.lastMessage) - new Date(a.lastMessage));
+                const exists = prev.find(c => c._id === conversationId);
+
+                if (exists) {
+                    const updated = prev.map(conv => {
+                        if (conv._id === conversationId) {
+                            return {
+                                ...conv,
+                                lastMessage: message.timestamp,
+                            };
+                        }
+                        return conv;
+                    });
+                    return updated.sort((a, b) => new Date(b.lastMessage) - new Date(a.lastMessage));
+                } else if (conversation) {
+                    // Start of new conversation
+                    return [conversation, ...prev];
+                }
+                return prev;
             });
         };
 

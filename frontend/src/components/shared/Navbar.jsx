@@ -94,20 +94,28 @@ const Navbar = () => {
           setUnseenCount((prev) => prev + 1);
           toast.info(`New message from ${message.sender?.fullname || 'someone'}`);
           const sound = new Howl({
-            src: ["/notification.mp3"] // Make sure this exists or remove
+            src: ["/notification.mp3"]
           });
-          // sound.play(); // Play sound if you have one
+          sound.play();
+        }
+      }
+    };
+
+    const handleStoreMessage = (data) => {
+      const { message } = data;
+      if (message.sender?._id !== usere?._id) {
+        if (location.pathname !== "/chats" && location.pathname !== "/store/chat") {
+          setUnseenCount((prev) => prev + 1);
         }
       }
     };
 
     socket.on("receiveMessage", handleReceiveMessage);
-
-    // Optional: listen for a "messagesRead" event to clear counter from other tabs
-    // For now, simpler: we clear it when we visit the page.
+    socket.on("newStoreMessage", handleStoreMessage);
 
     return () => {
       socket.off("receiveMessage", handleReceiveMessage);
+      socket.off("newStoreMessage", handleStoreMessage);
     };
   }, [socket, usere, location.pathname]);
 

@@ -233,12 +233,47 @@ const AllChats = () => {
         };
 
         const handleStoreMessage = (data) => {
-            const { message, conversationId } = data;
+            const { message, conversationId, conversation } = data;
+
+            // 1. Update Active Chat Messages
             if (activeChatId === conversationId) {
                 const normalized = { ...message, message: message.content, isStore: true };
                 setMessages(prev => [...prev, normalized]);
                 scrollToBottom();
             }
+
+            // 2. Update Chat List (Re-order or Add New)
+            setChats(prev => {
+                const existingIndex = prev.findIndex(c => c._id === conversationId);
+
+                if (existingIndex > -1) {
+                    // Update existing
+                    const updatedChats = [...prev];
+                    updatedChats[existingIndex] = {
+                        ...updatedChats[existingIndex],
+                        lastMessage: message.timestamp,
+                        timestamp: message.timestamp,
+                        unreadCount: activeChatId === conversationId ? 0 : (updatedChats[existingIndex].unreadCount || 0) + 1
+                    };
+                    return updatedChats.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                } else if (conversation) {
+                    // Add new store chat
+                    const otherUser = conversation.participants.find(p => p._id !== user._id);
+                    const newChat = {
+                        _id: conversation._id,
+                        type: 'store',
+                        name: otherUser?.fullname || 'Unknown',
+                        avatar: otherUser?.picture,
+                        product: conversation.product,
+                        lastMessage: conversation.lastMessage,
+                        timestamp: conversation.lastMessage,
+                        unreadCount: 1,
+                        participants: conversation.participants
+                    };
+                    return [newChat, ...prev];
+                }
+                return prev;
+            });
         };
 
         const handleTypingUpdate = ({ typingUsers, subjectId }) => {
