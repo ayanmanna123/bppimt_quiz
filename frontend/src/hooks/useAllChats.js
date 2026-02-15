@@ -234,8 +234,14 @@ const useAllChats = () => {
         const handleReceiveMessage = (msg) => {
             const rawSubjectId = msg.subjectId?._id || msg.subjectId;
             const msgSubjectId = (typeof rawSubjectId === 'object' && rawSubjectId !== null) ? rawSubjectId.toString() : rawSubjectId;
+
+            // MSG ID Resolution for DMs
+            const rawConversationId = msg.conversationId?._id || msg.conversationId;
+            const msgConversationId = (typeof rawConversationId === 'object' && rawConversationId !== null) ? rawConversationId.toString() : rawConversationId;
+
             const isGlobalMsg = msg.isGlobal === true || msgSubjectId === 'global';
-            const targetId = isGlobalMsg ? 'global' : msgSubjectId;
+            // Target ID is Global OR Subject OR Conversation
+            const targetId = isGlobalMsg ? 'global' : (msgSubjectId || msgConversationId);
 
             console.log("Socket: receiveMessage", { msg, targetId, current: activeChatId });
 

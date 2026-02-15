@@ -173,8 +173,9 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
         const handleReceiveMessage = (message) => {
             const isGlobalMessage = message.isGlobal && subjectId === "global";
             const isSubjectMessage = message.subjectId === subjectId;
+            const isConversationMessage = message.conversationId === subjectId;
 
-            if (isGlobalMessage || isSubjectMessage) {
+            if (isGlobalMessage || isSubjectMessage || isConversationMessage) {
                 setMessages((prev) => [...prev, message]);
                 markAsRead();
             }
@@ -183,14 +184,19 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
         const handleMessageUpdated = (updatedMsg) => {
             const isGlobalMessage = updatedMsg.isGlobal && subjectId === "global";
             const isSubjectMessage = updatedMsg.subjectId === subjectId;
+            const isConversationMessage = updatedMsg.conversationId === subjectId;
 
-            if (isGlobalMessage || isSubjectMessage) {
+            if (isGlobalMessage || isSubjectMessage || isConversationMessage) {
                 setMessages(prev => prev.map(msg => msg._id === updatedMsg._id ? updatedMsg : msg));
             }
         };
 
-        const handleMessageDeleted = ({ messageId }) => {
-            setMessages(prev => prev.filter(msg => msg._id !== messageId));
+        const handleMessageDeleted = ({ messageId, conversationId, subjectId: msgSubjectId }) => {
+            // Check if the deleted message belongs to the current chat
+            // For DMs, conversationId is passed. For subjects, subjectId is passed.
+            if (conversationId === subjectId || msgSubjectId === subjectId || (subjectId === 'global' && !conversationId && !msgSubjectId)) {
+                setMessages(prev => prev.filter(msg => msg._id !== messageId));
+            }
         };
 
         const handleTypingUpdate = ({ typingUsers: users, subjectId: sid }) => {
@@ -200,13 +206,16 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
             }
         };
 
-        const handleMessagesRead = ({ userId }) => {
-            setMessages((prev) => prev.map(msg => {
-                if (msg.sender?._id !== userId && !msg.readBy?.includes(userId)) {
-                    return { ...msg, readBy: [...(msg.readBy || []), userId] };
-                }
-                return msg;
-            }));
+        const handleMessagesRead = ({ userId, subjectId: sid }) => {
+            // verify this event is for current chat
+            if (sid === subjectId) {
+                setMessages((prev) => prev.map(msg => {
+                    if (msg.sender?._id !== userId && !msg.readBy?.includes(userId)) {
+                        return { ...msg, readBy: [...(msg.readBy || []), userId] };
+                    }
+                    return msg;
+                }));
+            }
         };
 
         const handleUpdatePresence = ({ userId, isOnline, lastSeen }) => {
