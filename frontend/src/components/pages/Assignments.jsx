@@ -26,6 +26,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogDescription,
     DialogTrigger,
     DialogFooter
 } from "@/components/ui/dialog";
@@ -283,6 +284,9 @@ const Assignments = () => {
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Create New Assignment</DialogTitle>
+                            <DialogDescription>
+                                Fill in the details below to create a new assignment for this subject.
+                            </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4 py-4">
                             <div className="space-y-2">
@@ -319,6 +323,9 @@ const Assignments = () => {
                                     </a>
                                 )}
                             </DialogTitle>
+                            <DialogDescription>
+                                Review and download student submissions for this assignment.
+                            </DialogDescription>
                         </DialogHeader>
                         <div className="py-4 space-y-2">
                             {loadingSubmissions ? (

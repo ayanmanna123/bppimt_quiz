@@ -3,6 +3,9 @@ import { getChatHistory, togglePinMessage, getPinnedMessages, updateMessage, del
 
 const router = express.Router();
 
+// Get online users - MUST be before /:subjectId
+router.get("/online/all", getOnlineUsers);
+
 // Get chat history for a subject
 router.get("/:subjectId", getChatHistory);
 
@@ -33,7 +36,6 @@ router.get("/search/:subjectId", searchMessages);
 // Get link preview
 router.get("/link-preview/metadata", getLinkPreview);
 
-// Get online users
-router.get("/online/all", getOnlineUsers);
+
 
 export default router;

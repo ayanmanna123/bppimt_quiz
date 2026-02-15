@@ -23,6 +23,7 @@ import MessageBubble from '../chat/MessageBubble';
 import ChatInput from '../chat/ChatInput';
 import TypingIndicator from '../chat/TypingIndicator';
 import OnlineUsersBar from '../chat/OnlineUsersBar';
+import ChatWindow from '../chat/ChatWindow';
 
 const AllChats = () => {
     const { usere: user } = useSelector(state => state.auth);
@@ -40,6 +41,7 @@ const AllChats = () => {
     const [loading, setLoading] = useState(true);
     const [messages, setMessages] = useState([]);
     const [loadingMessages, setLoadingMessages] = useState(false);
+    const [onlineUsers, setOnlineUsers] = useState([]); // [NEW]
 
     // Message Actions
     const [replyTo, setReplyTo] = useState(null);
@@ -53,7 +55,21 @@ const AllChats = () => {
 
     useEffect(() => {
         fetchAllChats();
+        fetchOnlineUsers();
     }, [user]);
+
+    const fetchOnlineUsers = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            // Note: Route fixed in backend to be /chat/online/all
+            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/chat/online/all`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setOnlineUsers(res.data);
+        } catch (error) {
+            console.error("Failed to fetch online users", error);
+        }
+    };
 
     const fetchAllChats = async () => {
         if (!user) return;
@@ -149,6 +165,7 @@ const AllChats = () => {
         setLoadingMessages(true);
         setReplyTo(null);
         setEditingMessage(null);
+        setTypingUsers([]);
 
         try {
             const token = await getAccessTokenSilently();
@@ -165,11 +182,8 @@ const AllChats = () => {
                     }));
                     setMessages(normalized);
                 }
-            } else {
-                // Global, Subject, StudyRoom use same chat endpoint
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/chat/${chat._id}?limit=50`, { headers });
-                setMessages(res.data);
             }
+            // For other chat types (global, subject, study-room), ChatWindow component handles fetching.
 
             // Join Socket Room
             if (socket) {
@@ -188,13 +202,26 @@ const AllChats = () => {
 
     useEffect(() => {
         if (!socket) return;
+        const activeChatId = selectedChat?._id;
 
         const handleReceiveMessage = (msg) => {
             // Check if message belongs to current chat
-            if (selectedChat && msg.subjectId === selectedChat._id) {
-                setMessages(prev => [...prev, msg]);
-                scrollToBottom();
-            } else if (msg.conversationId && selectedChat && msg.conversationId === selectedChat._id) {
+            // Fix activeChatId reference inside effect
+            /* Due to closure staleness, we rely on checking against 'selectedChat' from dependency or
+               using functional state updates if ID matches.
+               Here selectedChat is in dependency array so it updates.
+            */
+            const currentChatId = selectedChat?._id;
+
+            if (currentChatId) {
+                const isGlobalMatch = currentChatId === 'global' && (msg.isGlobal || msg.subjectId === 'global');
+                const isSubjectMatch = msg.subjectId === currentChatId;
+
+                if (isGlobalMatch || isSubjectMatch) {
+                    setMessages(prev => [...prev, msg]);
+                    scrollToBottom();
+                }
+            } else if (msg.conversationId && currentChatId && msg.conversationId === currentChatId) {
                 // Store message (different structure structure sometimes)
                 const normalized = { ...msg.message, message: msg.message.content, isStore: true };
                 setMessages(prev => [...prev, normalized]);
@@ -206,21 +233,58 @@ const AllChats = () => {
 
         const handleStoreMessage = (data) => {
             const { message, conversationId } = data;
-            if (selectedChat && selectedChat._id === conversationId) {
+            if (activeChatId === conversationId) {
                 const normalized = { ...message, message: message.content, isStore: true };
                 setMessages(prev => [...prev, normalized]);
                 scrollToBottom();
             }
         };
 
+        const handleTypingUpdate = ({ typingUsers, subjectId }) => {
+            if (activeChatId === subjectId) {
+                // Filter out self
+                const others = typingUsers.filter(u => u !== user?.fullname);
+                setTypingUsers(others);
+            }
+        };
+
+        const handleMessageUpdated = (updatedMsg) => {
+            setMessages(prev => prev.map(m => m._id === updatedMsg._id ? updatedMsg : m));
+        };
+
+        const handleMessageDeleted = ({ messageId, conversationId }) => {
+            if (activeChatId === conversationId) {
+                setMessages(prev => prev.filter(m => m._id !== messageId));
+            }
+        };
+
+        const handleUpdatePresence = ({ userId, isOnline }) => {
+            if (isOnline) {
+                // Ideally fetch user details or just simple add if we have ID.
+                // For full details we might need to refetch or just optimistcally add if we have data.
+                // Simplest: Refetch list
+                fetchOnlineUsers();
+            } else {
+                setOnlineUsers(prev => prev.filter(u => u._id !== userId));
+            }
+        };
+
         socket.on("receiveMessage", handleReceiveMessage); // Normal chats
         socket.on("newStoreMessage", handleStoreMessage); // Store chats
+        socket.on("typingUpdate", handleTypingUpdate);
+        socket.on("messageUpdated", handleMessageUpdated);
+        socket.on("messageDeleted", handleMessageDeleted);
+        socket.on("updatePresence", handleUpdatePresence);
 
         return () => {
             socket.off("receiveMessage", handleReceiveMessage);
             socket.off("newStoreMessage", handleStoreMessage);
+            socket.off("typingUpdate", handleTypingUpdate);
+            socket.off("messageUpdated", handleMessageUpdated);
+            socket.off("messageDeleted", handleMessageDeleted);
+            socket.off("updatePresence", handleUpdatePresence);
         };
-    }, [socket, selectedChat]);
+    }, [socket, selectedChat, user]); // Added user dependency
 
     const scrollToBottom = () => {
         setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
@@ -234,6 +298,11 @@ const AllChats = () => {
 
     const handleSendMessage = async (text, attachment) => {
         if (!selectedChat) return;
+
+        // Stop typing immediately
+        if (socket) {
+            socket.emit("stopTyping", { subjectId: selectedChat._id, user: user.fullname });
+        }
 
         try {
             const token = await getAccessTokenSilently();
@@ -259,6 +328,68 @@ const AllChats = () => {
         } catch (error) {
             console.error("Failed to send", error);
             toast.error("Failed to send message");
+        }
+    };
+
+    const handleTyping = () => {
+        if (!socket || !selectedChat) return;
+        socket.emit("typing", { subjectId: selectedChat._id, user: user.fullname });
+
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => {
+            socket.emit("stopTyping", { subjectId: selectedChat._id, user: user.fullname });
+        }, 3000);
+    };
+
+    const handleEditMessage = (msg) => {
+        setEditingMessage(msg);
+    };
+
+    const handleUpdateMessage = async (msgId, content) => {
+        try {
+            const token = await getAccessTokenSilently();
+            // Store and Standard Chat use different update endpoints?
+            // Checking chat.routes.js: router.put("/:messageId", updateMessage);
+            // This seems generic for Standard Chat. Store likely has its own.
+            // Let's assume Standard Chat for now per requirements context (Community/Subject).
+
+            if (selectedChat.type === 'store') {
+                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/store/message/${msgId}`, { content }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            } else {
+                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/chat/${msgId}`, {
+                    userId: user._id,
+                    message: content
+                }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            }
+
+            setEditingMessage(null);
+        } catch (error) {
+            console.error("Failed to update", error);
+            toast.error("Failed to update message");
+        }
+    };
+
+    const handleDeleteMessage = async (msgId) => {
+        if (!confirm("Are you sure you want to delete this message?")) return;
+        try {
+            const token = await getAccessTokenSilently();
+            if (selectedChat.type === 'store') {
+                await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/store/message/${msgId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            } else {
+                await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/chat/${msgId}`, {
+                    data: { userId: user._id }, // Helper to pass body in delete
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            }
+        } catch (error) {
+            console.error("Failed to delete", error);
+            toast.error("Failed to delete message");
         }
     };
 
@@ -399,84 +530,109 @@ const AllChats = () => {
             {/* Chat Area (Responsive) */}
             <div className={`${isMobileChatOpen ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-slate-100 relative`}>
                 {selectedChat ? (
-                    <>
-                        {/* Chat Header */}
-                        <div className="h-16 px-4 bg-white border-b border-slate-200 flex items-center justify-between shadow-sm z-10 shrink-0">
-                            <div className="flex items-center gap-3">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="md:hidden -ml-2"
-                                    onClick={() => setIsMobileChatOpen(false)}
-                                >
-                                    <ArrowLeft className="w-5 h-5" />
-                                </Button>
-                                <Avatar className="w-10 h-10 border border-slate-100 cursor-pointer">
-                                    <AvatarImage src={selectedChat.avatar} />
-                                    <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-                                        {selectedChat.name.charAt(0)}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="cursor-pointer">
-                                    <h2 className="font-bold text-slate-900 leading-tight">{selectedChat.name}</h2>
-                                    <p className="text-xs text-slate-500 capitalize">{selectedChat.type} Chat</p>
+                    selectedChat.type !== 'store' ? (
+                        <ChatWindow
+                            subjectId={selectedChat._id}
+                            subjectName={selectedChat.name}
+                            isOverlay={false}
+                            onClose={() => {
+                                setSelectedChat(null);
+                                setIsMobileChatOpen(false);
+                            }}
+                        />
+                    ) : (
+                        <>
+                            {/* Chat Header */}
+                            <div className="h-16 px-4 bg-white border-b border-slate-200 flex items-center justify-between shadow-sm z-10 shrink-0">
+                                <div className="flex items-center gap-3">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="md:hidden -ml-2"
+                                        onClick={() => setIsMobileChatOpen(false)}
+                                    >
+                                        <ArrowLeft className="w-5 h-5" />
+                                    </Button>
+                                    <Avatar className="w-10 h-10 border border-slate-100 cursor-pointer">
+                                        <AvatarImage src={selectedChat.avatar} />
+                                        <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+                                            {selectedChat.name.charAt(0)}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="cursor-pointer">
+                                        <h2 className="font-bold text-slate-900 leading-tight">{selectedChat.name}</h2>
+                                        <p className="text-xs text-slate-500 capitalize">{selectedChat.type} Chat</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-1">
+                                    <Button variant="ghost" size="icon" className="text-slate-500">
+                                        <Search className="w-5 h-5" />
+                                    </Button>
+                                    {selectedChat.type === 'store' && (
+                                        <Button variant="ghost" size="icon" className="text-slate-500">
+                                            <ShoppingBag className="w-5 h-5" />
+                                        </Button>
+                                    )}
+                                    <Button variant="ghost" size="icon" className="text-slate-500">
+                                        <MoreVertical className="w-5 h-5" />
+                                    </Button>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="icon" className="text-slate-500">
-                                    <Search className="w-5 h-5" />
-                                </Button>
-                                {selectedChat.type === 'store' && (
-                                    <Button variant="ghost" size="icon" className="text-slate-500">
-                                        <ShoppingBag className="w-5 h-5" />
-                                    </Button>
-                                )}
-                                <Button variant="ghost" size="icon" className="text-slate-500">
-                                    <MoreVertical className="w-5 h-5" />
-                                </Button>
+                            {/* Online Users (Dynamic Bar) - Only show for Global or Subject chats ideally */}
+                            {(selectedChat.type === 'global' || selectedChat.type === 'subject') && (
+                                <OnlineUsersBar users={onlineUsers} />
+                            )}
+
+                            {/* Messages */}
+                            <div className="flex-1 overflow-hidden relative bg-[url('https://web.whatsapp.com/img/bg-chat-tile-dark_a4be512e7195b6b733d9110b408f9640.png')] bg-repeat bg-opacity-5">
+                                {/* Light overlay for custom pattern effect if image fails or for styling */}
+                                <div className="absolute inset-0 bg-slate-100/90 backdrop-blur-[1px]"></div>
+
+                                <div className="relative h-full flex flex-col">
+                                    <ScrollViewport messages={messages} loading={loadingMessages}>
+                                        {messages.map((msg, idx) => {
+                                            const isMe = msg.sender?._id === user?._id;
+                                            const showAvatar = idx === 0 || messages[idx - 1]?.sender?._id !== msg.sender?._id;
+
+                                            return (
+                                                <MessageBubble
+                                                    key={msg._id || idx}
+                                                    message={msg}
+                                                    isMe={isMe}
+                                                    showAvatar={showAvatar}
+                                                    showSenderName={selectedChat.type !== 'store' && showAvatar}
+                                                    onReply={() => setReplyTo(msg)}
+                                                    onEdit={handleEditMessage}
+                                                    onDelete={handleDeleteMessage}
+                                                // Simplified props for AllChats
+                                                />
+                                            );
+                                        })}
+                                        <TypingIndicator typingUsers={typingUsers} />
+                                        <div ref={messagesEndRef} />
+                                    </ScrollViewport>
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Messages */}
-                        <div className="flex-1 overflow-hidden relative bg-[url('https://web.whatsapp.com/img/bg-chat-tile-dark_a4be512e7195b6b733d9110b408f9640.png')] bg-repeat bg-opacity-5">
-                            {/* Light overlay for custom pattern effect if image fails or for styling */}
-                            <div className="absolute inset-0 bg-slate-100/90 backdrop-blur-[1px]"></div>
+                            {/* Input Area */}
 
-                            <div className="relative h-full flex flex-col">
-                                <ScrollViewport messages={messages} loading={loadingMessages}>
-                                    {messages.map((msg, idx) => {
-                                        const isMe = msg.sender?._id === user?._id;
-                                        const showAvatar = idx === 0 || messages[idx - 1]?.sender?._id !== msg.sender?._id;
-
-                                        return (
-                                            <MessageBubble
-                                                key={msg._id || idx}
-                                                message={msg}
-                                                isMe={isMe}
-                                                showAvatar={showAvatar}
-                                                showSenderName={selectedChat.type !== 'store' && showAvatar}
-                                                onReply={() => setReplyTo(msg)}
-                                            // Simplified props for AllChats
-                                            />
-                                        );
-                                    })}
-                                    <div ref={messagesEndRef} />
-                                </ScrollViewport>
+                            <div className="bg-white p-3 border-t border-slate-200">
+                                <ChatInput
+                                    onSendMessage={handleSendMessage}
+                                    replyTo={replyTo}
+                                    onCancelReply={() => setReplyTo(null)}
+                                    // New Props
+                                    onTyping={handleTyping}
+                                    editingMessage={editingMessage}
+                                    onUpdateMessage={handleUpdateMessage}
+                                    onCancelEdit={() => setEditingMessage(null)}
+                                // Pass other props as needed
+                                />
                             </div>
-                        </div>
-
-                        {/* Input Area */}
-
-                        <div className="bg-white p-3 border-t border-slate-200">
-                            <ChatInput
-                                onSendMessage={handleSendMessage}
-                                replyTo={replyTo}
-                                onCancelReply={() => setReplyTo(null)}
-                            // Pass other props as needed
-                            />
-                        </div>
-                    </>
+                        </>
+                    )
                 ) : (
                     /* Empty State */
                     <div className="flex-1 flex flex-col items-center justify-center bg-slate-50/50 text-slate-400 p-8 text-center">

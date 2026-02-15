@@ -179,6 +179,13 @@ export const deleteMessage = async (req, res) => {
 
         await Chat.findByIdAndDelete(messageId);
 
+        // Notify clients
+        const io = req.app.get("io");
+        if (io) {
+            io.to(chat.subjectId || "global").emit("messageDeleted", { messageId, conversationId: chat.subjectId || "global" });
+            // specific checks for Store or Global might differ in ID structure, keeping it consistent with joinSubject
+        }
+
         res.status(200).json({ messageId, message: "Message deleted successfully" });
 
     } catch (error) {
@@ -213,6 +220,12 @@ export const updateMessage = async (req, res) => {
             }
         ]);
 
+        // Notify clients
+        const io = req.app.get("io");
+        if (io) {
+            io.to(chat.subjectId || "global").emit("messageUpdated", populatedChat);
+        }
+
         res.status(200).json(populatedChat);
 
     } catch (error) {
@@ -232,11 +245,8 @@ export const togglePinMessage = async (req, res) => {
         // Verify user role (should be teacher or admin)
         // Here we assume the frontend sent the userId and we blindly trust or check DB
         const user = await User.findById(userId);
-        if (!user || user.role !== "teacher") { // Strict check: only teachers for now
-            // For Admin features, we might need to check if user is admin. 
-            // The schema has 'role': enum ['teacher', 'student']. 
-            // If there is an 'admin' role, add it here.
-            // Based on User model, only 'teacher' and 'student' exist in enum, but let's allow teachers to pin.
+        if (!user || (user.role !== "teacher" && user.role !== "student")) {
+            // Allow both teachers and students to pin for now (or make it chat-type specific later)
             return res.status(403).json({ message: "Unauthorized to pin messages" });
         }
 

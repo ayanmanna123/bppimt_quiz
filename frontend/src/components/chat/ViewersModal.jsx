@@ -4,6 +4,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogDescription,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -45,6 +46,9 @@ const ViewersModal = ({ isOpen, onClose, messageId }) => {
                         <Users className="w-5 h-5 text-indigo-600" />
                         Seen by
                     </DialogTitle>
+                    <DialogDescription className="sr-only">
+                        List of users who have seen this message
+                    </DialogDescription>
                 </DialogHeader>
                 <ScrollArea className="max-h-[300px] mt-4">
                     {loading ? (

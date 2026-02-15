@@ -4,6 +4,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -133,6 +134,9 @@ const CreateMeetingModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                     <div className="flex items-center justify-between mr-8">
                         <DialogTitle className="text-xl">Manage Online Classes</DialogTitle>
                     </div>
+                    <DialogDescription>
+                        Schedule and manage online classes for this subject.
+                    </DialogDescription>
                 </DialogHeader>
 
                 {/* Tabs */}

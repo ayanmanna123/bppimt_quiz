@@ -13,10 +13,11 @@ import ChatInput from "./ChatInput";
 import TypingIndicator from "./TypingIndicator";
 import OnlineUsersBar from "./OnlineUsersBar";
 
-const ChatWindow = ({ subjectId, subjectName, onClose }) => {
+const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true }) => {
     const { usere } = useSelector((store) => store.auth);
     const socket = useSocket();
     const { getAccessTokenSilently } = useAuth0();
+
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(true);
@@ -45,6 +46,14 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
     const [currentSearchIndex, setCurrentSearchIndex] = useState(-1);
     const [isSearching, setIsSearching] = useState(false);
     const messageRefs = useRef({});
+
+    // ... existing functions ...
+
+    // Container class logic
+    const containerClass = isOverlay
+        ? "fixed top-[64px] left-0 right-0 bottom-0 z-40 bg-white flex flex-col overflow-hidden animate-in slide-in-from-right duration-300"
+        : "flex flex-col h-full w-full bg-white overflow-hidden";
+
 
     // Fetch chat history
     const fetchHistory = async (pageNum = 1) => {
@@ -161,14 +170,20 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
         socket.emit("joinSubject", subjectId);
 
         const handleReceiveMessage = (message) => {
-            if (message.subjectId === subjectId) {
+            const isGlobalMessage = message.isGlobal && subjectId === "global";
+            const isSubjectMessage = message.subjectId === subjectId;
+
+            if (isGlobalMessage || isSubjectMessage) {
                 setMessages((prev) => [...prev, message]);
                 markAsRead();
             }
         };
 
         const handleMessageUpdated = (updatedMsg) => {
-            if (updatedMsg.subjectId === subjectId) {
+            const isGlobalMessage = updatedMsg.isGlobal && subjectId === "global";
+            const isSubjectMessage = updatedMsg.subjectId === subjectId;
+
+            if (isGlobalMessage || isSubjectMessage) {
                 setMessages(prev => prev.map(msg => msg._id === updatedMsg._id ? updatedMsg : msg));
             }
         };
@@ -321,7 +336,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
             subjectId,
             message: text,
             senderId: usere._id,
-            isGlobal: false,
+            isGlobal: subjectId === 'global',
             replyTo: replyTo ? replyTo._id : null,
             attachments: attachment ? [attachment] : []
         };
@@ -413,7 +428,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose }) => {
     };
 
     return (
-        <div className="fixed top-[64px] left-0 right-0 bottom-0 z-40 bg-white flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
+        <div className={containerClass}>
             <div className="w-full h-full flex flex-col overflow-hidden">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex items-center justify-between text-white shrink-0 relative">
