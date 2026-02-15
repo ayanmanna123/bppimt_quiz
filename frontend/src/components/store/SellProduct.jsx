@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from "@auth0/auth0-react";
-import { Upload, X, DollarSign, Tag, MapPin, Type, FileText, Loader2 } from 'lucide-react';
+import { Upload, X, DollarSign, Tag, MapPin, Type, FileText, Loader2, IndianRupee, ImagePlus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -207,9 +207,9 @@ const SellProduct = () => {
                         <div className="space-y-4">
                             <Label className="text-slate-700 font-bold">Product Images</Label>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {images.map((img, idx) => (
+                                {imagePreviews.map((src, idx) => (
                                     <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 group">
-                                        <img src={img} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
+                                        <img src={src} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
                                         <button
                                             type="button"
                                             onClick={() => removeImage(idx)}
@@ -228,9 +228,9 @@ const SellProduct = () => {
                                         <input
                                             type="file"
                                             accept="image/*"
-                                            onChange={handleImageUpload}
+                                            onChange={handleImageChange}
                                             className="hidden"
-                                            disabled={uploading}
+                                            disabled={loading}
                                         />
                                     </label>
                                 )}
@@ -242,7 +242,7 @@ const SellProduct = () => {
 
                         <Button
                             type="submit"
-                            disabled={loading || uploading}
+                            disabled={loading}
                             className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700 shadow-lg shadow-primary/25 rounded-xl transition-all hover:scale-[1.01]"
                         >
                             {loading ? (
