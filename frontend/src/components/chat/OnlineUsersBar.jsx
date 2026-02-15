@@ -12,13 +12,13 @@ const OnlineUsersBar = ({ users }) => {
                 <span className="text-[10px] font-bold text-indigo-200 uppercase tracking-widest shrink-0">
                     Online Now
                 </span>
-                <ScrollArea className="w-full whitespace-nowrap">
+                <ScrollArea className="flex-1 whitespace-nowrap overflow-hidden">
                     <div className="flex gap-2 pb-1">
                         <TooltipProvider>
                             {users.map((user) => (
                                 <Tooltip key={user._id}>
                                     <TooltipTrigger asChild>
-                                        <div className="relative cursor-pointer hover:scale-105 transition-transform group">
+                                        <div className="relative cursor-pointer hover:scale-105 transition-transform group shrink-0">
                                             <Avatar className="w-8 h-8 border-2 border-indigo-500/50 group-hover:border-indigo-400 transition-colors">
                                                 <AvatarImage src={user.picture} alt={user.fullname} />
                                                 <AvatarFallback className="bg-indigo-600 text-white text-[10px]">
@@ -41,7 +41,7 @@ const OnlineUsersBar = ({ users }) => {
                     <ScrollBar orientation="horizontal" className="h-1 bg-white/5" />
                 </ScrollArea>
                 {users.length > 0 && (
-                    <div className="shrink-0 bg-green-500/20 text-green-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-green-500/30">
+                    <div className="shrink-0 bg-green-500/20 text-green-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-green-500/30 ml-2">
                         {users.length}
                     </div>
                 )}
