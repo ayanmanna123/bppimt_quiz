@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { useAuth0 } from "@auth0/auth0-react";
 import { MessageCircle, Search } from 'lucide-react';
+import { io } from "socket.io-client";
 import MessageBubble from '../chat/MessageBubble';
 import ChatInput from '../chat/ChatInput';
 import { Input } from '@/components/ui/input';
@@ -16,14 +17,62 @@ const StoreChat = () => {
     const [activeConversation, setActiveConversation] = useState(null);
     const [messages, setMessages] = useState([]);
     const messagesEndRef = useRef(null);
+    const socket = useRef(null);
+    const activeConversationRef = useRef(null);
     const { usere: user } = useSelector(state => state.auth); // Accessing auth state and aliasing usere to user
     const [searchTerm, setSearchTerm] = useState("");
 
-    // Poll for conversations (simple MVP approach)
+    // Keep ref in sync with state for socket callback
+    useEffect(() => {
+        activeConversationRef.current = activeConversation;
+    }, [activeConversation]);
+
+    // Socket Initialization
+    useEffect(() => {
+        if (user) {
+            // socket.current = io("http://localhost:5000", { 
+            // Better to drive from env if possible, assuming backend is on 5000 based on API calls
+            socket.current = io("http://localhost:5000", {
+                query: { userId: user._id }
+            });
+
+            socket.current.on("newStoreMessage", (data) => {
+                const { message, conversationId } = data;
+
+                // Use ref to check active conversation without re-running effect
+                if (activeConversationRef.current && activeConversationRef.current._id === conversationId) {
+                    setMessages((prevMessages) => [...prevMessages, message]);
+                }
+
+                // Update conversations list (move to top, update last message)
+                setConversations((prevConversations) => {
+                    const updatedConversations = prevConversations.map(conv => {
+                        if (conv._id === conversationId) {
+                            return {
+                                ...conv,
+                                messages: [...(conv.messages || []), message],
+                                lastMessage: message.timestamp
+                            };
+                        }
+                        return conv;
+                    });
+
+                    // Sort by last message timestamp (descending)
+                    return updatedConversations.sort((a, b) => new Date(b.lastMessage) - new Date(a.lastMessage));
+                });
+            });
+
+            return () => {
+                if (socket.current) socket.current.disconnect();
+            };
+        }
+    }, [user]); // Only re-run if user changes
+
+    // Poll for conversations (Keep as fallback or remove? User asked for real-time, polling is distinct. Let's keep it for initial sync safety but increase interval maybe?)
     useEffect(() => {
         fetchConversations();
-        const interval = setInterval(fetchConversations, 10000); // 10s poll
-        return () => clearInterval(interval);
+        // const interval = setInterval(fetchConversations, 10000); // Remove polling since we have sockets
+        // return () => clearInterval(interval);
     }, []);
 
     const fetchConversations = async () => {
@@ -68,7 +117,7 @@ const StoreChat = () => {
             });
 
             const payload = {
-                content: text,
+                content: text || "",
                 attachments: attachment ? [attachment] : []
             };
 

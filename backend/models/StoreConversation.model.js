@@ -23,8 +23,13 @@ const storeConversationSchema = new mongoose.Schema(
                 },
                 content: {
                     type: String,
-                    required: true,
                 },
+                attachments: [
+                    {
+                        url: { type: String },
+                        type: { type: String } // 'image', 'audio', 'file'
+                    }
+                ],
                 timestamp: {
                     type: Date,
                     default: Date.now,

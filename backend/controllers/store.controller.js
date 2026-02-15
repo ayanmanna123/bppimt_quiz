@@ -237,7 +237,7 @@ export const getConversations = async (req, res) => {
 export const sendMessage = async (req, res) => {
     try {
         const { conversationId } = req.params;
-        const { content } = req.body;
+        const { content, attachments } = req.body;
         const auth0Id = req.auth.payload.sub;
         const user = await User.findOne({ auth0Id });
         if (!user) return res.status(404).json({ message: "User not found" });
@@ -255,7 +255,8 @@ export const sendMessage = async (req, res) => {
 
         const newMessage = {
             sender: senderId,
-            content,
+            content: content || "",
+            attachments: attachments || [],
             timestamp: new Date(),
         };
 
@@ -263,9 +264,25 @@ export const sendMessage = async (req, res) => {
         conversation.lastMessage = new Date();
         await conversation.save();
 
-        // In a real app, you would emit a socket event here for real-time update
-        // const io = req.app.get("io");
-        // io.to(conversationId).emit("newStoreMessage", newMessage);
+        // Real-time update via Socket.io
+        const io = req.app.get("io");
+        if (io) {
+            const socketMessage = {
+                ...newMessage,
+                sender: {
+                    _id: user._id,
+                    fullname: user.fullname,
+                    picture: user.picture
+                }
+            };
+
+            conversation.participants.forEach(participantId => {
+                io.to(participantId.toString()).emit("newStoreMessage", {
+                    message: socketMessage,
+                    conversationId: conversation._id
+                });
+            });
+        }
 
         res.status(200).json({ success: true, message: newMessage });
     } catch (error) {
