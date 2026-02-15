@@ -7,7 +7,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
 import NotificationDropdown from '../shared/NotificationDropdown';
 import { format } from "date-fns";
 
@@ -213,7 +213,7 @@ const AllChats = () => {
                 </div>
 
                 {/* Chat List */}
-                <ScrollArea className="flex-1">
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
                     {loading ? (
                         <div className="flex justify-center p-8">
                             <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
@@ -272,7 +272,7 @@ const AllChats = () => {
                             })}
                         </div>
                     )}
-                </ScrollArea>
+                </div>
 
                 {/* User Profile / Status (Bottom Sidebar) */}
                 <div className="p-3 bg-slate-50 border-t border-slate-200 flex items-center gap-3">
