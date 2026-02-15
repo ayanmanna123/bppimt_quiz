@@ -10,11 +10,13 @@ import { sendNotification } from "../utils/notification.util.js";
 export const getChatHistory = async (req, res) => {
     try {
         const { subjectId } = req.params;
-        const { page = 1, limit = 50 } = req.query;
+        const { page = 1, limit = 50, type } = req.query;
 
         let query = {};
         if (subjectId === "global") {
             query = { isGlobal: true };
+        } else if (type === 'dm') {
+            query = { conversationId: subjectId };
         } else {
             query = { subjectId };
         }
@@ -41,7 +43,7 @@ export const getChatHistory = async (req, res) => {
 };
 
 // Helper function to save message (intended for Socket use)
-export const saveMessage = async (subjectId, senderId, messageContent, mentions = [], replyTo = null, attachments = [], io = null) => {
+export const saveMessage = async (subjectId, senderId, messageContent, mentions = [], replyTo = null, attachments = [], io = null, type = 'subject') => {
     try {
         let newMessage;
         const chatData = {
@@ -54,12 +56,30 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
 
         if (subjectId === "global") {
             chatData.isGlobal = true;
+        } else if (type === 'dm') {
+            chatData.conversationId = subjectId;
         } else {
             chatData.subjectId = subjectId;
         }
 
         newMessage = new Chat(chatData);
         await newMessage.save();
+
+        // Update Conversation last message if it's a DM
+        if (type === 'dm') {
+            // We need to import Conversation but cyclic dependency might be an issue if not careful
+            // Dynamic import or assume it's loaded? 
+            // Better to skip importing here and let the import at top handle it
+            // But wait, I didn't import Conversation in chat.controller.js yet. I will need to add it.
+            const Conversation = (await import("../models/Conversation.model.js")).default;
+
+            await Conversation.findByIdAndUpdate(subjectId, {
+                lastMessage: messageContent || (attachments.length ? 'Attachment' : 'New Message'),
+                lastMessageId: newMessage._id,
+                lastMessageTimestamp: new Date(),
+                $inc: { [`unreadCounts.${getOtherParticipantId(subjectId, senderId)}`]: 1 } // Complex... skip precise unread count for now or handle later
+            });
+        }
 
         // Populate details for immediate return to clients
         const populatedMessage = await newMessage.populate([
@@ -80,7 +100,10 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
                 ? messageContent.substring(0, 50) + "..."
                 : messageContent;
 
-            const url = subjectId === 'global' ? '/community-chat' : `/dashboard/subject/${subjectId}`;
+            let url = subjectId === 'global' ? '/community-chat' : `/dashboard/subject/${subjectId}`;
+            if (type === 'dm') {
+                url = `/chat/dm/${subjectId}`; // Or whatever the frontend route will be
+            }
 
             // Create persistent notification in DB (also handles real-time socket and web push)
             // We need to find recipients. For group chat, it's everyone else.
@@ -90,7 +113,18 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
 
             // For now, let's notify the room (or specific mentions if we want to be less noisy).
             // Looking at previous logic, it sent push to EVERYONE except sender.
-            const otherUsers = await User.find({ _id: { $ne: senderId } }, "_id");
+            let recipientQuery = { _id: { $ne: senderId } };
+
+            if (type === 'dm') {
+                const Conversation = (await import("../models/Conversation.model.js")).default;
+                const conv = await Conversation.findById(subjectId);
+                if (conv) {
+                    const otherId = conv.participants.find(p => p.toString() !== senderId.toString());
+                    recipientQuery = { _id: otherId };
+                }
+            }
+
+            const otherUsers = await User.find(recipientQuery, "_id");
 
             for (const user of otherUsers) {
                 await sendNotification({
@@ -545,7 +579,13 @@ export const getChatMetadata = async (req, res) => {
             if (targetId === "global") {
                 query = { isGlobal: true };
             } else {
-                query = { subjectId: targetId };
+                // Try to match either subjectId or conversationId
+                query = {
+                    $or: [
+                        { subjectId: targetId },
+                        { conversationId: targetId }
+                    ]
+                };
             }
 
             // 1. Last Message

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
 import { motion, animate } from "framer-motion";
@@ -10,6 +10,10 @@ import Dashboard from "./pages/Dashboard";
 import Calendar from "../components/pages/Calendar";
 import {
   User,
+  UserPlus,
+  UserCheck,
+  UserX,
+  MessageSquare,
   Mail,
   BookOpen,
   Edit3,
@@ -32,6 +36,7 @@ import {
 } from "lucide-react";
 
 const Profile = () => {
+  const navigate = useNavigate();
   const [open, setopen] = useState(false);
   const { usere } = useSelector((store) => store.auth);
   const { getAccessTokenSilently, isAuthenticated, loginWithRedirect, user } =
@@ -75,6 +80,7 @@ const Profile = () => {
           const data = await res.json();
 
           if (data.success) {
+            console.log("Profile Data:", data);
             setProfileUser(data.user);
             setProgress(data.progress);
             setSubjects(data.subjects);
@@ -98,9 +104,9 @@ const Profile = () => {
         }
 
         const token = await getAccessTokenSilently({
-          audience: "https://bppimt-quiz-kml1.vercel.app/api/v2",
+          audience: "http://localhost:5000/api/v2",
         });
-
+        console.log(token)
         const headers = {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -167,6 +173,128 @@ const Profile = () => {
 
     fetchData();
   }, [getAccessTokenSilently, isAuthenticated, loginWithRedirect, id]);
+
+  // --- Friend System Logic ---
+  const [friendStatus, setFriendStatus] = useState('none');
+  const [conversationId, setConversationId] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [friendRequests, setFriendRequests] = useState([]); // [NEW]
+
+  // Fetch Friend Requests (for own profile)
+  useEffect(() => {
+
+    const fetchRequests = async () => {
+      if (id || !isAuthenticated) return; // Only for own profile
+      try {
+        const token = await getAccessTokenSilently({
+          audience: "http://localhost:5000/api/v2",
+        });
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/friend/requests`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        // console.log("i am from data ", data);
+        console.log("Friend Requests:", data);
+        if (data.success) {
+          setFriendRequests(data.requests || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch friend requests", error);
+      }
+    };
+    fetchRequests();
+  }, [id, getAccessTokenSilently, isAuthenticated]);
+
+  // Check Status
+  useEffect(() => {
+    const checkStatus = async () => {
+      if (!id || !isAuthenticated || !profileUser || !usere) return;
+      // If viewing own profile (by ID matching or if ID param is my univ no)
+      if (profileUser._id === usere._id) return;
+
+      try {
+        const token = await getAccessTokenSilently({
+          audience: "http://localhost:5000/api/v2",
+        });
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/friend/status/${profileUser._id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        console.log("Friend Status:", data);
+        if (res.ok) {
+          setFriendStatus(data.status);
+          if (data.conversationId) setConversationId(data.conversationId);
+        }
+      } catch (error) {
+        console.error("Failed to check friend status", error);
+      }
+    };
+
+    checkStatus();
+  }, [profileUser, usere, id, getAccessTokenSilently, isAuthenticated]);
+
+  const handleFriendAction = async (action, targetId = null) => {
+    // If targetId is passed, use it (for list actions), else use profileUser._id
+    const targetUserId = targetId || profileUser?._id;
+    if (!targetUserId || actionLoading) return;
+
+    setActionLoading(true);
+    try {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v2",
+      });
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+
+      let url = '';
+      let body = {};
+
+      if (action === 'send') {
+        url = `${import.meta.env.VITE_BACKEND_URL}/friend/request`;
+        body = { targetUserId };
+      } else if (action === 'accept') {
+        url = `${import.meta.env.VITE_BACKEND_URL}/friend/accept`;
+        body = { requesterId: targetUserId };
+      } else if (action === 'reject') {
+        url = `${import.meta.env.VITE_BACKEND_URL}/friend/reject`;
+        body = { requesterId: targetUserId };
+      }
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+      console.log("Friend Action Response:", data);
+      if (data.success) {
+        // Update local state for Profile View
+        if (!targetId) { // If acting on main profile view
+          if (action === 'send') setFriendStatus('sent');
+          if (action === 'accept') {
+            setFriendStatus('friends');
+            setConversationId(data.conversationId);
+          }
+          if (action === 'reject') setFriendStatus('none');
+        } else {
+          // Acting on list
+          setFriendRequests(prev => prev.filter(r => r.from._id !== targetUserId));
+        }
+      }
+    } catch (error) {
+      console.error(`Failed to ${action} request`, error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleMessage = () => {
+    navigate(`/chats?dm=${conversationId}`);
+  };
+
 
   // Animate numbers when progress data is available
   useEffect(() => {
@@ -511,6 +639,63 @@ const Profile = () => {
                       </Button>
                     </motion.div>
                   )}
+
+                  {/* Friend Actions (If viewing other public profile) */}
+                  {id && usere && profileUser && usere._id !== profileUser._id && (
+                    <div className="mt-6 flex flex-col gap-3">
+                      {friendStatus === 'none' && (
+                        <Button
+                          onClick={() => handleFriendAction('send')}
+                          disabled={actionLoading}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+                        >
+                          <UserPlus className="w-5 h-5" />
+                          Add Friend
+                        </Button>
+                      )}
+
+                      {friendStatus === 'sent' && (
+                        <Button
+                          disabled
+                          className="w-full bg-gray-400 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+                        >
+                          <UserCheck className="w-5 h-5" />
+                          Request Sent
+                        </Button>
+                      )}
+
+                      {friendStatus === 'received' && (
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => handleFriendAction('accept')}
+                            disabled={actionLoading}
+                            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+                          >
+                            <UserCheck className="w-5 h-5" />
+                            Accept
+                          </Button>
+                          <Button
+                            onClick={() => handleFriendAction('reject')}
+                            disabled={actionLoading}
+                            className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+                          >
+                            <UserX className="w-5 h-5" />
+                            Reject
+                          </Button>
+                        </div>
+                      )}
+
+                      {friendStatus === 'friends' && (
+                        <Button
+                          onClick={handleMessage}
+                          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+                        >
+                          <MessageSquare className="w-5 h-5" />
+                          Message
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -523,6 +708,53 @@ const Profile = () => {
               transition={{ duration: 0.8, delay: 0.4 }}
             >
               <div className="space-y-6">
+
+                {/* Friend Requests Section (Only for Own Profile) */}
+                {!id && friendRequests.length > 0 && (
+                  <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+                    <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2 mb-6">
+                      <UserPlus className="w-7 h-7 text-blue-600" />
+                      Friend Requests
+                      <Badge className="bg-red-500 text-white px-2 py-0.5 rounded-full text-sm">
+                        {friendRequests.length}
+                      </Badge>
+                    </h3>
+                    <div className="space-y-4">
+                      {friendRequests.map((req) => (
+                        <div key={req._id} className="flex items-center justify-between p-4 bg-blue-50/50 rounded-2xl border border-blue-100">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                              <AvatarImage src={req.from.picture} />
+                              <AvatarFallback>{req.from.fullname[0]}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-bold text-gray-800">{req.from.fullname}</p>
+                              <p className="text-xs text-gray-500">{req.from.email}</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => handleFriendAction('accept', req.from._id)}
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                              Accept
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleFriendAction('reject', req.from._id)}
+                              className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200"
+                            >
+                              Reject
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Profile Information Card */}
                 <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
                   <div className="flex items-center justify-between mb-6">

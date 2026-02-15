@@ -32,6 +32,7 @@ import chatbotRoute from "./routes/chatbot.route.js";
 import { saveMessage, addReaction, removeReaction } from "./controllers/chat.controller.js";
 import { initSupportBot } from "./controllers/chatbot.controller.js";
 import storeRoute from "./routes/store.routes.js";
+import friendRoute from "./routes/friend.routes.js";
 
 dotenv.config();
 connectToMongo();
@@ -144,6 +145,7 @@ app.use("/api/v1/notifications", jwtMiddleware, notificationRoute);
 app.use("/api/v1/study-room", jwtMiddleware, studyRoomRoute);
 app.use("/api/v1/chatbot", jwtMiddleware, chatbotRoute);
 app.use("/api/v1/store", jwtMiddleware, storeRoute);
+app.use("/api/v1/friend", friendRoute); // Auth is handled inside the route file
 
 
 /* =========================
@@ -201,9 +203,9 @@ io.on("connection", async (socket) => {
     console.log(`Client ${socket.id} joined subject ${subjectId}`);
   });
 
-  socket.on("sendMessage", async ({ subjectId, message, senderId, mentions, replyTo, attachments }) => {
+  socket.on("sendMessage", async ({ subjectId, message, senderId, mentions, replyTo, attachments, type }) => {
     // Save to database
-    const savedMessage = await saveMessage(subjectId, senderId, message, mentions, replyTo, attachments, io);
+    const savedMessage = await saveMessage(subjectId, senderId, message, mentions, replyTo, attachments, io, type);
 
     if (savedMessage) {
       // Broadcast to room

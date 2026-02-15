@@ -13,7 +13,7 @@ import ChatInput from "./ChatInput";
 import TypingIndicator from "./TypingIndicator";
 import OnlineUsersBar from "./OnlineUsersBar";
 
-const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true }) => {
+const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 'subject' }) => { // Added type prop
     const { usere } = useSelector((store) => store.auth);
     const socket = useSocket();
     const { getAccessTokenSilently } = useAuth0();
@@ -62,8 +62,9 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true }) => {
             else setIsFetchingMore(true);
 
             const token = await getAccessTokenSilently();
+            // Pass type in query
             const res = await axios.get(
-                `${import.meta.env.VITE_BACKEND_URL}/chat/${subjectId}?page=${pageNum}&limit=50`,
+                `${import.meta.env.VITE_BACKEND_URL}/chat/${subjectId}?page=${pageNum}&limit=50&type=${type}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -338,7 +339,8 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true }) => {
             senderId: usere._id,
             isGlobal: subjectId === 'global',
             replyTo: replyTo ? replyTo._id : null,
-            attachments: attachment ? [attachment] : []
+            attachments: attachment ? [attachment] : [],
+            type // Pass type
         };
 
         socket.emit("sendMessage", messageData);
@@ -431,22 +433,29 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true }) => {
         <div className={containerClass}>
             <div className="w-full h-full flex flex-col overflow-hidden">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex items-center justify-between text-white shrink-0 relative">
+                <div className={`${type === 'dm' ? 'bg-white border-b border-slate-200 text-slate-800' : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'} p-4 flex items-center justify-between shrink-0 relative`}>
                     {!showSearch ? (
                         <>
                             <div className="flex items-center gap-2 overflow-hidden flex-1">
                                 <MessageCircle className="w-5 h-5 shrink-0" />
-                                <h3 className="font-bold truncate">{subjectName}</h3>
+                                <div className="flex flex-col overflow-hidden">
+                                    <h3 className="font-bold truncate">{subjectName}</h3>
+                                    {type === 'dm' && (
+                                        <span className={`text-[10px] font-medium leading-none ${onlineUsers.some(u => u.fullname === subjectName) ? 'text-green-500' : 'text-slate-400'}`}>
+                                            {onlineUsers.some(u => u.fullname === subjectName) ? 'Online' : 'Offline'}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="icon" onClick={() => setShowSearch(true)} className="text-white hover:bg-white/20 rounded-full h-8 w-8">
+                                <Button variant="ghost" size="icon" onClick={() => setShowSearch(true)} className={`${type === 'dm' ? 'text-slate-500 hover:bg-slate-100' : 'text-white hover:bg-white/20'} rounded-full h-8 w-8`}>
                                     <Search className="w-4 h-4" />
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     size="icon"
                                     onClick={onClose}
-                                    className="text-white hover:bg-white/20 rounded-full h-8 w-8"
+                                    className={`${type === 'dm' ? 'text-slate-500 hover:bg-slate-100' : 'text-white hover:bg-white/20'} rounded-full h-8 w-8`}
                                 >
                                     <X className="w-5 h-5" />
                                 </Button>
@@ -545,8 +554,8 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true }) => {
                     )}
                 </div>
 
-                {/* Online Users Bar */}
-                <OnlineUsersBar users={onlineUsers} />
+                {/* Online Users Bar - Hide for DMs */}
+                {type !== 'dm' && <OnlineUsersBar users={onlineUsers} />}
 
                 {/* Pinned Messages Banner */}
                 {pinnedMessages.length > 0 && (

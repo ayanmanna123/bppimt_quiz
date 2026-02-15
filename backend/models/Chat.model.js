@@ -7,6 +7,11 @@ const chatSchema = new mongoose.Schema(
             ref: "Subject",
             default: null,
         },
+        conversationId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Conversation",
+            default: null,
+        },
         isGlobal: {
             type: Boolean,
             default: false,

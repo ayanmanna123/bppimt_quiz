@@ -17,6 +17,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import ReactMarkdown from 'react-markdown';
+import { useLocation } from 'react-router-dom';
 
 // Reuse existing chat components
 import MessageBubble from '../chat/MessageBubble';
@@ -58,6 +59,19 @@ const AllChats = () => {
         fetchAllChats();
         fetchOnlineUsers();
     }, [user]);
+
+    // Handle URL Params for DM (e.g., coming from Profile)
+    const location = useLocation();
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const dmId = params.get('dm');
+        if (dmId && chats.length > 0) {
+            const chat = chats.find(c => c._id === dmId);
+            if (chat) {
+                handleSelectChat(chat);
+            }
+        }
+    }, [location.search, chats.length]);
 
     const fetchOnlineUsers = async () => {
         try {
@@ -142,11 +156,22 @@ const AllChats = () => {
                 };
             });
 
-            // 5. Fetch Metadata for Standard Chats (Global, Subjects, StudyRooms)
-            // Store chats usually have their own structure, but we can try to fetch meta if they share Chat model?
-            // No, Store uses StoreMessage/StoreConversation. The new endpoint is for standard Chat model.
+            // 5. Direct Messages (Friends)
+            const friendsRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/friend/list`, { headers });
+            const friendsChats = (friendsRes.data.friends || []).map(friend => ({
+                _id: friend.conversationId,
+                type: 'dm',
+                name: friend.user.fullname,
+                avatar: friend.user.picture,
+                lastMessage: null, // Will fetch metadata
+                timestamp: new Date().toISOString(), // Will fetch metadata
+                unreadCount: 0,
+                isOnline: friend.user.isOnline, // Optional: if available
+                friendId: friend.user._id
+            }));
 
-            const standardChatIds = ['global', ...subjects.map(s => s._id), ...studyRooms.map(r => r._id)];
+
+            const standardChatIds = ['global', ...subjects.map(s => s._id), ...studyRooms.map(r => r._id), ...friendsChats.map(f => f._id)];
 
             let metadata = {};
             try {
@@ -160,7 +185,7 @@ const AllChats = () => {
             }
 
             // Merge Metadata
-            const mergedStandardChats = [globalChat, ...subjectChats, ...studyRooms].map(chat => {
+            const mergedStandardChats = [globalChat, ...subjectChats, ...studyRooms, ...friendsChats].map(chat => {
                 const meta = metadata[chat._id];
                 return {
                     ...chat,
@@ -592,6 +617,7 @@ const AllChats = () => {
         if (chat.type === 'store') return `Product: ${chat.product?.title || 'Item'}`;
         if (chat.type === 'subject') return chat.code || 'Course';
         if (chat.type === 'study-room') return `${chat.members || 0} Members`;
+        if (chat.type === 'dm') return 'Start a conversation';
         return 'All Community';
     };
 
@@ -676,49 +702,59 @@ const AllChats = () => {
                         </div>
                     ) : (
                         <div className="divide-y divide-slate-50">
-                            {filteredChats.map(chat => (
-                                <div
-                                    key={chat._id}
-                                    onClick={() => handleSelectChat(chat)}
-                                    className={`flex items-center gap-3 p-4 hover:bg-slate-50 cursor-pointer transition-colors relative
+                            {filteredChats.map(chat => {
+                                // Check online status for DMs
+                                const isOnline = chat.type === 'dm' && onlineUsers.some(u => u._id === chat.friendId);
+
+                                return (
+                                    <div
+                                        key={chat._id}
+                                        onClick={() => handleSelectChat(chat)}
+                                        className={`flex items-center gap-3 p-4 hover:bg-slate-50 cursor-pointer transition-colors relative
                                         ${selectedChat?._id === chat._id ? 'bg-indigo-50 hover:bg-indigo-50' : ''}`}
-                                >
-                                    <div className="relative">
-                                        <Avatar className="w-12 h-12 border border-slate-100">
-                                            <AvatarImage src={chat.avatar} />
-                                            <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-500 text-white">
-                                                {chat.name.charAt(0)}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        {/* Type Icon Badge */}
-                                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
-                                            <div className="bg-slate-100 rounded-full p-1 text-slate-600">
-                                                {getChatIcon(chat.type)}
+                                    >
+                                        <div className="relative">
+                                            <Avatar className="w-12 h-12 border border-slate-100">
+                                                <AvatarImage src={chat.avatar} />
+                                                <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-500 text-white">
+                                                    {chat.name.charAt(0)}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            {/* Type Icon Badge */}
+                                            <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                                <div className="bg-slate-100 rounded-full p-1 text-slate-600">
+                                                    {getChatIcon(chat.type)}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex justify-between items-baseline mb-0.5">
-                                            <h3 className="font-semibold text-slate-900 truncate pr-2">{chat.name}</h3>
-                                            {chat.timestamp && (
-                                                <span className={`text-[10px] shrink-0 ${chat.unreadCount > 0 ? 'text-emerald-500 font-bold' : 'text-slate-400'}`}>
-                                                    {formatChatTime(chat.timestamp)}
-                                                </span>
-                                            )}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex justify-between items-baseline mb-0.5">
+                                                <h3 className="font-semibold text-slate-900 truncate pr-2">{chat.name}</h3>
+                                                {chat.timestamp && (
+                                                    <span className={`text-[10px] shrink-0 ${chat.unreadCount > 0 ? 'text-emerald-500 font-bold' : 'text-slate-400'}`}>
+                                                        {formatChatTime(chat.timestamp)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-sm text-slate-500 truncate flex items-center gap-2">
+                                                {chat.type === 'dm' && (
+                                                    <span className={`text-[10px] font-bold ${isOnline ? 'text-green-500' : 'text-slate-400'}`}>
+                                                        {isOnline ? 'Online' : 'Offline'}
+                                                    </span>
+                                                )}
+                                                <span className="truncate">{getChatSubtitle(chat)}</span>
+                                            </p>
                                         </div>
-                                        <p className="text-sm text-slate-500 truncate">
-                                            {getChatSubtitle(chat)}
-                                        </p>
-                                    </div>
 
-                                    {chat.unreadCount > 0 && (
-                                        <div className="w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold shrink-0">
-                                            {chat.unreadCount}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                                        {chat.unreadCount > 0 && (
+                                            <div className="w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold shrink-0">
+                                                {chat.unreadCount}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
                 </ScrollArea>
@@ -748,6 +784,7 @@ const AllChats = () => {
                                 setSelectedChat(null);
                                 setIsMobileChatOpen(false);
                             }}
+                            type={selectedChat.type} // Pass type
                         />
                     ) : (
                         <>
@@ -789,10 +826,6 @@ const AllChats = () => {
                                 </div>
                             </div>
 
-                            {/* Online Users (Dynamic Bar) - Only show for Global or Subject chats ideally */}
-                            {(selectedChat.type === 'global' || selectedChat.type === 'subject') && (
-                                <OnlineUsersBar users={onlineUsers} />
-                            )}
 
                             {/* Messages */}
                             <div className="flex-1 overflow-hidden relative bg-[url('https://web.whatsapp.com/img/bg-chat-tile-dark_a4be512e7195b6b733d9110b408f9640.png')] bg-repeat bg-opacity-5">
