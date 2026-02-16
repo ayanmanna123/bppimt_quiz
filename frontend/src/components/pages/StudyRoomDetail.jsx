@@ -32,6 +32,7 @@ const StudyRoomDetail = () => {
     const jitsiContainerRef = useRef(null);
     const jitsiApiRef = useRef(null);
     const messagesEndRef = useRef(null);
+    const scrollViewportRef = useRef(null);
 
     // Fetch room details and history
     const fetchRoomData = async () => {
@@ -79,12 +80,25 @@ const StudyRoomDetail = () => {
         const handleReceiveMessage = (message) => {
             if (message.subjectId === roomId) {
                 setMessages((prev) => [...prev, message]);
+                // Scroll to bottom on new message
+                setTimeout(() => {
+                    scrollViewportRef.current?.scrollTo({ top: scrollViewportRef.current.scrollHeight, behavior: 'smooth' });
+                }, 100);
             }
         };
 
         socket.on("receiveMessage", handleReceiveMessage);
         return () => socket.off("receiveMessage", handleReceiveMessage);
     }, [socket, roomId]);
+
+    // Initial scroll to bottom
+    useEffect(() => {
+        if (!loading) {
+            setTimeout(() => {
+                scrollViewportRef.current?.scrollTo({ top: scrollViewportRef.current.scrollHeight });
+            }, 200);
+        }
+    }, [loading]);
 
     // Scroll to bottom on new messages
     useEffect(() => {
@@ -178,7 +192,7 @@ const StudyRoomDetail = () => {
     return (
         <div className="flex h-[calc(100vh-64px)] bg-white overflow-hidden">
             {/* Sidebar - Room Info & Members */}
-            <div className="w-64 bg-slate-50 border-r border-slate-200 flex flex-col shrink-0 hidden md:flex">
+            <div className="w-64 bg-slate-50 border-r border-slate-200 flex flex-col shrink-0 hidden md:flex h-full">
                 <div className="p-4 border-b border-slate-200 bg-white">
                     <div className="flex items-center gap-2 text-indigo-600 font-black mb-1">
                         <Hash className="w-5 h-5" />
@@ -245,7 +259,7 @@ const StudyRoomDetail = () => {
                     </div>
                 </div>
 
-                <div className="p-4 bg-white border-t border-slate-200">
+                <div className="p-4 bg-white border-t border-slate-200 shrink-0">
                     <Button
                         variant="ghost"
                         className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl font-bold"
@@ -335,8 +349,11 @@ const StudyRoomDetail = () => {
                         </div>
                     )}
 
-                    <div className={`flex-1 flex flex-col min-h-0 bg-white`}>
-                        <ScrollArea className="flex-1 p-4">
+                    <div className={`flex-1 flex flex-col min-h-0 bg-white overflow-hidden`}>
+                        <div
+                            className="flex-1 p-4 overflow-y-auto scroll-smooth"
+                            ref={scrollViewportRef}
+                        >
                             <div className="flex flex-col gap-1 pb-4 max-w-4xl mx-auto w-full">
                                 <div className="py-10 text-center border-b border-slate-50 mb-6">
                                     <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-4 text-2xl font-black">
@@ -360,7 +377,7 @@ const StudyRoomDetail = () => {
                                 })}
                                 <div ref={messagesEndRef} />
                             </div>
-                        </ScrollArea>
+                        </div>
 
                         <div className="p-4 bg-white border-t border-slate-100 shrink-0">
                             <div className="max-w-4xl mx-auto">

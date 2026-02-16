@@ -213,7 +213,7 @@ const AllChats = () => {
                 </div>
 
                 {/* Chat List */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                <div className="flex-1 overflow-y-auto">
                     {loading ? (
                         <div className="flex justify-center p-8">
                             <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
