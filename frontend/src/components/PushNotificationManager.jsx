@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { useAuth0 } from "@auth0/auth0-react";
 
-const PushNotificationManager = () => {
+const PushNotificationManager = ({ showButton = true, inline = false }) => {
     const { user, getAccessTokenSilently } = useAuth0();
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [subscription, setSubscription] = useState(null);
@@ -137,12 +137,14 @@ const PushNotificationManager = () => {
         }
     };
 
+    if (!showButton) return null;
+
     if (isSubscribed) {
         return (
-            <div className="fixed bottom-4 right-4 z-50">
+            <div className={inline ? "" : "fixed bottom-4 right-4 z-50"}>
                 <button
                     onClick={sendTestNotification}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-green-700 transition"
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-green-700 transition w-full"
                 >
                     Send Test Notification 📲
                 </button>
@@ -151,10 +153,10 @@ const PushNotificationManager = () => {
     }
 
     return (
-        <div className="fixed bottom-4 right-4 z-50">
+        <div className={inline ? "" : "fixed bottom-4 right-4 z-50"}>
             <button
                 onClick={subscribeToPush}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-700 transition"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-700 transition w-full"
             >
                 Enable Notifications 🔔
             </button>

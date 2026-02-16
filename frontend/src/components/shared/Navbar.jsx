@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target, FileText, ShoppingBag } from "lucide-react";
+import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target, FileText, ShoppingBag, Settings, ChevronLeft } from "lucide-react";
+import PushNotificationManager from "../PushNotificationManager";
 import { useSocket } from "../../context/SocketContext";
 import axios from "axios";
 import {
@@ -28,6 +29,7 @@ const Navbar = () => {
   const { usere } = useSelector((store) => store.auth);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [popoverView, setPopoverView] = useState("menu"); // 'menu' or 'settings'
 
   // Unseen Message Count
   const [unseenCount, setUnseenCount] = useState(0);
@@ -387,71 +389,126 @@ const Navbar = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.2 }}
                 >
-                  {/* User Info */}
-                  <div className="flex items-center gap-4 mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage
-                        className="object-cover"
-                        src={
-                          usere?.picture ||
-                          `https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`
-                        }
-                      />
-                    </Avatar>
-                    <div>
-                      <h4 className="font-semibold text-slate-800">
-                        {usere?.fullname}
-                      </h4>
-                      <p className="text-sm text-slate-600">{user?.email}</p>
-                    </div>
-                  </div>
-
-                  {/* Menu Items */}
-                  <div className="space-y-2">
-                    <motion.div
-                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors duration-200 cursor-pointer group"
-                      whileHover={{ x: 5 }}
-                    >
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
-                        <User className="w-5 h-5 text-white" />
-                      </div>
-                      <Link
-                        to={`/profile/${usere?.universityNo}`}
-                        className="font-medium text-slate-700 group-hover:text-slate-900"
-                      >
-                        View Profile
-                      </Link>
-                    </motion.div>
-                    {usere?.role !== "teacher" && (
+                  <AnimatePresence mode="wait">
+                    {popoverView === "menu" ? (
                       <motion.div
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors duration-200 cursor-pointer group"
-                        whileHover={{ x: 5 }}
+                        key="menu"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.2 }}
                       >
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
-                          <User className="w-5 h-5 text-white" />
+                        {/* User Info */}
+                        <div className="flex items-center gap-4 mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
+                          <Avatar className="w-12 h-12">
+                            <AvatarImage
+                              className="object-cover"
+                              src={
+                                usere?.picture ||
+                                `https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`
+                              }
+                            />
+                          </Avatar>
+                          <div>
+                            <h4 className="font-semibold text-slate-800">
+                              {usere?.fullname}
+                            </h4>
+                            <p className="text-sm text-slate-600">{user?.email}</p>
+                          </div>
                         </div>
-                        <Link
-                          to="/dashbord"
-                          className="font-medium text-slate-700 group-hover:text-slate-900"
-                        >
-                          Dashbord
-                        </Link>
+
+                        {/* Menu Items */}
+                        <div className="space-y-2">
+                          <motion.div
+                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors duration-200 cursor-pointer group"
+                            whileHover={{ x: 5 }}
+                          >
+                            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                              <User className="w-5 h-5 text-white" />
+                            </div>
+                            <Link
+                              to={`/profile/${usere?.universityNo}`}
+                              className="font-medium text-slate-700 group-hover:text-slate-900"
+                            >
+                              View Profile
+                            </Link>
+                          </motion.div>
+                          {usere?.role !== "teacher" && (
+                            <motion.div
+                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors duration-200 cursor-pointer group"
+                              whileHover={{ x: 5 }}
+                            >
+                              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                                <User className="w-5 h-5 text-white" />
+                              </div>
+                              <Link
+                                to="/dashbord"
+                                className="font-medium text-slate-700 group-hover:text-slate-900"
+                              >
+                                Dashbord
+                              </Link>
+                            </motion.div>
+                          )}
+
+                          <motion.div
+                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors duration-200 cursor-pointer group"
+                            whileHover={{ x: 5 }}
+                            onClick={() => setPopoverView("settings")}
+                          >
+                            <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-700 rounded-xl flex items-center justify-center">
+                              <Settings className="w-5 h-5 text-white" />
+                            </div>
+                            <span className="font-medium text-slate-700 group-hover:text-slate-900">
+                              Settings
+                            </span>
+                          </motion.div>
+
+                          <motion.div
+                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 transition-colors duration-200 cursor-pointer group"
+                            whileHover={{ x: 5 }}
+                            onClick={handleLogout}
+                          >
+                            <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-rose-500 rounded-xl flex items-center justify-center">
+                              <LogOut className="w-5 h-5 text-white" />
+                            </div>
+                            <span className="font-medium text-slate-700 group-hover:text-red-600">
+                              Logout
+                            </span>
+                          </motion.div>
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="settings"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <div className="flex items-center gap-3 mb-6">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setPopoverView("menu")}
+                            className="hover:bg-slate-100 rounded-full"
+                          >
+                            <ChevronLeft className="w-5 h-5" />
+                          </Button>
+                          <h4 className="font-bold text-slate-800 text-lg">Settings</h4>
+                        </div>
+
+                        <div className="space-y-6">
+                          <div>
+                            <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                              Notifications
+                            </p>
+                            <PushNotificationManager inline={true} />
+                          </div>
+                          {/* Add more settings here in future */}
+                        </div>
                       </motion.div>
                     )}
-
-                    <motion.div
-                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 transition-colors duration-200 cursor-pointer group"
-                      whileHover={{ x: 5 }}
-                      onClick={handleLogout}
-                    >
-                      <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-rose-500 rounded-xl flex items-center justify-center">
-                        <LogOut className="w-5 h-5 text-white" />
-                      </div>
-                      <span className="font-medium text-slate-700 group-hover:text-red-600">
-                        Logout
-                      </span>
-                    </motion.div>
-                  </div>
+                  </AnimatePresence>
                 </motion.div>
               </PopoverContent>
             </Popover>
