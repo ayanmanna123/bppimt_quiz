@@ -90,8 +90,8 @@ const Footer = () => {
       count: studentCount,
       icon: "👨‍🎓",
       color: "from-emerald-500 to-teal-600",
-      bgColor: "bg-emerald-50",
-      textColor: "text-emerald-700",
+      bgColor: "bg-emerald-50 dark:bg-emerald-900/20",
+      textColor: "text-emerald-700 dark:text-emerald-400",
       glowColor: "shadow-emerald-500/25",
     },
     {
@@ -99,8 +99,8 @@ const Footer = () => {
       count: teacherCount,
       icon: "👩‍🏫",
       color: "from-blue-500 to-indigo-600",
-      bgColor: "bg-blue-50",
-      textColor: "text-blue-700",
+      bgColor: "bg-blue-50 dark:bg-blue-900/20",
+      textColor: "text-blue-700 dark:text-blue-400",
       glowColor: "shadow-blue-500/25",
     },
     {
@@ -108,16 +108,16 @@ const Footer = () => {
       count: quizCount,
       icon: "📚",
       color: "from-purple-500 to-pink-600",
-      bgColor: "bg-purple-50",
-      textColor: "text-purple-700",
+      bgColor: "bg-purple-50 dark:bg-purple-900/20",
+      textColor: "text-purple-700 dark:text-purple-400",
       glowColor: "shadow-purple-500/25",
     },
   ];
 
   return (
-    <footer className="relative bg-gradient-to-br from-slate-50 via-white to-slate-50 py-16 mt-16 overflow-hidden">
+    <footer className="relative bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-16 mt-16 transition-colors duration-700 overflow-hidden">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-blue-900/10 dark:to-purple-900/10"></div>
       <div
         className="absolute inset-0 opacity-40"
         style={{
@@ -130,15 +130,15 @@ const Footer = () => {
       <div className="relative max-w-6xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-200/50 mb-4">
-            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-400/5 dark:to-purple-400/5 border border-blue-200/50 dark:border-blue-800/30 mb-4">
+            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
               PLATFORM STATISTICS
             </span>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-100 mb-3">
             Growing Every Day
           </h2>
-          <p className="text-slate-600 text-lg max-w-2xl mx-auto">
+          <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl mx-auto">
             Join thousands of learners and educators in our thriving educational
             community
           </p>
@@ -149,7 +149,7 @@ const Footer = () => {
           {stats.map((stat, index) => (
             <div
               key={index}
-              className={`group relative bg-white rounded-2xl p-8 border border-slate-200/60 hover:border-slate-300/60 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ${stat.glowColor}`}
+              className={`group relative bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200/60 dark:border-slate-800/60 hover:border-slate-300/60 dark:hover:border-slate-700/60 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ${stat.glowColor}`}
             >
               {/* Glow effect */}
               <div
@@ -185,7 +185,7 @@ const Footer = () => {
               </div>
 
               {/* Title */}
-              <h3 className="text-xl font-bold text-slate-700 mb-2">
+              <h3 className="text-xl font-bold text-slate-700 dark:text-slate-200 mb-2">
                 {stat.title}
               </h3>
 
@@ -198,7 +198,7 @@ const Footer = () => {
               </p>
 
               {/* Progress bar */}
-              <div className="mt-6 h-1 bg-slate-100 rounded-full overflow-hidden">
+              <div className="mt-6 h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                 <div
                   className={`h-full bg-gradient-to-r ${stat.color} rounded-full transform origin-left transition-transform duration-1000 group-hover:scale-x-100`}
                   style={{ transform: loading ? "scaleX(0)" : "scaleX(1)" }}

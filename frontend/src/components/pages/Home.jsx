@@ -1,4 +1,5 @@
-import { lazy, Suspense } from "react";
+import { useState, lazy, Suspense, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
@@ -11,6 +12,7 @@ const Footerreal = lazy(() => import("./Footerreal"));
 const Calendar = lazy(() => import("./Calendar"));
 
 const Home = () => {
+  const { darktheme } = useSelector((store) => store.auth);
   const { getAccessTokenSilently } = useAuth0();
 
   const updateProfile = async () => {
@@ -41,9 +43,9 @@ const Home = () => {
   return (
     <>
       {/* Hero Section with Enhanced Background */}
-      <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 overflow-hidden">
+      <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors duration-700 overflow-hidden">
         {/* Animated Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-blue-900/10 dark:to-purple-900/10"></div>
         <div
           className="absolute inset-0 opacity-40"
           style={{
@@ -104,17 +106,17 @@ const Home = () => {
           >
             {/* Enhanced Title with Gradient */}
             <div className="mb-8">
-              <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-200/50 mb-6">
-                <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-400/5 dark:to-purple-400/5 border border-blue-200/50 dark:border-blue-800/30 mb-6">
+                <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
                   SMART LEARNING PLATFORM
                 </span>
               </div>
 
               <h1 className="relative min-h-[120px]">
-                <Suspense fallback={<div className="text-4xl md:text-5xl font-black text-slate-800 text-center leading-tight">Smart Quiz App<br />for College Mock Tests</div>}>
+                <Suspense fallback={<div className="text-4xl md:text-5xl font-black text-slate-800 dark:text-slate-100 text-center leading-tight">Smart Quiz App<br />for College Mock Tests</div>}>
                   <SplitText
                     text=" Smart Quiz App"
-                    className="text-4xl md:text-5xl font-black bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 bg-clip-text text-transparent text-center leading-tight"
+                    className="text-4xl md:text-5xl font-black bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 dark:from-slate-100 dark:via-slate-300 dark:to-slate-100 bg-clip-text text-transparent text-center leading-tight"
                     delay={100}
                     duration={0.6}
                     ease="power3.out"
@@ -144,13 +146,13 @@ const Home = () => {
                 </Suspense>
 
                 {/* Glow effect behind text */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 blur-3xl -z-10 opacity-30"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 blur-3xl -z-10 opacity-30 dark:opacity-20"></div>
               </h1>
             </div>
 
             {/* Enhanced Description */}
-            <div className="mb-8 p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-lg">
-              <Suspense fallback={<p className="font-mono text-xl md:text-2xl text-slate-700">A modern platform designed for students...</p>}>
+            <div className="mb-8 p-6 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-lg">
+              <Suspense fallback={<p className="font-mono text-xl md:text-2xl text-slate-700 dark:text-slate-300">A modern platform designed for students...</p>}>
                 <TextType
                   text={[
                     "A modern platform designed for students to practice mock tests,",
@@ -162,10 +164,10 @@ const Home = () => {
                   pauseDuration={1500}
                   deletingSpeed={40}
                   loop={true}
-                  className="font-mono text-xl md:text-2xl text-slate-700"
-                  textColors={["#334155"]}
+                  className="font-mono text-xl md:text-2xl text-slate-700 dark:text-slate-300"
+                  textColors={[darktheme ? "#cbd5e1" : "#334155"]}
                   cursorCharacter="|"
-                  cursorClassName="text-blue-600"
+                  cursorClassName="text-blue-600 dark:text-blue-400"
                 />
               </Suspense>
             </div>

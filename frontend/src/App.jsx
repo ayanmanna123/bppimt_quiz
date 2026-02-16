@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense, useEffect } from "react";
+import { useSelector } from "react-redux";
 import "./App.css";
 import Layout from "./components/Layout";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -58,7 +59,17 @@ import CubeLoader from "./components/shared/CubeLoader";
 const LoadingFallback = () => null;
 
 function App() {
+  const { darktheme } = useSelector((store) => store.auth);
   const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (darktheme) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [darktheme]);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 3000);

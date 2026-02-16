@@ -12,92 +12,123 @@ export function ThemeToggle() {
   return (
     <button
       onClick={handleThemeChange}
-      className="relative w-20 h-10 rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-300/50 transition-all duration-300 hover:scale-105"
+      className="relative w-14 h-7 rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-400/30 transition-all duration-300 hover:scale-105 shadow-md"
       aria-label="Toggle theme"
     >
       {/* Background - Sky/Night transition */}
       <div
-        className={`absolute inset-0 transition-all duration-700 ${
-          darktheme
-            ? "bg-gradient-to-b from-slate-900 via-slate-800 to-slate-700"
-            : "bg-gradient-to-b from-sky-300 via-sky-200 to-sky-100"
-        }`}
+        className={`absolute inset-0 transition-all duration-700 ${darktheme
+            ? "bg-gradient-to-b from-slate-900 via-indigo-900 to-slate-800"
+            : "bg-gradient-to-b from-sky-400 via-sky-300 to-sky-200"
+          }`}
       />
 
-      {/* Stars (dark mode only) */}
+      {/* Stars (dark mode only) with twinkling effect */}
       {darktheme && (
         <>
-          <div className="absolute top-1.5 left-5 w-0.5 h-0.5 bg-white rounded-full animate-pulse" />
-          <div className="absolute top-2.5 left-8 w-0.5 h-0.5 bg-white rounded-full animate-pulse delay-100" />
-          <div className="absolute top-2 right-7 w-0.5 h-0.5 bg-white rounded-full animate-pulse delay-200" />
+          <div
+            className="absolute top-1 left-3 w-0.5 h-0.5 bg-white rounded-full animate-pulse"
+            style={{ animationDuration: "1.5s" }}
+          />
+          <div
+            className="absolute top-1.5 left-5 w-0.5 h-0.5 bg-yellow-200 rounded-full animate-pulse"
+            style={{ animationDuration: "2s", animationDelay: "0.3s" }}
+          />
+          <div
+            className="absolute top-1 right-4 w-0.5 h-0.5 bg-white rounded-full animate-pulse"
+            style={{ animationDuration: "1.8s", animationDelay: "0.6s" }}
+          />
+        </>
+      )}
+
+      {/* Clouds (light mode only) */}
+      {!darktheme && (
+        <>
+          <div className="absolute top-1 left-4 w-4 h-1 bg-white/60 rounded-full blur-sm" />
+          <div className="absolute top-0.5 right-5 w-3 h-1 bg-white/60 rounded-full blur-sm" />
         </>
       )}
 
       {/* Ground/Landscape */}
       <div
-        className={`absolute bottom-0 left-0 right-0 h-4 transition-all duration-700 ${
-          darktheme
-            ? "bg-gradient-to-b from-green-900 to-green-950"
-            : "bg-gradient-to-b from-green-400 to-green-500"
-        }`}
+        className={`absolute bottom-0 left-0 right-0 h-2.5 transition-all duration-700 ${darktheme
+            ? "bg-gradient-to-b from-green-900 via-green-950 to-slate-900"
+            : "bg-gradient-to-b from-green-500 via-green-600 to-green-700"
+          }`}
       >
         {/* Hills */}
         <div
-          className={`absolute bottom-0 -left-2 w-8 h-3 rounded-t-full transition-colors duration-700 ${
-            darktheme ? "bg-green-800" : "bg-green-300"
-          }`}
+          className={`absolute bottom-0 -left-1 w-5 h-2 rounded-t-full transition-colors duration-700 ${darktheme ? "bg-green-800/80" : "bg-green-400/80"
+            }`}
         />
         <div
-          className={`absolute bottom-0 left-5 w-6 h-2 rounded-t-full transition-colors duration-700 ${
-            darktheme ? "bg-green-800" : "bg-green-300"
-          }`}
+          className={`absolute bottom-0 right-4 w-3 h-1 rounded-t-full transition-colors duration-700 ${darktheme ? "bg-green-800/70" : "bg-green-400/70"
+            }`}
         />
       </div>
 
-      {/* Tree */}
-      <div className="absolute bottom-4 right-3">
+      {/* Enhanced Tree */}
+      <div className="absolute bottom-2.5 right-2">
         {/* Trunk */}
         <div
-          className={`w-1 h-2.5 rounded-sm transition-colors duration-700 mx-auto ${
-            darktheme ? "bg-amber-900" : "bg-amber-800"
-          }`}
+          className={`w-0.5 h-1 rounded-sm transition-colors duration-700 mx-auto ${darktheme ? "bg-amber-900" : "bg-amber-800"
+            }`}
         />
         {/* Leaves */}
         <div
-          className={`w-4 h-4 rounded-full -mt-3 transition-colors duration-700 ${
-            darktheme ? "bg-green-800" : "bg-green-600"
-          }`}
+          className={`absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full transition-colors duration-700 ${darktheme ? "bg-green-800" : "bg-green-600"
+            }`}
         />
       </div>
 
       {/* Sun (light mode) */}
       <div
-        className={`absolute top-3 right-7 w-5 h-5 rounded-full transition-all duration-700 ${
-          !darktheme
-            ? "bg-yellow-300 opacity-100 scale-100 shadow-lg shadow-yellow-200"
-            : "bg-yellow-200 opacity-0 scale-0"
-        }`}
-      />
+        className={`absolute top-1.5 right-4 transition-all duration-700 ${!darktheme ? "opacity-100 scale-100" : "opacity-0 scale-0"
+          }`}
+      >
+        <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-400 shadow-sm shadow-yellow-300/60" />
+      </div>
 
       {/* Moon (dark mode) */}
       <div
-        className={`absolute top-2 left-5 w-4 h-4 rounded-full transition-all duration-700 ${
-          darktheme
-            ? "bg-slate-200 opacity-100 scale-100 shadow-lg shadow-slate-400/50"
+        className={`absolute top-1 left-3 w-2.5 h-2.5 rounded-full transition-all duration-700 ${darktheme
+            ? "bg-gradient-to-br from-slate-200 to-slate-300 opacity-100 scale-100 shadow-sm shadow-slate-400/50"
             : "bg-slate-300 opacity-0 scale-0"
-        }`}
-      >
-        {/* Moon craters */}
-        <div className="absolute top-1 left-1 w-1 h-1 bg-slate-300 rounded-full opacity-50" />
-        <div className="absolute bottom-0.5 right-0.5 w-0.5 h-0.5 bg-slate-300 rounded-full opacity-40" />
-      </div>
+          }`}
+      />
 
       {/* Sliding Toggle Circle */}
       <div
-        className={`absolute top-1 w-8 h-8 bg-white rounded-full shadow-2xl transition-all duration-700 ease-in-out ${
-          darktheme ? "left-1" : "left-[calc(100%-2.25rem)]"
-        }`}
-      />
+        className={`absolute top-1 w-5 h-5 rounded-full shadow-lg transition-all duration-700 ease-in-out ${darktheme
+            ? "left-1 bg-gradient-to-br from-slate-100 to-slate-200"
+            : "left-[calc(100%-1.25rem-4px)] bg-gradient-to-br from-white to-gray-50"
+          }`}
+      >
+        {/* Icon on toggle */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          {darktheme ? (
+            <svg
+              className="w-3 h-3 text-indigo-900"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+            </svg>
+          ) : (
+            <svg
+              className="w-3 h-3 text-yellow-500"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                clipRule="evenodd"
+              />
+            </svg>
+          )}
+        </div>
+      </div>
     </button>
   );
 }

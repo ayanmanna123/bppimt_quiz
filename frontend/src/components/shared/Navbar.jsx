@@ -18,6 +18,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import NotificationDropdown from "./NotificationDropdown";
+import { ThemeToggle } from "./theme-toggle";
 
 
 const Navbar = () => {
@@ -191,8 +192,8 @@ const Navbar = () => {
   return (
     <motion.div
       className={`sticky top-0 z-50 transition-all duration-300 ${scrolled
-        ? "bg-white/90 backdrop-blur-lg border-b border-slate-200/60 shadow-lg"
-        : "bg-white/80 backdrop-blur-sm"
+        ? "bg-white/90 dark:bg-slate-950/90 backdrop-blur-lg border-b border-slate-200/60 dark:border-slate-800/60 shadow-lg"
+        : "bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm"
         }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -209,7 +210,7 @@ const Navbar = () => {
             <img src="/bppimt.svg" alt="Shield Logo" className="h-10 w-10" />
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-lg opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
           </div>
-          <span className="font-black text-2xl bg-gradient-to-r from-[#03045E] via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <span className="font-black text-2xl bg-gradient-to-r from-[#03045E] via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
             Bppimt Quiz
           </span>
         </motion.div>
@@ -234,7 +235,7 @@ const Navbar = () => {
                         <button
                           className={`relative group flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 cursor-pointer ${isActive
                             ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg"
-                            : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                            : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                             }`}
                         >
                           <div className="relative">
@@ -247,7 +248,7 @@ const Navbar = () => {
                           )}
                         </button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-64 bg-white/95 backdrop-blur-lg border border-slate-200/60 shadow-2xl rounded-2xl p-2 z-[60]">
+                      <PopoverContent className="w-64 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border border-slate-200/60 dark:border-slate-800/60 shadow-2xl rounded-2xl p-2 z-[60]">
                         <div className="grid gap-1">
                           {[
                             { name: "Welcome Messages", path: "/about/welcome-messages", icon: Info },
@@ -262,10 +263,10 @@ const Navbar = () => {
                             <Link
                               key={subItem.path}
                               to={subItem.path}
-                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors group"
+                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
                             >
-                              <subItem.icon className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-colors" />
-                              <span className="text-sm font-medium text-slate-700">{subItem.name}</span>
+                              <subItem.icon className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{subItem.name}</span>
                             </Link>
                           ))}
                         </div>
@@ -286,7 +287,7 @@ const Navbar = () => {
                     to={item.path}
                     className={`relative group flex items-center gap-1.5 px-3 py-2 rounded-xl font-medium transition-all duration-300 ${isActive
                       ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg"
-                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                      : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                       }`}
                   >
 
@@ -326,6 +327,9 @@ const Navbar = () => {
 
         {/* Auth Section */}
         <div className="flex items-center gap-4">
+
+          {/* Theme Toggle */}
+          <ThemeToggle />
 
           {/* Notification Dropdown */}
           {isAuthenticated && <NotificationDropdown />}
@@ -383,7 +387,7 @@ const Navbar = () => {
                 </motion.div>
               </PopoverTrigger>
 
-              <PopoverContent className="w-80 bg-white/90 backdrop-blur-lg border border-slate-200/60 shadow-2xl rounded-2xl p-6">
+              <PopoverContent className="w-80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border border-slate-200/60 dark:border-slate-800/60 shadow-2xl rounded-2xl p-6">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -399,7 +403,7 @@ const Navbar = () => {
                         transition={{ duration: 0.2 }}
                       >
                         {/* User Info */}
-                        <div className="flex items-center gap-4 mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
+                        <div className="flex items-center gap-4 mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl">
                           <Avatar className="w-12 h-12">
                             <AvatarImage
                               className="object-cover"
@@ -410,10 +414,10 @@ const Navbar = () => {
                             />
                           </Avatar>
                           <div>
-                            <h4 className="font-semibold text-slate-800">
+                            <h4 className="font-semibold text-slate-800 dark:text-slate-200">
                               {usere?.fullname}
                             </h4>
-                            <p className="text-sm text-slate-600">{user?.email}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">{user?.email}</p>
                           </div>
                         </div>
 
@@ -428,14 +432,14 @@ const Navbar = () => {
                             </div>
                             <Link
                               to={`/profile/${usere?.universityNo}`}
-                              className="font-medium text-slate-700 group-hover:text-slate-900"
+                              className="font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white"
                             >
                               View Profile
                             </Link>
                           </motion.div>
                           {usere?.role !== "teacher" && (
                             <motion.div
-                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors duration-200 cursor-pointer group"
+                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 cursor-pointer group"
                               whileHover={{ x: 5 }}
                             >
                               <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
@@ -443,7 +447,7 @@ const Navbar = () => {
                               </div>
                               <Link
                                 to="/dashbord"
-                                className="font-medium text-slate-700 group-hover:text-slate-900"
+                                className="font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white"
                               >
                                 Dashbord
                               </Link>
@@ -451,14 +455,14 @@ const Navbar = () => {
                           )}
 
                           <motion.div
-                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors duration-200 cursor-pointer group"
+                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 cursor-pointer group"
                             whileHover={{ x: 5 }}
                             onClick={() => setPopoverView("settings")}
                           >
                             <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-700 rounded-xl flex items-center justify-center">
                               <Settings className="w-5 h-5 text-white" />
                             </div>
-                            <span className="font-medium text-slate-700 group-hover:text-slate-900">
+                            <span className="font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">
                               Settings
                             </span>
                           </motion.div>
@@ -516,7 +520,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <motion.button
-            className="lg:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors duration-200"
+            className="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             whileTap={{ scale: 0.95 }}
           >
@@ -539,11 +543,16 @@ const Navbar = () => {
                   exit={{ rotate: -90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Menu className="w-6 h-6 text-slate-700" />
+                  <Menu className="w-6 h-6 text-slate-700 dark:text-slate-300" />
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.button>
+
+          {/* Mobile Theme Toggle */}
+          <div className="lg:hidden ml-2">
+            <ThemeToggle />
+          </div>
         </div>
       </nav>
 
@@ -551,7 +560,7 @@ const Navbar = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            className="lg:hidden bg-white/95 backdrop-blur-lg border-t border-slate-200/60"
+            className="lg:hidden bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg border-t border-slate-200/60 dark:border-slate-800/60"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
@@ -573,7 +582,7 @@ const Navbar = () => {
                       to={item.path}
                       className={`flex items-center gap-3 p-4 rounded-xl font-medium transition-all duration-300 ${isActive
                         ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg"
-                        : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                        : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                         }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >

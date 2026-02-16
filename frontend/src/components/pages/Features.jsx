@@ -11,7 +11,7 @@ const features = [
     image: "/img4.png",
     icon: Shield,
     color: "from-emerald-500 to-teal-600",
-    bgColor: "from-emerald-50 to-teal-50",
+    bgColor: "from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20",
     glowColor: "shadow-emerald-500/25",
     accentColor: "emerald",
   },
@@ -23,7 +23,7 @@ const features = [
     image: "/img5.jpg",
     icon: Brain,
     color: "from-blue-500 to-indigo-600",
-    bgColor: "from-blue-50 to-indigo-50",
+    bgColor: "from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20",
     glowColor: "shadow-blue-500/25",
     accentColor: "blue",
   },
@@ -35,7 +35,7 @@ const features = [
     image: "/img7.png",
     icon: Award,
     color: "from-purple-500 to-pink-600",
-    bgColor: "from-purple-50 to-pink-50",
+    bgColor: "from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20",
     glowColor: "shadow-purple-500/25",
     accentColor: "purple",
   },
@@ -43,9 +43,9 @@ const features = [
 
 const Features = () => {
   return (
-    <section className="relative py-32 bg-gradient-to-br from-slate-50 via-white to-slate-50 overflow-hidden">
+    <section className="relative py-32 bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors duration-700 overflow-hidden">
       {/* Animated Background Pattern */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-blue-900/10 dark:to-purple-900/10"></div>
       <div
         className="absolute inset-0 opacity-30"
         style={{
@@ -101,15 +101,15 @@ const Features = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-200/50 mb-6">
-            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-400/5 dark:to-purple-400/5 border border-blue-200/50 dark:border-blue-800/30 mb-6">
+            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
               POWERFUL FEATURES
             </span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 bg-clip-text text-transparent mb-6">
+          <h2 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 dark:from-slate-100 dark:via-slate-300 dark:to-slate-100 bg-clip-text text-transparent mb-6">
             Why Choose Our Platform?
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
             Discover the advanced features that make our quiz platform the perfect choice for your learning journey
           </p>
         </motion.div>
@@ -120,55 +120,54 @@ const Features = () => {
         {features.map((feature, index) => {
           const isEven = index % 2 === 0;
           const IconComponent = feature.icon;
-          
+
           return (
             <div
               key={index}
-              className={`flex flex-col lg:flex-row items-center gap-16 ${
-                index % 2 === 1 ? "lg:flex-row-reverse" : ""
-              }`}
+              className={`flex flex-col lg:flex-row items-center gap-16 ${index % 2 === 1 ? "lg:flex-row-reverse" : ""
+                }`}
             >
               {/* Text content with enhanced styling */}
-              <motion.div 
+              <motion.div
                 className="flex-1 relative"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ 
-                  duration: 0.8, 
+                transition={{
+                  duration: 0.8,
                   ease: "easeOut",
                   delay: 0.1
                 }}
                 viewport={{ once: true, margin: "-100px" }}
               >
                 {/* Background card */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.bgColor} rounded-3xl opacity-50 blur-3xl transform scale-110`}></div>
-                
-                <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 lg:p-12 border border-slate-200/60 shadow-xl">
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.bgColor} rounded-3xl opacity-50 dark:opacity-20 blur-3xl transform scale-110`}></div>
+
+                <div className="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-3xl p-8 lg:p-12 border border-slate-200/60 dark:border-slate-800/60 shadow-xl">
                   {/* Icon and Title */}
                   <div className="flex items-center space-x-4 mb-6">
                     <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center shadow-lg ${feature.glowColor}`}>
                       <IconComponent className="w-8 h-8 text-white" />
                     </div>
-                    <h3 className="text-3xl lg:text-4xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+                    <h3 className="text-3xl lg:text-4xl font-black bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
                       {feature.title}
                     </h3>
                   </div>
 
                   {/* Description */}
-                  <p className="text-xl text-slate-700 mb-8 leading-relaxed">
+                  <p className="text-xl text-slate-700 dark:text-slate-300 mb-8 leading-relaxed">
                     {feature.description}
                   </p>
 
                   {/* Feature Points */}
                   <div className="space-y-4">
                     {feature.points.map((point, i) => (
-                      <motion.div 
-                        key={i} 
-                        className="group flex items-center gap-4 p-4 rounded-2xl bg-white/60 border border-slate-200/60 hover:border-slate-300/60 transition-all duration-300 hover:shadow-lg"
+                      <motion.div
+                        key={i}
+                        className="group flex items-center gap-4 p-4 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 hover:border-slate-300/60 dark:hover:border-slate-600/60 transition-all duration-300 hover:shadow-lg"
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ 
-                          duration: 0.5, 
+                        transition={{
+                          duration: 0.5,
                           delay: 0.4 + (i * 0.1),
                           ease: "easeOut"
                         }}
@@ -178,10 +177,10 @@ const Features = () => {
                         <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                           <CheckCircle className="w-5 h-5 text-white" />
                         </div>
-                        <span className="text-lg font-semibold text-slate-800 group-hover:text-slate-900 transition-colors">
+                        <span className="text-lg font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                           {point}
                         </span>
-                        
+
                         {/* Animated accent line */}
                         <div className="ml-auto w-0 h-0.5 bg-gradient-to-r from-transparent via-slate-400 to-transparent group-hover:w-8 transition-all duration-300"></div>
                       </motion.div>
@@ -190,7 +189,7 @@ const Features = () => {
 
                   {/* Bottom accent */}
                   <motion.div
-                    className="mt-8 h-1 bg-slate-100 rounded-full overflow-hidden"
+                    className="mt-8 h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"
                     initial={{ scaleX: 0 }}
                     whileInView={{ scaleX: 1 }}
                     viewport={{ once: true }}
@@ -205,32 +204,32 @@ const Features = () => {
               <div className="flex-1 flex justify-center relative">
                 <motion.div
                   className="relative group"
-                  initial={{ 
-                    opacity: 0, 
+                  initial={{
+                    opacity: 0,
                     x: isEven ? 80 : -80,
                     scale: 0.8
                   }}
-                  whileInView={{ 
-                    opacity: 1, 
+                  whileInView={{
+                    opacity: 1,
                     x: 0,
                     scale: 1
                   }}
-                  transition={{ 
-                    duration: 1, 
+                  transition={{
+                    duration: 1,
                     ease: [0.25, 0.46, 0.45, 0.94],
                     delay: 0.3
                   }}
                   viewport={{ once: true, margin: "-50px" }}
                   style={{ willChange: "transform, opacity" }}
-                   
+
                 >
                   {/* Image container with enhanced effects */}
                   <div className="relative">
                     {/* Glow effect behind image */}
                     <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-30 blur-2xl rounded-3xl transition-opacity duration-500 scale-110`}></div>
-                    
+
                     {/* Main image */}
-                    <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl p-6 border border-slate-200/60 shadow-2xl">
+                    <div className="relative bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm rounded-3xl p-6 border border-slate-200/60 dark:border-slate-800/60 shadow-2xl">
                       <img
                         src={feature.image}
                         alt={feature.title}
@@ -269,7 +268,7 @@ const Features = () => {
                       }}
                     />
                     <motion.div
-                      className="absolute top-1/2 -left-8 w-3 h-3 bg-gradient-to-r from-white to-slate-200 rounded-full opacity-70"
+                      className="absolute top-1/2 -left-8 w-3 h-3 bg-gradient-to-r from-white to-slate-200 dark:from-slate-400 dark:to-slate-600 rounded-full opacity-70"
                       animate={{
                         y: [0, -10, 0],
                         x: [0, -5, 0],
@@ -296,11 +295,11 @@ const Features = () => {
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
       >
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 border border-slate-200/60 shadow-xl">
-          <h3 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-4">
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-3xl p-12 border border-slate-200/60 dark:border-slate-800/60 shadow-xl">
+          <h3 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent mb-4">
             Ready to Get Started?
           </h3>
-          <p className="text-xl text-slate-600 mb-8">
+          <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
             Experience all these amazing features and more. Join thousands of learners today!
           </p>
           <motion.button
