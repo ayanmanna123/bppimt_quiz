@@ -89,6 +89,12 @@ const userSchema = new mongoose.Schema(
           default: Date.now,
         }
       }
+    ],
+    mutedChats: [
+      {
+        chatId: { type: String, required: true },
+        until: { type: Date, required: true }
+      }
     ]
   },
   { timestamps: true }

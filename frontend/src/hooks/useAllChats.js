@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from 'axios';
 import { useSocket } from "../context/SocketContext";
 import { toast } from "sonner";
+import { setuser } from '../Redux/auth.reducer';
 
 const useAllChats = () => {
+    const dispatch = useDispatch();
     const { usere: user } = useSelector(state => state.auth);
     const { getAccessTokenSilently } = useAuth0();
     const socket = useSocket();
@@ -171,7 +173,11 @@ const useAllChats = () => {
                 return timeB - timeA;
             });
 
-            setChats(all);
+            setChats(all.map(c => {
+                const muteInfo = user.mutedChats?.find(m => m.chatId === c._id);
+                const isMuted = muteInfo && new Date(muteInfo.until) > new Date();
+                return { ...c, isMuted };
+            }));
 
         } catch (error) {
             console.error("Failed to fetch chats", error);
@@ -489,6 +495,48 @@ const useAllChats = () => {
         }
     };
 
+    const handleMuteChat = async (chatId, duration) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/chat/mute`, { chatId, duration }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.status === 200) {
+                toast.success(`Muted ${duration === 'always' ? 'permanently' : `for ${duration} hours`}`);
+
+                // Update Redux state
+                const updatedMutedChats = [...(user.mutedChats || []).filter(m => m.chatId !== chatId), { chatId, until: res.data.until }];
+                dispatch(setuser({ ...user, mutedChats: updatedMutedChats }));
+
+                fetchAllChats(true);
+            }
+        } catch (error) {
+            console.error("Failed to mute", error);
+            toast.error("Failed to mute chat");
+        }
+    };
+
+    const handleUnmuteChat = async (chatId) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/chat/unmute`, { chatId }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.status === 200) {
+                toast.success("Unmuted successfully");
+
+                // Update Redux state
+                const updatedMutedChats = (user.mutedChats || []).filter(m => m.chatId !== chatId);
+                dispatch(setuser({ ...user, mutedChats: updatedMutedChats }));
+
+                fetchAllChats(true);
+            }
+        } catch (error) {
+            console.error("Failed to unmute", error);
+            toast.error("Failed to unmute chat");
+        }
+    };
+
     const handleDeleteMessage = async (msgId) => {
         if (!confirm("Are you sure you want to delete this message?")) return;
         try {
@@ -533,7 +581,9 @@ const useAllChats = () => {
         handleSendMessage,
         handleTyping,
         handleUpdateMessage,
-        handleDeleteMessage
+        handleDeleteMessage,
+        handleMuteChat,
+        handleUnmuteChat
     };
 };
 

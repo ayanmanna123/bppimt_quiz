@@ -138,48 +138,18 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
             // Looking at previous logic, it sent push to EVERYONE except sender.
             let recipientQuery = { _id: { $ne: senderId } };
 
-            if (subjectId === 'global' || chatData.isGlobal) {
-                // Global chat: Notify everyone except sender
-                recipientQuery = { _id: { $ne: senderId } };
-            } else if (type === 'dm') {
-                const Conversation = (await import("../models/Conversation.model.js")).default;
-                const conv = await Conversation.findById(subjectId);
-                if (conv) {
-                    const otherId = conv.participants.find(p => p.toString() !== senderId.toString());
-                    recipientQuery = { _id: otherId };
-                }
-            } else {
-                // It's either a Subject or a Study Room
-                const StudyRoom = (await import("../models/StudyRoom.model.js")).default;
-                const room = await StudyRoom.findById(subjectId);
-
-                if (room) {
-                    // It's a Study Room: Notify only members
-                    recipientQuery = {
-                        _id: { $in: room.members, $ne: senderId }
-                    };
-                } else {
-                    // It's likely a Subject: Notify only students in the same department/semester
-                    const Subject = (await import("../models/Subject.model.js")).default;
-                    const subject = await Subject.findById(subjectId);
-                    if (subject) {
-                        recipientQuery = {
-                            _id: { $ne: senderId },
-                            department: subject.department,
-                            semester: subject.semester,
-                            role: 'student'
-                        };
-                        // Also include the creator (teacher) if they are not the sender
-                        // Actually teachers usually don't want notifications for every chat message unless mentioned, 
-                        // but let's keep it consistent with previous "everyone" except now filtered.
-                    } else {
-                        // Fallback: If we can't identify the room, don't notify anyone (safety first)
-                        recipientQuery = { _id: null };
+            // [MUTE CHECK] Filter out users who have muted this chat
+            const otherUsers = await User.find({
+                ...recipientQuery,
+                mutedChats: {
+                    $not: {
+                        $elemMatch: {
+                            chatId: subjectId,
+                            until: { $gt: new Date() }
+                        }
                     }
                 }
-            }
-
-            const otherUsers = await User.find(recipientQuery, "_id");
+            }, "_id");
 
             for (const user of otherUsers) {
                 await sendNotification({
@@ -576,6 +546,60 @@ export const searchMessages = async (req, res) => {
     } catch (error) {
         console.error("Error searching messages:", error);
         res.status(500).json({ message: "Failed to search messages" });
+    }
+};
+
+// Mute a chat
+export const muteChat = async (req, res) => {
+    try {
+        const { chatId, duration } = req.body; // duration in hours or 'always'
+        const auth0Id = req.auth.payload.sub;
+        const user = await User.findOne({ auth0Id });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        let untilDate;
+        if (duration === 'always') {
+            untilDate = new Date('2099-12-31'); // Far in the future
+        } else {
+            untilDate = new Date();
+            untilDate.setHours(untilDate.getHours() + parseInt(duration));
+        }
+
+        // Remove existing mute for this chat if any
+        user.mutedChats = user.mutedChats.filter(m => m.chatId !== chatId);
+
+        // Add new mute
+        user.mutedChats.push({ chatId, until: untilDate });
+        await user.save();
+
+        res.status(200).json({ message: "Chat muted successfully", until: untilDate });
+    } catch (error) {
+        console.error("Error muting chat:", error);
+        res.status(500).json({ message: "Failed to mute chat" });
+    }
+};
+
+// Unmute a chat
+export const unmuteChat = async (req, res) => {
+    try {
+        const { chatId } = req.body;
+        const auth0Id = req.auth.payload.sub;
+        const user = await User.findOne({ auth0Id });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        user.mutedChats = user.mutedChats.filter(m => m.chatId !== chatId);
+        await user.save();
+
+        res.status(200).json({ message: "Chat unmuted successfully" });
+    } catch (error) {
+        console.error("Error unmuting chat:", error);
+        res.status(500).json({ message: "Failed to unmute chat" });
     }
 };
 

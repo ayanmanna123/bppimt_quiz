@@ -2,8 +2,17 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import {
     MessageCircle, Search, MoreVertical,
-    Users, Hash, ShoppingBag, Loader2
+    Users, Hash, ShoppingBag, Loader2,
+    BellOff, Bell, Clock, Info, Lock
 } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenuSeparator,
+    DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -44,11 +53,13 @@ const AllChats = () => {
         setEditingMessage,
         typingUsers,
         messagesEndRef,
-        handleSelectChat,
-        handleSendMessage,
         handleTyping,
         handleUpdateMessage,
-        handleDeleteMessage
+        handleDeleteMessage,
+        handleMuteChat,
+        handleUnmuteChat,
+        handleSelectChat,
+        handleSendMessage
     } = useAllChats();
 
     // --- Helpers ---
@@ -121,7 +132,7 @@ const AllChats = () => {
                         Select a chat to start messaging. Connect with your community, subjects, study rooms, and marketplace.
                     </p>
                     <div className="mt-8 flex items-center gap-2 text-xs text-slate-400">
-                        <LockIcon className="w-3 h-3" />
+                        <Lock className="w-3 h-3" />
                         Your personal messages are end-to-end encrypted (simulated)
                     </div>
                 </div>
@@ -226,7 +237,7 @@ const AllChats = () => {
                                     <div
                                         key={chat._id}
                                         onClick={() => handleSelectChat(chat)}
-                                        className={`flex items-center gap-3 p-4 hover:bg-slate-50 cursor-pointer transition-colors relative
+                                        className={`group flex items-center gap-3 p-4 hover:bg-slate-50 cursor-pointer transition-colors relative
                                         ${selectedChat?._id === chat._id ? 'bg-indigo-50 hover:bg-indigo-50' : ''}`}
                                     >
                                         <div className="relative">
@@ -245,7 +256,12 @@ const AllChats = () => {
 
                                         <div className="flex-1 min-w-0">
                                             <div className="flex justify-between items-baseline mb-0.5">
-                                                <h3 className="font-semibold text-slate-900 truncate pr-2">{chat.name}</h3>
+                                                <div className="flex items-center gap-1.5 overflow-hidden">
+                                                    <h3 className="font-semibold text-slate-900 truncate">{chat.name}</h3>
+                                                    {chat.isMuted && (
+                                                        <BellOff className="w-3 h-3 text-slate-400 shrink-0" />
+                                                    )}
+                                                </div>
                                                 {chat.timestamp && (
                                                     <span className={`text-[10px] shrink-0 ${chat.unreadCount > 0 ? 'text-emerald-500 font-bold' : 'text-slate-400'}`}>
                                                         {formatChatTime(chat.timestamp)}
@@ -262,11 +278,76 @@ const AllChats = () => {
                                             </p>
                                         </div>
 
-                                        {chat.unreadCount > 0 && (
-                                            <div className="w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold shrink-0">
-                                                {chat.unreadCount}
-                                            </div>
-                                        )}
+                                        <div className="flex flex-col items-end gap-1 shrink-0">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <MoreVertical className="w-4 h-4 text-slate-400" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl border-slate-100">
+                                                    <DropdownMenuLabel className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 py-2">
+                                                        Notifications
+                                                    </DropdownMenuLabel>
+                                                    {chat.isMuted ? (
+                                                        <DropdownMenuItem
+                                                            onClick={(e) => { e.stopPropagation(); handleUnmuteChat(chat._id); }}
+                                                            className="flex items-center gap-2 text-indigo-600 focus:text-indigo-600 focus:bg-indigo-50 cursor-pointer py-2.5 rounded-lg mx-1"
+                                                        >
+                                                            <Bell className="w-4 h-4" />
+                                                            <span>Unmute Chat</span>
+                                                        </DropdownMenuItem>
+                                                    ) : (
+                                                        <>
+                                                            <DropdownMenuItem
+                                                                onClick={(e) => { e.stopPropagation(); handleMuteChat(chat._id, 1); }}
+                                                                className="flex items-center gap-2 focus:bg-slate-50 cursor-pointer py-2.5 rounded-lg mx-1"
+                                                            >
+                                                                <Clock className="w-4 h-4 text-slate-400" />
+                                                                <span>Mute for 1 hour</span>
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={(e) => { e.stopPropagation(); handleMuteChat(chat._id, 8); }}
+                                                                className="flex items-center gap-2 focus:bg-slate-50 cursor-pointer py-2.5 rounded-lg mx-1"
+                                                            >
+                                                                <Clock className="w-4 h-4 text-slate-400" />
+                                                                <span>Mute for 8 hours</span>
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={(e) => { e.stopPropagation(); handleMuteChat(chat._id, 24); }}
+                                                                className="flex items-center gap-2 focus:bg-slate-50 cursor-pointer py-2.5 rounded-lg mx-1"
+                                                            >
+                                                                <Clock className="w-4 h-4 text-slate-400" />
+                                                                <span>Mute for 24 hours</span>
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={(e) => { e.stopPropagation(); handleMuteChat(chat._id, 'always'); }}
+                                                                className="flex items-center gap-2 focus:bg-slate-50 cursor-pointer py-2.5 rounded-lg mx-1"
+                                                            >
+                                                                <BellOff className="w-4 h-4 text-slate-400" />
+                                                                <span>Mute Always</span>
+                                                            </DropdownMenuItem>
+                                                        </>
+                                                    )}
+                                                    <DropdownMenuSeparator className="bg-slate-50" />
+                                                    <DropdownMenuItem className="flex items-center gap-2 text-slate-600 focus:bg-slate-50 cursor-pointer py-2.5 rounded-lg mx-1">
+                                                        <Info className="w-4 h-4 text-slate-400" />
+                                                        <span>Chat Info</span>
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+
+                                            {chat.unreadCount > 0 && (
+                                                <div className="w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold">
+                                                    {chat.unreadCount}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 );
                             })}
