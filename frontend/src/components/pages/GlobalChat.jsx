@@ -317,13 +317,14 @@ const GlobalChat = () => {
         socket.emit("stopTyping", { subjectId, user: usere.fullname });
 
         const messageData = {
-            subjectId,
+            subjectId: "global",
             message: text,
             senderId: usere._id,
             isGlobal: true,
-            mentions: [], // Logic for mentions can be parsed here if needed, or backend handles it
+            mentions: [],
             replyTo: replyTo ? replyTo._id : null,
-            attachments: attachment ? [attachment] : []
+            attachments: attachment ? [attachment] : [],
+            type: 'global' // Pass explicit type
         };
 
         // Naive mention parsing for now (or rely on backend/frontend consistencies)

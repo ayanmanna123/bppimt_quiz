@@ -198,9 +198,21 @@ io.on("connection", async (socket) => {
     }
   }
 
-  socket.on("joinSubject", (subjectId) => {
+  socket.on("joinSubject", async (data) => {
+    const { subjectId, type } = typeof data === 'string' ? { subjectId: data, type: 'subject' } : data;
+
+    // [SECURE] Verify membership for study rooms
+    if (type === 'study-room' && userId) {
+      const StudyRoom = (await import("./models/StudyRoom.model.js")).default;
+      const room = await StudyRoom.findById(subjectId);
+      if (room && !room.members.includes(userId)) {
+        console.log(`User ${userId} attempted to join unauthorized study room ${subjectId}`);
+        return; // Silently reject or emit error
+      }
+    }
+
     socket.join(subjectId);
-    console.log(`Client ${socket.id} joined subject ${subjectId}`);
+    console.log(`Client ${socket.id} joined ${type || 'subject'} ${subjectId}`);
   });
 
   socket.on("sendMessage", async ({ subjectId, message, senderId, mentions, replyTo, attachments, type }) => {

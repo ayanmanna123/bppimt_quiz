@@ -42,6 +42,25 @@ export const getAllRooms = async (req, res) => {
     }
 };
 
+// Get rooms the user has joined
+export const getJoinedRooms = async (req, res) => {
+    try {
+        const auth0Id = req.auth.payload.sub;
+        const user = await User.findOne({ auth0Id });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const rooms = await StudyRoom.find({ members: user._id })
+            .populate("createdBy", "fullname picture")
+            .populate("members", "fullname picture")
+            .sort({ updatedAt: -1 });
+
+        res.status(200).json(rooms);
+    } catch (error) {
+        console.error("Error fetching joined rooms:", error);
+        res.status(500).json({ message: "Failed to fetch joined rooms" });
+    }
+};
+
 // Join a Study Room
 export const joinRoom = async (req, res) => {
     try {

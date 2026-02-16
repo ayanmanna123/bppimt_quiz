@@ -90,8 +90,8 @@ const useAllChats = () => {
                 unreadCount: 0
             }));
 
-            // 3. Study Rooms
-            const roomsRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/study-room/all`, { headers });
+            // 3. Study Rooms (Only Joined)
+            const roomsRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/study-room/joined`, { headers });
             const studyRooms = (roomsRes.data || []).map(room => ({
                 _id: room._id,
                 type: 'study-room',
@@ -214,7 +214,7 @@ const useAllChats = () => {
             }
 
             if (socket) {
-                socket.emit("joinSubject", chat._id);
+                socket.emit("joinSubject", { subjectId: chat._id, type: chat.type });
             }
 
         } catch (error) {
@@ -236,7 +236,7 @@ const useAllChats = () => {
 
         chats.forEach(c => {
             if (['subject', 'study-room', 'global'].includes(c.type)) {
-                socket.emit("joinSubject", c._id);
+                socket.emit("joinSubject", { subjectId: c._id, type: c.type });
             }
         });
     }, [socket, chatIdsHash]);
@@ -446,7 +446,8 @@ const useAllChats = () => {
                     senderId: user._id,
                     isGlobal: selectedChat.type === 'global',
                     replyTo: replyTo?._id,
-                    attachments: attachment ? [attachment] : []
+                    attachments: attachment ? [attachment] : [],
+                    type: selectedChat.type // Pass type
                 });
             }
             setReplyTo(null);

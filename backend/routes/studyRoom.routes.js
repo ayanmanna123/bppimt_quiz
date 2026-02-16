@@ -2,6 +2,7 @@ import express from "express";
 import {
     createRoom,
     getAllRooms,
+    getJoinedRooms,
     joinRoom,
     getRoomDetails,
     deleteRoom
@@ -11,6 +12,7 @@ const studyRoomRoute = express.Router();
 
 studyRoomRoute.post("/create", createRoom);
 studyRoomRoute.get("/all", getAllRooms);
+studyRoomRoute.get("/joined", getJoinedRooms);
 studyRoomRoute.get("/:roomId", getRoomDetails);
 studyRoomRoute.post("/join/:roomId", joinRoom);
 studyRoomRoute.delete("/:roomId", deleteRoom);

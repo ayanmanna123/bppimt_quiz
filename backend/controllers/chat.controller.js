@@ -12,6 +12,21 @@ export const getChatHistory = async (req, res) => {
         const { subjectId } = req.params;
         const { page = 1, limit = 50, type } = req.query;
 
+        // [SECURE] Verify membership for study rooms
+        if (type === 'study-room') {
+            const auth0Id = req.auth.payload.sub;
+            const user = await User.findOne({ auth0Id });
+            if (!user) return res.status(404).json({ message: "User not found" });
+
+            const StudyRoom = (await import("../models/StudyRoom.model.js")).default;
+            const room = await StudyRoom.findById(subjectId);
+            if (!room) return res.status(404).json({ message: "Study room not found" });
+
+            if (!room.members.includes(user._id) && user.role !== 'teacher') {
+                return res.status(403).json({ message: "You are not a member of this study room" });
+            }
+        }
+
         let query = {};
         if (subjectId === "global") {
             query = { isGlobal: true };
@@ -108,7 +123,9 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
 
             let url = subjectId === 'global' ? '/community-chat' : `/dashboard/subject/${subjectId}`;
             if (type === 'dm') {
-                url = `/chat/dm/${subjectId}`; // Or whatever the frontend route will be
+                url = `/chat/dm/${subjectId}`;
+            } else if (type === 'study-room') {
+                url = `/study-room/${subjectId}`;
             }
 
             // Create persistent notification in DB (also handles real-time socket and web push)
@@ -121,12 +138,44 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
             // Looking at previous logic, it sent push to EVERYONE except sender.
             let recipientQuery = { _id: { $ne: senderId } };
 
-            if (type === 'dm') {
+            if (subjectId === 'global' || chatData.isGlobal) {
+                // Global chat: Notify everyone except sender
+                recipientQuery = { _id: { $ne: senderId } };
+            } else if (type === 'dm') {
                 const Conversation = (await import("../models/Conversation.model.js")).default;
                 const conv = await Conversation.findById(subjectId);
                 if (conv) {
                     const otherId = conv.participants.find(p => p.toString() !== senderId.toString());
                     recipientQuery = { _id: otherId };
+                }
+            } else {
+                // It's either a Subject or a Study Room
+                const StudyRoom = (await import("../models/StudyRoom.model.js")).default;
+                const room = await StudyRoom.findById(subjectId);
+
+                if (room) {
+                    // It's a Study Room: Notify only members
+                    recipientQuery = {
+                        _id: { $in: room.members, $ne: senderId }
+                    };
+                } else {
+                    // It's likely a Subject: Notify only students in the same department/semester
+                    const Subject = (await import("../models/Subject.model.js")).default;
+                    const subject = await Subject.findById(subjectId);
+                    if (subject) {
+                        recipientQuery = {
+                            _id: { $ne: senderId },
+                            department: subject.department,
+                            semester: subject.semester,
+                            role: 'student'
+                        };
+                        // Also include the creator (teacher) if they are not the sender
+                        // Actually teachers usually don't want notifications for every chat message unless mentioned, 
+                        // but let's keep it consistent with previous "everyone" except now filtered.
+                    } else {
+                        // Fallback: If we can't identify the room, don't notify anyone (safety first)
+                        recipientQuery = { _id: null };
+                    }
                 }
             }
 
@@ -425,18 +474,17 @@ export const markMessagesAsRead = async (req, res) => {
                 // Ideally we should match exactly what saveMessage does.
             }
 
-            // For DMs, we might need a more broad check or specific URL pattern since saveMessage uses /chat/dm/:id
-            // Let's broaden the query to include DM urls if subjectId is not global
+            // For DMs and Study Rooms, we might need a more broad check or specific URL pattern
             if (subjectId !== "global") {
-                // We update notifications that point to this subject/conversation
-                // This might need refinement if URLs are strictly unique
+                // We update notifications that point to this subject/conversation/room
                 await Notification.updateMany({
                     recipient: userId,
                     type: "chat",
                     isRead: false,
                     $or: [
                         { url: `/dashboard/subject/${subjectId}` },
-                        { url: `/chat/dm/${subjectId}` }
+                        { url: `/chat/dm/${subjectId}` },
+                        { url: `/study-room/${subjectId}` }
                     ]
                 }, { $set: { isRead: true } });
             } else {

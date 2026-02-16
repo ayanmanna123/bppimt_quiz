@@ -74,7 +74,7 @@ const StudyRoomDetail = () => {
     useEffect(() => {
         if (!socket || !roomId) return;
 
-        socket.emit("joinSubject", roomId);
+        socket.emit("joinSubject", { subjectId: roomId, type: 'study-room' });
 
         const handleReceiveMessage = (message) => {
             if (message.subjectId === roomId) {
@@ -159,7 +159,8 @@ const StudyRoomDetail = () => {
             subjectId: roomId,
             message: text,
             senderId: usere._id,
-            attachments: attachment ? [attachment] : []
+            attachments: attachment ? [attachment] : [],
+            type: 'study-room'
         });
     };
 

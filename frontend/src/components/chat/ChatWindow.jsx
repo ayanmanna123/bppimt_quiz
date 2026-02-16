@@ -168,7 +168,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
     useEffect(() => {
         if (!socket || !subjectId) return;
 
-        socket.emit("joinSubject", subjectId);
+        socket.emit("joinSubject", { subjectId, type });
 
         const handleReceiveMessage = (message) => {
             const isGlobalMessage = message.isGlobal && subjectId === "global";
