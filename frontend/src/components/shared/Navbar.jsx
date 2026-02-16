@@ -424,7 +424,7 @@ const Navbar = () => {
                         {/* Menu Items */}
                         <div className="space-y-2">
                           <motion.div
-                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors duration-200 cursor-pointer group"
+                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 cursor-pointer group"
                             whileHover={{ x: 5 }}
                           >
                             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
@@ -468,14 +468,14 @@ const Navbar = () => {
                           </motion.div>
 
                           <motion.div
-                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 transition-colors duration-200 cursor-pointer group"
+                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200 cursor-pointer group"
                             whileHover={{ x: 5 }}
                             onClick={handleLogout}
                           >
                             <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-rose-500 rounded-xl flex items-center justify-center">
                               <LogOut className="w-5 h-5 text-white" />
                             </div>
-                            <span className="font-medium text-slate-700 group-hover:text-red-600">
+                            <span className="font-medium text-slate-700 dark:text-slate-300 group-hover:text-red-600 dark:group-hover:text-red-400">
                               Logout
                             </span>
                           </motion.div>
@@ -494,11 +494,11 @@ const Navbar = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => setPopoverView("menu")}
-                            className="hover:bg-slate-100 rounded-full"
+                            className="hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"
                           >
-                            <ChevronLeft className="w-5 h-5" />
+                            <ChevronLeft className="w-5 h-5 dark:text-slate-300" />
                           </Button>
-                          <h4 className="font-bold text-slate-800 text-lg">Settings</h4>
+                          <h4 className="font-bold text-slate-800 dark:text-white text-lg">Settings</h4>
                         </div>
 
                         <div className="space-y-6">

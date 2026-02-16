@@ -67,7 +67,7 @@ const CertificateVerifier = () => {
   return (
     <>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100 dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-900 p-6 transition-colors duration-500">
         {/* Header Section */}
         <div className="relative mb-12">
           <motion.div
@@ -109,7 +109,7 @@ const CertificateVerifier = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.7, type: "spring", stiffness: 100 }}
           >
-            <Card className="overflow-hidden shadow-xl bg-white border-0 rounded-3xl">
+            <Card className="overflow-hidden shadow-xl bg-white dark:bg-slate-900 border-0 rounded-3xl transition-colors duration-500">
               {/* Header with gradient */}
               <div className="h-32 bg-gradient-to-br from-emerald-500 via-green-600 to-teal-600 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-40">
@@ -185,7 +185,7 @@ const CertificateVerifier = () => {
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-200 to-indigo-300 rounded-full mx-auto mb-4 flex items-center justify-center">
                       <Loader className="w-8 h-8 text-blue-600 animate-spin" />
                     </div>
-                    <p className="text-gray-600 text-lg font-medium">
+                    <p className="text-gray-600 dark:text-gray-400 text-lg font-medium">
                       Checking certificate authenticity...
                     </p>
                   </motion.div>
@@ -198,7 +198,7 @@ const CertificateVerifier = () => {
                     transition={{ duration: 0.6 }}
                     className="mt-8"
                   >
-                    <Card className="border-0 bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl overflow-hidden shadow-lg">
+                    <Card className="border-0 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/80 rounded-3xl overflow-hidden shadow-lg transition-colors duration-500">
                       <CardHeader className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white p-6">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
@@ -218,73 +218,73 @@ const CertificateVerifier = () => {
                       <CardContent className="p-6 space-y-4">
                         {/* Student Information Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm">
-                            <User className="w-5 h-5 text-green-600" />
+                          <div className="flex items-center gap-3 p-4 bg-white dark:bg-slate-700/50 rounded-xl shadow-sm transition-colors duration-500">
+                            <User className="w-5 h-5 text-green-600 dark:text-green-400" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 STUDENT NAME
                               </p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-sm font-bold text-gray-700 dark:text-white">
                                 {resultData.student.fullname}
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm">
-                            <Mail className="w-5 h-5 text-blue-600" />
+                          <div className="flex items-center gap-3 p-4 bg-white dark:bg-slate-700/50 rounded-xl shadow-sm transition-colors duration-500">
+                            <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 EMAIL
                               </p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-sm font-bold text-gray-700 dark:text-white">
                                 {resultData.student.email}
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm">
-                            <BookOpen className="w-5 h-5 text-purple-600" />
+                          <div className="flex items-center gap-3 p-4 bg-white dark:bg-slate-700/50 rounded-xl shadow-sm transition-colors duration-500">
+                            <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 UNIVERSITY NO
                               </p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-sm font-bold text-gray-700 dark:text-white">
                                 {resultData.student.universityNo}
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm">
-                            <GraduationCap className="w-5 h-5 text-indigo-600" />
+                          <div className="flex items-center gap-3 p-4 bg-white dark:bg-slate-700/50 rounded-xl shadow-sm transition-colors duration-500">
+                            <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 DEPARTMENT
                               </p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-sm font-bold text-gray-700 dark:text-white">
                                 {resultData.student.department}
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm">
-                            <Calendar className="w-5 h-5 text-orange-600" />
+                          <div className="flex items-center gap-3 p-4 bg-white dark:bg-slate-700/50 rounded-xl shadow-sm transition-colors duration-500">
+                            <Calendar className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 SEMESTER
                               </p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-sm font-bold text-gray-700 dark:text-white">
                                 {resultData.student.semester}
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl shadow-sm border-2 border-yellow-200">
-                            <Star className="w-5 h-5 text-yellow-600" />
+                          <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/40 dark:to-orange-900/40 rounded-xl shadow-sm border-2 border-yellow-200 dark:border-yellow-900/50">
+                            <Star className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
                             <div>
-                              <p className="text-xs text-gray-600 font-medium">
+                              <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">
                                 SCORE ACHIEVED
                               </p>
-                              <p className="text-lg font-bold text-yellow-700">
+                              <p className="text-lg font-bold text-yellow-700 dark:text-yellow-400">
                                 {resultData.score}
                               </p>
                             </div>
@@ -292,13 +292,13 @@ const CertificateVerifier = () => {
                         </div>
 
                         {/* Submission Date */}
-                        <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-xl shadow-sm border-2 border-purple-200">
-                          <Calendar className="w-5 h-5 text-purple-600" />
+                        <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 rounded-xl shadow-sm border-2 border-purple-200 dark:border-purple-900/50">
+                          <Calendar className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                           <div>
-                            <p className="text-xs text-purple-600 font-medium">
+                            <p className="text-xs text-purple-600 dark:text-purple-300 font-medium">
                               SUBMITTED ON
                             </p>
-                            <p className="text-sm font-bold text-purple-700">
+                            <p className="text-sm font-bold text-purple-700 dark:text-purple-300">
                               {new Date(
                                 resultData.submittedAt
                               ).toLocaleDateString("en-US", {
@@ -324,20 +324,20 @@ const CertificateVerifier = () => {
                     transition={{ duration: 0.6 }}
                     className="mt-8"
                   >
-                    <Card className="border-0 bg-gradient-to-br from-red-50 to-pink-50 rounded-3xl overflow-hidden shadow-lg">
+                    <Card className="border-0 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-3xl overflow-hidden shadow-lg transition-colors duration-500">
                       <CardContent className="p-8 text-center">
-                        <div className="w-20 h-20 bg-gradient-to-br from-red-200 to-pink-300 rounded-full mx-auto mb-6 flex items-center justify-center">
-                          <XCircle className="w-10 h-10 text-red-600" />
+                        <div className="w-20 h-20 bg-gradient-to-br from-red-200 to-pink-300 dark:from-red-800 dark:to-pink-900 rounded-full mx-auto mb-6 flex items-center justify-center">
+                          <XCircle className="w-10 h-10 text-red-600 dark:text-red-300" />
                         </div>
-                        <h3 className="text-xl font-bold text-red-800 mb-2">
+                        <h3 className="text-xl font-bold text-red-800 dark:text-red-200 mb-2">
                           ❌ Certificate Not Verified
                         </h3>
-                        <p className="text-red-600">
+                        <p className="text-red-600 dark:text-red-300">
                           The provided Result ID is invalid or the certificate
                           could not be found in our system.
                         </p>
-                        <div className="mt-6 p-4 bg-red-100 rounded-xl">
-                          <p className="text-sm text-red-700 font-medium">
+                        <div className="mt-6 p-4 bg-red-100 dark:bg-red-900/30 rounded-xl">
+                          <p className="text-sm text-red-700 dark:text-red-300 font-medium">
                             Please check the Result ID and try again, or contact
                             support if you believe this is an error.
                           </p>

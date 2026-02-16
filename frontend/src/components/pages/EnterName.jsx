@@ -44,7 +44,7 @@ const EnterName = () => {
       toast.error("Please enter your name first!");
       return;
     }
-    
+
     try {
       setLoading(true);
       const token = await getAccessTokenSilently({
@@ -135,22 +135,22 @@ const EnterName = () => {
 
   const stepVariants = {
     hidden: { opacity: 0, x: 50, scale: 0.9 },
-    visible: { 
-      opacity: 1, 
-      x: 0, 
+    visible: {
+      opacity: 1,
+      x: 0,
       scale: 1,
       transition: { duration: 0.6, type: "spring", stiffness: 100 }
     },
-    exit: { 
-      opacity: 0, 
-      x: -50, 
+    exit: {
+      opacity: 0,
+      x: -50,
       scale: 0.9,
       transition: { duration: 0.3 }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-100 dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-900 transition-colors duration-500">
       {/* Enhanced Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 opacity-90"></div>
@@ -211,10 +211,10 @@ const EnterName = () => {
           transition={{ delay: 0.3, duration: 0.8 }}
           className="max-w-2xl mx-auto"
         >
-          <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
+          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 dark:border-slate-700/50 overflow-hidden transition-colors duration-500">
             <form onSubmit={submitHandler}>
               {/* Form Header */}
-              <div className="bg-gradient-to-r from-purple-500 via-violet-500 to-indigo-500 p-8 text-white">
+              <div className="bg-gradient-to-r from-purple-500 via-violet-500 to-indigo-500 dark:from-purple-900 dark:via-violet-900 dark:to-indigo-900 p-8 text-white transition-colors duration-500">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
                     <ShieldCheck className="w-8 h-8" />
@@ -234,10 +234,10 @@ const EnterName = () => {
                   animate="visible"
                   className="space-y-6"
                 >
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border-l-4 border-blue-400">
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/50 rounded-2xl p-6 border-l-4 border-blue-400 dark:border-blue-600 transition-colors duration-500">
                     <div className="flex items-center gap-3 mb-4">
-                      <User className="w-6 h-6 text-blue-600" />
-                      <h3 className="text-xl font-bold text-gray-800">Personal Information</h3>
+                      <User className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                      <h3 className="text-xl font-bold text-gray-800 dark:text-white">Personal Information</h3>
                     </div>
                     <div className="relative">
                       <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -246,7 +246,7 @@ const EnterName = () => {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Enter your full name"
-                        className="pl-12 h-14 text-lg border-2 border-gray-200 rounded-xl bg-white/80 hover:bg-white focus:bg-white focus:border-blue-400 transition-all duration-300 font-medium shadow-sm"
+                        className="pl-12 h-14 text-lg border-2 border-gray-200 dark:border-slate-600 rounded-xl bg-white/80 dark:bg-slate-700/50 hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-700 focus:border-blue-400 dark:focus:border-blue-500 transition-all duration-300 font-medium shadow-sm dark:text-white dark:placeholder:text-gray-400"
                         required
                       />
                     </div>
@@ -258,17 +258,17 @@ const EnterName = () => {
                   variants={stepVariants}
                   initial="hidden"
                   animate={step >= 1 && name.trim() ? "visible" : "hidden"}
-                  className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-2xl p-6 border-l-4 border-purple-400"
+                  className="bg-gradient-to-r from-purple-50 to-violet-50 dark:from-slate-800 dark:to-slate-800/50 rounded-2xl p-6 border-l-4 border-purple-400 dark:border-purple-600 transition-colors duration-500"
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <Mail className="w-6 h-6 text-purple-600" />
-                    <h3 className="text-xl font-bold text-gray-800">Email Verification</h3>
+                    <Mail className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-white">Email Verification</h3>
                   </div>
-                  <div className="bg-white/80 rounded-xl p-4 mb-4 border border-purple-200">
-                    <p className="text-gray-700 mb-2">
+                  <div className="bg-white/80 dark:bg-slate-700/50 rounded-xl p-4 mb-4 border border-purple-200 dark:border-purple-900/50 transition-colors duration-500">
+                    <p className="text-gray-700 dark:text-gray-300 mb-2">
                       We'll send a verification code to:
                     </p>
-                    <p className="font-bold text-purple-700 text-lg flex items-center gap-2">
+                    <p className="font-bold text-purple-700 dark:text-purple-400 text-lg flex items-center gap-2">
                       <Mail className="w-5 h-5" />
                       {usere?.email}
                     </p>
@@ -300,11 +300,11 @@ const EnterName = () => {
                     variants={stepVariants}
                     initial="hidden"
                     animate="visible"
-                    className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl p-6 border-l-4 border-orange-400"
+                    className="bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-slate-800 dark:to-slate-800/50 rounded-2xl p-6 border-l-4 border-orange-400 dark:border-orange-600 transition-colors duration-500"
                   >
                     <div className="flex items-center gap-3 mb-4">
-                      <KeyRound className="w-6 h-6 text-orange-600" />
-                      <h3 className="text-xl font-bold text-gray-800">Enter Verification Code</h3>
+                      <KeyRound className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                      <h3 className="text-xl font-bold text-gray-800 dark:text-white">Enter Verification Code</h3>
                     </div>
                     <div className="flex gap-3">
                       <div className="relative flex-1">
@@ -314,7 +314,7 @@ const EnterName = () => {
                           value={code}
                           onChange={(e) => setCode(e.target.value)}
                           placeholder="Enter 6-digit code"
-                          className="pl-12 h-14 text-lg border-2 border-gray-200 rounded-xl bg-white/80 hover:bg-white focus:bg-white focus:border-orange-400 transition-all duration-300 font-mono shadow-sm"
+                          className="pl-12 h-14 text-lg border-2 border-gray-200 dark:border-slate-600 rounded-xl bg-white/80 dark:bg-slate-700/50 hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-700 focus:border-orange-400 dark:focus:border-orange-500 transition-all duration-300 font-mono shadow-sm dark:text-white dark:placeholder:text-gray-400"
                           maxLength={6}
                         />
                       </div>
@@ -337,19 +337,19 @@ const EnterName = () => {
                     variants={stepVariants}
                     initial="hidden"
                     animate="visible"
-                    className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border-l-4 border-green-400"
+                    className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/50 rounded-2xl p-6 border-l-4 border-green-400 dark:border-green-600 transition-colors duration-500"
                   >
                     <div className="flex items-center gap-3 mb-4">
-                      <CheckCircle className="w-6 h-6 text-green-600" />
-                      <h3 className="text-xl font-bold text-gray-800">Verification Successful!</h3>
+                      <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+                      <h3 className="text-xl font-bold text-gray-800 dark:text-white">Verification Successful!</h3>
                     </div>
-                    <div className="bg-white/80 rounded-xl p-4 mb-6">
-                      <p className="text-green-700 font-semibold flex items-center gap-2">
+                    <div className="bg-white/80 dark:bg-slate-700/50 rounded-xl p-4 mb-6 transition-colors duration-500">
+                      <p className="text-green-700 dark:text-green-400 font-semibold flex items-center gap-2">
                         <CheckCircle className="w-5 h-5" />
                         Your email has been verified successfully!
                       </p>
                     </div>
-                    
+
                     <Button
                       type="submit"
                       className="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
@@ -369,13 +369,13 @@ const EnterName = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.6 }}
-            className="mt-8 bg-white/60 backdrop-blur-lg rounded-2xl p-6 border border-white/40 text-center"
+            className="mt-8 bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg rounded-2xl p-6 border border-white/40 dark:border-slate-700/50 text-center transition-colors duration-500"
           >
             <div className="flex items-center justify-center gap-3 mb-3">
-              <ShieldCheck className="w-6 h-6 text-indigo-600" />
-              <h3 className="text-lg font-bold text-gray-800">Secure & Safe</h3>
+              <ShieldCheck className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+              <h3 className="text-lg font-bold text-gray-800 dark:text-white">Secure & Safe</h3>
             </div>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Your information is encrypted and protected. We only use your email for verification purposes.
             </p>
           </motion.div>

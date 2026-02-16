@@ -171,10 +171,10 @@ const AdmineResult = () => {
   }, [results, searchTerm, statusFilter, sortBy]);
 
   const getScoreColor = (score) => {
-    if (score >= 85) return "text-green-600 bg-green-100";
-    if (score >= 70) return "text-blue-600 bg-blue-100";
-    if (score >= 60) return "text-yellow-600 bg-yellow-100";
-    return "text-red-600 bg-red-100";
+    if (score >= 85) return "text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30";
+    if (score >= 70) return "text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30";
+    if (score >= 60) return "text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30";
+    return "text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30";
   };
 
   const getPerformanceIcon = (score) => {
@@ -557,7 +557,7 @@ const AdmineResult = () => {
                               <div
                                 className={`px-3 py-1 rounded-full text-xs font-semibold ${getScoreColor(
                                   result.score
-                                )} bg-white/90`}
+                                )}`}
                               >
                                 {getPerformanceIcon(result.score)}
                                 <span className="ml-1">
@@ -569,12 +569,12 @@ const AdmineResult = () => {
 
                           <div className="text-right">
                             {status === "onTime" ? (
-                              <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                              <div className="bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
                                 <CheckCircle className="w-3 h-3" />
                                 On Time
                               </div>
                             ) : (
-                              <div className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                              <div className="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
                                 <XCircle className="w-3 h-3" />
                                 Late
                               </div>

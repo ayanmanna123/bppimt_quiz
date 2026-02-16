@@ -141,7 +141,7 @@ const Complete = () => {
       : role && department && semester && universityNo;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-100 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-100 dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-900 flex items-center justify-center p-6 transition-colors duration-500">
       {/* Floating decorative elements */}
       <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full opacity-20 blur-2xl"></div>
       <div className="absolute bottom-20 right-20 w-40 h-40 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full opacity-15 blur-2xl"></div>
@@ -154,9 +154,9 @@ const Complete = () => {
         className="w-full max-w-2xl"
       >
         {/* Welcome Card */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/50 overflow-hidden transition-colors duration-500">
           {/* Header Section */}
-          <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-8 text-center relative overflow-hidden">
+          <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-900 dark:via-purple-900 dark:to-pink-900 p-8 text-center relative overflow-hidden transition-colors duration-500">
             {/* Background pattern */}
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-4 right-4 w-24 h-24 border-2 border-white/40 rounded-full animate-pulse"></div>
@@ -191,20 +191,20 @@ const Complete = () => {
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5, duration: 0.6 }}
-                className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 mb-8 border border-blue-100"
+                className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/50 rounded-2xl p-6 mb-8 border border-blue-100 dark:border-slate-700 transition-colors duration-500"
               >
                 <div className="flex items-center gap-4">
                   <img
                     src={user.picture}
                     alt={user.name}
                     loading="lazy"
-                    className="w-16 h-16 rounded-full border-4 border-white shadow-lg"
+                    className="w-16 h-16 rounded-full border-4 border-white dark:border-slate-700 shadow-lg"
                   />
                   <div>
-                    <h3 className="text-xl font-bold text-gray-800">
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-white">
                       {user.name}
                     </h3>
-                    <p className="text-gray-600">{user.email}</p>
+                    <p className="text-gray-600 dark:text-gray-400">{user.email}</p>
                   </div>
                 </div>
               </motion.div>
@@ -217,18 +217,17 @@ const Complete = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6, duration: 0.6 }}
               >
-                <label className="block text-sm font-semibold text-gray-700 mb-3 items-center gap-2">
-                  <Users className="w-4 h-4 text-indigo-600" />
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 items-center gap-2">
+                  <Users className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                   Select Your Role
                 </label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
-                      variant="outline"
-                      className="w-full h-14 text-left justify-between bg-white/50 hover:bg-white/80 border-2 border-gray-200 hover:border-indigo-300 rounded-xl shadow-sm transition-all duration-300"
+                      className={`w-full h-14 text-left justify-between bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 dark:hover:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500 rounded-xl shadow-sm transition-all duration-300`}
                     >
                       <span
-                        className={role ? "text-gray-900" : "text-gray-500"}
+                        className={role ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400"}
                       >
                         {role
                           ? role === "student"
@@ -239,24 +238,24 @@ const Complete = () => {
                       <UserCircle className="w-5 h-5 text-gray-400" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-full rounded-xl border-0 shadow-xl bg-white/95 backdrop-blur-xl">
-                    <DropdownMenuLabel className="text-indigo-600 font-semibold">
+                  <DropdownMenuContent className="w-full rounded-xl border-0 shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl dark:border dark:border-slate-700">
+                    <DropdownMenuLabel className="text-indigo-600 dark:text-indigo-400 font-semibold">
                       Choose Role
                     </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                    <DropdownMenuSeparator className="dark:bg-slate-700" />
                     <DropdownMenuRadioGroup
                       value={role}
                       onValueChange={setRole}
                     >
                       <DropdownMenuRadioItem
                         value="student"
-                        className="cursor-pointer py-3"
+                        className="cursor-pointer py-3 dark:text-gray-200 dark:focus:bg-slate-800"
                       >
                         🎓 Student
                       </DropdownMenuRadioItem>
                       <DropdownMenuRadioItem
                         value="teacher"
-                        className="cursor-pointer py-3"
+                        className="cursor-pointer py-3 dark:text-gray-200 dark:focus:bg-slate-800"
                       >
                         👨‍🏫 Teacher
                       </DropdownMenuRadioItem>
@@ -272,19 +271,19 @@ const Complete = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7, duration: 0.6 }}
                   >
-                    <label className="block text-sm font-semibold text-gray-700 mb-3 items-center gap-2">
-                      <Building2 className="w-4 h-4 text-purple-600" />
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 items-center gap-2">
+                      <Building2 className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                       Select Department
                     </label>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
                           variant="outline"
-                          className="w-full h-14 text-left justify-between bg-white/50 hover:bg-white/80 border-2 border-gray-200 hover:border-purple-300 rounded-xl shadow-sm transition-all duration-300"
+                          className="w-full h-14 text-left justify-between bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 dark:hover:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-500 rounded-xl shadow-sm transition-all duration-300"
                         >
                           <span
                             className={
-                              department ? "text-gray-900" : "text-gray-500"
+                              department ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400"
                             }
                           >
                             {department
@@ -294,36 +293,36 @@ const Complete = () => {
                           <Building2 className="w-5 h-5 text-gray-400" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-full rounded-xl border-0 shadow-xl bg-white/95 backdrop-blur-xl">
-                        <DropdownMenuLabel className="text-purple-600 font-semibold">
+                      <DropdownMenuContent className="w-full rounded-xl border-0 shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl dark:border dark:border-slate-700">
+                        <DropdownMenuLabel className="text-purple-600 dark:text-purple-400 font-semibold">
                           Department
                         </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
+                        <DropdownMenuSeparator className="dark:bg-slate-700" />
                         <DropdownMenuRadioGroup
                           value={department}
                           onValueChange={setDepartment}
                         >
                           <DropdownMenuRadioItem
                             value="EE"
-                            className="cursor-pointer py-3"
+                            className="cursor-pointer py-3 dark:text-gray-200 dark:focus:bg-slate-800"
                           >
                             ⚡ Electrical Engineering (EE)
                           </DropdownMenuRadioItem>
                           <DropdownMenuRadioItem
                             value="ECE"
-                            className="cursor-pointer py-3"
+                            className="cursor-pointer py-3 dark:text-gray-200 dark:focus:bg-slate-800"
                           >
                             📡 Electronics & Communication (ECE)
                           </DropdownMenuRadioItem>
                           <DropdownMenuRadioItem
                             value="CSE"
-                            className="cursor-pointer py-3"
+                            className="cursor-pointer py-3 dark:text-gray-200 dark:focus:bg-slate-800"
                           >
                             💻 Computer Science (CSE)
                           </DropdownMenuRadioItem>
                           <DropdownMenuRadioItem
                             value="IT"
-                            className="cursor-pointer py-3"
+                            className="cursor-pointer py-3 dark:text-gray-200 dark:focus:bg-slate-800"
                           >
                             🌐 Information Technology (IT)
                           </DropdownMenuRadioItem>
@@ -337,19 +336,19 @@ const Complete = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8, duration: 0.6 }}
                   >
-                    <label className="block text-sm font-semibold text-gray-700 mb-3 items-center gap-2">
-                      <Calendar className="w-4 h-4 text-pink-600" />
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 items-center gap-2">
+                      <Calendar className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                       Select Semester
                     </label>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
                           variant="outline"
-                          className="w-full h-14 text-left justify-between bg-white/50 hover:bg-white/80 border-2 border-gray-200 hover:border-pink-300 rounded-xl shadow-sm transition-all duration-300"
+                          className="w-full h-14 text-left justify-between bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 dark:hover:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 hover:border-pink-300 dark:hover:border-pink-500 rounded-xl shadow-sm transition-all duration-300"
                         >
                           <span
                             className={
-                              semester ? "text-gray-900" : "text-gray-500"
+                              semester ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400"
                             }
                           >
                             {semester
@@ -361,11 +360,11 @@ const Complete = () => {
                           <Calendar className="w-5 h-5 text-gray-400" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-full rounded-xl border-0 shadow-xl bg-white/95 backdrop-blur-xl">
-                        <DropdownMenuLabel className="text-pink-600 font-semibold">
+                      <DropdownMenuContent className="w-full rounded-xl border-0 shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl dark:border dark:border-slate-700">
+                        <DropdownMenuLabel className="text-pink-600 dark:text-pink-400 font-semibold">
                           Semester
                         </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
+                        <DropdownMenuSeparator className="dark:bg-slate-700" />
                         <DropdownMenuRadioGroup
                           value={semester}
                           onValueChange={setSemester}
@@ -383,7 +382,7 @@ const Complete = () => {
                             <DropdownMenuRadioItem
                               key={sem.value}
                               value={sem.value}
-                              className="cursor-pointer py-3"
+                              className="cursor-pointer py-3 dark:text-gray-200 dark:focus:bg-slate-800"
                             >
                               {sem.label}
                             </DropdownMenuRadioItem>
@@ -399,8 +398,8 @@ const Complete = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.9, duration: 0.6 }}
                   >
-                    <label className="block text-sm font-semibold text-gray-700 mb-3 items-center gap-2">
-                      <Hash className="w-4 h-4 text-emerald-600" />
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 items-center gap-2">
+                      <Hash className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                       University Number
                     </label>
                     <div className="relative">
@@ -409,7 +408,7 @@ const Complete = () => {
                         placeholder="Enter your university number..."
                         value={universityNo}
                         onChange={(e) => setuniversityNo(e.target.value)}
-                        className="w-full h-14 bg-white/50 hover:bg-white/80 border-2 border-gray-200 focus:border-emerald-300 rounded-xl shadow-sm transition-all duration-300 text-lg pl-12"
+                        className="w-full h-14 bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 dark:hover:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 focus:border-emerald-300 dark:focus:border-emerald-500 rounded-xl shadow-sm transition-all duration-300 text-lg pl-12 dark:text-white dark:placeholder:text-gray-500"
                       />
                       <Hash className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
@@ -423,14 +422,14 @@ const Complete = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.0, duration: 0.6 }}
-              className="mt-8 pt-6 border-t border-gray-100"
+              className="mt-8 pt-6 border-t border-gray-100 dark:border-slate-800"
             >
               <Button
                 onClick={handelsubmite}
                 disabled={!isFormComplete || isSubmitting}
                 className={`w-full h-16 text-lg font-bold rounded-2xl transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105 ${isFormComplete
                   ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white"
-                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  : "bg-gray-200 dark:bg-slate-800 text-gray-500 dark:text-gray-500 cursor-not-allowed border dark:border-slate-700"
                   }`}
               >
                 {isSubmitting ? (
@@ -469,7 +468,7 @@ const Complete = () => {
                   )}
                 </div>
               </div>
-              <p className="text-center text-sm text-gray-500 mt-2">
+              <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
                 {
                   Object.values({
                     role,

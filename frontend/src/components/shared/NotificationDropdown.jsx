@@ -78,7 +78,7 @@ const NotificationItem = ({ notification, onMarkRead, onDelete }) => {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 text-blue-500 hover:text-blue-700 hover:bg-blue-200"
+                            className="h-6 w-6 text-blue-500 hover:text-blue-700 hover:bg-blue-200 dark:hover:bg-blue-900/50"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onMarkRead(notification._id);
@@ -91,7 +91,7 @@ const NotificationItem = ({ notification, onMarkRead, onDelete }) => {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 text-slate-400 hover:text-red-500 hover:bg-red-100"
+                        className="h-6 w-6 text-slate-400 hover:text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30"
                         onClick={(e) => {
                             e.stopPropagation();
                             onDelete(notification._id);
@@ -135,7 +135,7 @@ const NotificationDropdown = () => {
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="text-[11px] h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                    className="text-[11px] h-8 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                     onClick={() => markAsRead('all')}
                                 >
                                     Mark all as read
@@ -145,7 +145,7 @@ const NotificationDropdown = () => {
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="text-[11px] h-8 text-slate-500 hover:text-red-600 hover:bg-red-50"
+                                    className="text-[11px] h-8 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                                     onClick={() => deleteNotification('all')}
                                 >
                                     Clear all
