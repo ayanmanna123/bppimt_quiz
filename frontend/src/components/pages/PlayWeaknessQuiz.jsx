@@ -266,171 +266,183 @@ const PlayWeaknessQuiz = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-rose-100">
-            {/* Header */}
-            <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white/80 backdrop-blur-xl border-b border-red-100 sticky top-0 z-50"
-            >
-                <div className="max-w-4xl mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                                <Target className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <h1 className="text-xl font-bold text-gray-800">{quizData.title}</h1>
-                                    <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-xs font-bold border border-red-200">HARD MODE</span>
-                                </div>
-                                <p className="text-sm text-gray-600">
-                                    Question {currentIndex + 1} of {questions.length}
-                                </p>
-                            </div>
-                        </div>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014] transition-colors duration-700 overflow-hidden">
+            {/* Animated Background Pattern */}
+            <div className="absolute inset-0 opacity-10 dark:opacity-20 pointer-events-none">
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100 dark:bg-blue-900/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-100 dark:bg-purple-900/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4"></div>
+            </div>
 
-                        <Button
-                            variant="ghost"
-                            onClick={() => navigate('/reasult')}
-                            className="text-gray-500 hover:text-gray-800"
-                        >
-                            Exit
-                        </Button>
-                    </div>
-
-                    {/* Progress Bar */}
-                    <div className="mt-4">
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                            <motion.div
-                                className="bg-gradient-to-r from-red-500 to-rose-500 h-2 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.5)]"
-                                initial={{ width: 0 }}
-                                animate={{ width: `${progressPercentage}%` }}
-                                transition={{ duration: 0.5 }}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
-
-            {/* Main Content */}
-            <div className="max-w-4xl mx-auto p-6">
-                <AnimatePresence mode="wait">
+            <div className="max-w-4xl mx-auto px-4 py-12 relative z-10">
+                {!showResult ? (
                     <motion.div
-                        key={currentIndex}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        transition={{ duration: 0.3 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="space-y-8"
                     >
-                        <Card className="bg-white/90 backdrop-blur-xl border-0 shadow-2xl rounded-3xl overflow-hidden relative">
-                            {/* Decorative background element */}
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-
-                            <CardHeader className="p-8">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <span className="text-sm font-bold text-red-500 tracking-wider uppercase mb-2 block">Question {currentIndex + 1}</span>
-                                        <h3 className="text-2xl font-bold text-gray-800 leading-relaxed">
-                                            {currentQuestion.question}
-                                        </h3>
-                                    </div>
+                        {/* Header */}
+                        <div className="flex justify-between items-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/40">
+                                    <Brain className="w-6 h-6" />
                                 </div>
-                            </CardHeader>
+                                <div>
+                                    <h1 className="text-xl font-black text-slate-900 dark:text-slate-100">{quizData.title}</h1>
+                                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400">Question {currentIndex + 1} of {quizData.questions.length}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <span className="text-sm font-black px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                                    Score: {score}
+                                </span>
+                            </div>
+                        </div>
 
-                            <CardContent className="p-8 pt-0 space-y-6">
-                                <RadioGroup
-                                    value={currentSelected !== undefined ? String(currentSelected) : ""}
-                                    onValueChange={(value) =>
-                                        handleAnswerChange(currentIndex, Number(value))
-                                    }
-                                    className="space-y-4"
-                                >
-                                    {currentQuestion.options.map((option, idx) => {
-                                        const isSelected = currentSelected === idx;
-                                        return (
-                                            <motion.div
-                                                key={idx}
-                                                whileHover={{ scale: 1.01 }}
-                                                whileTap={{ scale: 0.99 }}
-                                                className={`flex items-center space-x-4 p-5 rounded-2xl border-2 transition-all duration-200 cursor-pointer ${isSelected
-                                                    ? "border-red-500 bg-red-50/50 shadow-md ring-1 ring-red-200"
-                                                    : "border-gray-100 bg-white hover:border-red-200 hover:bg-gray-50"
-                                                    }`}
-                                                onClick={() =>
-                                                    handleAnswerChange(currentIndex, idx)
-                                                }
-                                            >
-                                                <RadioGroupItem
-                                                    value={String(idx)}
-                                                    id={`opt-${idx}`}
-                                                    className="text-red-600 border-gray-300"
-                                                />
-                                                <Label
-                                                    htmlFor={`opt-${idx}`}
-                                                    className="flex-1 cursor-pointer text-base font-medium text-gray-700"
+                        {/* Progress */}
+                        <div className="space-y-2 px-2">
+                            <div className="flex justify-between text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                                <span>Progress</span>
+                                <span>{Math.round(((currentIndex + 1) / quizData.questions.length) * 100)}%</span>
+                            </div>
+                            <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden border border-white dark:border-slate-700 shadow-inner">
+                                <motion.div
+                                    className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${((currentIndex + 1) / quizData.questions.length) * 100}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Question Card */}
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={currentIndex}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                            >
+                                <Card className="border-0 shadow-2xl rounded-[2.5rem] overflow-hidden bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl">
+                                    <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+                                    <CardContent className="p-8 md:p-12">
+                                        <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-slate-100 mb-10 leading-tight">
+                                            {quizData.questions[currentIndex].question}
+                                        </h2>
+
+                                        <RadioGroup
+                                            value={answers[currentIndex]?.toString()}
+                                            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                        >
+                                            {quizData.questions[currentIndex].options.map((option, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    onClick={() => handleAnswerSelect(idx)}
+                                                    className={cn(
+                                                        "group flex items-center p-6 rounded-3xl border-2 transition-all cursor-pointer hover:shadow-lg active:scale-95",
+                                                        answers[currentIndex] === idx
+                                                            ? "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-500 shadow-indigo-100 dark:shadow-none"
+                                                            : "border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 hover:border-indigo-200 dark:hover:border-indigo-900"
+                                                    )}
                                                 >
-                                                    {option}
-                                                </Label>
-                                                {isSelected && (
-                                                    <CheckCircle2 className="w-5 h-5 text-red-600" />
-                                                )}
-                                            </motion.div>
-                                        );
-                                    })}
-                                </RadioGroup>
+                                                    <div className={cn(
+                                                        "w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-sm transition-all shadow-sm",
+                                                        answers[currentIndex] === idx
+                                                            ? "bg-indigo-600 text-white"
+                                                            : "bg-white dark:bg-slate-700 text-slate-400 dark:text-slate-400 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900 group-hover:text-indigo-600"
+                                                    )}>
+                                                        {String.fromCharCode(65 + idx)}
+                                                    </div>
+                                                    <span className={cn(
+                                                        "ml-4 font-bold text-lg",
+                                                        answers[currentIndex] === idx ? "text-indigo-900 dark:text-indigo-100" : "text-slate-600 dark:text-slate-300"
+                                                    )}>
+                                                        {option}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </RadioGroup>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        </AnimatePresence>
 
-                                <div className="flex items-center justify-between pt-8 mt-4">
-                                    <Button
-                                        variant="ghost"
-                                        onClick={handlePrevious}
-                                        disabled={currentIndex === 0}
-                                        className="text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-xl"
-                                    >
-                                        <ChevronLeft className="w-5 h-5 mr-2" />
-                                        Previous
-                                    </Button>
+                        {/* Controls */}
+                        <div className="flex justify-between gap-4">
+                            <Button
+                                variant="outline"
+                                onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
+                                disabled={currentIndex === 0}
+                                className="h-14 px-8 rounded-2xl font-bold text-slate-600 dark:text-slate-300 border-2 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                            >
+                                <ChevronLeft className="w-5 h-5 mr-2" /> Previous
+                            </Button>
 
-                                    {/* Navigation dots */}
-                                    <div className="hidden md:flex gap-1.5">
-                                        {questions.map((_, idx) => (
-                                            <div
-                                                key={idx}
-                                                className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentIndex ? 'w-6 bg-red-500' :
-                                                    answers[idx] !== undefined ? 'w-1.5 bg-red-200' : 'w-1.5 bg-gray-200'
-                                                    }`}
-                                            />
-                                        ))}
-                                    </div>
+                            {currentIndex === quizData.questions.length - 1 ? (
+                                <Button
+                                    onClick={handleSubmit}
+                                    className="h-14 px-8 rounded-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-xl shadow-green-200 dark:shadow-none"
+                                >
+                                    Finish Quiz <CheckCircle className="w-5 h-5 ml-2" />
+                                </Button>
+                            ) : (
+                                <Button
+                                    onClick={() => setCurrentIndex(prev => Math.min(quizData.questions.length - 1, prev + 1))}
+                                    disabled={answers[currentIndex] === undefined}
+                                    className="h-14 px-8 rounded-2xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-200 dark:shadow-none"
+                                >
+                                    Next Question <ChevronRight className="w-5 h-5 ml-2" />
+                                </Button>
+                            )}
+                        </div>
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="space-y-8"
+                    >
+                        <Card className="border-0 shadow-2xl rounded-[3rem] overflow-hidden bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl p-12 text-center">
+                            <div className="inline-flex p-6 bg-yellow-50 dark:bg-yellow-900/20 rounded-full mb-8">
+                                <Trophy className="w-16 h-16 text-yellow-500" />
+                            </div>
+                            <h2 className="text-4xl font-black text-slate-900 dark:text-slate-100 mb-4">Quiz Completed!</h2>
+                            <p className="text-xl font-bold text-slate-500 dark:text-slate-400 mb-12">Fantastic work! Here's how you performed.</p>
 
-                                    {!isLast ? (
-                                        <Button
-                                            onClick={handleNext}
-                                            disabled={currentSelected === undefined}
-                                            className="bg-gray-900 hover:bg-black text-white px-8 py-6 rounded-xl text-lg font-medium shadow-xl hover:shadow-2xl transition-all"
-                                        >
-                                            Next Question
-                                            <ChevronRight className="w-5 h-5 ml-2" />
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            onClick={handleSubmit}
-                                            disabled={!allAnswered || isSubmitting}
-                                            className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white px-8 py-6 rounded-xl text-lg font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all"
-                                        >
-                                            {isSubmitting ? "Submitting..." : "Complete Attack"}
-                                            {!isSubmitting && <Trophy className="w-5 h-5 ml-2" />}
-                                        </Button>
-                                    )}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                                <div className="p-8 bg-indigo-50 dark:bg-indigo-900/30 rounded-3xl border border-indigo-100 dark:border-indigo-800">
+                                    <div className="text-sm font-black text-indigo-400 dark:text-indigo-500 uppercase tracking-widest mb-2">Final Score</div>
+                                    <div className="text-5xl font-black text-indigo-600 dark:text-indigo-400">{score}/{quizData.questions.length}</div>
                                 </div>
-                            </CardContent>
+                                <div className="p-8 bg-purple-50 dark:bg-purple-900/30 rounded-3xl border border-purple-100 dark:border-purple-800">
+                                    <div className="text-sm font-black text-purple-400 dark:text-purple-500 uppercase tracking-widest mb-2">Accuracy</div>
+                                    <div className="text-5xl font-black text-purple-600 dark:text-purple-400">{Math.round((score / quizData.questions.length) * 100)}%</div>
+                                </div>
+                                <div className="p-8 bg-pink-50 dark:bg-pink-900/30 rounded-3xl border border-pink-100 dark:border-pink-800">
+                                    <div className="text-sm font-black text-pink-400 dark:text-pink-500 uppercase tracking-widest mb-2">Points</div>
+                                    <div className="text-5xl font-black text-pink-600 dark:text-pink-400">{score * 10}</div>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <Button
+                                    onClick={() => navigate("/quiz")}
+                                    variant="outline"
+                                    className="h-16 px-10 rounded-2xl font-black text-lg border-2"
+                                >
+                                    Home
+                                </Button>
+                                {score < quizData.questions.length && (
+                                    <Button
+                                        onClick={handleRetry}
+                                        className="h-16 px-10 rounded-2xl font-black text-lg bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-200 dark:shadow-none"
+                                    >
+                                        <RefreshCw className="w-6 h-6 mr-2" />
+                                        Retry Weak Points
+                                    </Button>
+                                )}
+                            </div>
                         </Card>
                     </motion.div>
-                </AnimatePresence>
-
-                <div className="mt-8 text-center text-gray-400 text-sm">
-                    Weakness Attack Mode · AI Generated Quiz
-                </div>
+                )}
             </div>
         </div>
     );

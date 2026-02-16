@@ -34,26 +34,26 @@ const GiveQuiz = ({ tabSwitchCount }) => {
   const [showWarning, setShowWarning] = useState(false);
   const navigate = useNavigate();
 
- 
+
   const hasSubmitted = useRef(false);
- 
+
   const answersRef = useRef({});
- 
+
   const isMounted = useRef(true);
 
- 
+
   useEffect(() => {
     answersRef.current = answers;
   }, [answers]);
 
-  
+
   const handlePageLeave = useCallback(async () => {
     if (
       !hasSubmitted.current &&
       !isSubmitting &&
       Object.keys(answersRef.current).length > 0
     ) {
- 
+
       try {
         const token = await getAccessTokenSilently({
           audience: "http://localhost:5000/api/v2",
@@ -69,9 +69,9 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         const payload = JSON.stringify({
           quizId,
           answers: answerArray,
-          autoSubmitted: true,  
+          autoSubmitted: true,
         });
- 
+
         const blob = new Blob([payload], { type: "application/json" });
         navigator.sendBeacon(
           `${import.meta.env.VITE_BACKEND_URL}/reasult/reasult/submite`,
@@ -120,7 +120,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
       }
     };
 
- 
+
     window.addEventListener("popstate", handlePopState);
     window.addEventListener("beforeunload", handleBeforeUnload);
 
@@ -131,7 +131,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     };
   }, [handlePageLeave]);
 
- 
+
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (
@@ -139,8 +139,8 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         !hasSubmitted.current &&
         Object.keys(answersRef.current).length > 0
       ) {
-         
-        
+
+
       }
     };
 
@@ -192,14 +192,14 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     return () => clearInterval(interval);
   }, [timeLeft !== null]);
 
-  
+
   useEffect(() => {
     if (timeLeft === 0 && !hasSubmitted.current && !isSubmitting) {
       handleSubmit();
     }
   }, [timeLeft]);
 
- 
+
   useEffect(() => {
     if (timeLeft === 30) {
       setShowWarning(true);
@@ -207,7 +207,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     }
   }, [timeLeft]);
 
- 
+
   useEffect(() => {
     if (tabSwitchCount >= 10 && !hasSubmitted.current && !isSubmitting) {
       toast.error("Too many tab switches! Quiz will be auto-submitted.");
@@ -246,7 +246,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
       setCurrentIndex((prev) => prev - 1);
     }
   };
-  
+
 
   const handleSubmit = useCallback(async () => {
 
@@ -262,10 +262,10 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         audience: "http://localhost:5000/api/v2",
       });
 
-   
+
       const latestAnswers = answersRef.current;
 
- 
+
       const answerArray = Object.entries(latestAnswers).map(
         ([questionId, option]) => ({
           questionId,
@@ -273,7 +273,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         })
       );
 
-       
+
 
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/reasult/reasult/submite`,
@@ -291,8 +291,8 @@ const GiveQuiz = ({ tabSwitchCount }) => {
       });
       sound.play();
 
-        confetti({ particleCount: 150, spread: 60 });
-        
+      confetti({ particleCount: 150, spread: 60 });
+
       navigate("/quiz");
     } catch (error) {
       console.error("Submit error:", error);
@@ -303,7 +303,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     }
   }, [getAccessTokenSilently, quizId, navigate, isSubmitting]);
 
- 
+
   const handleCustomBack = () => {
     if (!hasSubmitted.current && Object.keys(answers).length > 0) {
       const confirmed = window.confirm(
@@ -350,49 +350,48 @@ const GiveQuiz = ({ tabSwitchCount }) => {
     timeLeft > 300
       ? "text-green-600"
       : timeLeft > 60
-      ? "text-yellow-600"
-      : "text-red-600";
+        ? "text-yellow-600"
+        : "text-red-600";
   const timeBgColor =
     timeLeft > 300
       ? "bg-green-50"
       : timeLeft > 60
-      ? "bg-yellow-50"
-      : "bg-red-50";
+        ? "bg-yellow-50"
+        : "bg-red-50";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-100">
- 
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-100 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014] transition-colors duration-700">
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="bg-white/80 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50"
+        className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-white/20 dark:border-slate-800/20 sticky top-0 z-50"
       >
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                 <Brain className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-800">
+                <h1 className="text-xl font-bold text-gray-800 dark:text-white">
                   {quiz.title}
                 </h1>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-slate-400">
                   Question {currentIndex + 1} of {questions.length}
                 </p>
               </div>
             </div>
 
             <div
-              className={`flex items-center gap-3 px-4 py-2 rounded-xl ${timeBgColor} border-2 ${
-                timeLeft <= 30
-                  ? "border-red-200 animate-pulse"
-                  : "border-transparent"
-              }`}
+              className={`flex items-center gap-3 px-4 py-2 rounded-xl border-2 transition-all ${timeLeft <= 30
+                ? "border-red-200 dark:border-red-900/50 animate-pulse bg-red-50 dark:bg-red-900/20"
+                : "border-transparent bg-slate-100 dark:bg-slate-800/50"
+                }`}
             >
-              <Timer className={`w-5 h-5 ${timeColor}`} />
-              <span className={`font-mono font-bold text-lg ${timeColor}`}>
+              <Timer className={`w-5 h-5 ${timeLeft <= 30 ? 'text-red-600 dark:text-red-400' : 'text-indigo-600 dark:text-indigo-400'}`} />
+              <span className={`font-mono font-bold text-lg ${timeLeft <= 30 ? 'text-red-600 dark:text-red-400' : 'text-indigo-600 dark:text-indigo-400'}`}>
                 {timeLeft !== null ? formatTime(timeLeft) : "--:--"}
               </span>
               {showWarning && timeLeft <= 30 && (
@@ -401,17 +400,17 @@ const GiveQuiz = ({ tabSwitchCount }) => {
             </div>
           </div>
 
- 
+
           <div className="mt-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-sm font-medium text-gray-600 dark:text-slate-400">
                 Progress
               </span>
-              <span className="text-sm font-bold text-indigo-600">
+              <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">
                 {answeredCount}/{questions.length} completed
               </span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3">
+            <div className="w-full bg-gray-200 dark:bg-slate-800 rounded-full h-3">
               <motion.div
                 className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 h-3 rounded-full"
                 initial={{ width: 0 }}
@@ -421,15 +420,15 @@ const GiveQuiz = ({ tabSwitchCount }) => {
             </div>
           </div>
 
- 
+
           {tabSwitchCount > 0 && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3"
+              className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-xl flex items-center gap-3"
             >
-              <AlertTriangle className="w-5 h-5 text-red-600" />
-              <span className="text-sm font-medium text-red-800">
+              <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
+              <span className="text-sm font-medium text-red-800 dark:text-red-200">
                 Tab switches: {tabSwitchCount}/10 (Auto-submit at 10)
               </span>
             </motion.div>
@@ -437,7 +436,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
         </div>
       </motion.div>
 
- 
+
       <div className="max-w-4xl mx-auto p-6">
         <AnimatePresence mode="wait">
           <motion.div
@@ -447,7 +446,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.4 }}
           >
-            <Card className="bg-white/90 backdrop-blur-xl border-0 shadow-2xl rounded-3xl overflow-hidden">
+            <Card className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-0 shadow-2xl rounded-3xl overflow-hidden">
               <CardHeader className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white p-8">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -479,7 +478,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
                   >
-                    <h3 className="text-xl font-semibold text-gray-800 leading-relaxed mb-6">
+                    <h3 className="text-xl font-semibold text-gray-800 dark:text-white leading-relaxed mb-6">
                       {currentQuestion.questionText}
                     </h3>
                   </motion.div>
@@ -500,11 +499,10 @@ const GiveQuiz = ({ tabSwitchCount }) => {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.3 + idx * 0.1, duration: 0.4 }}
-                          className={`flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer hover:shadow-lg ${
-                            isSelected
-                              ? "border-indigo-500 bg-indigo-50 shadow-md"
-                              : "border-gray-200 bg-white hover:border-indigo-300"
-                          }`}
+                          className={`flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer hover:shadow-lg ${isSelected
+                            ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 shadow-md ring-1 ring-indigo-200 dark:ring-indigo-900/50"
+                            : "border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-800/50 hover:border-indigo-300 dark:hover:border-indigo-900"
+                            }`}
                           onClick={() =>
                             handleAnswerChange(currentQuestion._id, String(idx))
                           }
@@ -516,7 +514,7 @@ const GiveQuiz = ({ tabSwitchCount }) => {
                           />
                           <Label
                             htmlFor={id}
-                            className="flex-1 cursor-pointer text-base font-medium text-gray-700"
+                            className="flex-1 cursor-pointer text-base font-medium text-gray-700 dark:text-slate-200"
                           >
                             {option}
                           </Label>
@@ -529,18 +527,18 @@ const GiveQuiz = ({ tabSwitchCount }) => {
                   </RadioGroup>
                 </div>
 
- 
+
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6, duration: 0.5 }}
-                  className="flex items-center justify-between pt-6 border-t border-gray-100"
+                  className="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-slate-800"
                 >
                   <Button
                     variant="outline"
                     onClick={handlePrevious}
                     disabled={currentIndex === 0 || isSubmitting}
-                    className="flex items-center gap-2 px-6 py-3 rounded-2xl border-2 hover:shadow-lg transition-all duration-300"
+                    className="flex items-center gap-2 px-6 py-3 rounded-2xl border-2 hover:shadow-lg transition-all duration-300 dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
                   >
                     <ChevronLeft className="w-5 h-5" />
                     Previous
@@ -550,13 +548,12 @@ const GiveQuiz = ({ tabSwitchCount }) => {
                     {questions.map((_, idx) => (
                       <div
                         key={idx}
-                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                          idx === currentIndex
-                            ? "bg-indigo-600 scale-125"
-                            : answers[questions[idx]._id]
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${idx === currentIndex
+                          ? "bg-indigo-600 scale-125"
+                          : answers[questions[idx]._id]
                             ? "bg-green-500"
-                            : "bg-gray-300"
-                        }`}
+                            : "bg-gray-300 dark:bg-slate-700"
+                          }`}
                       />
                     ))}
                   </div>
@@ -596,14 +593,14 @@ const GiveQuiz = ({ tabSwitchCount }) => {
           </motion.div>
         </AnimatePresence>
 
- 
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
-          className="mt-8 p-6 bg-white/80 backdrop-blur-xl rounded-3xl border border-white/20"
+          className="mt-8 p-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-slate-800/20 shadow-xl"
         >
-          <h4 className="font-semibold text-gray-700 mb-4 flex items-center gap-2">
+          <h4 className="font-semibold text-gray-700 dark:text-slate-200 mb-4 flex items-center gap-2">
             <Zap className="w-5 h-5 text-indigo-600" />
             Quick Navigation
           </h4>
@@ -612,13 +609,12 @@ const GiveQuiz = ({ tabSwitchCount }) => {
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
-                className={`w-12 h-12 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center ${
-                  idx === currentIndex
-                    ? "bg-gradient-to-br from-indigo-500 to-purple-500 text-white shadow-lg scale-110"
-                    : answers[questions[idx]._id]
+                className={`w-12 h-12 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center ${idx === currentIndex
+                  ? "bg-gradient-to-br from-indigo-500 to-purple-500 text-white shadow-lg scale-110"
+                  : answers[questions[idx]._id]
                     ? "bg-green-500 text-white hover:bg-green-600"
-                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-                }`}
+                    : "bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:bg-gray-300 dark:hover:bg-slate-700"
+                  }`}
               >
                 {idx + 1}
               </button>
