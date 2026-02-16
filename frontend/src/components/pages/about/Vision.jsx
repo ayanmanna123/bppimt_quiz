@@ -20,10 +20,10 @@ const Vision = () => {
             className="space-y-12"
         >
             <div className="text-center space-y-6">
-                <Suspense fallback={<h1 className="text-5xl font-black text-slate-900 leading-tight">Vision</h1>}>
+                <Suspense fallback={<h1 className="text-5xl font-black text-slate-900 dark:text-white leading-tight">Vision</h1>}>
                     <SplitText
                         text="Vision"
-                        className="text-5xl md:text-6xl font-black text-slate-900 leading-tight"
+                        className="text-5xl md:text-6xl font-black text-slate-900 dark:text-white leading-tight"
                         delay={50}
                         duration={0.5}
                         textAlign="center"
@@ -32,13 +32,13 @@ const Vision = () => {
                 </Suspense>
 
                 {/* Social Icons */}
-                <div className="flex justify-center gap-6 py-2 border-b border-slate-200/60 max-w-sm mx-auto">
+                <div className="flex justify-center gap-6 py-2 border-b border-slate-200/60 dark:border-indigo-500/20 max-w-sm mx-auto">
                     {socialIcons.map((social, i) => (
                         <motion.a
                             key={i}
                             href="#"
                             whileHover={{ y: -3, scale: 1.1 }}
-                            className={`${social.color} transition-colors p-1`}
+                            className={`${social.color} dark:text-indigo-400 transition-colors p-1`}
                         >
                             <social.icon className="w-5 h-5" />
                         </motion.a>
@@ -46,23 +46,23 @@ const Vision = () => {
                 </div>
             </div>
 
-            <div className="relative p-10 md:p-16 rounded-[3rem] bg-gradient-to-br from-[#03045E] to-blue-900 text-white shadow-2xl overflow-hidden group">
+            <div className="relative p-10 md:p-16 rounded-[3rem] bg-gradient-to-br from-[#03045E] to-blue-900 dark:from-[#05001c] dark:to-indigo-950/40 text-white shadow-2xl overflow-hidden group border dark:border-indigo-500/20">
                 <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:scale-110 transition-transform duration-700">
                     <Eye className="w-48 h-48" />
                 </div>
 
                 <div className="relative z-10 space-y-6">
-                    <div className="w-16 h-16 bg-rose-500 rounded-2xl flex items-center justify-center shadow-lg mb-8">
+                    <div className="w-16 h-16 bg-rose-500 dark:bg-purple-600 rounded-2xl flex items-center justify-center shadow-lg mb-8 shadow-rose-500/20 dark:shadow-purple-500/20">
                         <Eye className="w-10 h-10" />
                     </div>
                     <h2 className="text-3xl md:text-4xl font-black">Our Vision</h2>
-                    <p className="text-xl md:text-2xl leading-relaxed text-blue-50 font-medium italic">
+                    <p className="text-xl md:text-2xl leading-relaxed text-blue-50 dark:text-indigo-100 font-medium italic">
                         "To emerge as a progressive and premier Institute for Engineering and Technology education with ethical values for creative engineering solutions commensurate with global changes."
                     </p>
                     <div className="pt-10 flex gap-4">
-                        <div className="h-1 w-20 bg-rose-500 rounded-full"></div>
-                        <div className="h-1 w-10 bg-blue-400 rounded-full"></div>
-                        <div className="h-1 w-5 bg-blue-200 rounded-full"></div>
+                        <div className="h-1 w-20 bg-rose-500 dark:bg-purple-500 rounded-full"></div>
+                        <div className="h-1 w-10 bg-blue-400 dark:bg-indigo-400 rounded-full"></div>
+                        <div className="h-1 w-5 bg-blue-200 dark:bg-indigo-200 rounded-full"></div>
                     </div>
                 </div>
             </div>

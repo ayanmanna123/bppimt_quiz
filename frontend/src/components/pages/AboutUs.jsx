@@ -30,21 +30,21 @@ const AboutUs = () => {
   const breadcrumbs = getBreadcrumbs();
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-[#030014] transition-colors duration-700">
       {/* Breadcrumbs Header */}
-      <div className="bg-white border-b border-slate-200/60 py-4">
+      <div className="bg-white dark:bg-[#030014]/80 backdrop-blur-md border-b border-slate-200/60 dark:border-indigo-500/20 py-4 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 md:px-10">
-          <nav className="flex items-center space-x-2 text-sm text-slate-500">
-            <Link to="/" className="hover:text-blue-600 transition-colors flex items-center gap-1">
+          <nav className="flex items-center space-x-2 text-sm text-slate-500 dark:text-indigo-200/60">
+            <Link to="/" className="hover:text-blue-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-1">
               <Home className="w-4 h-4" />
               <span>Home</span>
             </Link>
             {breadcrumbs.map((bc, index) => (
               <React.Fragment key={bc.url}>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <ChevronRight className="w-4 h-4 text-slate-400 dark:text-indigo-500/40" />
                 <Link
                   to={bc.url}
-                  className={`hover:text-blue-600 transition-colors ${index === breadcrumbs.length - 1 ? "text-slate-900 font-medium pointer-events-none" : ""}`}
+                  className={`hover:text-blue-600 dark:hover:text-indigo-400 transition-colors ${index === breadcrumbs.length - 1 ? "text-slate-900 dark:text-white font-bold pointer-events-none" : ""}`}
                 >
                   {bc.name}
                 </Link>
@@ -65,17 +65,17 @@ const AboutUs = () => {
         {/* Sidebar */}
         <div className="lg:col-span-1">
           <div className="sticky top-24 space-y-6">
-            <div className="bg-slate-100/50 rounded-2xl border border-slate-200/40 shadow-sm overflow-hidden">
+            <div className="bg-slate-100/50 dark:bg-indigo-950/10 backdrop-blur-md rounded-2xl border border-slate-200/40 dark:border-indigo-500/20 shadow-sm overflow-hidden">
               <div className="p-6">
                 <div className="flex items-center gap-3">
-                  <h3 className="text-2xl font-black text-slate-800 tracking-tight">Related Pages</h3>
-                  <div className="h-px flex-1 bg-rose-500/30"></div>
-                  <div className="h-0.5 w-8 bg-rose-500"></div>
+                  <h3 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">Related Pages</h3>
+                  <div className="h-px flex-1 bg-rose-500/30 dark:bg-purple-500/30"></div>
+                  <div className="h-0.5 w-8 bg-rose-500 dark:bg-purple-500"></div>
                 </div>
               </div>
 
               <div className="p-2 space-y-1">
-                <div className="bg-[#1A1A4E] text-white px-4 py-3 rounded-lg mb-2 font-bold flex items-center gap-3 shadow-lg">
+                <div className="bg-[#1A1A4E] dark:bg-indigo-600/20 text-white px-4 py-3 rounded-lg mb-2 font-bold flex items-center gap-3 shadow-lg dark:shadow-indigo-500/10 border dark:border-indigo-500/30">
                   <Info className="w-5 h-5 shrink-0" />
                   <span className="text-lg">About Us</span>
                 </div>
@@ -88,8 +88,8 @@ const AboutUs = () => {
                         key={item.path}
                         to={item.path}
                         className={`group flex items-center gap-3 px-4 py-2.5 transition-all duration-200 border-l-2 ${isActive
-                          ? "text-[#5E17EB] bg-white border-[#5E17EB] font-bold shadow-sm"
-                          : "text-slate-600 hover:text-slate-900 border-transparent hover:bg-white/50"
+                          ? "text-[#5E17EB] dark:text-indigo-400 bg-white dark:bg-indigo-500/10 border-[#5E17EB] dark:border-indigo-500 font-bold shadow-sm"
+                          : "text-slate-600 dark:text-indigo-200/60 hover:text-slate-900 dark:hover:text-white border-transparent hover:bg-white/50 dark:hover:bg-indigo-500/5"
                           }`}
                       >
                         <span className="text-[15px]">{item.name}</span>
@@ -101,13 +101,13 @@ const AboutUs = () => {
             </div>
 
             {/* Support Card */}
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden group">
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-indigo-600 dark:to-purple-700 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
                 <Users className="w-24 h-24" />
               </div>
               <h4 className="text-lg font-bold mb-2">Need Help?</h4>
-              <p className="text-blue-100 text-sm mb-4">Feel free to contact our administrative office for any queries.</p>
-              <button className="bg-white text-blue-700 px-4 py-2 rounded-xl text-sm font-bold hover:shadow-lg transition-all w-full">
+              <p className="text-blue-100 dark:text-indigo-100 text-sm mb-4">Feel free to contact our administrative office for any queries.</p>
+              <button className="bg-white dark:bg-indigo-500 dark:hover:bg-indigo-400 text-blue-700 dark:text-white px-4 py-2 rounded-xl text-sm font-bold hover:shadow-lg transition-all w-full border-none">
                 Contact Us
               </button>
             </div>

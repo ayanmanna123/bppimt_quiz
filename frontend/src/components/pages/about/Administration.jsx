@@ -23,13 +23,13 @@ const Administration = () => {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-10"
         >
-            <Suspense fallback={<h1>Administration</h1>}>
-                <div className="border-b-2 border-rose-500 pb-2 inline-block">
-                    <SplitText text="Administration" className="text-4xl md:text-5xl font-black text-slate-900" tag="h1" />
+            <Suspense fallback={<h1 className="text-4xl font-bold text-slate-900 dark:text-white">Administration</h1>}>
+                <div className="border-b-2 border-rose-500 dark:border-purple-500 pb-2 inline-block">
+                    <SplitText text="Administration" className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white" tag="h1" />
                 </div>
             </Suspense>
 
-            <div className="bg-white rounded-3xl border border-slate-200/60 shadow-xl overflow-hidden p-8">
+            <div className="bg-white dark:bg-indigo-950/20 backdrop-blur-md rounded-3xl border border-slate-200/60 dark:border-indigo-500/20 shadow-xl overflow-hidden p-8 dark:shadow-indigo-500/10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {staff.map((person, index) => (
                         <motion.div
@@ -37,14 +37,14 @@ const Administration = () => {
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: index * 0.05 }}
-                            className="flex items-center gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-200 hover:bg-white hover:shadow-lg transition-all"
+                            className="flex items-center gap-4 p-5 rounded-2xl bg-slate-50 dark:bg-indigo-500/5 border border-slate-100 dark:border-indigo-500/10 hover:border-blue-200 dark:hover:border-indigo-400 hover:bg-white dark:hover:bg-indigo-500/10 hover:shadow-lg transition-all"
                         >
-                            <div className="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-lg">
+                            <div className="w-12 h-12 rounded-xl bg-blue-600 dark:bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-600/20 dark:shadow-indigo-600/20">
                                 <UserCheck className="w-6 h-6" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-slate-900">{person.name}</h3>
-                                <p className="text-sm text-blue-600 font-medium">{person.role}</p>
+                                <h3 className="font-bold text-slate-900 dark:text-white">{person.name}</h3>
+                                <p className="text-sm text-blue-600 dark:text-indigo-400 font-medium">{person.role}</p>
                             </div>
                         </motion.div>
                     ))}

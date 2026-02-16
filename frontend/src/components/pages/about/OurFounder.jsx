@@ -18,11 +18,11 @@ const OurFounder = () => {
             className="space-y-10"
         >
             <div className="space-y-4">
-                <Suspense fallback={<h1 className="text-4xl font-bold text-slate-900 border-b-2 border-rose-500 pb-2 inline-block">Our Founder</h1>}>
-                    <div className="border-b-2 border-rose-500 pb-2 inline-block">
+                <Suspense fallback={<h1 className="text-4xl font-bold text-slate-900 dark:text-white border-b-2 border-rose-500 dark:border-purple-500 pb-2 inline-block">Our Founder</h1>}>
+                    <div className="border-b-2 border-rose-500 dark:border-purple-500 pb-2 inline-block">
                         <SplitText
                             text="Our Founder"
-                            className="text-4xl md:text-5xl font-black text-slate-900"
+                            className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white"
                             delay={50}
                             duration={0.5}
                             textAlign="left"
@@ -37,13 +37,13 @@ const OurFounder = () => {
                     whileHover={{ scale: 1.02, rotate: -1 }}
                     className="w-full lg:w-2/5 shrink-0"
                 >
-                    <div className="relative p-2 bg-white rounded-3xl shadow-2xl border-2 border-blue-100 rotate-1 transition-transform">
+                    <div className="relative p-2 bg-white dark:bg-indigo-950/20 backdrop-blur-md rounded-3xl shadow-2xl border-2 border-blue-100 dark:border-indigo-500/20 rotate-1 transition-transform shadow-[0_10px_40px_rgba(99,102,241,0.1)]">
                         <img
                             src="/Founder.png"
                             alt="Late Badri Prasad Poddar"
                             className="w-full h-auto rounded-2xl object-cover"
                         />
-                        <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-blue-600/10 rounded-full blur-2xl -z-10"></div>
+                        <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-blue-600/10 dark:bg-purple-600/20 rounded-full blur-2xl -z-10"></div>
                     </div>
                     <div className="mt-8 p-6 bg-gradient-to-br from-slate-50 to-blue-50/30 rounded-2xl border border-blue-100 text-center">
                         <h3 className="text-xl font-bold text-blue-900">Late Badri Prasad Poddar</h3>

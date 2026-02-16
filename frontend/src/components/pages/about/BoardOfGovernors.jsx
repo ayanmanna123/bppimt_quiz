@@ -25,13 +25,13 @@ const BoardOfGovernors = () => {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-10"
         >
-            <Suspense fallback={<h1>Board of Governors</h1>}>
-                <div className="border-b-2 border-rose-500 pb-2 inline-block">
-                    <SplitText text="Board of Governors" className="text-4xl md:text-5xl font-black text-slate-900" tag="h1" />
+            <Suspense fallback={<h1 className="text-4xl font-bold text-slate-900 dark:text-white">Board of Governors</h1>}>
+                <div className="border-b-2 border-rose-500 dark:border-purple-500 pb-2 inline-block">
+                    <SplitText text="Board of Governors" className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white" tag="h1" />
                 </div>
             </Suspense>
 
-            <div className="bg-white rounded-3xl border border-slate-200/60 shadow-xl overflow-hidden">
+            <div className="bg-white dark:bg-indigo-950/20 backdrop-blur-md rounded-3xl border border-slate-200/60 dark:border-indigo-500/20 shadow-xl overflow-hidden dark:shadow-indigo-500/10">
                 <div className="p-8 space-y-4">
                     {members.map((member, index) => (
                         <motion.div
@@ -39,17 +39,17 @@ const BoardOfGovernors = () => {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            whileHover={{ x: 10, backgroundColor: "rgba(241, 245, 249, 0.5)" }}
-                            className="flex items-start gap-4 p-4 rounded-2xl transition-all border-b border-slate-50 last:border-0"
+                            whileHover={{ x: 10, backgroundColor: "rgba(99, 102, 241, 0.1)" }}
+                            className="flex items-start gap-4 p-4 rounded-2xl transition-all border-b border-slate-50 dark:border-indigo-500/10 last:border-0"
                         >
                             <div className="mt-1 shrink-0">
-                                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-indigo-500/20 flex items-center justify-center text-blue-600 dark:text-indigo-400">
                                     <ShieldCheck className="w-5 h-5" />
                                 </div>
                             </div>
                             <div>
-                                <h3 className="font-bold text-slate-900 text-lg">{member.name}</h3>
-                                <p className="text-slate-500">{member.role}</p>
+                                <h3 className="font-bold text-slate-900 dark:text-white text-lg">{member.name}</h3>
+                                <p className="text-slate-500 dark:text-indigo-200/60">{member.role}</p>
                             </div>
                         </motion.div>
                     ))}
