@@ -129,23 +129,33 @@ const SubjectNotes = () => {
 
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100 p-6">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014] transition-colors duration-700 p-6 overflow-hidden">
+            {/* Animated Background Pattern */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-indigo-500/5 dark:to-purple-500/5 pointer-events-none"></div>
+            <div
+                className="absolute inset-0 opacity-40 pointer-events-none"
+                style={{
+                    backgroundImage: `radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.1) 0%, transparent 50%), 
+                           radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)`,
+                }}
+            ></div>
+
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="max-w-7xl mx-auto"
+                className="max-w-7xl mx-auto relative z-10"
             >
-                <Button onClick={() => navigate(-1)} variant="ghost" className="mb-6 hover:bg-white/50">
+                <Button onClick={() => navigate(-1)} variant="ghost" className="mb-6 hover:bg-white/50 dark:hover:bg-indigo-900/30 dark:text-gray-300">
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back to Subject
                 </Button>
 
                 <div className="flex items-center gap-3 mb-8">
-                    <div className="p-3 bg-indigo-600 rounded-xl text-white shadow-lg">
+                    <div className="p-3 bg-indigo-600 rounded-xl text-white shadow-lg shadow-indigo-500/30">
                         <BookOpen className="h-8 w-8" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-800">Study Materials</h1>
-                        <p className="text-gray-600">Access and share lecture notes and resources</p>
+                        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Study Materials</h1>
+                        <p className="text-gray-600 dark:text-gray-300">Access and share lecture notes and resources</p>
                     </div>
                 </div>
 
@@ -153,10 +163,10 @@ const SubjectNotes = () => {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-white/50 mb-10"
+                        className="bg-white/80 dark:bg-indigo-950/40 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-white/50 dark:border-indigo-500/20 mb-10"
                     >
-                        <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4 flex items-center gap-2">
-                            <Upload className="h-5 w-5 text-indigo-600" />
+                        <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent mb-4 flex items-center gap-2">
+                            <Upload className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                             Upload New Material
                         </h2>
                         <form onSubmit={handleUpload} className="space-y-4">
@@ -166,19 +176,19 @@ const SubjectNotes = () => {
                                     placeholder="Title (e.g., Lecture 1: Introduction)"
                                     value={title}
                                     onChange={e => setTitle(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-indigo-500/30 bg-white dark:bg-indigo-900/30 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all dark:text-white dark:placeholder-indigo-300/50"
                                 />
                                 <input
                                     type="file"
                                     onChange={e => setFile(e.target.files[0])}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-indigo-500/30 bg-white dark:bg-indigo-900/30 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900/50 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800/50 cursor-pointer dark:text-gray-300"
                                 />
                             </div>
                             <textarea
                                 placeholder="Description (optional)"
                                 value={description}
                                 onChange={e => setDescription(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all h-24 resize-none"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-indigo-500/30 bg-white dark:bg-indigo-900/30 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all h-24 resize-none dark:text-white dark:placeholder-indigo-300/50"
                             />
 
                             <div className="flex justify-end">
@@ -209,28 +219,28 @@ const SubjectNotes = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: idx * 0.1 }}
-                                className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group"
+                                className="bg-white dark:bg-indigo-950/40 rounded-2xl shadow-lg border border-gray-100 dark:border-indigo-500/20 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group backdrop-blur-sm"
                             >
                                 <div className="p-6 flex-grow">
                                     <div className="flex items-start justify-between mb-4">
-                                        <div className={`p-3 rounded-xl transition-transform group-hover:scale-110 ${isPdf ? "bg-red-50 text-red-600" : isImage ? "bg-blue-50 text-blue-600" : isVideo ? "bg-purple-50 text-purple-600" : "bg-gray-50 text-gray-600"}`}>
+                                        <div className={`p-3 rounded-xl transition-transform group-hover:scale-110 ${isPdf ? "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400" : isImage ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" : isVideo ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400" : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300"}`}>
                                             {isPdf ? <FileText className="h-6 w-6" /> : isImage ? <FileText className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
                                         </div>
                                         {(usere?.role === 'teacher' && usere?._id === note.uploadedBy?._id) && (
-                                            <Button variant="ghost" size="icon" onClick={() => handleDelete(note._id)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full">
+                                            <Button variant="ghost" size="icon" onClick={() => handleDelete(note._id)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full">
                                                 <Trash2 className="h-5 w-5" />
                                             </Button>
                                         )}
                                     </div>
 
-                                    <h3 className="font-bold text-xl text-gray-800 mb-2 line-clamp-2" title={note.title}>{note.title}</h3>
-                                    <p className="text-gray-600 text-sm line-clamp-3 mb-4">{note.description || "No description provided."}</p>
+                                    <h3 className="font-bold text-xl text-gray-800 dark:text-white mb-2 line-clamp-2" title={note.title}>{note.title}</h3>
+                                    <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 mb-4">{note.description || "No description provided."}</p>
                                 </div>
 
-                                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                                <div className="px-6 py-4 bg-gray-50 dark:bg-indigo-900/20 border-t border-gray-100 dark:border-indigo-500/20 flex items-center justify-between">
                                     <div className="flex flex-col">
-                                        <span className="text-xs text-gray-500 font-medium">Uploaded on</span>
-                                        <span className="text-xs text-gray-700">{new Date(note.createdAt).toLocaleDateString()}</span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Uploaded on</span>
+                                        <span className="text-xs text-gray-700 dark:text-gray-300">{new Date(note.createdAt).toLocaleDateString()}</span>
                                     </div>
 
                                     <div className="flex gap-2">
@@ -260,7 +270,7 @@ const SubjectNotes = () => {
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                             >
-                                                <Button size="sm" variant="outline" className="text-gray-600 border-gray-200">
+                                                <Button size="sm" variant="outline" className="text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 dark:hover:bg-indigo-900/30">
                                                     View
                                                 </Button>
                                             </a>
@@ -274,9 +284,9 @@ const SubjectNotes = () => {
 
                 {notes.length === 0 && !loading && (
                     <div className="text-center py-20 opacity-60">
-                        <FileText className="h-20 w-20 mx-auto text-gray-300 mb-4" />
-                        <h3 className="text-xl font-semibold text-gray-500">No notes available yet</h3>
-                        <p className="text-gray-400">Check back later for updates</p>
+                        <FileText className="h-20 w-20 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+                        <h3 className="text-xl font-semibold text-gray-500 dark:text-gray-400">No notes available yet</h3>
+                        <p className="text-gray-400 dark:text-gray-500">Check back later for updates</p>
                     </div>
                 )}
             </motion.div>

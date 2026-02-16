@@ -284,41 +284,47 @@ const AttendanceSheet = () => {
   return (
     <>
 
-      <div className="min-h-screen bg-slate-50 relative overflow-hidden font-sans">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#030014] relative overflow-hidden font-sans transition-colors duration-700">
         {/* Abstract Background Shapes */}
-        <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-b-[40px] shadow-2xl z-0"></div>
-        <div className="absolute top-20 right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl z-0"></div>
-        <div className="absolute top-40 left-10 w-48 h-48 bg-indigo-500/30 rounded-full blur-2xl z-0"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014]"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-indigo-500/5 dark:to-purple-500/5 pointer-events-none"></div>
+        <div
+          className="absolute inset-0 opacity-40 pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.1) 0%, transparent 50%), 
+                        radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)`,
+          }}
+        ></div>
 
         {/* Main Content Container */}
         <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
           {/* Header Card */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 mb-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="bg-white/10 dark:bg-indigo-950/40 backdrop-blur-md border border-white/20 dark:border-indigo-500/20 rounded-3xl p-8 mb-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
             <div className="flex items-center gap-6">
-              <div className="bg-white text-indigo-600 p-4 rounded-2xl shadow-lg">
+              <div className="bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white p-4 rounded-2xl shadow-lg">
                 <FileSpreadsheet className="w-8 h-8" />
               </div>
               <div>
-                <h1 className="text-4xl font-extrabold tracking-tight">Attendance Dashboard</h1>
-                <p className="text-indigo-100 mt-1 font-medium text-lg">Manage & track student attendance seamlessly</p>
+                <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">Attendance Dashboard</h1>
+                <p className="text-indigo-600 dark:text-gray-300 mt-1 font-medium text-lg">Manage & track student attendance seamlessly</p>
               </div>
             </div>
 
             {/* Action Bar */}
             <div className="flex flex-wrap gap-4 items-center">
-              <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-xl border border-white/10 backdrop-blur-sm">
+              <div className="flex items-center gap-3 bg-white/50 dark:bg-indigo-900/40 px-4 py-2 rounded-xl border border-white/10 dark:border-indigo-500/30 backdrop-blur-sm">
                 <div className={`w-3 h-3 rounded-full shadow-inner ${isAttendanceEnabled ? "bg-green-400 animate-pulse box-shadow-green" : "bg-red-400"}`} />
-                <span className="font-semibold text-sm uppercase tracking-wider">{isAttendanceEnabled ? "Live" : "Offline"}</span>
+                <span className="font-semibold text-sm uppercase tracking-wider text-gray-700 dark:text-gray-200">{isAttendanceEnabled ? "Live" : "Offline"}</span>
                 <label className="relative inline-flex items-center cursor-pointer ml-2">
                   <input type="checkbox" checked={isAttendanceEnabled} onChange={handleToggleAttendance} className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                  <div className="w-11 h-6 bg-gray-400 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
                 </label>
               </div>
 
               <button
                 onClick={exportToExcel}
-                className="flex items-center gap-2 bg-white text-indigo-700 px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0"
               >
                 <Download className="w-5 h-5" />
                 <span>Export Data</span>
@@ -329,19 +335,19 @@ const AttendanceSheet = () => {
           {/* OTP Banner - Floating Card */}
           {generatedOtp && (
             <div className="mb-8 transform transition-all duration-500 ease-out translate-y-0 opacity-100">
-              <div className="bg-white rounded-2xl shadow-xl border-l-8 border-indigo-500 p-6 flex items-center justify-between relative overflow-hidden group">
-                <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-indigo-50 to-transparent opacity-50 z-0 group-hover:w-full transition-all duration-700"></div>
+              <div className="bg-white dark:bg-indigo-950/60 rounded-2xl shadow-xl border-l-8 border-indigo-500 p-6 flex items-center justify-between relative overflow-hidden group">
+                <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-indigo-50 to-transparent dark:from-indigo-900/20 opacity-50 z-0 group-hover:w-full transition-all duration-700"></div>
                 <div className="relative z-10">
-                  <div className="flex items-center gap-3 text-indigo-700 mb-1">
+                  <div className="flex items-center gap-3 text-indigo-700 dark:text-indigo-400 mb-1">
                     <ShieldCheck className="w-6 h-6" />
                     <h3 className="text-lg font-bold uppercase tracking-wider">Active Session Code</h3>
                   </div>
-                  <p className="text-gray-500 flex items-center gap-2 text-sm font-medium">
+                  <p className="text-gray-500 dark:text-gray-400 flex items-center gap-2 text-sm font-medium">
                     <Clock className="w-4 h-4" /> Expires at {otpExpiresAt?.toLocaleTimeString()}
                   </p>
                 </div>
-                <div className="relative z-10 bg-indigo-50 px-8 py-3 rounded-xl border border-indigo-100 shadow-inner">
-                  <span className="text-5xl font-mono font-black text-indigo-600 tracking-[0.2em]">{generatedOtp}</span>
+                <div className="relative z-10 bg-indigo-50 dark:bg-indigo-900/40 px-8 py-3 rounded-xl border border-indigo-100 dark:border-indigo-500/30 shadow-inner">
+                  <span className="text-5xl font-mono font-black text-indigo-600 dark:text-indigo-400 tracking-[0.2em]">{generatedOtp}</span>
                 </div>
               </div>
             </div>
@@ -350,15 +356,15 @@ const AttendanceSheet = () => {
           {/* Data Tables Section */}
           <div className="space-y-12">
             {months.map((month) => (
-              <div key={month.month} className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+              <div key={month.month} className="bg-white dark:bg-indigo-950/20 rounded-3xl shadow-sm border border-slate-200 dark:border-indigo-500/20 overflow-hidden backdrop-blur-sm">
                 {/* Month Header */}
-                <div className="px-8 py-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50/50">
+                <div className="px-8 py-6 border-b border-gray-100 dark:border-indigo-500/20 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50/50 dark:bg-indigo-900/20">
                   <div className="flex items-center gap-4">
-                    <div className="bg-indigo-100 text-indigo-600 p-3 rounded-xl">
+                    <div className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 p-3 rounded-xl">
                       <Calendar className="w-6 h-6" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-800">
-                      {monthNames[month.month - 1]} <span className="text-gray-400 font-medium text-xl">{new Date().getFullYear()}</span>
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
+                      {monthNames[month.month - 1]} <span className="text-gray-400 dark:text-gray-500 font-medium text-xl">{new Date().getFullYear()}</span>
                     </h3>
                   </div>
                   <button
@@ -371,7 +377,7 @@ const AttendanceSheet = () => {
                         ).toLocaleDateString()
                       )
                     }
-                    className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors shadow-md shadow-indigo-200"
+                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold transition-all shadow-md shadow-indigo-200 dark:shadow-indigo-900/50"
                   >
                     <span>+ Mark Attendance</span>
                   </button>
@@ -380,36 +386,36 @@ const AttendanceSheet = () => {
                 {/* The Table */}
                 <div className="overflow-x-auto custom-scrollbar">
                   <div className="inline-block min-w-full align-middle">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-indigo-500/20">
+                      <thead className="bg-gray-50 dark:bg-indigo-900/40">
                         <tr>
-                          <th scope="col" className="sticky left-0 z-20 bg-gray-50 px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] border-r border-gray-200 min-w-[200px]">
+                          <th scope="col" className="sticky left-0 z-20 bg-gray-50 dark:bg-indigo-950 px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] border-r border-gray-200 dark:border-indigo-500/20 min-w-[200px]">
                             Student Name
                           </th>
-                          <th scope="col" className="sticky left-[200px] z-20 bg-gray-50 px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] border-r border-gray-200 min-w-[140px]">
+                          <th scope="col" className="sticky left-[200px] z-20 bg-gray-50 dark:bg-indigo-950 px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] border-r border-gray-200 dark:border-indigo-500/20 min-w-[140px]">
                             University ID
                           </th>
                           {month.days.map((day) => (
                             <th
                               key={day.date}
                               onClick={() => handleDateClick(day.date)}
-                              className="px-2 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-indigo-50 hover:text-indigo-600 transition-colors min-w-[40px] border-r border-gray-100 last:border-r-0 group"
+                              className="px-2 py-3 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors min-w-[40px] border-r border-gray-100 dark:border-indigo-500/10 last:border-r-0 group"
                             >
                               <div className="flex flex-col items-center gap-1">
                                 <span>{new Date(day.date).getDate()}</span>
-                                <span className="text-[10px] text-gray-400 font-normal group-hover:text-indigo-400">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 1)}</span>
+                                <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal group-hover:text-indigo-400">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 1)}</span>
                               </div>
                             </th>
                           ))}
-                          <th scope="col" className="px-4 py-3 text-center text-xs font-bold text-green-600 uppercase tracking-wider bg-green-50/30 border-l border-gray-200">
+                          <th scope="col" className="px-4 py-3 text-center text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-wider bg-green-50/30 dark:bg-green-900/20 border-l border-gray-200 dark:border-indigo-500/20">
                             Present
                           </th>
-                          <th scope="col" className="px-4 py-3 text-center text-xs font-bold text-red-600 uppercase tracking-wider bg-red-50/30 border-l border-gray-200">
+                          <th scope="col" className="px-4 py-3 text-center text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wider bg-red-50/30 dark:bg-red-900/20 border-l border-gray-200 dark:border-indigo-500/20">
                             Absent
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-gray-100">
+                      <tbody className="bg-white dark:bg-transparent divide-y divide-gray-100 dark:divide-indigo-500/10">
                         {students.map((student, idx) => {
                           let monthPresent = 0;
                           let monthAbsent = 0;
@@ -420,18 +426,18 @@ const AttendanceSheet = () => {
                           });
 
                           return (
-                            <tr key={idx} className="hover:bg-indigo-50/30 transition-colors even:bg-slate-50/30">
-                              <td className="sticky left-0 z-10 bg-white px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 border-r border-gray-200 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] group-hover:bg-indigo-50/30">
+                            <tr key={idx} className="hover:bg-indigo-50/30 dark:hover:bg-indigo-900/20 transition-colors even:bg-slate-50/30 dark:even:bg-indigo-900/5">
+                              <td className="sticky left-0 z-10 bg-white dark:bg-indigo-950 px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-200 border-r border-gray-200 dark:border-indigo-500/20 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] group-hover:bg-indigo-50/30 dark:group-hover:bg-indigo-900/30">
                                 {student.fullname}
                               </td>
-                              <td className="sticky left-[200px] z-10 bg-white px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] font-mono group-hover:bg-indigo-50/30">
+                              <td className="sticky left-[200px] z-10 bg-white dark:bg-indigo-950 px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-r border-gray-200 dark:border-indigo-500/20 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] font-mono group-hover:bg-indigo-50/30 dark:group-hover:bg-indigo-900/30">
                                 {student.universityNo}
                               </td>
 
                               {month.days.map((day) => (
                                 <td
                                   key={day.date}
-                                  className="px-2 py-3 whitespace-nowrap text-center text-sm font-medium border-r border-gray-50 last:border-r-0"
+                                  className="px-2 py-3 whitespace-nowrap text-center text-sm font-medium border-r border-gray-50 dark:border-indigo-500/10 last:border-r-0"
                                 >
                                   {student[day.date] === "P" ? (
                                     <div className="flex justify-center">
@@ -442,15 +448,15 @@ const AttendanceSheet = () => {
                                       <XCircle className="w-5 h-5 text-red-500 fill-red-50" />
                                     </div>
                                   ) : (
-                                    <span className="w-2 h-2 rounded-full bg-gray-200 inline-block"></span>
+                                    <span className="w-2 h-2 rounded-full bg-gray-200 dark:bg-gray-700 inline-block"></span>
                                   )}
                                 </td>
                               ))}
 
-                              <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-bold text-green-600 bg-green-50/20 border-l border-gray-100">
+                              <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-bold text-green-600 dark:text-green-400 bg-green-50/20 dark:bg-green-900/10 border-l border-gray-100 dark:border-indigo-500/10">
                                 {monthPresent}
                               </td>
-                              <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-bold text-red-600 bg-red-50/20 border-l border-gray-100">
+                              <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-bold text-red-600 dark:text-red-400 bg-red-50/20 dark:bg-red-900/10 border-l border-gray-100 dark:border-indigo-500/10">
                                 {monthAbsent}
                               </td>
                             </tr>
@@ -474,14 +480,14 @@ const AttendanceSheet = () => {
             onClick={() => setShowPopup(false)}
           ></div>
 
-          <div className="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden transform transition-all scale-100">
+          <div className="relative bg-white dark:bg-indigo-950 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden transform transition-all scale-100 border dark:border-indigo-500/30">
             {/* Modal Header */}
-            <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50/50">
+            <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-indigo-500/20 bg-gray-50/50 dark:bg-indigo-900/30">
               <div>
-                <h2 className="text-2xl font-bold text-gray-800">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
                   Mark Attendance
                 </h2>
-                <p className="text-gray-500 text-sm mt-1 flex items-center gap-2">
+                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 flex items-center gap-2">
                   <Calendar className="w-4 h-4" /> {selectedDate}
                 </p>
               </div>
@@ -495,29 +501,29 @@ const AttendanceSheet = () => {
             </div>
 
             {/* Modal Body - Scrollable */}
-            <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-white">
+            <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-white dark:bg-indigo-950">
               <div className="space-y-3">
                 {students.map((stu) => (
                   <div
                     key={stu._id}
-                    className="flex justify-between items-center p-4 rounded-xl border border-gray-100 hover:border-indigo-100 hover:bg-indigo-50/30 transition-all group"
+                    className="flex justify-between items-center p-4 rounded-xl border border-gray-100 dark:border-indigo-500/20 hover:border-indigo-100 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/30 transition-all group"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">
+                      <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-700 dark:text-indigo-400 font-bold text-sm">
                         {stu.fullname.charAt(0)}
                       </div>
                       <div>
-                        <p className="font-bold text-gray-800 group-hover:text-indigo-700 transition-colors">{stu.fullname}</p>
-                        <p className="text-xs text-gray-400 font-mono">{stu.universityNo}</p>
+                        <p className="font-bold text-gray-800 dark:text-gray-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">{stu.fullname}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 font-mono">{stu.universityNo}</p>
                       </div>
                     </div>
 
-                    <div className="flex gap-2 bg-gray-100/50 p-1 rounded-lg">
+                    <div className="flex gap-2 bg-gray-100/50 dark:bg-indigo-900/20 p-1 rounded-lg">
                       <button
                         onClick={() => toggleAttendance(stu._id, "P")}
                         className={`flex items-center gap-2 px-4 py-2 rounded-md font-semibold text-sm transition-all ${selectedAttendance[stu._id] === "P"
-                            ? "bg-white text-green-600 shadow-sm border border-green-200"
-                            : "text-gray-500 hover:bg-gray-200/50"
+                          ? "bg-white text-green-600 shadow-sm border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-500/30"
+                          : "text-gray-500 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-indigo-800/50"
                           }`}
                       >
                         <CheckCircle2 className={`w-4 h-4 ${selectedAttendance[stu._id] === "P" ? "fill-green-100" : ""}`} />
@@ -526,8 +532,8 @@ const AttendanceSheet = () => {
                       <button
                         onClick={() => toggleAttendance(stu._id, "A")}
                         className={`flex items-center gap-2 px-4 py-2 rounded-md font-semibold text-sm transition-all ${selectedAttendance[stu._id] === "A"
-                            ? "bg-white text-red-600 shadow-sm border border-red-200"
-                            : "text-gray-500 hover:bg-gray-200/50"
+                          ? "bg-white text-red-600 shadow-sm border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-500/30"
+                          : "text-gray-500 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-indigo-800/50"
                           }`}
                       >
                         <XCircle className={`w-4 h-4 ${selectedAttendance[stu._id] === "A" ? "fill-red-100" : ""}`} />
@@ -540,10 +546,10 @@ const AttendanceSheet = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end items-center gap-3">
+            <div className="p-6 border-t border-gray-100 dark:border-indigo-500/20 bg-gray-50 dark:bg-indigo-900/30 flex justify-end items-center gap-3">
               <button
                 onClick={() => setShowPopup(false)}
-                className="px-6 py-2.5 rounded-xl text-gray-600 font-semibold hover:bg-gray-200/50 transition-colors"
+                className="px-6 py-2.5 rounded-xl text-gray-600 dark:text-gray-300 font-semibold hover:bg-gray-200/50 dark:hover:bg-indigo-800/50 transition-colors"
               >
                 Cancel
               </button>

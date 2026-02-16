@@ -133,16 +133,16 @@ const StudentAttendanceSummary = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 flex justify-center items-center">
-        <Loader2 className="animate-spin w-8 h-8 text-gray-500" />
+      <div className="min-h-screen bg-slate-50 dark:bg-[#030014] flex justify-center items-center transition-colors duration-700">
+        <Loader2 className="animate-spin w-8 h-8 text-indigo-500 hover:text-indigo-400" />
       </div>
     );
   }
 
   if (!attendanceData?.success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 flex justify-center items-center">
-        <div className="text-center text-red-600">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#030014] flex justify-center items-center transition-colors duration-700">
+        <div className="text-center text-red-600 dark:text-red-400">
           Failed to load attendance data.
         </div>
       </div>
@@ -154,10 +154,10 @@ const StudentAttendanceSummary = () => {
   return (
     <>
 
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#030014] transition-colors duration-700">
         {/* Hero Section */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 opacity-90"></div>
+        <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014]">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 opacity-90 dark:opacity-20"></div>
           <div className="absolute inset-0">
             <div className="absolute top-10 left-10 w-32 h-32 border-2 border-white/20 rounded-full"></div>
             <div className="absolute bottom-20 right-20 w-24 h-24 bg-white/10 rounded-full"></div>
@@ -167,15 +167,15 @@ const StudentAttendanceSummary = () => {
           <div className="relative z-10 text-center py-16 px-6">
             <div className="inline-flex items-center gap-4 mb-6">
               <div className="relative">
-                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-                  <BarChart3 className="w-8 h-8 text-white" />
+                <div className="w-16 h-16 bg-white/20 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                  <BarChart3 className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
                 </div>
               </div>
               <div className="text-left">
-                <h1 className="text-4xl font-bold text-white mb-2">
+                <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
                   Attendance Summary
                 </h1>
-                <p className="text-white/90 text-lg">
+                <p className="text-gray-600 dark:text-gray-300 text-lg">
                   Track your progress across all subjects
                 </p>
               </div>
@@ -185,25 +185,25 @@ const StudentAttendanceSummary = () => {
 
         {/* Student Info Card */}
         <div className="px-6 -mt-8 relative z-20">
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6 mb-8">
+          <div className="bg-white/80 dark:bg-indigo-950/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-indigo-500/20 p-6 mb-8">
             <div className="flex items-center gap-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
                 <User className="w-8 h-8 text-white" />
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl font-bold text-gray-800">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
                   {student.fullname} ({student.universityNo})
                 </h2>
                 <div className="flex gap-6 mt-2">
                   <div className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-gray-600" />
-                    <span className="text-gray-600 font-medium">
+                    <BookOpen className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                    <span className="text-gray-600 dark:text-gray-300 font-medium">
                       Department: {student.department}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-gray-600" />
-                    <span className="text-gray-600 font-medium">
+                    <Calendar className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                    <span className="text-gray-600 dark:text-gray-300 font-medium">
                       Semester: {student.semester}
                     </span>
                   </div>
@@ -225,7 +225,7 @@ const StudentAttendanceSummary = () => {
               return (
                 <Card
                   key={subj.subjectId}
-                  className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-105"
+                  className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white dark:bg-indigo-950/40 border-0 dark:border dark:border-indigo-500/20 rounded-3xl transform hover:scale-105 backdrop-blur-sm"
                 >
                   {/* Enhanced gradient header */}
                   <div
@@ -242,7 +242,8 @@ const StudentAttendanceSummary = () => {
                     </div>
 
                     {/* Subject info */}
-                    <div className="absolute bottom-4 left-4 right-4 text-gray-900">
+                    {/* Subject info */}
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
                       <h3 className="text-xl font-bold drop-shadow-2xl mb-2 leading-tight">
                         {subj.subjectName}
                       </h3>
@@ -268,61 +269,61 @@ const StudentAttendanceSummary = () => {
                   </div>
 
                   {/* Enhanced content */}
-                  <CardContent className="p-6">
+                  <CardContent className="p-6 text-gray-700 dark:text-gray-200">
                     <div className="space-y-4">
-                      <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
+                      <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
                         <Calendar className="w-5 h-5 text-blue-600" />
                         <div className="flex-1">
-                          <p className="text-xs text-gray-500 font-medium">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                             TOTAL DAYS
                           </p>
-                          <p className="text-sm font-bold text-gray-700">
+                          <p className="text-sm font-bold text-gray-700 dark:text-white">
                             {subj.totalDays}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
+                      <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
                         <Calendar className="w-5 h-5 text-blue-600" />
                         <div className="flex-1">
-                          <p className="text-xs text-gray-500 font-medium">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                             TOTAL DAY NEED FOR 75% ATTENDANCE
                           </p>
-                          <p className="text-sm font-bold text-gray-700">
+                          <p className="text-sm font-bold text-gray-700 dark:text-white">
                             {subj.classesNeededFor75}
                           </p>
                         </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="flex items-center gap-2 p-3 bg-green-50 rounded-xl">
+                        <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
                           <CheckCircle2 className="w-4 h-4 text-green-600" />
                           <div>
-                            <p className="text-xs text-gray-500 font-medium">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                               PRESENT
                             </p>
-                            <p className="text-sm font-bold text-gray-700">
+                            <p className="text-sm font-bold text-gray-700 dark:text-white">
                               {subj.totalPresent}
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 p-3 bg-red-50 rounded-xl">
+                        <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-xl">
                           <XCircle className="w-4 h-4 text-red-600" />
                           <div>
-                            <p className="text-xs text-gray-500 font-medium">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                               ABSENT
                             </p>
-                            <p className="text-sm font-bold text-gray-700">
+                            <p className="text-sm font-bold text-gray-700 dark:text-white">
                               {subj.totalAbsent}
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 border-l-4 border-blue-400">
+                      <div className="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-900/20 rounded-xl p-4 border-l-4 border-blue-400 dark:border-blue-500">
                         <div className="flex justify-between text-xs font-semibold mb-2">
-                          <span className="text-gray-500">ATTENDANCE %</span>
-                          <span className="text-gray-800">
+                          <span className="text-gray-500 dark:text-gray-300">ATTENDANCE %</span>
+                          <span className="text-gray-800 dark:text-white">
                             {subj.attendancePercentage}%
                           </span>
                         </div>

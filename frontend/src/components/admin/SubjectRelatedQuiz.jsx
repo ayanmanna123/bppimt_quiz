@@ -158,13 +158,22 @@ const SubjectRelatedQuiz = () => {
   return (
     <>
 
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014] transition-colors duration-700 overflow-hidden relative">
+        {/* Animated Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-indigo-500/5 dark:to-purple-500/5 pointer-events-none"></div>
+        <div
+          className="absolute inset-0 opacity-40 pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.1) 0%, transparent 50%), 
+                     radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)`,
+          }}
+        ></div>
         {/* Header Section */}
-        <div className="p-2">
+        <div className="p-2 relative z-10">
           <div className="flex items-center gap-4 mb-8">
             <motion.div
               onClick={() => navigate("/Admin/subject")}
-              className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 cursor-pointer transition-colors p-2 rounded-lg hover:bg-white/60"
+              className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white cursor-pointer transition-colors p-2 rounded-lg hover:bg-white/60 dark:hover:bg-indigo-900/30"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -185,7 +194,7 @@ const SubjectRelatedQuiz = () => {
                 <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
                   My Quizzes
                 </h1>
               </div>
@@ -199,7 +208,7 @@ const SubjectRelatedQuiz = () => {
         </div>
 
         {/* Content Section */}
-        <div className="px-6 pb-12">
+        <div className="px-6 pb-12 relative z-10">
           {quizzes.length === 0 ? (
             <div className="text-center py-12">
               <QuizCardSkeleton />
@@ -209,11 +218,11 @@ const SubjectRelatedQuiz = () => {
                 transition={{ delay: 0.5 }}
                 className="mt-8"
               >
-                <div className="w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <HelpCircle className="w-12 h-12 text-gray-500" />
+                <div className="w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <HelpCircle className="w-12 h-12 text-gray-500 dark:text-gray-300" />
                 </div>
-                <p className="text-gray-500 text-lg">No quizzes created yet.</p>
-                <p className="text-gray-400 text-sm mt-2">Start by creating your first quiz!</p>
+                <p className="text-gray-500 dark:text-gray-400 text-lg">No quizzes created yet.</p>
+                <p className="text-gray-400 dark:text-gray-500 text-sm mt-2">Start by creating your first quiz!</p>
               </motion.div>
             </div>
           ) : (
@@ -237,7 +246,7 @@ const SubjectRelatedQuiz = () => {
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     className="group"
                   >
-                    <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-2xl transform hover:scale-105 relative">
+                    <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 bg-white dark:bg-indigo-950/40 border-0 dark:border dark:border-indigo-500/20 rounded-2xl transform hover:scale-105 relative backdrop-blur-sm">
                       {/* Creative gradient header with pattern */}
                       <div
                         className={`h-32 ${gradientClass} relative overflow-hidden`}
@@ -267,7 +276,7 @@ const SubjectRelatedQuiz = () => {
 
                         {/* Quiz title overlay */}
                         <div className="absolute bottom-3 left-4 right-4">
-                          <h3 className="text-gray-700 font-bold text-lg leading-tight drop-shadow-lg truncate">
+                          <h3 className="text-white font-bold text-lg leading-tight drop-shadow-md truncate">
                             {quiz.title}
                           </h3>
                         </div>
@@ -278,27 +287,27 @@ const SubjectRelatedQuiz = () => {
                         {/* Stats grid */}
                         <div className="grid grid-cols-2 gap-3">
                           <div className="flex items-center gap-2 text-sm">
-                            <Calendar className="w-4 h-4 text-indigo-500" />
-                            <span className="text-gray-600">{quiz.date}</span>
+                            <Calendar className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+                            <span className="text-gray-600 dark:text-gray-300">{quiz.date}</span>
                           </div>
                           <div className="flex items-center gap-2 text-sm">
-                            <Clock className="w-4 h-4 text-orange-500" />
-                            <span className="text-gray-600">{quiz.time}m</span>
+                            <Clock className="w-4 h-4 text-orange-500 dark:text-orange-400" />
+                            <span className="text-gray-600 dark:text-gray-300">{quiz.time}m</span>
                           </div>
                           <div className="flex items-center gap-2 text-sm">
-                            <Award className="w-4 h-4 text-yellow-500" />
-                            <span className="text-gray-600">{quiz.marks} pts</span>
+                            <Award className="w-4 h-4 text-yellow-500 dark:text-yellow-400" />
+                            <span className="text-gray-600 dark:text-gray-300">{quiz.marks} pts</span>
                           </div>
                           <div className="flex items-center gap-2 text-sm">
-                            <HelpCircle className="w-4 h-4 text-green-500" />
-                            <span className="text-gray-600">{quiz.totalQuestions} Q</span>
+                            <HelpCircle className="w-4 h-4 text-green-500 dark:text-green-400" />
+                            <span className="text-gray-600 dark:text-gray-300">{quiz.totalQuestions} Q</span>
                           </div>
                         </div>
 
                         {/* Created date with creative styling */}
-                        <div className="bg-gray-50 rounded-lg p-3">
-                          <p className="text-xs text-gray-500 font-medium">Created</p>
-                          <p className="text-sm font-semibold text-gray-700">
+                        <div className="bg-gray-50 dark:bg-indigo-900/30 rounded-lg p-3">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Created</p>
+                          <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                             {new Date(quiz.createdAt).toLocaleDateString("en-US", {
                               month: "short",
                               day: "numeric",
@@ -315,7 +324,7 @@ const SubjectRelatedQuiz = () => {
                                 e.stopPropagation();
                                 handleRescheduleClick(quiz);
                               }}
-                              className="w-full bg-white text-indigo-600 border-2 border-indigo-100 hover:bg-indigo-50 hover:border-indigo-200 font-semibold py-2 rounded-xl flex items-center justify-center gap-2 transition-all duration-300"
+                              className="w-full bg-white dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-300 border-2 border-indigo-100 dark:border-indigo-500/30 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 hover:border-indigo-200 font-semibold py-2 rounded-xl flex items-center justify-center gap-2 transition-all duration-300"
                             >
                               <RotateCcw className="w-4 h-4" />
                               Rearrange
@@ -346,14 +355,14 @@ const SubjectRelatedQuiz = () => {
         <Dialog open={isRescheduleOpen} onOpenChange={setIsRescheduleOpen}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Reschedule Quiz</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="dark:text-white">Reschedule Quiz</DialogTitle>
+              <DialogDescription className="dark:text-gray-400">
                 Update the date and duration for "{selectedQuiz?.title}".
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="date" className="text-right">
+                <Label htmlFor="date" className="text-right dark:text-gray-300">
                   Date
                 </Label>
                 <Input
@@ -361,12 +370,12 @@ const SubjectRelatedQuiz = () => {
                   type="date"
                   value={newDate}
                   onChange={(e) => setNewDate(e.target.value)}
-                  className="col-span-3"
+                  className="col-span-3 dark:bg-indigo-950/50 dark:border-indigo-500/30 dark:text-white"
                   min={new Date().toISOString().split("T")[0]}
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="time" className="text-right">
+                <Label htmlFor="time" className="text-right dark:text-gray-300">
                   Duration (min)
                 </Label>
                 <Input
@@ -374,7 +383,7 @@ const SubjectRelatedQuiz = () => {
                   type="number"
                   value={newTime}
                   onChange={(e) => setNewTime(e.target.value)}
-                  className="col-span-3"
+                  className="col-span-3 dark:bg-indigo-950/50 dark:border-indigo-500/30 dark:text-white"
                 />
               </div>
             </div>

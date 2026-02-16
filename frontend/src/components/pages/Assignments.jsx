@@ -176,24 +176,34 @@ const Assignments = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014] transition-colors duration-700 p-6 overflow-hidden">
+            {/* Animated Background Pattern */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-indigo-500/5 dark:to-purple-500/5 pointer-events-none"></div>
+            <div
+                className="absolute inset-0 opacity-40 pointer-events-none"
+                style={{
+                    backgroundImage: `radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.1) 0%, transparent 50%), 
+                           radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)`,
+                }}
+            ></div>
+
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="max-w-6xl mx-auto"
+                className="max-w-6xl mx-auto relative z-10"
             >
-                <Button onClick={() => navigate(-1)} variant="ghost" className="mb-6 hover:bg-white/50">
+                <Button onClick={() => navigate(-1)} variant="ghost" className="mb-6 hover:bg-white/50 dark:hover:bg-indigo-900/30 dark:text-gray-300">
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back to Subject
                 </Button>
 
                 <div className="flex justify-between items-center mb-10">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-indigo-600 rounded-2xl text-white shadow-lg shadow-indigo-200">
+                        <div className="p-3 bg-indigo-600 rounded-2xl text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-500/30">
                             <ClipboardList className="h-8 w-8" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-800">Assignments</h1>
-                            <p className="text-gray-600">Track and submit your coursework</p>
+                            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Assignments</h1>
+                            <p className="text-gray-600 dark:text-gray-300">Track and submit your coursework</p>
                         </div>
                     </div>
                     {usere?.role === 'teacher' && (
@@ -210,18 +220,18 @@ const Assignments = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.1 }}
-                            className="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-xl transition-all"
+                            className="bg-white dark:bg-indigo-950/40 rounded-2xl p-6 shadow-md border border-gray-100 dark:border-indigo-500/20 hover:shadow-xl transition-all backdrop-blur-sm"
                         >
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <h3 className="text-xl font-bold text-gray-800 mb-2">{assign.title}</h3>
-                                    <p className="text-gray-600 mb-4">{assign.description}</p>
-                                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                                        <div className="flex items-center gap-1 bg-orange-50 text-orange-600 px-3 py-1 rounded-lg">
+                                    <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">{assign.title}</h3>
+                                    <p className="text-gray-600 dark:text-gray-300 mb-4">{assign.description}</p>
+                                    <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                                        <div className="flex items-center gap-1 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 px-3 py-1 rounded-lg">
                                             <Calendar className="h-4 w-4" />
                                             Deadline: {new Date(assign.deadline).toLocaleDateString()}
                                         </div>
-                                        <div className="flex items-center gap-1 bg-blue-50 text-blue-600 px-3 py-1 rounded-lg">
+                                        <div className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-lg">
                                             <FileText className="h-4 w-4" />
                                             Parsed from {new Date(assign.createdAt).toLocaleDateString()}
                                         </div>
@@ -229,10 +239,10 @@ const Assignments = () => {
                                 </div>
                                 {usere?.role === 'teacher' ? (
                                     <div className="flex gap-2">
-                                        <Button variant="outline" onClick={() => loadSubmissions(assign)} className="border-indigo-200 text-indigo-600 hover:bg-indigo-50">
+                                        <Button variant="outline" onClick={() => loadSubmissions(assign)} className="border-indigo-200 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30">
                                             <Users className="mr-2 h-4 w-4" /> Submissions
                                         </Button>
-                                        <Button variant="ghost" size="icon" onClick={() => handleDeleteAssignment(assign._id)} className="text-gray-400 hover:text-red-500 hover:bg-red-50">
+                                        <Button variant="ghost" size="icon" onClick={() => handleDeleteAssignment(assign._id)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">
                                             <Trash2 className="h-5 w-5" />
                                         </Button>
                                     </div>
@@ -249,7 +259,7 @@ const Assignments = () => {
                                                     />
                                                     <label
                                                         htmlFor={`file-${assign._id}`}
-                                                        className="flex items-center justify-center gap-2 w-full px-4 py-2 rounded-xl border border-dashed border-indigo-300 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 cursor-pointer transition-all text-sm font-medium"
+                                                        className="flex items-center justify-center gap-2 w-full px-4 py-2 rounded-xl border border-dashed border-indigo-300 dark:border-indigo-500/50 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 cursor-pointer transition-all text-sm font-medium"
                                                     >
                                                         <Upload className="w-4 h-4" />
                                                         {submissionFile ? submissionFile.name.substring(0, 15) + "..." : "Select File"}
@@ -273,8 +283,8 @@ const Assignments = () => {
 
                     {assignments.length === 0 && !loading && (
                         <div className="text-center py-20 opacity-60">
-                            <ClipboardList className="h-20 w-20 mx-auto text-gray-300 mb-4" />
-                            <h3 className="text-xl font-semibold text-gray-500">No assignments yet</h3>
+                            <ClipboardList className="h-20 w-20 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+                            <h3 className="text-xl font-semibold text-gray-500 dark:text-gray-400">No assignments yet</h3>
                         </div>
                     )}
                 </div>
@@ -283,23 +293,23 @@ const Assignments = () => {
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Create New Assignment</DialogTitle>
-                            <DialogDescription>
+                            <DialogTitle className="dark:text-white">Create New Assignment</DialogTitle>
+                            <DialogDescription className="dark:text-gray-400">
                                 Fill in the details below to create a new assignment for this subject.
                             </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4 py-4">
                             <div className="space-y-2">
-                                <Label>Title</Label>
-                                <Input value={newTitle} onChange={e => setNewTitle(e.target.value)} placeholder="e.g. Chapter 1 Homework" />
+                                <Label className="dark:text-gray-300">Title</Label>
+                                <Input value={newTitle} onChange={e => setNewTitle(e.target.value)} placeholder="e.g. Chapter 1 Homework" className="dark:bg-indigo-950/50 dark:border-indigo-500/30 dark:text-white" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Description</Label>
-                                <Textarea value={newDesc} onChange={e => setNewDesc(e.target.value)} placeholder="Instructions..." />
+                                <Label className="dark:text-gray-300">Description</Label>
+                                <Textarea value={newDesc} onChange={e => setNewDesc(e.target.value)} placeholder="Instructions..." className="dark:bg-indigo-950/50 dark:border-indigo-500/30 dark:text-white" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Deadline</Label>
-                                <Input type="date" value={newDeadline} onChange={e => setNewDeadline(e.target.value)} />
+                                <Label className="dark:text-gray-300">Deadline</Label>
+                                <Input type="date" value={newDeadline} onChange={e => setNewDeadline(e.target.value)} className="dark:bg-indigo-950/50 dark:border-indigo-500/30 dark:text-white" />
                             </div>
                         </div>
                         <DialogFooter>
@@ -313,7 +323,7 @@ const Assignments = () => {
                 <Dialog open={viewSubmissionsOpen} onOpenChange={setViewSubmissionsOpen}>
                     <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
                         <DialogHeader>
-                            <DialogTitle className="flex justify-between items-center">
+                            <DialogTitle className="flex justify-between items-center dark:text-white">
                                 <span>Submissions for: {selectedAssignment?.title}</span>
                                 {submissions.length > 0 && (
                                     <a href={`${import.meta.env.VITE_BACKEND_URL}/assignment/${selectedAssignment?._id}/download-all`} download>
@@ -323,7 +333,7 @@ const Assignments = () => {
                                     </a>
                                 )}
                             </DialogTitle>
-                            <DialogDescription>
+                            <DialogDescription className="dark:text-gray-400">
                                 Review and download student submissions for this assignment.
                             </DialogDescription>
                         </DialogHeader>
@@ -334,18 +344,18 @@ const Assignments = () => {
                                 <p className="text-center text-gray-500">No submissions yet.</p>
                             ) : (
                                 submissions.map(sub => (
-                                    <div key={sub._id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border hover:bg-white transition-colors">
+                                    <div key={sub._id} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-indigo-900/30 rounded-lg border dark:border-indigo-500/20 hover:bg-white dark:hover:bg-indigo-900/50 transition-colors">
                                         <div className="flex items-center gap-3">
-                                            <div className={`p-2 rounded-lg ${sub.fileUrl?.endsWith('.pdf') ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                                            <div className={`p-2 rounded-lg ${sub.fileUrl?.endsWith('.pdf') ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'}`}>
                                                 <FileText className="h-5 w-5" />
                                             </div>
                                             <div>
-                                                <p className="font-semibold text-gray-800">{sub.student?.fullname || "Unknown Student"}</p>
-                                                <p className="text-xs text-gray-500">{sub.student?.universityNo} • {new Date(sub.createdAt).toLocaleString()}</p>
+                                                <p className="font-semibold text-gray-800 dark:text-gray-200">{sub.student?.fullname || "Unknown Student"}</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">{sub.student?.universityNo} • {new Date(sub.createdAt).toLocaleString()}</p>
                                             </div>
                                         </div>
                                         <a href={sub.fileUrl} target="_blank" rel="noreferrer">
-                                            <Button size="sm" variant="outline" className="text-gray-600 border-gray-200">
+                                            <Button size="sm" variant="outline" className="text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700">
                                                 {sub.fileUrl?.endsWith('.pdf') ? "View PDF" : "View File"}
                                             </Button>
                                         </a>
