@@ -336,11 +336,11 @@ const StoreChat = () => {
     });
 
     return (
-        <div className="flex h-[calc(100vh-64px)] bg-slate-50 overflow-hidden">
+        <div className="flex h-[calc(100vh-64px)] bg-slate-50 dark:bg-slate-950 overflow-hidden transition-colors">
             {/* Conversations Sidebar */}
-            <div className="w-80 bg-white border-r border-slate-200 flex flex-col shrink-0">
-                <div className="p-4 border-b border-slate-200 bg-white">
-                    <h1 className="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">
+            <div className="w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 transition-colors">
+                <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors">
+                    <h1 className="text-xl font-black text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                         <MessageCircle className="w-6 h-6 text-primary" />
                         Store Messages
                     </h1>
@@ -350,7 +350,7 @@ const StoreChat = () => {
                             placeholder="Search chats..."
                             value={sidebarSearchTerm}
                             onChange={(e) => setSidebarSearchTerm(e.target.value)}
-                            className="pl-9 bg-slate-50 border-slate-200 focus-visible:ring-primary font-medium"
+                            className="pl-9 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus-visible:ring-primary font-medium dark:text-slate-100 dark:placeholder:text-slate-500"
                         />
                     </div>
                 </div>
@@ -365,11 +365,11 @@ const StoreChat = () => {
                                     <div
                                         key={conv._id}
                                         onClick={() => fetchMessages(conv._id)}
-                                        className={`p-4 cursor-pointer transition-all hover:bg-slate-50 ${isActive ? 'bg-indigo-50/50 border-l-4 border-indigo-500' : 'border-l-4 border-transparent'}`}
+                                        className={`p-4 cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-slate-800 ${isActive ? 'bg-indigo-50/50 dark:bg-indigo-900/20 border-l-4 border-indigo-500 dark:border-indigo-400' : 'border-l-4 border-transparent'}`}
                                     >
                                         <div className="flex items-start gap-3">
                                             <div className="relative shrink-0">
-                                                <Avatar className="w-10 h-10 border border-slate-200">
+                                                <Avatar className="w-10 h-10 border border-slate-200 dark:border-slate-700">
                                                     <AvatarImage src={otherUser?.picture} />
                                                     <AvatarFallback>{otherUser?.fullname?.[0]}</AvatarFallback>
                                                 </Avatar>
@@ -379,14 +379,14 @@ const StoreChat = () => {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-baseline mb-0.5">
-                                                    <h4 className={`text-sm truncate ${isActive ? 'font-bold text-indigo-900' : 'font-semibold text-slate-700'}`}>
+                                                    <h4 className={`text-sm truncate ${isActive ? 'font-bold text-indigo-900 dark:text-indigo-400' : 'font-semibold text-slate-700 dark:text-slate-300'}`}>
                                                         {otherUser?.fullname}
                                                     </h4>
                                                     <span className="text-[10px] text-slate-400 font-medium">
                                                         {new Date(conv.lastMessage).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                                                     </span>
                                                 </div>
-                                                <p className="text-xs font-bold text-indigo-600 truncate mb-1 bg-indigo-50 inline-block px-1.5 py-0.5 rounded-sm">
+                                                <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 truncate mb-1 bg-indigo-50 dark:bg-indigo-900/30 inline-block px-1.5 py-0.5 rounded-sm">
                                                     {conv.product?.title}
                                                 </p>
                                             </div>
@@ -402,18 +402,18 @@ const StoreChat = () => {
             </div>
 
             {/* Main Chat Area */}
-            <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50 relative">
+            <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50 dark:bg-slate-950/50 relative transition-colors">
                 {activeConversation ? (
                     <>
                         {/* Header */}
-                        <div className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 shadow-sm z-10">
+                        <div className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 shadow-sm z-10 transition-colors">
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-slate-100 rounded-lg border border-slate-200 overflow-hidden shrink-0">
+                                <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0">
                                     <img src={activeConversation.product.images[0]} alt="Product" className="w-full h-full object-cover" />
                                 </div>
                                 <div>
-                                    <h2 className="font-bold text-slate-900 leading-tight">{activeConversation.product.title}</h2>
-                                    <p className="text-xs font-bold text-indigo-600">₹{activeConversation.product.price}</p>
+                                    <h2 className="font-bold text-slate-900 dark:text-white leading-tight">{activeConversation.product.title}</h2>
+                                    <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400">₹{activeConversation.product.price}</p>
                                 </div>
                             </div>
 
@@ -423,36 +423,36 @@ const StoreChat = () => {
                                         <Search className="w-5 h-5 text-slate-500" />
                                     </Button>
                                 ) : (
-                                    <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-md">
-                                        <Search className="w-4 h-4 text-slate-400 ml-2" />
+                                    <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-md transition-colors">
+                                        <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 ml-2" />
                                         <form onSubmit={handleSearchChat}>
                                             <Input
                                                 autoFocus
                                                 value={chatSearchTerm}
                                                 onChange={e => setChatSearchTerm(e.target.value)}
                                                 placeholder="Search in chat..."
-                                                className="h-8 border-none bg-transparent focus-visible:ring-0 w-40"
+                                                className="h-8 border-none bg-transparent focus-visible:ring-0 w-40 dark:text-slate-100 dark:placeholder:text-slate-500"
                                             />
                                         </form>
                                         {searchResults.length > 0 && (
-                                            <span className="text-xs text-slate-500 whitespace-nowrap px-1">
+                                            <span className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap px-1">
                                                 {currentSearchIndex + 1}/{searchResults.length}
                                             </span>
                                         )}
                                         <div className="flex">
-                                            <Button size="icon" variant="ghost" className="h-8 w-6" onClick={() => setCurrentSearchIndex((prev) => (prev + 1) % searchResults.length)}>
-                                                <ChevronDown className="w-4 h-4" />
+                                            <Button size="icon" variant="ghost" className="h-8 w-6 hover:bg-slate-200 dark:hover:bg-slate-700" onClick={() => setCurrentSearchIndex((prev) => (prev + 1) % searchResults.length)}>
+                                                <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                                             </Button>
-                                            <Button size="icon" variant="ghost" className="h-8 w-6" onClick={() => setCurrentSearchIndex((prev) => (prev - 1 + searchResults.length) % searchResults.length)}>
-                                                <ChevronUp className="w-4 h-4" />
+                                            <Button size="icon" variant="ghost" className="h-8 w-6 hover:bg-slate-200 dark:hover:bg-slate-700" onClick={() => setCurrentSearchIndex((prev) => (prev - 1 + searchResults.length) % searchResults.length)}>
+                                                <ChevronUp className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                                             </Button>
                                         </div>
-                                        <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-slate-200 rounded-sm" onClick={() => {
+                                        <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-sm" onClick={() => {
                                             setShowChatSearch(false);
                                             setChatSearchTerm("");
                                             setSearchResults([]);
                                         }}>
-                                            <X className="w-4 h-4" />
+                                            <X className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                                         </Button>
                                     </div>
                                 )}
@@ -461,12 +461,12 @@ const StoreChat = () => {
 
                         {/* Pinned Messages Banner */}
                         {pinnedMessages.length > 0 && (
-                            <div className="bg-indigo-50 border-b border-indigo-100 p-2 flex items-center justify-between shrink-0">
+                            <div className="bg-indigo-50 dark:bg-indigo-900/20 border-b border-indigo-100 dark:border-indigo-900/50 p-2 flex items-center justify-between shrink-0 transition-colors">
                                 <div className="flex items-center gap-2 overflow-hidden flex-1 cursor-pointer" onClick={() => jumpToMessage(pinnedMessages[0]._id)}>
-                                    <Pin className="w-4 h-4 text-indigo-600 shrink-0 fill-current" />
+                                    <Pin className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0 fill-current" />
                                     <div className="flex flex-col">
-                                        <span className="text-[9px] font-bold text-indigo-600 uppercase tracking-wider">Pinned Message</span>
-                                        <p className="text-[11px] text-indigo-900 truncate font-medium">
+                                        <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Pinned Message</span>
+                                        <p className="text-[11px] text-indigo-900 dark:text-indigo-200 truncate font-medium">
                                             {pinnedMessages[0].content}
                                         </p>
                                     </div>
@@ -480,7 +480,7 @@ const StoreChat = () => {
                         )}
 
                         {/* Messages List */}
-                        <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
+                        <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50 dark:bg-slate-950/50 transition-colors">
                             {loadingMessages ? (
                                 <div className="h-full flex items-center justify-center">
                                     <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
@@ -525,7 +525,7 @@ const StoreChat = () => {
                         </div>
 
                         {/* Input Area */}
-                        <div className="p-4 bg-white border-t border-slate-200">
+                        <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 transition-colors">
                             <div className="max-w-4xl mx-auto">
                                 <ChatInput
                                     onSendMessage={handleSendMessage}
@@ -542,11 +542,11 @@ const StoreChat = () => {
                     </>
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-center p-8">
-                        <div className="w-20 h-20 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mb-6 animate-pulse">
+                        <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 dark:text-indigo-400 rounded-full flex items-center justify-center mb-6 animate-pulse">
                             <MessageCircle className="w-10 h-10" />
                         </div>
-                        <h2 className="text-2xl font-black text-slate-900 mb-2">Welcome to Store Chat</h2>
-                        <p className="text-slate-500 max-w-sm">Select a conversation from the sidebar to make offers and chat with sellers.</p>
+                        <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">Welcome to Store Chat</h2>
+                        <p className="text-slate-500 dark:text-slate-400 max-w-sm">Select a conversation from the sidebar to make offers and chat with sellers.</p>
                     </div>
                 )}
             </div>

@@ -423,7 +423,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex justify-center items-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 flex justify-center items-center transition-colors duration-500">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -433,16 +433,16 @@ const Profile = () => {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              className="w-20 h-20 border-4 border-blue-200 border-t-blue-600 rounded-full mx-auto mb-6"
+              className="w-20 h-20 border-4 border-blue-200 dark:border-blue-900 border-t-blue-600 dark:border-t-blue-500 rounded-full mx-auto mb-6"
             />
             <div className="absolute inset-0 flex items-center justify-center">
-              <Brain className="w-8 h-8 text-blue-600 animate-pulse" />
+              <Brain className="w-8 h-8 text-blue-600 dark:text-blue-400 animate-pulse" />
             </div>
           </div>
           <motion.p
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 1.5, repeat: Infinity }}
-            className="text-xl font-semibold text-gray-700"
+            className="text-xl font-semibold text-gray-700 dark:text-gray-300"
           >
             Loading Your Profile...
           </motion.p>
@@ -452,7 +452,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 relative overflow-hidden transition-colors duration-500">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -500,10 +500,10 @@ const Profile = () => {
                 />
               </div>
               <div>
-                <h1 className="text-4xl font-bold text-gray-800">
+                <h1 className="text-4xl font-bold text-gray-800 dark:text-white">
                   Profile Dashboard
                 </h1>
-                <p className="text-gray-600 text-lg">
+                <p className="text-gray-600 dark:text-gray-300 text-lg">
                   Manage your account and track your progress
                 </p>
               </div>
@@ -519,9 +519,9 @@ const Profile = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 relative overflow-hidden">
+              <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 dark:border-slate-800/20 relative overflow-hidden transition-colors">
                 {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-5">
+                <div className="absolute inset-0 opacity-5 dark:opacity-10">
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{
@@ -541,7 +541,7 @@ const Profile = () => {
                       whileHover={{ scale: 1.05 }}
                       transition={{ type: "spring", stiffness: 300 }}
                     >
-                      <Avatar className="h-32 w-32 border-4 border-white shadow-2xl">
+                      <Avatar className="h-32 w-32 border-4 border-white dark:border-slate-800 shadow-2xl">
                         <AvatarImage
                           className="object-cover"
                           src={
@@ -558,7 +558,7 @@ const Profile = () => {
                       <motion.div
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
-                        className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center"
+                        className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center transition-colors"
                       >
                         <Crown className="w-4 h-4 text-white" />
                       </motion.div>
@@ -570,7 +570,7 @@ const Profile = () => {
                     </motion.div>
 
                     <div className="space-y-2">
-                      <h2 className="text-2xl font-bold text-gray-800 flex items-center justify-center gap-2">
+                      <h2 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center justify-center gap-2">
                         {profileUser?.fullname}
                         <motion.div
                           animate={{ rotate: [0, 10, -10, 0] }}
@@ -579,11 +579,11 @@ const Profile = () => {
                           <Sparkles className="w-5 h-5 text-purple-500" />
                         </motion.div>
                       </h2>
-                      <p className="text-gray-600 flex items-center justify-center gap-1">
+                      <p className="text-gray-600 dark:text-slate-400 flex items-center justify-center gap-1">
                         <Badge className="w-4 h-4" />
                         {profileUser?.role}
                       </p>
-                      <p className="text-gray-600 flex items-center justify-center gap-1">
+                      <p className="text-gray-600 dark:text-slate-400 flex items-center justify-center gap-1">
                         <Hash className="w-4 h-4" />
                         {profileUser?.universityNo}
                       </p>
@@ -606,15 +606,15 @@ const Profile = () => {
                             type: "spring",
                           }}
                           whileHover={{ scale: 1.05, y: -2 }}
-                          className={`${stat.bg} rounded-2xl p-4 text-center border-2 border-transparent hover:border-gray-200 transition-all duration-300`}
+                          className={`${stat.bg} dark:bg-slate-800/50 rounded-2xl p-4 text-center border-2 border-transparent hover:border-gray-200 dark:hover:border-slate-700 transition-all duration-300`}
                         >
                           <stat.icon
                             className={`w-6 h-6 ${stat.color} mx-auto mb-2`}
                           />
-                          <div className="text-xl font-bold text-gray-800">
+                          <div className="text-xl font-bold text-gray-800 dark:text-white">
                             {stat.value}
                           </div>
-                          <div className="text-xs text-gray-600 font-medium">
+                          <div className="text-xs text-gray-600 dark:text-slate-400 font-medium">
                             {stat.label}
                           </div>
                         </motion.div>
@@ -711,8 +711,8 @@ const Profile = () => {
 
                 {/* Friend Requests Section (Only for Own Profile) */}
                 {!id && friendRequests.length > 0 && (
-                  <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
-                    <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2 mb-6">
+                  <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 dark:border-slate-800/20 transition-colors">
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2 mb-6">
                       <UserPlus className="w-7 h-7 text-blue-600" />
                       Friend Requests
                       <Badge className="bg-red-500 text-white px-2 py-0.5 rounded-full text-sm">
@@ -721,15 +721,15 @@ const Profile = () => {
                     </h3>
                     <div className="space-y-4">
                       {friendRequests.map((req) => (
-                        <div key={req._id} className="flex items-center justify-between p-4 bg-blue-50/50 rounded-2xl border border-blue-100">
+                        <div key={req._id} className="flex items-center justify-between p-4 bg-blue-50/50 dark:bg-slate-800/50 rounded-2xl border border-blue-100 dark:border-slate-700 transition-colors">
                           <div className="flex items-center gap-3">
-                            <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                            <Avatar className="h-12 w-12 border-2 border-white dark:border-slate-800 shadow-sm">
                               <AvatarImage src={req.from.picture} />
                               <AvatarFallback>{req.from.fullname[0]}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="font-bold text-gray-800">{req.from.fullname}</p>
-                              <p className="text-xs text-gray-500">{req.from.email}</p>
+                              <p className="font-bold text-gray-800 dark:text-white">{req.from.fullname}</p>
+                              <p className="text-xs text-gray-500 dark:text-slate-400">{req.from.email}</p>
                             </div>
                           </div>
                           <div className="flex gap-2">
@@ -756,10 +756,10 @@ const Profile = () => {
                 )}
 
                 {/* Profile Information Card */}
-                <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+                <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 dark:border-slate-800/20 transition-colors">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                      <Settings className="w-7 h-7 text-gray-600" />
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                      <Settings className="w-7 h-7 text-gray-600 dark:text-white/80" />
                       Account Information
                     </h3>
                     <motion.div
@@ -785,25 +785,25 @@ const Profile = () => {
                         whileHover={{ scale: 1.02, x: 5 }}
                         className="group cursor-pointer"
                       >
-                        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl border-2 border-gray-200 group-hover:border-blue-300 transition-all duration-300">
+                        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-slate-800 dark:to-slate-800/50 rounded-2xl border-2 border-gray-200 dark:border-slate-700 group-hover:border-blue-300 dark:group-hover:border-blue-700 transition-all duration-300">
                           <div className="flex items-center gap-4">
                             <div
-                              className={`w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300`}
+                              className={`w-12 h-12 bg-white dark:bg-slate-700 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300`}
                             >
                               <section.icon
-                                className={`w-6 h-6 ${section.color}`}
+                                className={`w-6 h-6 ${section.color} dark:text-white`}
                               />
                             </div>
                             <div>
-                              <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                              <p className="text-sm font-semibold text-gray-600 dark:text-slate-400 uppercase tracking-wide">
                                 {section.label}
                               </p>
-                              <p className="text-lg font-bold text-gray-800">
+                              <p className="text-lg font-bold text-gray-800 dark:text-white">
                                 {section.value || "Not specified"}
                               </p>
                             </div>
                           </div>
-                          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-300" />
+                          <ChevronRight className="w-5 h-5 text-gray-400 dark:text-slate-500 group-hover:text-blue-500 transition-colors duration-300" />
                         </div>
                       </motion.div>
                     ))}

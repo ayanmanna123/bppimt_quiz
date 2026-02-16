@@ -12,11 +12,11 @@ import {
 const StatsCard = ({ title, value, subtext, icon: Icon, color, delay, trend }) => {
     // Premium glassmorphism styles
     const styles = {
-        blue: "from-blue-500/10 to-blue-600/5 border-blue-200/50 text-blue-600",
-        purple: "from-purple-500/10 to-purple-600/5 border-purple-200/50 text-purple-600",
-        orange: "from-orange-500/10 to-orange-600/5 border-orange-200/50 text-orange-600",
-        yellow: "from-yellow-500/10 to-yellow-600/5 border-yellow-200/50 text-yellow-600",
-        green: "from-emerald-500/10 to-emerald-600/5 border-emerald-200/50 text-emerald-600",
+        blue: "from-blue-500/10 to-blue-600/5 border-blue-200/50 text-blue-600 dark:bg-blue-900/10 dark:text-blue-400",
+        purple: "from-purple-500/10 to-purple-600/5 border-purple-200/50 text-purple-600 dark:bg-purple-900/10 dark:text-purple-400",
+        orange: "from-orange-500/10 to-orange-600/5 border-orange-200/50 text-orange-600 dark:bg-orange-900/10 dark:text-orange-400",
+        yellow: "from-yellow-500/10 to-yellow-600/5 border-yellow-200/50 text-yellow-600 dark:bg-yellow-900/10 dark:text-yellow-400",
+        green: "from-emerald-500/10 to-emerald-600/5 border-emerald-200/50 text-emerald-600 dark:bg-emerald-900/10 dark:text-emerald-400",
     };
 
     const currentStyle = styles[color] || styles.blue;
@@ -29,7 +29,7 @@ const StatsCard = ({ title, value, subtext, icon: Icon, color, delay, trend }) =
             whileHover={{ y: -5, shadow: "0 10px 30px -10px rgba(0,0,0,0.1)" }}
             className={`
                 relative overflow-hidden rounded-[2rem] p-5
-                bg-white/60 backdrop-blur-xl border border-white/40 shadow-sm
+                bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/40 dark:border-slate-800 shadow-sm
                 flex flex-col justify-between h-full min-h-[160px]
                 transition-all duration-300
             `}
@@ -39,14 +39,14 @@ const StatsCard = ({ title, value, subtext, icon: Icon, color, delay, trend }) =
 
             <div className="relative z-10 flex justify-between items-start">
                 <div className={`
-                    p-3 rounded-2xl bg-white/80 shadow-sm border border-white/50 
+                    p-3 rounded-2xl bg-white/80 dark:bg-slate-800/80 shadow-sm border border-white/50 dark:border-slate-700 
                     ${currentStyle.split(' ').pop()}
                 `}>
                     <Icon className="w-6 h-6" />
                 </div>
 
                 {trend && (
-                    <div className="flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">
+                    <div className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-full border border-emerald-100 dark:border-emerald-800">
                         <TrendingUp className="w-3 h-3" />
                         {trend}
                     </div>
@@ -54,13 +54,13 @@ const StatsCard = ({ title, value, subtext, icon: Icon, color, delay, trend }) =
             </div>
 
             <div className="relative z-10 mt-4">
-                <h3 className="text-gray-500 font-medium text-sm tracking-wide">{title}</h3>
+                <h3 className="text-gray-500 dark:text-gray-400 font-medium text-sm tracking-wide">{title}</h3>
                 <div className="flex items-baseline gap-2 mt-1">
-                    <h2 className="text-4xl font-extrabold text-gray-800 tracking-tight">
+                    <h2 className="text-4xl font-extrabold text-gray-800 dark:text-white tracking-tight">
                         {value}
                     </h2>
                     {subtext && (
-                        <span className="text-xs font-semibold text-gray-400">
+                        <span className="text-xs font-semibold text-gray-400 dark:text-gray-500">
                             {subtext}
                         </span>
                     )}

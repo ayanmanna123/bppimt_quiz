@@ -284,7 +284,7 @@ const AttendanceSheet = () => {
   return (
     <>
 
-      <div className="min-h-screen bg-slate-50 dark:bg-[#030014] relative overflow-hidden font-sans transition-colors duration-700">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 relative overflow-hidden font-sans transition-colors duration-700">
         {/* Abstract Background Shapes */}
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014]"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-indigo-500/5 dark:to-purple-500/5 pointer-events-none"></div>
@@ -300,7 +300,7 @@ const AttendanceSheet = () => {
         <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
           {/* Header Card */}
-          <div className="bg-white/10 dark:bg-indigo-950/40 backdrop-blur-md border border-white/20 dark:border-indigo-500/20 rounded-3xl p-8 mb-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+          <div className="bg-white/10 dark:bg-slate-900/40 backdrop-blur-md border border-white/20 dark:border-slate-700 rounded-3xl p-8 mb-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
             <div className="flex items-center gap-6">
               <div className="bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white p-4 rounded-2xl shadow-lg">
                 <FileSpreadsheet className="w-8 h-8" />
@@ -313,12 +313,12 @@ const AttendanceSheet = () => {
 
             {/* Action Bar */}
             <div className="flex flex-wrap gap-4 items-center">
-              <div className="flex items-center gap-3 bg-white/50 dark:bg-indigo-900/40 px-4 py-2 rounded-xl border border-white/10 dark:border-indigo-500/30 backdrop-blur-sm">
+              <div className="flex items-center gap-3 bg-white/50 dark:bg-slate-800/40 px-4 py-2 rounded-xl border border-white/10 dark:border-slate-700 backdrop-blur-sm">
                 <div className={`w-3 h-3 rounded-full shadow-inner ${isAttendanceEnabled ? "bg-green-400 animate-pulse box-shadow-green" : "bg-red-400"}`} />
                 <span className="font-semibold text-sm uppercase tracking-wider text-gray-700 dark:text-gray-200">{isAttendanceEnabled ? "Live" : "Offline"}</span>
                 <label className="relative inline-flex items-center cursor-pointer ml-2">
                   <input type="checkbox" checked={isAttendanceEnabled} onChange={handleToggleAttendance} className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-400 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                  <div className="w-11 h-6 bg-gray-400 dark:bg-slate-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
                 </label>
               </div>
 
@@ -335,8 +335,8 @@ const AttendanceSheet = () => {
           {/* OTP Banner - Floating Card */}
           {generatedOtp && (
             <div className="mb-8 transform transition-all duration-500 ease-out translate-y-0 opacity-100">
-              <div className="bg-white dark:bg-indigo-950/60 rounded-2xl shadow-xl border-l-8 border-indigo-500 p-6 flex items-center justify-between relative overflow-hidden group">
-                <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-indigo-50 to-transparent dark:from-indigo-900/20 opacity-50 z-0 group-hover:w-full transition-all duration-700"></div>
+              <div className="bg-white dark:bg-slate-900/60 rounded-2xl shadow-xl border-l-8 border-indigo-500 p-6 flex items-center justify-between relative overflow-hidden group">
+                <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-indigo-50 to-transparent dark:from-indigo-900/10 opacity-50 z-0 group-hover:w-full transition-all duration-700"></div>
                 <div className="relative z-10">
                   <div className="flex items-center gap-3 text-indigo-700 dark:text-indigo-400 mb-1">
                     <ShieldCheck className="w-6 h-6" />
@@ -346,7 +346,7 @@ const AttendanceSheet = () => {
                     <Clock className="w-4 h-4" /> Expires at {otpExpiresAt?.toLocaleTimeString()}
                   </p>
                 </div>
-                <div className="relative z-10 bg-indigo-50 dark:bg-indigo-900/40 px-8 py-3 rounded-xl border border-indigo-100 dark:border-indigo-500/30 shadow-inner">
+                <div className="relative z-10 bg-indigo-50 dark:bg-indigo-900/20 px-8 py-3 rounded-xl border border-indigo-100 dark:border-indigo-800 shadow-inner">
                   <span className="text-5xl font-mono font-black text-indigo-600 dark:text-indigo-400 tracking-[0.2em]">{generatedOtp}</span>
                 </div>
               </div>
@@ -356,9 +356,9 @@ const AttendanceSheet = () => {
           {/* Data Tables Section */}
           <div className="space-y-12">
             {months.map((month) => (
-              <div key={month.month} className="bg-white dark:bg-indigo-950/20 rounded-3xl shadow-sm border border-slate-200 dark:border-indigo-500/20 overflow-hidden backdrop-blur-sm">
+              <div key={month.month} className="bg-white dark:bg-slate-900/40 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden backdrop-blur-sm">
                 {/* Month Header */}
-                <div className="px-8 py-6 border-b border-gray-100 dark:border-indigo-500/20 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50/50 dark:bg-indigo-900/20">
+                <div className="px-8 py-6 border-b border-gray-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50/50 dark:bg-slate-900/50">
                   <div className="flex items-center gap-4">
                     <div className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 p-3 rounded-xl">
                       <Calendar className="w-6 h-6" />
@@ -387,19 +387,19 @@ const AttendanceSheet = () => {
                 <div className="overflow-x-auto custom-scrollbar">
                   <div className="inline-block min-w-full align-middle">
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-indigo-500/20">
-                      <thead className="bg-gray-50 dark:bg-indigo-900/40">
+                      <thead className="bg-gray-50 dark:bg-slate-900/50">
                         <tr>
-                          <th scope="col" className="sticky left-0 z-20 bg-gray-50 dark:bg-indigo-950 px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] border-r border-gray-200 dark:border-indigo-500/20 min-w-[200px]">
+                          <th scope="col" className="sticky left-0 z-20 bg-gray-50 dark:bg-slate-900 px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] border-r border-gray-200 dark:border-slate-800 min-w-[200px]">
                             Student Name
                           </th>
-                          <th scope="col" className="sticky left-[200px] z-20 bg-gray-50 dark:bg-indigo-950 px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] border-r border-gray-200 dark:border-indigo-500/20 min-w-[140px]">
+                          <th scope="col" className="sticky left-[200px] z-20 bg-gray-50 dark:bg-slate-900 px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] border-r border-gray-200 dark:border-slate-800 min-w-[140px]">
                             University ID
                           </th>
                           {month.days.map((day) => (
                             <th
                               key={day.date}
                               onClick={() => handleDateClick(day.date)}
-                              className="px-2 py-3 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors min-w-[40px] border-r border-gray-100 dark:border-indigo-500/10 last:border-r-0 group"
+                              className="px-2 py-3 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors min-w-[40px] border-r border-gray-100 dark:border-slate-800 last:border-r-0 group"
                             >
                               <div className="flex flex-col items-center gap-1">
                                 <span>{new Date(day.date).getDate()}</span>
@@ -407,15 +407,15 @@ const AttendanceSheet = () => {
                               </div>
                             </th>
                           ))}
-                          <th scope="col" className="px-4 py-3 text-center text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-wider bg-green-50/30 dark:bg-green-900/20 border-l border-gray-200 dark:border-indigo-500/20">
+                          <th scope="col" className="px-4 py-3 text-center text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-wider bg-green-50/30 dark:bg-green-900/20 border-l border-gray-200 dark:border-slate-800">
                             Present
                           </th>
-                          <th scope="col" className="px-4 py-3 text-center text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wider bg-red-50/30 dark:bg-red-900/20 border-l border-gray-200 dark:border-indigo-500/20">
+                          <th scope="col" className="px-4 py-3 text-center text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wider bg-red-50/30 dark:bg-red-900/20 border-l border-gray-200 dark:border-slate-800">
                             Absent
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white dark:bg-transparent divide-y divide-gray-100 dark:divide-indigo-500/10">
+                      <tbody className="bg-white dark:bg-transparent divide-y divide-gray-100 dark:divide-slate-800">
                         {students.map((student, idx) => {
                           let monthPresent = 0;
                           let monthAbsent = 0;
@@ -426,18 +426,18 @@ const AttendanceSheet = () => {
                           });
 
                           return (
-                            <tr key={idx} className="hover:bg-indigo-50/30 dark:hover:bg-indigo-900/20 transition-colors even:bg-slate-50/30 dark:even:bg-indigo-900/5">
-                              <td className="sticky left-0 z-10 bg-white dark:bg-indigo-950 px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-200 border-r border-gray-200 dark:border-indigo-500/20 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] group-hover:bg-indigo-50/30 dark:group-hover:bg-indigo-900/30">
+                            <tr key={idx} className="hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-colors even:bg-slate-50/30 dark:even:bg-slate-900/30">
+                              <td className="sticky left-0 z-10 bg-white dark:bg-slate-900 px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-200 border-r border-gray-200 dark:border-slate-800 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] group-hover:bg-indigo-50/30 dark:group-hover:bg-indigo-900/10">
                                 {student.fullname}
                               </td>
-                              <td className="sticky left-[200px] z-10 bg-white dark:bg-indigo-950 px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-r border-gray-200 dark:border-indigo-500/20 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] font-mono group-hover:bg-indigo-50/30 dark:group-hover:bg-indigo-900/30">
+                              <td className="sticky left-[200px] z-10 bg-white dark:bg-slate-900 px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-r border-gray-200 dark:border-slate-800 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] font-mono group-hover:bg-indigo-50/30 dark:group-hover:bg-indigo-900/10">
                                 {student.universityNo}
                               </td>
 
                               {month.days.map((day) => (
                                 <td
                                   key={day.date}
-                                  className="px-2 py-3 whitespace-nowrap text-center text-sm font-medium border-r border-gray-50 dark:border-indigo-500/10 last:border-r-0"
+                                  className="px-2 py-3 whitespace-nowrap text-center text-sm font-medium border-r border-gray-50 dark:border-slate-800/50 last:border-r-0"
                                 >
                                   {student[day.date] === "P" ? (
                                     <div className="flex justify-center">
@@ -453,10 +453,12 @@ const AttendanceSheet = () => {
                                 </td>
                               ))}
 
-                              <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-bold text-green-600 dark:text-green-400 bg-green-50/20 dark:bg-green-900/10 border-l border-gray-100 dark:border-indigo-500/10">
+
+
+                              <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-bold text-green-600 dark:text-green-400 bg-green-50/20 dark:bg-green-900/10 border-l border-gray-100 dark:border-slate-800">
                                 {monthPresent}
                               </td>
-                              <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-bold text-red-600 dark:text-red-400 bg-red-50/20 dark:bg-red-900/10 border-l border-gray-100 dark:border-indigo-500/10">
+                              <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-bold text-red-600 dark:text-red-400 bg-red-50/20 dark:bg-red-900/10 border-l border-gray-100 dark:border-slate-800">
                                 {monthAbsent}
                               </td>
                             </tr>
@@ -476,13 +478,13 @@ const AttendanceSheet = () => {
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
           <div
-            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity"
+            className="absolute inset-0 bg-gray-900/60 dark:bg-black/80 backdrop-blur-sm transition-opacity"
             onClick={() => setShowPopup(false)}
           ></div>
 
-          <div className="relative bg-white dark:bg-indigo-950 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden transform transition-all scale-100 border dark:border-indigo-500/30">
+          <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden transform transition-all scale-100 border dark:border-slate-800">
             {/* Modal Header */}
-            <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-indigo-500/20 bg-gray-50/50 dark:bg-indigo-900/30">
+            <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-900/50">
               <div>
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
                   Mark Attendance
@@ -501,12 +503,12 @@ const AttendanceSheet = () => {
             </div>
 
             {/* Modal Body - Scrollable */}
-            <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-white dark:bg-indigo-950">
+            <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-white dark:bg-slate-900">
               <div className="space-y-3">
                 {students.map((stu) => (
                   <div
                     key={stu._id}
-                    className="flex justify-between items-center p-4 rounded-xl border border-gray-100 dark:border-indigo-500/20 hover:border-indigo-100 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/30 transition-all group"
+                    className="flex justify-between items-center p-4 rounded-xl border border-gray-100 dark:border-slate-800 hover:border-indigo-100 dark:hover:border-indigo-900 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all group"
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-700 dark:text-indigo-400 font-bold text-sm">
@@ -518,25 +520,25 @@ const AttendanceSheet = () => {
                       </div>
                     </div>
 
-                    <div className="flex gap-2 bg-gray-100/50 dark:bg-indigo-900/20 p-1 rounded-lg">
+                    <div className="flex gap-2 bg-gray-100/50 dark:bg-slate-800 p-1 rounded-lg">
                       <button
                         onClick={() => toggleAttendance(stu._id, "P")}
                         className={`flex items-center gap-2 px-4 py-2 rounded-md font-semibold text-sm transition-all ${selectedAttendance[stu._id] === "P"
-                          ? "bg-white text-green-600 shadow-sm border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-500/30"
-                          : "text-gray-500 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-indigo-800/50"
+                          ? "bg-white dark:bg-green-900/30 text-green-600 dark:text-green-400 shadow-sm border border-green-200 dark:border-green-800"
+                          : "text-gray-500 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-slate-700"
                           }`}
                       >
-                        <CheckCircle2 className={`w-4 h-4 ${selectedAttendance[stu._id] === "P" ? "fill-green-100" : ""}`} />
+                        <CheckCircle2 className={`w-4 h-4 ${selectedAttendance[stu._id] === "P" ? "fill-green-100 dark:fill-green-900/50" : ""}`} />
                         Present
                       </button>
                       <button
                         onClick={() => toggleAttendance(stu._id, "A")}
                         className={`flex items-center gap-2 px-4 py-2 rounded-md font-semibold text-sm transition-all ${selectedAttendance[stu._id] === "A"
-                          ? "bg-white text-red-600 shadow-sm border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-500/30"
-                          : "text-gray-500 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-indigo-800/50"
+                          ? "bg-white dark:bg-red-900/30 text-red-600 dark:text-red-400 shadow-sm border border-red-200 dark:border-red-800"
+                          : "text-gray-500 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-slate-700"
                           }`}
                       >
-                        <XCircle className={`w-4 h-4 ${selectedAttendance[stu._id] === "A" ? "fill-red-100" : ""}`} />
+                        <XCircle className={`w-4 h-4 ${selectedAttendance[stu._id] === "A" ? "fill-red-100 dark:fill-red-900/50" : ""}`} />
                         Absent
                       </button>
                     </div>
@@ -546,10 +548,10 @@ const AttendanceSheet = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 border-t border-gray-100 dark:border-indigo-500/20 bg-gray-50 dark:bg-indigo-900/30 flex justify-end items-center gap-3">
+            <div className="p-6 border-t border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 flex justify-end items-center gap-3">
               <button
                 onClick={() => setShowPopup(false)}
-                className="px-6 py-2.5 rounded-xl text-gray-600 dark:text-gray-300 font-semibold hover:bg-gray-200/50 dark:hover:bg-indigo-800/50 transition-colors"
+                className="px-6 py-2.5 rounded-xl text-gray-600 dark:text-gray-400 font-semibold hover:bg-gray-200/50 dark:hover:bg-slate-800 transition-colors"
               >
                 Cancel
               </button>

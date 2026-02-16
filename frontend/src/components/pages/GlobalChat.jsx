@@ -445,8 +445,8 @@ const GlobalChat = () => {
 
 
     return (
-        <div className="flex flex-col h-[calc(100vh-64px)] w-full">
-            <div className="bg-white w-full h-full flex flex-col overflow-hidden border-t border-slate-200">
+        <div className="flex flex-col h-[calc(100vh-64px)] w-full bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
+            <div className="bg-white dark:bg-slate-950 w-full h-full flex flex-col overflow-hidden border-t border-slate-200 dark:border-slate-800">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex items-center justify-between text-white shrink-0 relative">
                     {!showSearch ? (
@@ -456,8 +456,8 @@ const GlobalChat = () => {
                                     <MessageCircle className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-lg">Community Chat</h3>
-                                    <p className="text-xs text-indigo-100">Connect with everyone in college</p>
+                                    <h3 className="font-bold text-lg text-white">Community Chat</h3>
+                                    <p className="text-xs text-indigo-100 dark:text-indigo-200">Connect with everyone in college</p>
                                 </div>
                             </div>
                             <Button variant="ghost" size="icon" onClick={() => setShowSearch(true)} className="text-white hover:bg-white/20">
@@ -502,9 +502,9 @@ const GlobalChat = () => {
 
                     {/* Telegram-style Search Results List */}
                     {showSearch && searchTerm.trim() && searchResults.length > 0 && (
-                        <div className="absolute top-full left-0 right-0 bg-white shadow-2xl z-50 border-b border-gray-200 max-h-[300px] flex flex-col animate-in slide-in-from-top-2 duration-200">
-                            <div className="p-2 bg-gray-50 border-b border-gray-100 flex justify-between items-center shrink-0">
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2">
+                        <div className="absolute top-full left-0 right-0 bg-white dark:bg-slate-900 shadow-2xl z-50 border-b border-gray-200 dark:border-slate-800 max-h-[300px] flex flex-col animate-in slide-in-from-top-2 duration-200">
+                            <div className="p-2 bg-gray-50 dark:bg-slate-800 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center shrink-0">
+                                <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-2">
                                     {searchResults.length} {searchResults.length === 1 ? 'Result' : 'Results'} found
                                 </span>
                             </div>
@@ -517,26 +517,26 @@ const GlobalChat = () => {
                                                 setCurrentSearchIndex(idx);
                                                 jumpToMessage(result._id);
                                             }}
-                                            className={`w-full p-3 text-left hover:bg-indigo-50/50 transition-colors flex gap-3 items-start ${currentSearchIndex === idx ? 'bg-indigo-50 border-l-2 border-indigo-600' : ''}`}
+                                            className={`w-full p-3 text-left hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 transition-colors flex gap-3 items-start ${currentSearchIndex === idx ? 'bg-indigo-50 dark:bg-indigo-900/30 border-l-2 border-indigo-600 dark:border-indigo-400' : ''}`}
                                         >
-                                            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center shrink-0">
                                                 {result.sender?.picture ? (
                                                     <img src={result.sender.picture} alt="" className="w-full h-full rounded-full object-cover" />
                                                 ) : (
-                                                    <UserIcon className="w-4 h-4 text-indigo-600" />
+                                                    <UserIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-start mb-0.5">
-                                                    <span className="text-xs font-bold text-gray-900 truncate">
+                                                    <span className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">
                                                         {result.sender?.fullname || 'Unknown'}
                                                     </span>
-                                                    <div className="flex items-center gap-1 text-[9px] text-gray-400 whitespace-nowrap ml-2">
+                                                    <div className="flex items-center gap-1 text-[9px] text-gray-400 dark:text-gray-500 whitespace-nowrap ml-2">
                                                         <Clock className="w-2.5 h-2.5" />
                                                         {new Date(result.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                                                     </div>
                                                 </div>
-                                                <p className="text-xs text-gray-600 line-clamp-2 break-words leading-relaxed"
+                                                <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 break-words leading-relaxed"
                                                     dangerouslySetInnerHTML={{
                                                         __html: result.message.replace(new RegExp(`(${searchTerm})`, 'gi'), '<mark class="bg-yellow-200 text-black px-0.5 rounded">$1</mark>')
                                                     }}>
@@ -550,9 +550,9 @@ const GlobalChat = () => {
                     )}
 
                     {showSearch && searchTerm.trim() && searchResults.length === 0 && !isSearching && (
-                        <div className="absolute top-full left-0 right-0 bg-white shadow-xl z-50 border-b border-gray-200 p-8 text-center animate-in slide-in-from-top-2 duration-200">
-                            <Search className="w-8 h-8 text-gray-200 mx-auto mb-2" />
-                            <p className="text-sm text-gray-500 font-medium">No messages found for "{searchTerm}"</p>
+                        <div className="absolute top-full left-0 right-0 bg-white dark:bg-slate-900 shadow-xl z-50 border-b border-gray-200 dark:border-slate-800 p-8 text-center animate-in slide-in-from-top-2 duration-200">
+                            <Search className="w-8 h-8 text-gray-200 dark:text-gray-700 mx-auto mb-2" />
+                            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">No messages found for "{searchTerm}"</p>
                         </div>
                     )}
                 </div>
@@ -562,18 +562,18 @@ const GlobalChat = () => {
 
                 {/* Pinned Messages Banner */}
                 {pinnedMessages.length > 0 && (
-                    <div className="bg-indigo-50 border-b border-indigo-100 p-2 flex items-center justify-between shrink-0">
+                    <div className="bg-indigo-50 dark:bg-indigo-900/20 border-b border-indigo-100 dark:border-indigo-900/30 p-2 flex items-center justify-between shrink-0">
                         <div className="flex items-center gap-2 overflow-hidden flex-1">
-                            <Pin className="w-4 h-4 text-indigo-600 shrink-0 fill-current" />
+                            <Pin className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0 fill-current" />
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Pinned Message</span>
-                                <p className="text-xs text-indigo-900 truncate font-medium">
+                                <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Pinned Message</span>
+                                <p className="text-xs text-indigo-900 dark:text-indigo-200 truncate font-medium">
                                     {pinnedMessages[0].message}
                                 </p>
                             </div>
                         </div>
                         {pinnedMessages.length > 1 && (
-                            <span className="text-[10px] bg-indigo-200 text-indigo-700 px-1.5 py-0.5 rounded-full ml-2">
+                            <span className="text-[10px] bg-indigo-200 dark:bg-indigo-800 text-indigo-700 dark:text-indigo-200 px-1.5 py-0.5 rounded-full ml-2">
                                 +{pinnedMessages.length - 1}
                             </span>
                         )}
@@ -581,7 +581,7 @@ const GlobalChat = () => {
                 )}
 
                 {/* Messages Area */}
-                <div className="flex-1 overflow-hidden bg-slate-50 relative flex flex-col">
+                <div className="flex-1 overflow-hidden bg-slate-50 dark:bg-slate-950 relative flex flex-col">
                     <div
                         className="flex-1 p-4 overflow-y-auto"
                         onScroll={handleScroll}
@@ -589,21 +589,21 @@ const GlobalChat = () => {
                     >
                         {loading ? (
                             <div className="flex justify-center items-center h-full">
-                                <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                                <Loader2 className="w-8 h-8 animate-spin text-indigo-600 dark:text-indigo-400" />
                             </div>
                         ) : messages.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-full text-slate-400 py-10">
-                                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                                    <MessageCircle className="w-8 h-8 text-slate-300" />
+                            <div className="flex flex-col items-center justify-center h-full text-slate-400 dark:text-slate-500 py-10">
+                                <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                                    <MessageCircle className="w-8 h-8 text-slate-300 dark:text-slate-600" />
                                 </div>
-                                <p className="font-medium">No messages yet.</p>
+                                <p className="font-medium text-slate-500 dark:text-slate-400">No messages yet.</p>
                                 <p className="text-sm">Be the first to say hello!</p>
                             </div>
                         ) : (
                             <div className="flex flex-col gap-1 pb-4">
                                 {isFetchingMore && (
                                     <div className="flex justify-center py-2">
-                                        <Loader2 className="w-5 h-5 animate-spin text-indigo-400" />
+                                        <Loader2 className="w-5 h-5 animate-spin text-indigo-400 dark:text-indigo-500" />
                                     </div>
                                 )}
                                 {messages.map((msg, idx) => {
@@ -630,14 +630,14 @@ const GlobalChat = () => {
                                         <React.Fragment key={msg._id || idx}>
                                             {showDateSeparator && (
                                                 <div className="flex justify-center my-4">
-                                                    <span className="bg-slate-200 text-slate-600 text-xs px-3 py-1 rounded-full shadow-sm">
+                                                    <span className="bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs px-3 py-1 rounded-full shadow-sm">
                                                         {dateLabel}
                                                     </span>
                                                 </div>
                                             )}
                                             <div
                                                 ref={(el) => (messageRefs.current[msg._id] = el)}
-                                                className="transition-colors duration-500 rounded-lg"
+                                                className="transition-colors duration-500 rounded-lg dark:hover:bg-slate-900/50"
                                             >
                                                 <MessageBubble
                                                     message={msg}

@@ -90,11 +90,11 @@ const Store = () => {
     };
 
     return (
-        <div className="flex h-[calc(100vh-64px)] bg-slate-50 overflow-hidden">
+        <div className="flex h-[calc(100vh-64px)] bg-slate-50 dark:bg-slate-950 overflow-hidden transition-colors duration-500">
             {/* Sidebar Filters */}
-            <aside className="w-80 bg-white border-r border-border flex-col hidden md:flex shrink-0">
-                <div className="p-6 border-b border-border">
-                    <div className="flex items-center gap-2 font-bold text-lg text-foreground">
+            <aside className="w-80 bg-white dark:bg-slate-900 border-r border-border dark:border-slate-800 flex-col hidden md:flex shrink-0 transition-colors">
+                <div className="p-6 border-b border-border dark:border-slate-800">
+                    <div className="flex items-center gap-2 font-bold text-lg text-foreground dark:text-slate-100">
                         <Filter className="w-5 h-5 text-primary" /> Filters
                     </div>
                 </div>
@@ -103,12 +103,12 @@ const Store = () => {
                     <div className="space-y-4">
                         <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Search</label>
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground dark:text-slate-500" />
                             <Input
                                 placeholder="Search products..."
                                 value={filters.search}
                                 onChange={(e) => handleFilterChange('search', e.target.value)}
-                                className="pl-9 bg-slate-50 border-slate-200 focus-visible:ring-primary"
+                                className="pl-9 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus-visible:ring-primary dark:text-slate-100 dark:placeholder:text-slate-500"
                             />
                         </div>
                     </div>
@@ -119,7 +119,7 @@ const Store = () => {
                             value={filters.category}
                             onValueChange={(val) => handleFilterChange('category', val)}
                         >
-                            <SelectTrigger className="bg-slate-50 border-slate-200">
+                            <SelectTrigger className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 dark:text-slate-100">
                                 <SelectValue placeholder="All Categories" />
                             </SelectTrigger>
                             <SelectContent>
@@ -138,17 +138,16 @@ const Store = () => {
                         <div className="flex gap-2">
                             <Input
                                 type="number"
-                                placeholder="Min"
                                 value={filters.minPrice}
                                 onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                                className="bg-slate-50 border-slate-200"
+                                className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500"
                             />
                             <Input
                                 type="number"
                                 placeholder="Max"
                                 value={filters.maxPrice}
                                 onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                                className="bg-slate-50 border-slate-200"
+                                className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500"
                             />
                         </div>
                     </div>
@@ -159,7 +158,7 @@ const Store = () => {
                             value={filters.sortBy}
                             onValueChange={(val) => handleFilterChange('sortBy', val)}
                         >
-                            <SelectTrigger className="bg-slate-50 border-slate-200">
+                            <SelectTrigger className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 dark:text-slate-100">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -173,9 +172,9 @@ const Store = () => {
             </aside>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50">
+            <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50 dark:bg-slate-950/50 transition-colors">
                 {/* Header Toolbar */}
-                <div className="h-20 bg-white border-b border-border flex items-center justify-between px-8 shrink-0">
+                <div className="h-20 bg-white dark:bg-slate-900 border-b border-border dark:border-slate-800 flex items-center justify-between px-8 shrink-0 transition-colors">
                     <div>
                         <h1 className="text-2xl font-black bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                             Campus Store
@@ -199,7 +198,7 @@ const Store = () => {
                             </Button>
                         </Link>
                         <Link to="/store/chat">
-                            <Button variant="outline" className="border-border text-foreground hover:bg-slate-50 font-semibold">
+                            <Button variant="outline" className="border-border dark:border-slate-700 text-foreground dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold transition-colors">
                                 <MessageCircle className="w-4 h-4 mr-2" /> Chats
                             </Button>
                         </Link>
@@ -220,9 +219,9 @@ const Store = () => {
                                 <Link
                                     to={`/store/product/${product._id}`}
                                     key={product._id}
-                                    className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                                    className="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                                 >
-                                    <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden">
+                                    <div className="aspect-[4/3] bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
                                         <img
                                             src={product.images[0]}
                                             alt={product.title}
@@ -236,9 +235,9 @@ const Store = () => {
                                     </div>
                                     <div className="p-4 space-y-3">
                                         <div>
-                                            <h3 className="font-bold text-lg text-slate-800 truncate">{product.title}</h3>
+                                            <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 truncate">{product.title}</h3>
                                             <div className="flex justify-between items-center mt-1">
-                                                <span className="text-xl font-black text-primary">₹{product.price}</span>
+                                                <span className="text-xl font-black text-primary dark:text-primary/90">₹{product.price}</span>
                                                 {product.status === 'Sold' ? (
                                                     <Badge variant="destructive" className="uppercase font-bold tracking-wider">
                                                         SOLD OUT
@@ -259,7 +258,7 @@ const Store = () => {
                                                 )}
                                             </div>
                                         </div>
-                                        <div className="pt-3 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500 font-medium">
+                                        <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 font-medium">
                                             <div className="flex items-center gap-1">
                                                 <div className="w-2 h-2 rounded-full bg-emerald-500" />
                                                 {product.location || 'Campus'}
@@ -271,12 +270,12 @@ const Store = () => {
                             ))}
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border border-dashed border-slate-200 mx-auto max-w-2xl">
-                            <div className="w-20 h-20 bg-indigo-50 text-primary rounded-full flex items-center justify-center mb-6">
+                        <div className="flex flex-col items-center justify-center py-20 text-center bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 mx-auto max-w-2xl transition-colors">
+                            <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/30 text-primary dark:text-indigo-400 rounded-full flex items-center justify-center mb-6">
                                 <Search className="w-10 h-10" />
                             </div>
-                            <h3 className="text-2xl font-bold text-slate-900">No products found</h3>
-                            <p className="text-slate-500 mt-2 mb-8 max-w-md">
+                            <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">No products found</h3>
+                            <p className="text-slate-500 dark:text-slate-400 mt-2 mb-8 max-w-md">
                                 We couldn't find any products matching your filters. Try adjusting your search or be the first to sell something!
                             </p>
                             <Link to="/store/sell">

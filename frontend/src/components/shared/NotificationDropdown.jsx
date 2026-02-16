@@ -56,7 +56,7 @@ const NotificationItem = ({ notification, onMarkRead, onDelete }) => {
             exit={{ opacity: 0, x: -10 }}
             className={cn(
                 "p-3 rounded-lg mb-2 transition-colors cursor-pointer group relative border-l-4",
-                notification.isRead ? "bg-white border-transparent hover:bg-slate-50" : "bg-blue-50 border-blue-500 hover:bg-blue-100"
+                notification.isRead ? "bg-white dark:bg-slate-900 border-transparent hover:bg-slate-50 dark:hover:bg-slate-800" : "bg-blue-50 dark:bg-blue-900/20 border-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/30"
             )}
             onClick={handleClick}
         >
@@ -65,7 +65,7 @@ const NotificationItem = ({ notification, onMarkRead, onDelete }) => {
                     {getIcon()}
                 </div>
                 <div className="flex-1">
-                    <p className={cn("text-xs leading-relaxed font-medium", notification.isRead ? "text-slate-600" : "text-slate-900")}>
+                    <p className={cn("text-xs leading-relaxed font-medium", notification.isRead ? "text-slate-600 dark:text-slate-400" : "text-slate-900 dark:text-slate-200")}>
                         {notification.message}
                     </p>
                     <span className="text-[10px] text-slate-400 mt-1 block">
@@ -112,18 +112,18 @@ const NotificationDropdown = () => {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full hover:bg-slate-100">
-                    <Bell className="h-5 w-5 text-slate-600" />
+                <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
+                    <Bell className="h-5 w-5" />
                     {unreadCount > 0 && (
                         <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse" />
                     )}
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 sm:w-96 p-0 mr-4 overflow-hidden border-0 shadow-2xl" align="end">
+            <PopoverContent className="w-80 sm:w-96 p-0 mr-4 overflow-hidden border-0 shadow-2xl dark:border dark:border-slate-800 dark:bg-slate-900" align="end">
                 <div className="flex flex-col h-[500px]">
-                    <div className="p-4 border-b flex items-center justify-between bg-white sticky top-0 z-10">
+                    <div className="p-4 border-b dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900 sticky top-0 z-10">
                         <div className="flex items-center gap-2">
-                            <h4 className="font-bold text-base text-slate-800">Notifications</h4>
+                            <h4 className="font-bold text-base text-slate-800 dark:text-slate-100">Notifications</h4>
                             {unreadCount > 0 && (
                                 <span className="bg-red-100 text-red-600 text-[10px] px-1.5 py-0.5 rounded-full font-bold">
                                     {unreadCount}
@@ -170,11 +170,11 @@ const NotificationDropdown = () => {
                                 </div>
                             ) : notifications.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                                    <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-                                        <Bell className="h-8 w-8 text-slate-300" />
+                                    <div className="h-16 w-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                                        <Bell className="h-8 w-8 text-slate-300 dark:text-slate-600" />
                                     </div>
-                                    <h5 className="font-semibold text-slate-900">All caught up!</h5>
-                                    <p className="text-xs text-slate-500 mt-1">No new notifications for you.</p>
+                                    <h5 className="font-semibold text-slate-900 dark:text-slate-200">All caught up!</h5>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">No new notifications for you.</p>
                                 </div>
                             ) : (
                                 <>
@@ -211,8 +211,8 @@ const NotificationDropdown = () => {
                         </div>
                     </ScrollArea>
 
-                    <div className="p-3 border-t bg-slate-50 text-center">
-                        <p className="text-[10px] text-slate-400">Stay updated with your latest activities</p>
+                    <div className="p-3 border-t dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-center">
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500">Stay updated with your latest activities</p>
                     </div>
                 </div>
             </PopoverContent>

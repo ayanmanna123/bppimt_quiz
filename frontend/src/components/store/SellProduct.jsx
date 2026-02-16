@@ -84,8 +84,8 @@ const SellProduct = () => {
     };
 
     return (
-        <div className="min-h-[calc(100vh-64px)] bg-slate-50 flex items-center justify-center p-4">
-            <Card className="w-full max-w-2xl bg-white border-slate-200 shadow-xl rounded-3xl overflow-hidden">
+        <div className="min-h-[calc(100vh-64px)] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 transition-colors">
+            <Card className="w-full max-w-2xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-xl rounded-3xl overflow-hidden transition-colors">
                 <CardHeader className="bg-gradient-to-r from-primary to-purple-600 text-white p-8">
                     <CardTitle className="text-2xl font-black flex items-center gap-3">
                         <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
@@ -101,14 +101,14 @@ const SellProduct = () => {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Title */}
                         <div className="space-y-2">
-                            <Label htmlFor="title" className="text-slate-700 font-bold">Product Title</Label>
+                            <Label htmlFor="title" className="text-slate-700 dark:text-slate-300 font-bold">Product Title</Label>
                             <Input
                                 id="title"
                                 name="title"
                                 value={formData.title}
                                 onChange={handleChange}
                                 placeholder="e.g. Engineering Mathematics Vol 1"
-                                className="h-12 border-slate-200 bg-slate-50 focus-visible:ring-primary font-medium"
+                                className="h-12 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus-visible:ring-primary font-medium dark:text-slate-100 dark:placeholder:text-slate-500"
                                 required
                             />
                         </div>
@@ -116,7 +116,7 @@ const SellProduct = () => {
                         {/* Price & Category */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label htmlFor="price" className="text-slate-700 font-bold">Price (₹)</Label>
+                                <Label htmlFor="price" className="text-slate-700 dark:text-slate-300 font-bold">Price (₹)</Label>
                                 <div className="relative">
                                     <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                     <Input
@@ -126,19 +126,19 @@ const SellProduct = () => {
                                         value={formData.price}
                                         onChange={handleChange}
                                         placeholder="0.00"
-                                        className="pl-9 h-12 border-slate-200 bg-slate-50 focus-visible:ring-primary font-medium"
+                                        className="pl-9 h-12 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus-visible:ring-primary font-medium dark:text-slate-100 dark:placeholder:text-slate-500"
                                         required
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="category" className="text-slate-700 font-bold">Category</Label>
+                                <Label htmlFor="category" className="text-slate-700 dark:text-slate-300 font-bold">Category</Label>
                                 <Select
                                     value={formData.category}
                                     onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
                                 >
-                                    <SelectTrigger className="h-12 border-slate-200 bg-slate-50 focus-visible:ring-primary font-medium">
+                                    <SelectTrigger className="h-12 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus-visible:ring-primary font-medium dark:text-slate-100">
                                         <SelectValue placeholder="Select Category" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -155,12 +155,12 @@ const SellProduct = () => {
                         {/* Condition & Location */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label htmlFor="condition" className="text-slate-700 font-bold">Condition</Label>
+                                <Label htmlFor="condition" className="text-slate-700 dark:text-slate-300 font-bold">Condition</Label>
                                 <Select
                                     value={formData.condition}
                                     onValueChange={(value) => setFormData(prev => ({ ...prev, condition: value }))}
                                 >
-                                    <SelectTrigger className="h-12 border-slate-200 bg-slate-50 focus-visible:ring-primary font-medium">
+                                    <SelectTrigger className="h-12 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus-visible:ring-primary font-medium dark:text-slate-100">
                                         <SelectValue placeholder="Select Condition" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -174,7 +174,7 @@ const SellProduct = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="location" className="text-slate-700 font-bold">Pickup Location (Optional)</Label>
+                                <Label htmlFor="location" className="text-slate-700 dark:text-slate-300 font-bold">Pickup Location (Optional)</Label>
                                 <div className="relative">
                                     <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                     <Input
@@ -183,7 +183,7 @@ const SellProduct = () => {
                                         value={formData.location}
                                         onChange={handleChange}
                                         placeholder="e.g. Main Library"
-                                        className="pl-9 h-12 border-slate-200 bg-slate-50 focus-visible:ring-primary font-medium"
+                                        className="pl-9 h-12 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus-visible:ring-primary font-medium dark:text-slate-100 dark:placeholder:text-slate-500"
                                     />
                                 </div>
                             </div>
@@ -191,24 +191,24 @@ const SellProduct = () => {
 
                         {/* Description */}
                         <div className="space-y-2">
-                            <Label htmlFor="description" className="text-slate-700 font-bold">Description</Label>
+                            <Label htmlFor="description" className="text-slate-700 dark:text-slate-300 font-bold">Description</Label>
                             <Textarea
                                 id="description"
                                 name="description"
                                 value={formData.description}
                                 onChange={handleChange}
                                 placeholder="Describe your item, condition, and any other details..."
-                                className="min-h-[120px] border-slate-200 bg-slate-50 focus-visible:ring-primary font-medium resize-none p-4"
+                                className="min-h-[120px] border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus-visible:ring-primary font-medium resize-none p-4 dark:text-slate-100 dark:placeholder:text-slate-500"
                                 required
                             />
                         </div>
 
                         {/* Images */}
                         <div className="space-y-4">
-                            <Label className="text-slate-700 font-bold">Product Images</Label>
+                            <Label className="text-slate-700 dark:text-slate-300 font-bold">Product Images</Label>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {imagePreviews.map((src, idx) => (
-                                    <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 group">
+                                    <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 group">
                                         <img src={src} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
                                         <button
                                             type="button"
@@ -220,11 +220,11 @@ const SellProduct = () => {
                                     </div>
                                 ))}
                                 {images.length < 4 && (
-                                    <label className="flex flex-col items-center justify-center aspect-square rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-primary/50 cursor-pointer transition-all group">
-                                        <div className="bg-white p-3 rounded-full shadow-sm mb-2 group-hover:scale-110 transition-transform">
-                                            <ImagePlus className="w-6 h-6 text-primary" />
+                                    <label className="flex flex-col items-center justify-center aspect-square rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:border-primary/50 cursor-pointer transition-all group">
+                                        <div className="bg-white dark:bg-slate-700 p-3 rounded-full shadow-sm mb-2 group-hover:scale-110 transition-transform">
+                                            <ImagePlus className="w-6 h-6 text-primary dark:text-primary/90" />
                                         </div>
-                                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Add Photo</span>
+                                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Add Photo</span>
                                         <input
                                             type="file"
                                             accept="image/*"

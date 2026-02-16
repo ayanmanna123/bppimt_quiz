@@ -131,7 +131,13 @@
     background: #e2e8f0;
     border-radius: 4px;
   }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #334155; /* slate-700 */
+  }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #cbd5e1;
+  }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #475569; /* slate-600 */
   }
 }

@@ -252,17 +252,17 @@ const Subject = () => {
                       {/* Details Box Grid */}
                       <CardContent className="p-8 pb-4">
                         <div className="grid grid-cols-2 gap-4 mb-4">
-                          <div className="p-4 rounded-[1.5rem] bg-[#F8FAFC] dark:bg-indigo-900/40 border border-[#F1F5F9] dark:border-indigo-500/30">
+                          <div className="p-4 rounded-[1.5rem] bg-[#F8FAFC] dark:bg-slate-900/50 border border-[#F1F5F9] dark:border-slate-800">
                             <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 tracking-wider mb-1 uppercase">Code</p>
                             <p className="text-base font-bold text-gray-800 dark:text-white">{subj?.subjectCode}</p>
                           </div>
-                          <div className="p-4 rounded-[1.5rem] bg-[#FDF2F8] dark:bg-pink-900/20 border border-[#FCE7F3] dark:border-pink-500/30">
+                          <div className="p-4 rounded-[1.5rem] bg-[#FDF2F8] dark:bg-pink-900/20 border border-[#FCE7F3] dark:border-pink-900/30">
                             <p className="text-[10px] font-bold text-pink-600 dark:text-pink-400 tracking-wider mb-1 uppercase">Dept</p>
                             <p className="text-base font-bold text-gray-800 dark:text-white">{subj?.department}</p>
                           </div>
                         </div>
 
-                        <div className="p-5 rounded-[1.5rem] bg-[#F5F3FF] dark:bg-indigo-900/20 border border-[#EDE9FE] dark:border-indigo-500/20 flex items-center justify-between mb-8">
+                        <div className="p-5 rounded-[1.5rem] bg-[#F5F3FF] dark:bg-indigo-900/10 border border-[#EDE9FE] dark:border-indigo-900/30 flex items-center justify-between mb-8">
                           <div>
                             <p className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 tracking-wider mb-1 uppercase">Semester</p>
                             <p className="text-base font-bold text-gray-800 dark:text-white">{subj?.semester}</p>
@@ -292,7 +292,7 @@ const Subject = () => {
                                 <MoreVertical className="w-6 h-6 text-gray-400 dark:text-gray-300" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl dark:bg-indigo-950 dark:border-indigo-500/30">
+                            <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl dark:bg-slate-900 dark:border-slate-800">
                               {[
                                 { icon: FileText, title: "View Notes", color: "text-indigo-500 dark:text-indigo-400", onClick: () => navigate(`/subject/notes/${subj._id}`) },
                                 { icon: ClipboardList, title: "Assignments", color: "text-pink-500 dark:text-pink-400", onClick: () => navigate(`/subject/assignments/${subj._id}`) },

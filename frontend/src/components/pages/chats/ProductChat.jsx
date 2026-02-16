@@ -44,9 +44,9 @@ const ProductChat = ({
         markAsRead();
     }, [chat?._id, getAccessTokenSilently, messages]);
     return (
-        <div className="flex flex-col h-full bg-slate-100 relative">
+        <div className="flex flex-col h-full bg-slate-100 dark:bg-slate-950 relative transition-colors">
             {/* Chat Header */}
-            <div className="h-16 px-4 bg-white border-b border-slate-200 flex items-center justify-between shadow-sm z-10 shrink-0">
+            <div className="h-16 px-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-sm z-10 shrink-0 transition-colors">
                 <div className="flex items-center gap-3">
                     <Button
                         variant="ghost"
@@ -63,27 +63,27 @@ const ProductChat = ({
                         </AvatarFallback>
                     </Avatar>
                     <div className="cursor-pointer">
-                        <h2 className="font-bold text-slate-900 leading-tight">{chat.name}</h2>
-                        <p className="text-xs text-slate-500 capitalize">{chat.type} Chat</p>
+                        <h2 className="font-bold text-slate-900 dark:text-white leading-tight">{chat.name}</h2>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">{chat.type} Chat</p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" className="text-slate-500">
+                    <Button variant="ghost" size="icon" className="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
                         <Search className="w-5 h-5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="text-slate-500">
+                    <Button variant="ghost" size="icon" className="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
                         <ShoppingBag className="w-5 h-5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="text-slate-500">
+                    <Button variant="ghost" size="icon" className="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
                         <MoreVertical className="w-5 h-5" />
                     </Button>
                 </div>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-hidden relative bg-[url('https://web.whatsapp.com/img/bg-chat-tile-dark_a4be512e7195b6b733d9110b408f9640.png')] bg-repeat bg-opacity-5">
-                <div className="absolute inset-0 bg-slate-100/90 backdrop-blur-[1px]"></div>
+            <div className="flex-1 overflow-hidden relative bg-[url('https://web.whatsapp.com/img/bg-chat-tile-dark_a4be512e7195b6b733d9110b408f9640.png')] bg-repeat bg-opacity-5 dark:bg-opacity-10 transition-colors">
+                <div className="absolute inset-0 bg-slate-100/90 dark:bg-slate-950/90 backdrop-blur-[1px] transition-colors"></div>
 
                 <div className="relative h-full flex flex-col">
                     <ScrollArea className="h-full p-4">
@@ -119,7 +119,7 @@ const ProductChat = ({
             </div>
 
             {/* Input Area */}
-            <div className="bg-white p-3 border-t border-slate-200">
+            <div className="bg-white dark:bg-slate-900 p-3 border-t border-slate-200 dark:border-slate-800 transition-colors">
                 <ChatInput
                     onSendMessage={onSendMessage}
                     replyTo={replyTo}

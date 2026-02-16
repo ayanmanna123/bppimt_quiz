@@ -114,7 +114,7 @@ const Dashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex justify-center items-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex justify-center items-center transition-colors">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -131,14 +131,14 @@ const Dashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-50 flex justify-center items-center p-4">
-        <div className="text-center bg-white p-8 rounded-3xl shadow-xl max-w-md w-full border border-red-100">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex justify-center items-center p-4 transition-colors">
+        <div className="text-center bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-xl max-w-md w-full border border-red-100 dark:border-red-900/30">
           <Shield className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Connection Error</h2>
-          <p className="text-gray-500 mb-6">{error}</p>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Connection Error</h2>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition"
+            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition"
           >
             Retry Connection
           </button>
@@ -153,13 +153,13 @@ const Dashboard = () => {
   const currentStreak = dashboardData.streak.length > 0 ? Math.max(...dashboardData.streak.map(s => s.count)) : 0;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 relative overflow-x-hidden font-sans selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-100 relative overflow-x-hidden font-sans selection:bg-indigo-100 dark:selection:bg-indigo-900/30 selection:text-indigo-900 dark:selection:text-indigo-300 transition-colors duration-500">
 
       {/* Premium Background Elements */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-purple-200/40 rounded-full blur-[120px] mix-blend-multiply opacity-70" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-200/40 rounded-full blur-[120px] mix-blend-multiply opacity-70" />
-        <div className="absolute top-[40%] left-[30%] w-[400px] h-[400px] bg-pink-100/40 rounded-full blur-[100px] mix-blend-multiply opacity-50" />
+        <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-purple-200/40 dark:bg-purple-900/20 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen opacity-70" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-200/40 dark:bg-blue-900/20 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen opacity-70" />
+        <div className="absolute top-[40%] left-[30%] w-[400px] h-[400px] bg-pink-100/40 dark:bg-pink-900/20 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-screen opacity-50" />
       </div>
 
       <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
@@ -172,27 +172,27 @@ const Dashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               className="flex items-center gap-3 mb-2"
             >
-              <div className="p-2 bg-white rounded-xl shadow-sm text-indigo-600">
+              <div className="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm text-indigo-600 dark:text-indigo-400">
                 <LayoutDashboard className="w-5 h-5" />
               </div>
-              <span className="text-sm font-bold text-indigo-900 tracking-wider uppercase bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+              <span className="text-sm font-bold text-indigo-900 dark:text-indigo-300 tracking-wider uppercase bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 rounded-full border border-indigo-100 dark:border-indigo-800">
                 Student Dashboard
               </span>
             </motion.div>
 
-            <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
-              {getGreeting()}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">{user?.given_name || 'Student'}</span>
+            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
+              {getGreeting()}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">{user?.given_name || 'Student'}</span>
             </h1>
-            <p className="text-slate-500 font-medium mt-2 text-lg">
+            <p className="text-slate-500 dark:text-slate-400 font-medium mt-2 text-lg">
               Ready to crush your goals today? 🚀
             </p>
           </div>
 
           <div className="hidden md:block text-right">
-            <p className="text-6xl font-black text-slate-200 tracking-tighter">
+            <p className="text-6xl font-black text-slate-200 dark:text-slate-800 tracking-tighter">
               {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).replace(/\s[AP]M/, '')}
             </p>
-            <p className="text-slate-400 font-medium uppercase tracking-widest text-sm">
+            <p className="text-slate-400 dark:text-slate-500 font-medium uppercase tracking-widest text-sm">
               {currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })}
             </p>
           </div>
@@ -248,7 +248,7 @@ const Dashboard = () => {
             >
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <div className="p-2 bg-white/20 dark:bg-white/10 rounded-xl backdrop-blur-sm">
                     <Rocket className="w-6 h-6" />
                   </div>
                   <span className="font-bold opacity-90">Daily Boost</span>
@@ -275,7 +275,7 @@ const Dashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <div className="bg-white/60 backdrop-blur-xl rounded-[2rem] shadow-sm border border-white/40 overflow-hidden">
+            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-[2rem] shadow-sm border border-white/40 dark:border-slate-800 overflow-hidden transition-colors">
               <Calendar />
             </div>
           </motion.div>

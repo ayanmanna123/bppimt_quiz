@@ -88,10 +88,10 @@ const UpdateProfilelog = ({ open, setopen }) => {
 
   return (
     <Dialog open={open} onOpenChange={setopen}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 transition-colors">
         <DialogHeader>
-          <DialogTitle>Update Profile</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-slate-900 dark:text-white">Update Profile</DialogTitle>
+          <DialogDescription className="text-slate-500 dark:text-slate-400">
             Update your semester, name, and profile picture.
           </DialogDescription>
         </DialogHeader>
@@ -125,7 +125,7 @@ const UpdateProfilelog = ({ open, setopen }) => {
           <div className="grid gap-4 py-4">
             {/* Name Input */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
+              <Label htmlFor="name" className="text-right text-slate-700 dark:text-slate-300">
                 Name
               </Label>
               <Input
@@ -133,51 +133,51 @@ const UpdateProfilelog = ({ open, setopen }) => {
                 value={name}
                 onChange={(e) => setname(e.target.value)}
                 placeholder={usere?.fullname || "Enter your name"}
-                className="col-span-3"
+                className="col-span-3 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
               />
             </div>
 
             {/* Semester Dropdown */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="semester" className="text-right">
+              <Label htmlFor="semester" className="text-right text-slate-700 dark:text-slate-300">
                 Semester
               </Label>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="col-span-3 justify-between"
+                    className="col-span-3 justify-between bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700"
                   >
                     {semester ? semester : usere?.semester || "Select Semester"}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
+                <DropdownMenuContent className="w-56 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
                   <DropdownMenuRadioGroup
                     value={semester}
                     onValueChange={setsemester}
                   >
-                    <DropdownMenuRadioItem value="first">
+                    <DropdownMenuRadioItem value="first" className="dark:text-white dark:focus:bg-slate-700">
                       First
                     </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="second">
+                    <DropdownMenuRadioItem value="second" className="dark:text-white dark:focus:bg-slate-700">
                       Second
                     </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="third">
+                    <DropdownMenuRadioItem value="third" className="dark:text-white dark:focus:bg-slate-700">
                       Third
                     </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="fourth">
+                    <DropdownMenuRadioItem value="fourth" className="dark:text-white dark:focus:bg-slate-700">
                       Fourth
                     </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="fifth">
+                    <DropdownMenuRadioItem value="fifth" className="dark:text-white dark:focus:bg-slate-700">
                       Fifth
                     </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="sixth">
+                    <DropdownMenuRadioItem value="sixth" className="dark:text-white dark:focus:bg-slate-700">
                       Sixth
                     </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="seventh">
+                    <DropdownMenuRadioItem value="seventh" className="dark:text-white dark:focus:bg-slate-700">
                       Seventh
                     </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="eighth">
+                    <DropdownMenuRadioItem value="eighth" className="dark:text-white dark:focus:bg-slate-700">
                       Eighth
                     </DropdownMenuRadioItem>
                   </DropdownMenuRadioGroup>
@@ -187,7 +187,7 @@ const UpdateProfilelog = ({ open, setopen }) => {
           </div>
 
           <DialogFooter>
-            <Button className="bg-green-400 hover:bg-green-500" type="submit">
+            <Button className="bg-green-400 hover:bg-green-500 text-white" type="submit">
               Submit
             </Button>
           </DialogFooter>

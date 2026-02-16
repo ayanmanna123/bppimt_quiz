@@ -44,8 +44,8 @@ const ValidatedInput = ({
   return (
     <div className="relative group">
       {label && (
-        <label className="block text-sm font-semibold text-gray-700 mb-2 items-center gap-2">
-          {Icon && <Icon className="w-4 h-4 text-indigo-600" />}
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 items-center gap-2">
+          {Icon && <Icon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />}
           {label}
         </label>
       )}
@@ -56,10 +56,10 @@ const ValidatedInput = ({
           value={value}
           onChange={onChange}
           className={`
-            w-full px-4 py-3 rounded-2xl border-2 transition-all duration-300 text-gray-800 font-medium
+            w-full px-4 py-3 rounded-2xl border-2 transition-all duration-300 text-gray-800 dark:text-white font-medium
             ${isValid
-              ? "border-green-400 bg-green-50 focus:border-green-500 focus:ring-4 focus:ring-green-100"
-              : "border-gray-200 bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+              ? "border-green-400 bg-green-50 dark:bg-green-900/20 dark:border-green-500/30 focus:border-green-500 focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/30"
+              : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-indigo-400 dark:focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
             }
             focus:outline-none shadow-sm hover:shadow-md
             ${className}
@@ -289,13 +289,13 @@ const CreateQuize = () => {
   return (
     <>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100 dark:from-[#030014] dark:via-[#05001c] dark:to-[#1e1b4b] transition-colors duration-700">
         {/* Header Section */}
         <div className="p-6">
           <div className="flex items-center gap-4 mb-8">
             <motion.div
               onClick={() => navigate("/")}
-              className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 cursor-pointer transition-all duration-300 p-3 rounded-xl hover:bg-white/70 hover:shadow-md"
+              className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer transition-all duration-300 p-3 rounded-xl hover:bg-white/70 dark:hover:bg-indigo-900/30 hover:shadow-md"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -325,20 +325,20 @@ const CreateQuize = () => {
                   <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                     Quiz Creator Studio
                   </h1>
-                  <p className="text-gray-600 text-lg mt-1">
+                  <p className="text-gray-600 dark:text-gray-300 text-lg mt-1">
                     Craft engaging quizzes with AI assistance
                   </p>
                 </div>
               </div>
 
               {/* Progress indicator */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 max-w-md mx-auto border border-white/50 shadow-lg">
+              <div className="bg-white/80 dark:bg-indigo-950/40 backdrop-blur-sm rounded-2xl p-4 max-w-md mx-auto border border-white/50 dark:border-indigo-500/20 shadow-lg">
                 <div className="flex items-center gap-3 mb-2">
-                  <Target className="w-5 h-5 text-indigo-600" />
-                  <span className="text-sm font-semibold text-gray-700">Quiz Completion</span>
-                  <Badge className="bg-indigo-100 text-indigo-700">{getCompletionPercentage()}%</Badge>
+                  <Target className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">Quiz Completion</span>
+                  <Badge className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300">{getCompletionPercentage()}%</Badge>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                   <div
                     className="h-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-500"
                     style={{ width: `${getCompletionPercentage()}%` }}
@@ -364,7 +364,7 @@ const CreateQuize = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <Card className="overflow-hidden shadow-2xl bg-white/80 backdrop-blur-sm border-0 rounded-3xl">
+              <Card className="overflow-hidden shadow-2xl bg-white/80 dark:bg-indigo-950/40 backdrop-blur-sm border-0 dark:border dark:border-indigo-500/20 rounded-3xl">
                 <CardHeader className="bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 text-white relative overflow-hidden">
                   <div className="absolute inset-0 opacity-20">
                     <div className="absolute top-3 right-3 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
@@ -574,7 +574,7 @@ const CreateQuize = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <Card className="overflow-hidden shadow-2xl bg-white/80 backdrop-blur-sm border-0 rounded-3xl">
+              <Card className="overflow-hidden shadow-2xl bg-white/80 dark:bg-indigo-950/40 backdrop-blur-sm border-0 dark:border dark:border-indigo-500/20 rounded-3xl">
                 <CardHeader className="bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 text-white relative overflow-hidden">
                   <div className="absolute inset-0 opacity-20">
                     <div className="absolute top-2 right-2 w-16 h-16 border border-white/30 rounded-2xl rotate-12 animate-pulse"></div>
@@ -607,7 +607,7 @@ const CreateQuize = () => {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.4, delay: i * 0.1 }}
-                      className="relative p-6 bg-gradient-to-br from-gray-50 to-white rounded-3xl border-2 border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="relative p-6 bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-800 rounded-3xl border-2 border-gray-100 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300"
                     >
                       {/* Question Header */}
                       <div className="flex items-center justify-between mb-6">
@@ -615,7 +615,7 @@ const CreateQuize = () => {
                           <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center text-white font-bold">
                             {i + 1}
                           </div>
-                          <span className="text-lg font-bold text-gray-800">Question {i + 1}</span>
+                          <span className="text-lg font-bold text-gray-800 dark:text-white">Question {i + 1}</span>
                         </div>
 
                         {questions.length > 1 && (
@@ -655,14 +655,14 @@ const CreateQuize = () => {
                             onChange={(e) =>
                               handleQuestionChange(i, `option-${j}`, e.target.value)
                             }
-                            className={q.correctAnswer === j ? "ring-2 ring-green-300 bg-green-50" : ""}
+                            className={q.correctAnswer === j ? "ring-2 ring-green-300 bg-green-50 dark:bg-green-900/20" : ""}
                           />
                         ))}
                       </div>
 
                       {/* Correct Answer Selector */}
-                      <div className="bg-blue-50 rounded-2xl p-4 border-l-4 border-blue-400">
-                        <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      <div className="bg-blue-50 dark:bg-indigo-900/30 rounded-2xl p-4 border-l-4 border-blue-400 dark:border-blue-500">
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                           Correct Answer:
                         </label>
                         <div className="flex gap-2">
@@ -675,7 +675,7 @@ const CreateQuize = () => {
                                 w-12 h-12 rounded-xl font-bold transition-all duration-300 border-2
                                 ${q.correctAnswer === j
                                   ? "bg-green-500 text-white border-green-600 shadow-lg scale-110"
-                                  : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50 hover:scale-105"
+                                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:scale-105"
                                 }
                               `}
                             >

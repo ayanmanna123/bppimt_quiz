@@ -148,7 +148,7 @@ const EditTimeSlotModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                                 variant="outline"
                                 size="sm"
                                 onClick={handleAddSlot}
-                                className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800"
+                                className="border-emerald-200 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-800 dark:hover:text-emerald-300 dark:bg-transparent"
                             >
                                 <Plus className="w-4 h-4 mr-1" />
                                 Add Slot
@@ -158,26 +158,26 @@ const EditTimeSlotModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                         <ScrollArea className="flex-1 pr-4 -mr-4">
                             <div className="space-y-4 p-1">
                                 {timeSlots.length === 0 ? (
-                                    <div className="text-center py-8 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-indigo-900/20 rounded-xl border border-dashed border-gray-200 dark:border-indigo-500/30">
+                                    <div className="text-center py-8 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-slate-900/40 rounded-xl border border-dashed border-gray-200 dark:border-slate-800">
                                         <Calendar className="w-10 h-10 mx-auto mb-2 opacity-50" />
                                         <p>No time slots configured.</p>
                                         <p className="text-sm">Click "Add Slot" to create a schedule.</p>
                                     </div>
                                 ) : (
                                     timeSlots.map((slot, index) => (
-                                        <div key={index} className="flex flex-col sm:flex-row gap-3 p-4 rounded-xl border border-gray-100 dark:border-indigo-500/20 bg-white dark:bg-indigo-950/40 shadow-sm hover:shadow-md transition-shadow">
+                                        <div key={index} className="flex flex-col sm:flex-row gap-3 p-4 rounded-xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900/40 shadow-sm hover:shadow-md transition-shadow">
                                             <div className="flex-1 min-w-[140px]">
                                                 <Label className="text-xs text-gray-500 dark:text-gray-400 mb-1.5 block">Day</Label>
                                                 <Select
-                                                    value={slot.dayOfWeek}
+                                                    value={slot.dayOfWeek || ""}
                                                     onValueChange={(val) => handleChange(index, "dayOfWeek", val)}
                                                 >
-                                                    <SelectTrigger className="h-9">
+                                                    <SelectTrigger className="h-9 bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
                                                         <SelectValue placeholder="Select Day" />
                                                     </SelectTrigger>
-                                                    <SelectContent>
+                                                    <SelectContent className="dark:bg-slate-900 dark:border-slate-800">
                                                         {dayOfWeekOptions.map(day => (
-                                                            <SelectItem key={day} value={day}>{day}</SelectItem>
+                                                            <SelectItem key={day} value={day} className="dark:text-gray-200 dark:focus:bg-slate-800">{day}</SelectItem>
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
@@ -189,7 +189,7 @@ const EditTimeSlotModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                                                     type="time"
                                                     value={slot.startTime}
                                                     onChange={(e) => handleChange(index, "startTime", e.target.value)}
-                                                    className="h-9"
+                                                    className="h-9 bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700"
                                                 />
                                             </div>
 
@@ -199,7 +199,7 @@ const EditTimeSlotModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                                                     type="time"
                                                     value={slot.endTime}
                                                     onChange={(e) => handleChange(index, "endTime", e.target.value)}
-                                                    className="h-9"
+                                                    className="h-9 bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700"
                                                 />
                                             </div>
 
@@ -208,7 +208,7 @@ const EditTimeSlotModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => handleRemoveSlot(index)}
-                                                    className="h-9 w-9 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-full"
+                                                    className="h-9 w-9 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 rounded-full"
                                                     title="Remove Slot"
                                                 >
                                                     <Trash2 className="w-4 h-4" />

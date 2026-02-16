@@ -22,11 +22,11 @@ const TypingIndicator = ({ typingUsers }) => {
     return (
         <div className="flex items-center gap-1.5 px-4 py-1 animate-pulse">
             <div className="flex gap-0.5">
-                <div className="w-1 h-1 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                <div className="w-1 h-1 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                <div className="w-1 h-1 bg-slate-400 rounded-full animate-bounce"></div>
+                <div className="w-1 h-1 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div className="w-1 h-1 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div className="w-1 h-1 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce"></div>
             </div>
-            <span className="text-[11px] text-slate-500 font-medium italic">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium italic">
                 {text}
             </span>
         </div>

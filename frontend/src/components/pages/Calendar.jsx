@@ -113,7 +113,7 @@ const Calendar = () => {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden"
+            className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden transition-colors"
           >
             {/* Header */}
             <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
@@ -135,57 +135,57 @@ const Calendar = () => {
             {/* Content */}
             <div className="p-6 space-y-6">
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-blue-50 rounded-2xl flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 rounded-xl text-blue-600">
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center gap-3 transition-colors">
+                  <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-xl text-blue-600 dark:text-blue-300">
                     <CalendarIcon className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-blue-600 font-semibold uppercase">Date</p>
-                    <p className="font-medium text-gray-800">{quiz.date}</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold uppercase">Date</p>
+                    <p className="font-medium text-gray-800 dark:text-white">{quiz.date}</p>
                   </div>
                 </div>
-                <div className="p-4 bg-purple-50 rounded-2xl flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 rounded-xl text-purple-600">
+                <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl flex items-center gap-3 transition-colors">
+                  <div className="p-2 bg-purple-100 dark:bg-purple-800 rounded-xl text-purple-600 dark:text-purple-300">
                     <Clock className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-purple-600 font-semibold uppercase">Duration</p>
-                    <p className="font-medium text-gray-800">{quiz.time} mins</p>
+                    <p className="text-xs text-purple-600 dark:text-purple-400 font-semibold uppercase">Duration</p>
+                    <p className="font-medium text-gray-800 dark:text-white">{quiz.time} mins</p>
                   </div>
                 </div>
-                <div className="p-4 bg-orange-50 rounded-2xl flex items-center gap-3">
-                  <div className="p-2 bg-orange-100 rounded-xl text-orange-600">
+                <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-2xl flex items-center gap-3 transition-colors">
+                  <div className="p-2 bg-orange-100 dark:bg-orange-800 rounded-xl text-orange-600 dark:text-orange-300">
                     <Target className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-orange-600 font-semibold uppercase">Questions</p>
-                    <p className="font-medium text-gray-800">{quiz.totalQuestions}</p>
+                    <p className="text-xs text-orange-600 dark:text-orange-400 font-semibold uppercase">Questions</p>
+                    <p className="font-medium text-gray-800 dark:text-white">{quiz.totalQuestions}</p>
                   </div>
                 </div>
-                <div className="p-4 bg-green-50 rounded-2xl flex items-center gap-3">
-                  <div className="p-2 bg-green-100 rounded-xl text-green-600">
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-2xl flex items-center gap-3 transition-colors">
+                  <div className="p-2 bg-green-100 dark:bg-green-800 rounded-xl text-green-600 dark:text-green-300">
                     <Sparkles className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-green-600 font-semibold uppercase">Marks</p>
-                    <p className="font-medium text-gray-800">{quiz.marks}/Q</p>
+                    <p className="text-xs text-green-600 dark:text-green-400 font-semibold uppercase">Marks</p>
+                    <p className="font-medium text-gray-800 dark:text-white">{quiz.marks}/Q</p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                  <User className="w-5 h-5 text-gray-500" />
+              <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 transition-colors">
+                <div className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                  <User className="w-5 h-5 text-gray-500 dark:text-slate-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 font-semibold uppercase">Created By</p>
-                  <p className="font-medium text-gray-800">{quiz.createdBy?.fullname || "Instructor"}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 font-semibold uppercase">Created By</p>
+                  <p className="font-medium text-gray-800 dark:text-white">{quiz.createdBy?.fullname || "Instructor"}</p>
                 </div>
               </div>
             </div>
 
             <div className="p-6 pt-0 flex gap-3">
-              <button onClick={onClose} className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition-colors">
+              <button onClick={onClose} className="flex-1 py-3 rounded-xl bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 font-semibold transition-colors">
                 Close Details
               </button>
               {usere?.role === "teacher" ? (
@@ -199,7 +199,7 @@ const Calendar = () => {
               ) : quiz.isAttempted ? (
                 <button
                   disabled
-                  className="flex-[2] py-3 rounded-xl bg-gray-100 text-gray-500 font-bold cursor-not-allowed border border-gray-200 flex items-center justify-center gap-2"
+                  className="flex-[2] py-3 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-500 font-bold cursor-not-allowed border border-gray-200 dark:border-slate-700 flex items-center justify-center gap-2"
                 >
                   <Target className="w-5 h-5 line-through" />
                   Submitted
@@ -228,7 +228,7 @@ const Calendar = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            className="relative w-full max-w-4xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-colors"
           >
             {/* Header */}
             <div className="relative bg-gradient-to-r from-indigo-600 to-blue-600 p-6 text-white shrink-0">
@@ -248,50 +248,50 @@ const Calendar = () => {
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-gray-50">
+            <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-gray-50 dark:bg-slate-950 transition-colors">
               {quizzes.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-gray-500 dark:text-slate-400">
                   <p>No quizzes found for this month.</p>
                 </div>
               ) : (
                 quizzes.map((quiz, quizIndex) => (
-                  <div key={quiz._id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                  <div key={quiz._id} className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden transition-colors">
+                    <div className="bg-gray-50 dark:bg-slate-800/50 px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
                       <div>
-                        <h3 className="text-lg font-bold text-gray-800">{quiz.title}</h3>
-                        <p className="text-sm text-gray-500">
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-white">{quiz.title}</h3>
+                        <p className="text-sm text-gray-500 dark:text-slate-400">
                           {quiz.subject.subjectName} • {format(parseISO(quiz.date), "PPP")}
                         </p>
                       </div>
-                      <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">
+                      <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold px-3 py-1 rounded-full">
                         {quiz.questions?.length || 0} Questions
                       </span>
                     </div>
 
-                    <div className="divide-y divide-gray-100">
+                    <div className="divide-y divide-gray-100 dark:divide-slate-800">
                       {quiz.questions && quiz.questions.length > 0 ? (
                         quiz.questions.map((q, qIndex) => (
-                          <div key={q._id || qIndex} className="p-6 hover:bg-gray-50/50 transition-colors">
+                          <div key={q._id || qIndex} className="p-6 hover:bg-gray-50/50 dark:hover:bg-slate-800/50 transition-colors">
                             <div className="flex gap-4">
-                              <span className="flex-shrink-0 w-8 h-8 bg-gray-100 text-gray-500 rounded-lg flex items-center justify-center font-bold text-sm">
+                              <span className="flex-shrink-0 w-8 h-8 bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400 rounded-lg flex items-center justify-center font-bold text-sm">
                                 {qIndex + 1}
                               </span>
                               <div className="flex-1 space-y-3">
-                                <p className="font-medium text-gray-900 text-lg">{q.questionText}</p>
+                                <p className="font-medium text-gray-900 dark:text-white text-lg">{q.questionText}</p>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                   {q.options.map((opt, optIndex) => (
                                     <div
                                       key={optIndex}
-                                      className={`p-3 rounded-xl text-sm border flex items-center gap-3
+                                      className={`p-3 rounded-xl text-sm border flex items-center gap-3 transition-colors
                                         ${(optIndex + 1) === q.correctAnswer
-                                          ? "bg-green-50 border-green-200 text-green-800 ring-1 ring-green-500"
-                                          : "bg-white border-gray-200 text-gray-600"
+                                          ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-300 ring-1 ring-green-500"
+                                          : "bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300"
                                         }`}
                                     >
-                                      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border
+                                      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border transition-colors
                                         ${(optIndex + 1) === q.correctAnswer
                                           ? "bg-green-500 border-green-500 text-white"
-                                          : "bg-gray-50 border-gray-200 text-gray-400"
+                                          : "bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-400 dark:text-slate-400"
                                         }`}
                                       >
                                         {String.fromCharCode(65 + optIndex)}
@@ -308,7 +308,7 @@ const Calendar = () => {
                           </div>
                         ))
                       ) : (
-                        <div className="p-6 text-center text-gray-400 italic">
+                        <div className="p-6 text-center text-gray-400 dark:text-slate-500 italic">
                           No questions available for this quiz.
                         </div>
                       )}
@@ -318,10 +318,10 @@ const Calendar = () => {
               )}
             </div>
 
-            <div className="p-4 border-t border-gray-100 bg-white shrink-0">
+            <div className="p-4 border-t border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 transition-colors">
               <button
                 onClick={onClose}
-                className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors"
+                className="w-full py-3 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 font-bold rounded-xl transition-colors"
               >
                 Close Question Bank
               </button>
@@ -347,9 +347,9 @@ const Calendar = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6">
-      <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+      <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-slate-800/20 overflow-hidden transition-colors">
         {/* Header */}
-        <div className="flex flex-col md:flex-row items-center justify-between p-6 md:p-8 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+        <div className="flex flex-col md:flex-row items-center justify-between p-6 md:p-8 bg-gradient-to-r from-gray-50 to-white dark:from-slate-800 dark:to-slate-900 border-b border-gray-100 dark:border-slate-800 transition-colors">
           <div className="mb-4 md:mb-0 text-center md:text-left">
             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
               Quiz Calendar
@@ -364,26 +364,26 @@ const Calendar = () => {
             {usere?.role === "teacher" && (
               <button
                 onClick={() => setShowAllQuestions(true)}
-                className="px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-xl font-semibold shadow-sm hover:shadow-md hover:bg-blue-50 transition-all flex items-center gap-2"
+                className="px-4 py-2 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900 rounded-xl font-semibold shadow-sm hover:shadow-md hover:bg-blue-50 dark:hover:bg-slate-700 transition-all flex items-center gap-2"
               >
                 <FileText className="w-4 h-4" />
                 <span className="hidden sm:inline">All Questions</span>
               </button>
             )}
 
-            <div className="flex items-center gap-6 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
+            <div className="flex items-center gap-6 bg-white dark:bg-slate-800 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 transition-colors">
               <button
                 onClick={() => navigateMonth(-1)}
-                className="p-2 hover:bg-gray-50 rounded-xl transition-colors text-gray-600 hover:text-blue-600"
+                className="p-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl transition-colors text-gray-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <div className="text-lg font-bold text-gray-800 min-w-[140px] text-center">
+              <div className="text-lg font-bold text-gray-800 dark:text-white min-w-[140px] text-center">
                 {format(currentDate, "MMMM yyyy")}
               </div>
               <button
                 onClick={() => navigateMonth(1)}
-                className="p-2 hover:bg-gray-50 rounded-xl transition-colors text-gray-600 hover:text-blue-600"
+                className="p-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl transition-colors text-gray-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -425,20 +425,20 @@ const Calendar = () => {
                     key={idx}
                     className={`min-h-[120px] rounded-2xl p-3 border transition-all duration-300 group relative
                     ${!isCurrentMonth
-                        ? "bg-gray-50/50 border-transparent opacity-40 hover:opacity-100"
-                        : "bg-white border-gray-100 hover:border-blue-200 hover:shadow-lg hover:-translate-y-1 hover:z-20"
+                        ? "bg-gray-50/50 dark:bg-slate-800/20 border-transparent opacity-40 hover:opacity-100"
+                        : "bg-white dark:bg-slate-900 border-gray-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-800 hover:shadow-lg hover:-translate-y-1 hover:z-20"
                       }
-                    ${isToday ? "ring-2 ring-blue-500 ring-offset-2 bg-blue-50/30 z-10" : "z-0"}
+                    ${isToday ? "ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-900 bg-blue-50/30 dark:bg-blue-900/10 z-10" : "z-0"}
                   `}
                   >
                     <div className="flex justify-between items-start mb-2">
                       <span
-                        className={`text-sm font-semibold w-7 h-7 flex items-center justify-center rounded-full
+                        className={`text-sm font-semibold w-7 h-7 flex items-center justify-center rounded-full transition-colors
                         ${isToday
-                            ? "bg-blue-600 text-white shadow-blue-200 shadow-lg"
+                            ? "bg-blue-600 text-white shadow-blue-200 dark:shadow-blue-900/50 shadow-lg"
                             : isCurrentMonth
-                              ? "text-gray-700 group-hover:bg-gray-100"
-                              : "text-gray-400"
+                              ? "text-gray-700 dark:text-slate-300 group-hover:bg-gray-100 dark:group-hover:bg-slate-800"
+                              : "text-gray-400 dark:text-slate-600"
                           }
                       `}
                       >

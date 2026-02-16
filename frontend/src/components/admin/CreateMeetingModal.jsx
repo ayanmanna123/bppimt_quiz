@@ -161,14 +161,14 @@ const CreateMeetingModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                             <div className="text-center py-10 text-gray-500 dark:text-gray-400">
                                 <Video className="w-12 h-12 mx-auto mb-2 opacity-20" />
                                 <p>No meetings scheduled.</p>
-                                <Button variant="link" onClick={() => setActiveTab("create")} className="mt-2 dark:text-blue-400">
+                                <Button variant="link" onClick={() => setActiveTab("create")} className="mt-2 text-blue-600 dark:text-blue-400">
                                     Schedule one now
                                 </Button>
                             </div>
                         ) : (
                             <div className="space-y-3">
                                 {meetings.map((meeting) => (
-                                    <div key={meeting._id} className="bg-white dark:bg-indigo-950/40 border border-gray-200 dark:border-indigo-500/20 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow relative group">
+                                    <div key={meeting._id} className="bg-white dark:bg-slate-900/40 border border-gray-200 dark:border-slate-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow relative group">
                                         <div className="flex justify-between items-start mb-2">
                                             <div>
                                                 <h4 className="font-semibold text-gray-800 dark:text-white">{meeting.title}</h4>
@@ -178,7 +178,7 @@ const CreateMeetingModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
-                                                    className="text-blue-600 hover:bg-blue-50 h-8"
+                                                    className="text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 h-8 border-gray-200 dark:border-slate-700"
                                                     onClick={() => window.open(meeting.meetingLink, "_blank")}
                                                 >
                                                     <ExternalLink className="w-3 h-3 mr-1" />
@@ -187,7 +187,7 @@ const CreateMeetingModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                                                 <Button
                                                     size="icon"
                                                     variant="ghost"
-                                                    className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-600"
+                                                    className="h-8 w-8 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400"
                                                     onClick={() => handleDelete(meeting._id)}
                                                 >
                                                     <Trash2 className="w-4 h-4" />

@@ -7,9 +7,9 @@ const OnlineUsersBar = ({ users }) => {
     if (!users || users.length === 0) return null;
 
     return (
-        <div className="bg-indigo-700/30 backdrop-blur-md border-b border-white/10 py-2.5 px-4 shrink-0">
+        <div className="bg-indigo-700/30 dark:bg-indigo-900/40 backdrop-blur-md border-b border-white/10 py-2.5 px-4 shrink-0 transition-colors">
             <div className="flex items-center gap-3">
-                <span className="text-[10px] font-bold text-indigo-200 uppercase tracking-widest shrink-0">
+                <span className="text-[10px] font-bold text-indigo-200 dark:text-indigo-300 uppercase tracking-widest shrink-0">
                     Online Now
                 </span>
                 <ScrollArea className="flex-1 whitespace-nowrap overflow-hidden">
@@ -30,7 +30,7 @@ const OnlineUsersBar = ({ users }) => {
                                     </TooltipTrigger>
                                     <TooltipContent side="bottom" className="bg-slate-900 text-white border-slate-800">
                                         <div className="flex flex-col gap-0.5">
-                                            <p className="text-xs font-bold">{user.fullname}</p>
+                                            <p className="text-xs font-bold text-slate-100">{user.fullname}</p>
                                             <p className="text-[10px] text-slate-400 capitalize">{user.role}</p>
                                         </div>
                                     </TooltipContent>

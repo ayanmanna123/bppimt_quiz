@@ -125,8 +125,8 @@ const EnhancedDropdown = ({ value, onValueChange, options, placeholder, icon: Ic
   return (
     <div className="relative group">
       {label && (
-        <label className="block text-sm font-semibold text-gray-700 mb-2 items-center gap-2">
-          {Icon && <Icon className="w-4 h-4 text-emerald-600" />}
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 items-center gap-2">
+          {Icon && <Icon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
           {label}
           {required && <span className="text-red-500">*</span>}
         </label>
@@ -579,7 +579,7 @@ const CreateSubject = () => {
                               <Button
                                 type="button"
                                 onClick={() => removeTimeSlot(index)}
-                                className="bg-red-100 hover:bg-red-200 text-red-600 rounded-xl px-3 py-2"
+                                className="bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl px-3 py-2"
                               >
                                 <X className="w-4 h-4" />
                               </Button>

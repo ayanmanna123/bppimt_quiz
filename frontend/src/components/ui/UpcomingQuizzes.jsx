@@ -9,7 +9,7 @@ const UpcomingQuizzes = ({ quizzes }) => {
     const upcoming = quizzes ? quizzes.slice(0, 3) : [];
 
     return (
-        <div className="bg-gradient-to-br from-[#4f46e5] to-[#7c3aed] text-white rounded-[2rem] p-6 shadow-xl shadow-indigo-200 relative overflow-hidden h-full flex flex-col">
+        <div className="bg-gradient-to-br from-[#4f46e5] to-[#7c3aed] dark:from-[#3730a3] dark:to-[#5b21b6] text-white rounded-[2rem] p-6 shadow-xl shadow-indigo-200 dark:shadow-indigo-900/40 relative overflow-hidden h-full flex flex-col transition-colors">
             {/* Background Decorations */}
             <div className="absolute top-0 right-0 -mr-12 -mt-12 w-48 h-48 bg-white/10 rounded-full blur-3xl mix-blend-overlay" />
             <div className="absolute bottom-0 left-0 -ml-12 -mb-12 w-40 h-40 bg-purple-500/30 rounded-full blur-3xl mix-blend-overlay" />

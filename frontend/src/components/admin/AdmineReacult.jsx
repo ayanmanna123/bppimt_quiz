@@ -284,11 +284,11 @@ const AdmineResult = () => {
     return (
       <>
 
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-100 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-100 dark:from-slate-950 dark:via-gray-900 dark:to-blue-950 flex items-center justify-center transition-colors">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full"
+            className="w-16 h-16 border-4 border-blue-200 dark:border-blue-900 border-t-blue-600 dark:border-t-blue-500 rounded-full"
           />
         </div>
       </>
@@ -301,7 +301,7 @@ const AdmineResult = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-100 dark:from-slate-950 dark:via-gray-900 dark:to-blue-950 transition-colors duration-500">
         {/* Enhanced Header */}
         <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-700 via-gray-800 to-slate-900 opacity-95"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-700 via-gray-800 to-slate-900 dark:from-slate-900 dark:via-black dark:to-slate-900 opacity-95 transition-colors"></div>
           <div className="absolute inset-0">
             <div className="absolute top-10 right-10 w-32 h-32 border-2 border-white/20 rounded-full animate-pulse"></div>
             <div className="absolute bottom-20 left-20 w-24 h-24 bg-white/10 rounded-full animate-bounce"></div>
@@ -352,35 +352,35 @@ const AdmineResult = () => {
 
               {/* Admin Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-8">
-                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20 dark:border-white/10">
                   <Users className="w-6 h-6 text-blue-400 mb-2 mx-auto" />
                   <div className="text-2xl font-bold text-white">
                     {stats.totalStudents}
                   </div>
                   <div className="text-white/80 text-sm">Total Students</div>
                 </div>
-                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20 dark:border-white/10">
                   <TrendingUp className="w-6 h-6 text-green-400 mb-2 mx-auto" />
                   <div className="text-2xl font-bold text-white">
                     {stats.averageScore}
                   </div>
                   <div className="text-white/80 text-sm">Average Score</div>
                 </div>
-                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20 dark:border-white/10">
                   <CheckCircle className="w-6 h-6 text-emerald-400 mb-2 mx-auto" />
                   <div className="text-2xl font-bold text-white">
                     {stats.onTimeSubmissions}
                   </div>
                   <div className="text-white/80 text-sm">On Time</div>
                 </div>
-                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20 dark:border-white/10">
                   <Clock className="w-6 h-6 text-orange-400 mb-2 mx-auto" />
                   <div className="text-2xl font-bold text-white">
                     {stats.lateSubmissions}
                   </div>
                   <div className="text-white/80 text-sm">Late</div>
                 </div>
-                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20 dark:border-white/10">
                   <Trophy className="w-6 h-6 text-yellow-400 mb-2 mx-auto" />
                   <div className="text-2xl font-bold text-white">
                     {stats.passRate}%
@@ -398,7 +398,7 @@ const AdmineResult = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700 p-6 mb-8"
+            className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-slate-800 p-6 mb-8 transition-colors"
           >
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
               {/* Search */}

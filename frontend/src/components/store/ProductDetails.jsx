@@ -83,12 +83,12 @@ const ProductDetails = () => {
     );
 
     return (
-        <div className="min-h-[calc(100vh-64px)] bg-slate-50 p-6 md:p-10">
+        <div className="min-h-[calc(100vh-64px)] bg-slate-50 dark:bg-slate-950 p-6 md:p-10 transition-colors">
             <div className="max-w-7xl mx-auto">
                 <Button
                     variant="ghost"
                     onClick={() => navigate('/store')}
-                    className="mb-8 hover:bg-white hover:text-primary rounded-xl font-bold text-slate-500"
+                    className="mb-8 hover:bg-white dark:hover:bg-slate-800 hover:text-primary rounded-xl font-bold text-slate-500 dark:text-slate-400 transition-colors"
                 >
                     <ChevronLeft className="w-4 h-4 mr-2" /> Back to Campus Store
                 </Button>
@@ -96,7 +96,7 @@ const ProductDetails = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                     {/* Image Gallery - Left Side */}
                     <div className="space-y-4">
-                        <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-200 aspect-square flex items-center justify-center p-8 relative group">
+                        <div className="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 aspect-square flex items-center justify-center p-8 relative group transition-colors">
                             <img
                                 src={mainImage}
                                 alt={product.title}
@@ -128,16 +128,16 @@ const ProductDetails = () => {
 
                     {/* Product Info - Right Side */}
                     <div className="flex flex-col gap-6">
-                        <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+                        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm transition-colors">
                             <div className="flex items-start justify-between gap-4 mb-6">
                                 <div>
-                                    <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-2 leading-tight">{product.title}</h1>
-                                    <div className="flex items-center gap-3 text-slate-500 text-sm font-medium">
+                                    <h1 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-2 leading-tight">{product.title}</h1>
+                                    <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 text-sm font-medium">
                                         <div className="flex items-center gap-1.5">
                                             <MapPin className="w-4 h-4 text-primary" />
                                             {product.location}
                                         </div>
-                                        <div className="w-1 h-1 rounded-full bg-slate-300" />
+                                        <div className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
                                         <div className="flex items-center gap-1.5">
                                             <Clock className="w-4 h-4 text-primary" />
                                             Posted {new Date(product.createdAt).toLocaleDateString()}
@@ -152,18 +152,18 @@ const ProductDetails = () => {
                                 </div>
                             </div>
 
-                            <Card className="bg-slate-50/50 border-slate-100 mb-8 overflow-hidden hover:border-primary/20 transition-colors">
+                            <Card className="bg-slate-50/50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-700 mb-8 overflow-hidden hover:border-primary/20 dark:hover:border-primary/20 transition-colors">
                                 <div className="p-4 flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                        <Avatar className="w-12 h-12 ring-2 ring-white shadow-sm">
+                                        <Avatar className="w-12 h-12 ring-2 ring-white dark:ring-slate-700 shadow-sm">
                                             <AvatarImage src={product.seller.picture} />
-                                            <AvatarFallback className="bg-indigo-100 text-primary font-bold">
+                                            <AvatarFallback className="bg-indigo-100 dark:bg-indigo-900/50 text-primary dark:text-indigo-300 font-bold">
                                                 {product.seller.fullname.charAt(0)}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div>
-                                            <p className="font-bold text-slate-900">{product.seller.fullname}</p>
-                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Seller</p>
+                                            <p className="font-bold text-slate-900 dark:text-white">{product.seller.fullname}</p>
+                                            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Seller</p>
                                         </div>
                                     </div>
                                     <Button
@@ -179,20 +179,20 @@ const ProductDetails = () => {
                             </Card>
 
                             <div className="space-y-4">
-                                <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
+                                <h3 className="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
                                     <Tag className="w-5 h-5 text-primary" />
                                     Description
                                 </h3>
-                                <p className="text-slate-600 leading-8 whitespace-pre-wrap text-base">
+                                <p className="text-slate-600 dark:text-slate-300 leading-8 whitespace-pre-wrap text-base">
                                     {product.description}
                                 </p>
                             </div>
                         </div>
 
                         {/* Safety Tips or Extras could go here */}
-                        <div className="bg-indigo-50/50 rounded-2xl border border-indigo-100 p-6">
-                            <h4 className="font-bold text-indigo-900 mb-2 text-sm uppercase tracking-wide">Safety Tips</h4>
-                            <ul className="text-sm text-indigo-800/80 space-y-2 list-disc pl-4">
+                        <div className="bg-indigo-50/50 dark:bg-indigo-900/10 rounded-2xl border border-indigo-100 dark:border-indigo-900/30 p-6 transition-colors">
+                            <h4 className="font-bold text-indigo-900 dark:text-indigo-300 mb-2 text-sm uppercase tracking-wide">Safety Tips</h4>
+                            <ul className="text-sm text-indigo-800/80 dark:text-indigo-300/80 space-y-2 list-disc pl-4">
                                 <li>Meet in a safe, public place like the library or cafeteria.</li>
                                 <li>Check the item properly before making any payment.</li>
                                 <li>Avoid sharing sensitive personal information.</li>
