@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +39,7 @@ const resultPatterns = [
 ];
 
 const Result = () => {
+  const { darktheme } = useSelector((store) => store.auth);
   const { getAccessTokenSilently } = useAuth0();
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,13 +113,13 @@ const Result = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-100">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-100 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 transition-colors duration-500">
         {/* Header Section */}
         <div className="p-6">
           <div className="flex items-center gap-4 mb-8">
             <motion.div
               onClick={() => navigate("/quiz")}
-              className="flex items-center gap-2 text-gray-600 hover:text-purple-600 cursor-pointer transition-all duration-300 p-3 rounded-xl hover:bg-white/70 hover:shadow-md"
+              className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 cursor-pointer transition-all duration-300 p-3 rounded-xl hover:bg-white/70 dark:hover:bg-slate-800/70 hover:shadow-md"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -144,10 +146,10 @@ const Result = () => {
                   </div>
                 </div>
                 <div className="text-left">
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 dark:from-purple-400 dark:via-indigo-400 dark:to-blue-400 bg-clip-text text-transparent">
                     Quiz Results
                   </h1>
-                  <p className="text-gray-600 text-lg mt-1">
+                  <p className="text-gray-600 dark:text-gray-400 text-lg mt-1">
                     Your academic performance dashboard
                   </p>
                 </div>
@@ -212,11 +214,11 @@ const Result = () => {
                 transition={{ delay: 0.5, duration: 0.5 }}
                 className="mt-10"
               >
-                <div className="w-28 h-28 bg-gradient-to-br from-purple-200 to-indigo-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
-                  <Trophy className="w-14 h-14 text-purple-600" />
+                <div className="w-28 h-28 bg-gradient-to-br from-purple-200 to-indigo-300 dark:from-purple-900 dark:to-indigo-900 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
+                  <Trophy className="w-14 h-14 text-purple-600 dark:text-purple-400" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700 mb-2">Loading Results...</h3>
-                <p className="text-gray-500 text-lg">Please wait while we fetch your quiz results</p>
+                <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">Loading Results...</h3>
+                <p className="text-gray-500 dark:text-gray-400 text-lg">Please wait while we fetch your quiz results</p>
               </motion.div>
             </div>
           ) : expiredResults?.length === 0 ? (
@@ -226,11 +228,11 @@ const Result = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="w-28 h-28 bg-gradient-to-br from-gray-200 to-slate-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
-                  <Trophy className="w-14 h-14 text-gray-600" />
+                <div className="w-28 h-28 bg-gradient-to-br from-gray-200 to-slate-300 dark:from-gray-800 dark:to-slate-700 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
+                  <Trophy className="w-14 h-14 text-gray-600 dark:text-gray-400" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700 mb-2">No Results Found</h3>
-                <p className="text-gray-500 text-lg">Complete some quizzes to see your results here</p>
+                <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">No Results Found</h3>
+                <p className="text-gray-500 dark:text-gray-400 text-lg">Complete some quizzes to see your results here</p>
               </motion.div>
             </div>
           ) : (
@@ -260,7 +262,7 @@ const Result = () => {
                     className="group"
                   >
                     <Card
-                      className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-105 relative cursor-pointer"
+                      className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white dark:bg-slate-900 border-0 dark:border-slate-800 rounded-3xl transform hover:scale-105 relative cursor-pointer"
                       onClick={() => navigate(`/reasult/details/${result?._id}`)}
                     >
                       {/* Creative gradient header with enhanced patterns */}
@@ -295,7 +297,7 @@ const Result = () => {
 
                         {/* Quiz title with enhanced styling */}
                         <div className="absolute bottom-4 left-4 right-4">
-                          <h3 className="text-gray-800 font-bold text-xl leading-tight drop-shadow-2xl truncate">
+                          <h3 className="text-gray-800 dark:text-white font-bold text-xl leading-tight drop-shadow-2xl truncate">
                             {result?.quiz?.title || "Untitled Quiz"}
                           </h3>
                           <div className="w-12 h-1 bg-white/60 rounded-full mt-2"></div>
@@ -305,12 +307,12 @@ const Result = () => {
                       {/* Enhanced content section */}
                       <CardContent className="p-6 space-y-5">
                         {/* Score section with circular progress */}
-                        <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-5 text-center relative overflow-hidden">
+                        <div className="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-slate-800 dark:to-blue-900/40 rounded-2xl p-5 text-center relative overflow-hidden">
                           <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-blue-200 to-purple-200 rounded-full -translate-y-8 translate-x-8 opacity-60"></div>
                           <div className="relative z-10">
-                            <p className="text-xs text-gray-500 font-semibold mb-2">YOUR SCORE</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-2">YOUR SCORE</p>
                             <div className="flex items-center justify-center gap-2 mb-2">
-                              <Target className="w-5 h-5 text-blue-600" />
+                              <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                               <span className={`text-3xl font-bold ${getGradeColor(percentage)}`}>
                                 {result?.score}
                               </span>
@@ -324,25 +326,25 @@ const Result = () => {
                                 style={{ width: `${Math.min(percentage, 100)}%` }}
                               ></div>
                             </div>
-                            <p className="text-sm font-bold text-gray-700">{percentage}% Accuracy</p>
+                            <p className="text-sm font-bold text-gray-700 dark:text-gray-300">{percentage}% Accuracy</p>
                           </div>
                         </div>
 
                         {/* Subject and Department info */}
                         <div className="grid grid-cols-1 gap-4">
-                          <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
-                            <BookOpen className="w-5 h-5 text-green-600" />
+                          <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                            <BookOpen className="w-5 h-5 text-green-600 dark:text-green-400" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">Subject</p>
-                              <p className="text-sm font-bold text-gray-800">{result?.quiz?.subject?.subjectName}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Subject</p>
+                              <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{result?.quiz?.subject?.subjectName}</p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-xl">
-                            <Users className="w-5 h-5 text-purple-600" />
+                          <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+                            <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">Department</p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Department</p>
+                              <p className="text-sm font-bold text-gray-700 dark:text-gray-300">
                                 {result?.quiz?.subject?.department} ({result?.quiz?.subject?.semester} sem)
                               </p>
                             </div>
@@ -351,31 +353,31 @@ const Result = () => {
 
                         {/* Enhanced stats grid */}
                         <div className="grid grid-cols-2 gap-4">
-                          <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
-                            <Calendar className="w-5 h-5 text-blue-600" />
+                          <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                            <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">Quiz Date</p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Quiz Date</p>
+                              <p className="text-sm font-bold text-gray-700 dark:text-gray-200">
                                 {new Date(result?.quiz?.date).toLocaleDateString()}
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-xl">
-                            <Brain className="w-5 h-5 text-orange-600" />
+                          <div className="flex items-center gap-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-xl">
+                            <Brain className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">Questions</p>
-                              <p className="text-sm font-bold text-gray-700">{result?.quiz?.totalQuestions}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Questions</p>
+                              <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{result?.quiz?.totalQuestions}</p>
                             </div>
                           </div>
                         </div>
 
                         {/* Submission time */}
-                        <div className="bg-gradient-to-r from-gray-50 to-purple-50 rounded-xl p-4 border-l-4 border-purple-400">
-                          <p className="text-xs text-gray-500 font-semibold mb-1">SUBMITTED ON</p>
+                        <div className="bg-gradient-to-r from-gray-50 to-purple-50 dark:from-slate-800 dark:to-purple-900/40 rounded-xl p-4 border-l-4 border-purple-400 dark:border-purple-500">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-1">SUBMITTED ON</p>
                           <div className="flex items-center gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-600" />
-                            <p className="text-sm font-bold text-gray-800">
+                            <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
+                            <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
                               {new Date(result?.submittedAt).toLocaleString('en-US', {
                                 weekday: 'short',
                                 month: 'short',
@@ -414,15 +416,15 @@ const Result = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-slate-200/60 shadow-xl">
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-3xl p-8 border border-slate-200/60 dark:border-slate-700/60 shadow-xl">
               <div className="flex items-center justify-center gap-8 flex-wrap">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
                     <Trophy className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-left">
-                    <p className="text-2xl font-bold text-gray-800">{expiredResults.length}</p>
-                    <p className="text-sm text-gray-600">Completed Quizzes</p>
+                    <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{expiredResults.length}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Completed Quizzes</p>
                   </div>
                 </div>
 
@@ -431,13 +433,13 @@ const Result = () => {
                     <Award className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-left">
-                    <p className="text-2xl font-bold text-gray-800">
+                    <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                       {Math.round(expiredResults.reduce((acc, result) => {
                         const totalMarks = result?.quiz?.marks * result?.quiz?.totalQuestions;
                         return acc + getScorePercentage(result?.score, totalMarks);
                       }, 0) / expiredResults.length)}%
                     </p>
-                    <p className="text-sm text-gray-600">Average Score</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Average Score</p>
                   </div>
                 </div>
               </div>
@@ -447,7 +449,7 @@ const Result = () => {
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-2xl bg-white/95 backdrop-blur-xl border-0 rounded-3xl shadow-2xl p-0 overflow-hidden">
+        <DialogContent className="max-w-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-0 rounded-3xl shadow-2xl p-0 overflow-hidden">
           <div className="bg-gradient-to-r from-red-500 via-rose-500 to-pink-600 p-6 text-white text-center relaltive overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-10 translate-x-10 blur-xl"></div>
             <div className="relative z-10">
@@ -462,21 +464,21 @@ const Result = () => {
           </div>
 
           <div className="p-8 text-center space-y-6">
-            <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto animate-bounce">
+            <div className="w-20 h-20 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto animate-bounce">
               <Brain className="w-10 h-10 text-red-500" />
             </div>
 
-            <p className="text-gray-600 text-lg leading-relaxed">
+            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
               {generatedQuiz?.message}
             </p>
 
             <div className="grid grid-cols-2 gap-4 text-center">
-              <div className="p-4 bg-gray-50 rounded-xl">
-                <p className="text-sm text-gray-500 uppercase font-bold tracking-wider">Questions</p>
-                <p className="text-2xl font-bold text-gray-800">{generatedQuiz?.questions?.length}</p>
+              <div className="p-4 bg-gray-50 dark:bg-slate-800/50 rounded-xl">
+                <p className="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider">Questions</p>
+                <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{generatedQuiz?.questions?.length}</p>
               </div>
-              <div className="p-4 bg-gray-50 rounded-xl">
-                <p className="text-sm text-gray-500 uppercase font-bold tracking-wider">Difficulty</p>
+              <div className="p-4 bg-gray-50 dark:bg-slate-800/50 rounded-xl">
+                <p className="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider">Difficulty</p>
                 <p className="text-2xl font-bold text-red-600">Adaptive Hard</p>
               </div>
             </div>

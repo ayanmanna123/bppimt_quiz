@@ -253,23 +253,23 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
     };
 
     return (
-        <div className="p-4 bg-white border-t border-slate-100 relative">
+        <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 relative">
             {/* Mention Popover */}
             {showMentions && mentionUsers.length > 0 && (
-                <div className="absolute bottom-full left-4 mb-2 bg-white rounded-lg shadow-xl border border-slate-100 w-64 max-h-48 overflow-y-auto z-50">
-                    <div className="p-2 border-b border-slate-50 text-xs font-semibold text-slate-500 bg-slate-50">
+                <div className="absolute bottom-full left-4 mb-2 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 w-64 max-h-48 overflow-y-auto z-50">
+                    <div className="p-2 border-b border-slate-50 dark:border-slate-700 text-xs font-semibold text-slate-500 dark:text-slate-300 bg-slate-50 dark:bg-slate-700">
                         Suggesting users...
                     </div>
                     {mentionUsers.map(user => (
                         <button
                             key={user._id}
                             onClick={() => insertMention(user)}
-                            className="w-full text-left flex items-center gap-2 p-2 hover:bg-indigo-50 transition-colors"
+                            className="w-full text-left flex items-center gap-2 p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
                         >
                             <img src={user.picture} alt="" className="w-6 h-6 rounded-full" />
                             <div className="flex flex-col">
-                                <span className="text-sm font-medium text-slate-700">{user.fullname}</span>
-                                <span className="text-[10px] text-slate-400 capitalize">{user.role}</span>
+                                <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{user.fullname}</span>
+                                <span className="text-[10px] text-slate-400 dark:text-slate-500 capitalize">{user.role}</span>
                             </div>
                         </button>
                     ))}
@@ -278,11 +278,11 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
 
             {/* Edit Preview */}
             {editingMessage && (
-                <div className="flex items-center justify-between bg-yellow-50 p-2 rounded-t-lg border-b border-yellow-100 mb-2 border-l-4 border-l-yellow-500">
+                <div className="flex items-center justify-between bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded-t-lg border-b border-yellow-100 dark:border-yellow-900/30 mb-2 border-l-4 border-l-yellow-500">
                     <div className="text-sm">
-                        <span className="font-semibold text-yellow-700">Editing Message</span>
+                        <span className="font-semibold text-yellow-700 dark:text-yellow-400">Editing Message</span>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => { setMessage(""); onCancelEdit(); }} className="h-6 w-6 text-yellow-700 hover:bg-yellow-100">
+                    <Button variant="ghost" size="icon" onClick={() => { setMessage(""); onCancelEdit(); }} className="h-6 w-6 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/30">
                         <X className="w-4 h-4" />
                     </Button>
                 </div>
@@ -290,12 +290,12 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
 
             {/* Reply Preview */}
             {!editingMessage && replyTo && (
-                <div className="flex items-center justify-between bg-slate-50 p-2 rounded-t-lg border-b border-slate-100 mb-2 border-l-4 border-l-indigo-500">
+                <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800 p-2 rounded-t-lg border-b border-slate-100 dark:border-slate-700 mb-2 border-l-4 border-l-indigo-500">
                     <div className="text-sm">
-                        <span className="font-semibold text-indigo-600">Replying to {replyTo.sender?.fullname}</span>
-                        <p className="text-slate-500 text-xs truncate max-w-md">{replyTo.message}</p>
+                        <span className="font-semibold text-indigo-600 dark:text-indigo-400">Replying to {replyTo.sender?.fullname}</span>
+                        <p className="text-slate-500 dark:text-slate-400 text-xs truncate max-w-md">{replyTo.message}</p>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={onCancelReply} className="h-6 w-6">
+                    <Button variant="ghost" size="icon" onClick={onCancelReply} className="h-6 w-6 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700">
                         <X className="w-4 h-4" />
                     </Button>
                 </div>
@@ -304,14 +304,14 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
             {/* Attachment Preview */}
             {attachment && (
                 <div className="relative inline-block mb-2">
-                    <img src={attachment.url} alt="preview" className="h-16 w-16 object-cover rounded-lg border border-slate-200" />
+                    <img src={attachment.url} alt="preview" className="h-16 w-16 object-cover rounded-lg border border-slate-200 dark:border-slate-700" />
                     <button
                         onClick={() => setAttachment(null)}
                         className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 shadow-sm hover:bg-red-600"
                     >
                         <X className="w-3 h-3" />
                     </button>
-                    {uploading && <div className="absolute inset-0 bg-white/50 flex items-center justify-center rounded-lg"><Loader2 className="animate-spin w-4 h-4" /></div>}
+                    {uploading && <div className="absolute inset-0 bg-white/50 dark:bg-black/50 flex items-center justify-center rounded-lg"><Loader2 className="animate-spin w-4 h-4 dark:text-white" /></div>}
                 </div>
             )}
 
@@ -327,7 +327,7 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="text-slate-400 hover:text-indigo-600"
+                    className="text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading || !!editingMessage}
                 >
@@ -339,7 +339,7 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
                     <Button
                         variant="ghost"
                         size="icon"
-                        className={`${isRecording ? "text-red-500 animate-pulse bg-red-50" : "text-slate-400 hover:text-indigo-600"}`}
+                        className={`${isRecording ? "text-red-500 animate-pulse bg-red-50 dark:bg-red-900/20" : "text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
                         onClick={isRecording ? stopRecording : startRecording}
                         disabled={uploading}
                     >
@@ -351,7 +351,7 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
                 {/* Emoji Picker */}
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-yellow-500">
+                        <Button variant="ghost" size="icon" className="text-slate-400 dark:text-slate-500 hover:text-yellow-500">
                             <Smile className="w-5 h-5" />
                         </Button>
                     </PopoverTrigger>
@@ -367,7 +367,7 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
                 {/* Text Area or Recording UI */}
                 <div className="flex-1 relative">
                     {isRecording ? (
-                        <div className="flex items-center gap-2 h-full px-4 py-3 bg-red-50 rounded-xl border border-red-100 text-red-600 font-medium">
+                        <div className="flex items-center gap-2 h-full px-4 py-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-100 dark:border-red-900 text-red-600 dark:text-red-400 font-medium">
                             <span className="animate-pulse">● Rec</span>
                             <span>{formatTime(recordingDuration)}</span>
                         </div>
@@ -378,7 +378,7 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
                             onChange={handleChange}
                             onKeyDown={handleKeyDown}
                             placeholder={editingMessage ? "Edit message..." : "Type a message..."}
-                            className="w-full bg-slate-50 text-slate-700 placeholder:text-slate-400 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all resize-none min-h-[48px] max-h-32"
+                            className="w-full bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 transition-all resize-none min-h-[48px] max-h-32"
                             rows={1}
                             style={{ height: "auto", minHeight: "48px" }}
                         />

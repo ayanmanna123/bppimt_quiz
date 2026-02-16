@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +43,7 @@ const teacherPatterns = [
 ];
 
 const TeacherCreateQuiz = () => {
+  const { darktheme } = useSelector((store) => store.auth);
   const { getAccessTokenSilently } = useAuth0();
   const [quizzes, setQuizzes] = useState([]);
   const navigate = useNavigate();
@@ -103,13 +105,13 @@ const TeacherCreateQuiz = () => {
   return (
     <>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950 transition-colors duration-500">
         {/* Header Section */}
         <div className="p-6">
           <div className="flex items-center gap-4 mb-8">
             <motion.div
               onClick={() => navigate("/Admin/subject")}
-              className="flex items-center gap-2 text-gray-600 hover:text-blue-600 cursor-pointer transition-all duration-300 p-3 rounded-xl hover:bg-white/70 hover:shadow-md"
+              className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-all duration-300 p-3 rounded-xl hover:bg-white/70 dark:hover:bg-slate-800/70 hover:shadow-md"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -136,10 +138,10 @@ const TeacherCreateQuiz = () => {
                   </div>
                 </div>
                 <div className="text-left">
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
                     Teacher's Quiz Hub
                   </h1>
-                  <p className="text-gray-600 text-lg mt-1">
+                  <p className="text-gray-600 dark:text-gray-400 text-lg mt-1">
                     Your comprehensive quiz management dashboard
                   </p>
                 </div>
@@ -164,13 +166,13 @@ const TeacherCreateQuiz = () => {
                 transition={{ delay: 0.5, duration: 0.5 }}
                 className="mt-10"
               >
-                <div className="w-28 h-28 bg-gradient-to-br from-blue-200 to-indigo-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
-                  <Brain className="w-14 h-14 text-blue-600" />
+                <div className="w-28 h-28 bg-gradient-to-br from-blue-200 to-indigo-300 dark:from-blue-900 dark:to-indigo-900 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
+                  <Brain className="w-14 h-14 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700 mb-2">
+                <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
                   No Quizzes Yet
                 </h3>
-                <p className="text-gray-500 text-lg">
+                <p className="text-gray-500 dark:text-gray-400 text-lg">
                   Ready to create your first masterpiece quiz?
                 </p>
               </motion.div>
@@ -201,7 +203,7 @@ const TeacherCreateQuiz = () => {
                     }}
                     className="group"
                   >
-                    <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-110   relative">
+                    <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white dark:bg-slate-900 border-0 rounded-3xl transform hover:scale-110 relative">
                       {/* Creative gradient header with enhanced patterns */}
                       <div
                         className={`h-36 ${gradientClass} relative overflow-hidden`}
@@ -233,7 +235,7 @@ const TeacherCreateQuiz = () => {
 
                         {/* Quiz title with enhanced styling */}
                         <div className="absolute bottom-4 left-4 right-4">
-                          <h3 className="  font-bold text-xl leading-tight drop-shadow-2xl truncate text-gray-800">
+                          <h3 className="font-bold text-xl leading-tight drop-shadow-2xl truncate text-white drop-shadow-md">
                             {quiz.title}
                           </h3>
 
@@ -245,49 +247,49 @@ const TeacherCreateQuiz = () => {
                       <CardContent className="p-6 space-y-5">
                         {/* Enhanced stats grid with icons */}
                         <div className="grid grid-cols-2 gap-4">
-                          <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
-                            <Calendar className="w-5 h-5 text-blue-600" />
+                          <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                            <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 Date
                               </p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-sm font-bold text-gray-700 dark:text-gray-200">
                                 {quiz.date}
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-xl">
-                            <Clock className="w-5 h-5 text-orange-600" />
+                          <div className="flex items-center gap-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-xl">
+                            <Clock className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 Time
                               </p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-sm font-bold text-gray-700 dark:text-gray-200">
                                 {quiz.time}m
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-xl">
-                            <Trophy className="w-5 h-5 text-yellow-600" />
+                          <div className="flex items-center gap-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl">
+                            <Trophy className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 Marks
                               </p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-sm font-bold text-gray-700 dark:text-gray-200">
                                 {quiz.marks}
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
-                            <Brain className="w-5 h-5 text-green-600" />
+                          <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                            <Brain className="w-5 h-5 text-green-600 dark:text-green-400" />
                             <div>
-                              <p className="text-xs text-gray-500 font-medium">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 Questions
                               </p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-sm font-bold text-gray-700 dark:text-gray-200">
                                 {quiz.totalQuestions}
                               </p>
                             </div>
@@ -295,11 +297,11 @@ const TeacherCreateQuiz = () => {
                         </div>
 
                         {/* Enhanced created date section */}
-                        <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 border-l-4 border-blue-400">
-                          <p className="text-xs text-gray-500 font-semibold mb-1">
+                        <div className="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-slate-800 dark:to-blue-900/30 rounded-xl p-4 border-l-4 border-blue-400 dark:border-blue-500">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-1">
                             CREATED ON
                           </p>
-                          <p className="text-sm font-bold text-gray-800">
+                          <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
                             {new Date(quiz.createdAt).toLocaleDateString(
                               "en-US",
                               {
@@ -318,7 +320,7 @@ const TeacherCreateQuiz = () => {
                             e.stopPropagation();
                             navigate(`/admin/reasult/${quiz._id}`);
                           }}
-                          className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
+                          className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 dark:from-blue-500 dark:via-indigo-500 dark:to-purple-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-lg hover:shadow-2xl transform hover:scale-105"
                         >
                           <Eye className="w-5 h-5" />
                           View Results

@@ -180,30 +180,30 @@ const StudyRoomDetail = () => {
 
     if (loading) {
         return (
-            <div className="flex h-[calc(100vh-64px)] items-center justify-center bg-slate-50">
+            <div className="flex h-[calc(100vh-64px)] items-center justify-center bg-slate-50 dark:bg-slate-950">
                 <div className="text-center">
-                    <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mx-auto mb-4" />
-                    <p className="text-slate-600 font-medium">Entering Study Room...</p>
+                    <Loader2 className="w-12 h-12 animate-spin text-indigo-600 dark:text-indigo-400 mx-auto mb-4" />
+                    <p className="text-slate-600 dark:text-slate-400 font-medium">Entering Study Room...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="flex h-[calc(100vh-64px)] bg-white overflow-hidden">
+        <div className="flex h-[calc(100vh-64px)] bg-white dark:bg-slate-950 overflow-hidden">
             {/* Sidebar - Room Info & Members */}
-            <div className="w-64 bg-slate-50 border-r border-slate-200 flex flex-col shrink-0 hidden md:flex h-full">
-                <div className="p-4 border-b border-slate-200 bg-white">
-                    <div className="flex items-center gap-2 text-indigo-600 font-black mb-1">
+            <div className="w-64 bg-slate-50 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 hidden md:flex h-full">
+                <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                    <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black mb-1">
                         <Hash className="w-5 h-5" />
-                        <span className="truncate">{room.name}</span>
+                        <span className="truncate text-slate-900 dark:text-slate-100">{room.name}</span>
                     </div>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-4">Study Room</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-4">Study Room</p>
                     <div className="flex flex-col gap-2">
                         <Button
                             variant={isVideoActive ? "destructive" : "secondary"}
                             size="sm"
-                            className={`w-full rounded-xl font-bold transition-all shadow-sm ${isVideoActive ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'}`}
+                            className={`w-full rounded-xl font-bold transition-all shadow-sm ${isVideoActive ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30' : 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/30'}`}
                             onClick={toggleVideo}
                         >
                             {isVideoActive ? <VideoOff className="w-4 h-4 mr-2" /> : <Video className="w-4 h-4 mr-2" />}
@@ -212,7 +212,7 @@ const StudyRoomDetail = () => {
                         <Button
                             variant="outline"
                             size="sm"
-                            className="w-full rounded-xl font-bold border-slate-200 text-slate-600 hover:bg-slate-50"
+                            className="w-full rounded-xl font-bold border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-transparent"
                             onClick={openJitsiInNewTab}
                         >
                             <MonitorIcon className="w-4 h-4 mr-2" />
@@ -223,7 +223,7 @@ const StudyRoomDetail = () => {
 
                 <div className="flex-1 overflow-y-auto px-4 py-6">
                     <div className="mb-8">
-                        <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                             <Users className="w-3 h-3" />
                             Active Members — {room.members.length}
                         </h4>
@@ -231,17 +231,17 @@ const StudyRoomDetail = () => {
                             {room.members.map((member) => (
                                 <div key={member._id} className="flex items-center gap-3 group">
                                     <div className="relative">
-                                        <Avatar className="w-8 h-8 ring-2 ring-white">
+                                        <Avatar className="w-8 h-8 ring-2 ring-white dark:ring-slate-800">
                                             <AvatarImage src={member.picture} />
                                             <AvatarFallback>{member.fullname.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                         {member.isOnline && (
-                                            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-slate-50" />
+                                            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-slate-50 dark:border-slate-900" />
                                         )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-slate-700 truncate">{member.fullname}</p>
-                                        <p className="text-[10px] text-slate-400 capitalize">{member.role}</p>
+                                        <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{member.fullname}</p>
+                                        <p className="text-[10px] text-slate-400 dark:text-slate-500 capitalize">{member.role}</p>
                                     </div>
                                 </div>
                             ))}
@@ -249,7 +249,7 @@ const StudyRoomDetail = () => {
                     </div>
 
                     <div>
-                        <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                             <Info className="w-3 h-3" />
                             About
                         </h4>
@@ -259,10 +259,10 @@ const StudyRoomDetail = () => {
                     </div>
                 </div>
 
-                <div className="p-4 bg-white border-t border-slate-200 shrink-0">
+                <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shrink-0">
                     <Button
                         variant="ghost"
-                        className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl font-bold"
+                        className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl font-bold"
                         onClick={() => navigate("/study-rooms")}
                     >
                         <LogOut className="w-4 h-4 mr-2" />
@@ -272,15 +272,15 @@ const StudyRoomDetail = () => {
             </div>
 
             {/* Main Area - Video & Chat */}
-            <div className="flex-1 flex flex-col min-w-0 relative bg-slate-100">
+            <div className="flex-1 flex flex-col min-w-0 relative bg-slate-100 dark:bg-slate-950">
                 {/* Top Toolbar */}
-                <div className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 z-10">
+                <div className="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 z-10">
                     <div className="flex items-center gap-4">
-                        <div className="md:hidden flex items-center gap-2 text-indigo-600 font-black">
+                        <div className="md:hidden flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black">
                             <Hash className="w-5 h-5" />
-                            <span className="truncate max-w-[150px]">{room.name}</span>
+                            <span className="truncate max-w-[150px] text-slate-900 dark:text-slate-100">{room.name}</span>
                         </div>
-                        <div className="hidden md:flex items-center gap-2 text-slate-400">
+                        <div className="hidden md:flex items-center gap-2 text-slate-400 dark:text-slate-500">
                             <MessageSquare className="w-4 h-4" />
                             <span className="text-sm font-medium">Room Chat</span>
                         </div>
@@ -290,7 +290,7 @@ const StudyRoomDetail = () => {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50"
+                            className="rounded-xl text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
                         >
                             <Settings className="w-5 h-5" />
                         </Button>
@@ -349,18 +349,18 @@ const StudyRoomDetail = () => {
                         </div>
                     )}
 
-                    <div className={`flex-1 flex flex-col min-h-0 bg-white overflow-hidden`}>
+                    <div className={`flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-950 overflow-hidden`}>
                         <div
                             className="flex-1 p-4 overflow-y-auto scroll-smooth"
                             ref={scrollViewportRef}
                         >
                             <div className="flex flex-col gap-1 pb-4 max-w-4xl mx-auto w-full">
-                                <div className="py-10 text-center border-b border-slate-50 mb-6">
-                                    <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-4 text-2xl font-black">
+                                <div className="py-10 text-center border-b border-slate-50 dark:border-slate-800 mb-6">
+                                    <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-3xl flex items-center justify-center mx-auto mb-4 text-2xl font-black">
                                         {room.name.charAt(0).toUpperCase()}
                                     </div>
-                                    <h2 className="text-2xl font-black text-slate-900">Welcome to #{room.name}!</h2>
-                                    <p className="text-slate-500 text-sm">This is the beginning of the room history.</p>
+                                    <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100">Welcome to #{room.name}!</h2>
+                                    <p className="text-slate-500 dark:text-slate-400 text-sm">This is the beginning of the room history.</p>
                                 </div>
                                 {messages.map((msg, idx) => {
                                     const isMe = msg.sender?._id === usere?._id;
@@ -379,7 +379,7 @@ const StudyRoomDetail = () => {
                             </div>
                         </div>
 
-                        <div className="p-4 bg-white border-t border-slate-100 shrink-0">
+                        <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 shrink-0">
                             <div className="max-w-4xl mx-auto">
                                 <ChatInput
                                     onSendMessage={handleSendMessage}

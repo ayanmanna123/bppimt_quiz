@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 import { useEffect } from "react";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -46,6 +46,7 @@ const subjectPatterns = [
 ];
 
 const OtherTeacher = () => {
+  const { darktheme } = useSelector((store) => store.auth);
   const { getAccessTokenSilently } = useAuth0();
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -155,12 +156,12 @@ const OtherTeacher = () => {
     return (
       <>
 
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100 dark:from-slate-950 dark:via-purple-950 dark:to-pink-950 transition-colors duration-500 flex items-center justify-center">
           <div className="text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-purple-500 via-violet-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl animate-pulse mb-4">
               <Users className="w-8 h-8 text-white" />
             </div>
-            <p className="text-gray-600 text-lg">Loading other teachers...</p>
+            <p className="text-gray-600 dark:text-gray-300 text-lg">Loading other teachers...</p>
           </div>
         </div>
       </>
@@ -170,13 +171,13 @@ const OtherTeacher = () => {
   return (
     <>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100 dark:from-slate-950 dark:via-purple-950 dark:to-pink-950 transition-colors duration-500">
         {/* Header Section */}
         <div className="p-6">
           <div className="flex justify-between items-center mb-8">
             <motion.div
               onClick={() => navigate("/")}
-              className="flex items-center gap-2 text-gray-600 hover:text-purple-600 cursor-pointer transition-all duration-300 p-3 rounded-xl hover:bg-white/70 hover:shadow-md"
+              className="flex items-center gap-2 text-gray-600 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 cursor-pointer transition-all duration-300 p-3 rounded-xl hover:bg-white/70 dark:hover:bg-slate-800/70 hover:shadow-md"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -203,10 +204,10 @@ const OtherTeacher = () => {
                   </div>
                 </div>
                 <div className="text-left">
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 dark:from-purple-400 dark:via-violet-400 dark:to-indigo-400 bg-clip-text text-transparent">
                     Other Teachers
                   </h1>
-                  <p className="text-gray-600 text-lg mt-1">
+                  <p className="text-gray-600 dark:text-gray-400 text-lg mt-1">
                     Collaborate with teachers across subjects
                   </p>
                 </div>
@@ -230,13 +231,13 @@ const OtherTeacher = () => {
                 transition={{ delay: 0.5, duration: 0.5 }}
                 className="mt-10"
               >
-                <div className="w-28 h-28 bg-gradient-to-br from-purple-200 to-violet-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
-                  <Users className="w-14 h-14 text-purple-600" />
+                <div className="w-28 h-28 bg-gradient-to-br from-purple-200 to-violet-300 dark:from-purple-900 dark:to-violet-900 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
+                  <Users className="w-14 h-14 text-purple-600 dark:text-purple-400" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700 mb-2">
+                <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
                   No Other Teachers Yet
                 </h3>
-                <p className="text-gray-500 text-lg">
+                <p className="text-gray-500 dark:text-gray-400 text-lg">
                   No collaborative teaching assignments found
                 </p>
               </motion.div>
@@ -267,7 +268,7 @@ const OtherTeacher = () => {
                     }}
                     className="group"
                   >
-                    <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 rounded-3xl transform hover:scale-105 relative h-full">
+                    <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white dark:bg-slate-900 border-0 dark:border-slate-800 rounded-3xl transform hover:scale-105 relative h-full">
                       {/* Creative gradient header */}
                       <div
                         className={`h-32 ${gradientClass} relative overflow-hidden`}
@@ -282,7 +283,7 @@ const OtherTeacher = () => {
 
                         {/* Subject info overlay */}
                         <div className="absolute bottom-4 left-4 right-4 text-white">
-                          <CardTitle className="text-lg font-bold drop-shadow-2xl mb-1 leading-tight truncate text-black">
+                          <CardTitle className="text-lg font-bold drop-shadow-2xl mb-1 leading-tight truncate text-black dark:text-white">
                             {subject?.subjectName}
                           </CardTitle>
                           <div className="flex items-center gap-2">
@@ -298,25 +299,25 @@ const OtherTeacher = () => {
                       <CardContent className="p-6">
                         {/* Subject Info */}
                         <div className="mb-6 space-y-3">
-                          <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
-                            <Users className="w-4 h-4 text-blue-600" />
+                          <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                            <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                             <div className="flex-1">
-                              <p className="text-xs text-gray-500 font-medium">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 DEPARTMENT
                               </p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-sm font-bold text-gray-700 dark:text-gray-200">
                                 {subject?.department}
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-xl">
-                            <GraduationCap className="w-4 h-4 text-purple-600" />
+                          <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+                            <GraduationCap className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                             <div className="flex-1">
-                              <p className="text-xs text-gray-500 font-medium">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 SEMESTER
                               </p>
-                              <p className="text-sm font-bold text-gray-700">
+                              <p className="text-sm font-bold text-gray-700 dark:text-gray-200">
                                 {subject?.semester}
                               </p>
                             </div>
@@ -326,8 +327,8 @@ const OtherTeacher = () => {
                         {/* Other Teachers List */}
                         <div className="space-y-4">
                           <div className="flex items-center gap-2 mb-3">
-                            <UserCheck className="w-5 h-5 text-indigo-600" />
-                            <h4 className="font-semibold text-gray-700">
+                            <UserCheck className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                            <h4 className="font-semibold text-gray-700 dark:text-gray-200">
                               Collaborating Teachers
                             </h4>
                             <Sparkles className="w-4 h-4 text-yellow-500" />
@@ -343,7 +344,7 @@ const OtherTeacher = () => {
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: teacherIndex * 0.1 }}
-                                    className="bg-gradient-to-r from-gray-50 to-white p-4 rounded-2xl border border-gray-100 hover:shadow-md transition-all duration-300"
+                                    className="bg-gradient-to-r from-gray-50 to-white dark:from-slate-800 dark:to-slate-900 p-4 rounded-2xl border border-gray-100 dark:border-slate-800 hover:shadow-md transition-all duration-300"
                                   >
                                     <div className="flex items-start justify-between mb-3">
                                       <div className="flex-1">
@@ -360,12 +361,12 @@ const OtherTeacher = () => {
                                             </Avatar>
                                           </div>
                                           <div>
-                                            <p className="font-semibold text-gray-800 text-sm">
+                                            <p className="font-semibold text-gray-800 dark:text-gray-200 text-sm">
                                               {otherTeacher.teacher?.fullname}
                                             </p>
                                           </div>
                                         </div>
-                                        <div className="flex items-center gap-2 text-xs text-gray-500 ml-10">
+                                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 ml-10">
                                           <Mail className="w-3 h-3" />
                                           <span className="truncate">
                                             {otherTeacher.teacher?.email}
@@ -384,8 +385,8 @@ const OtherTeacher = () => {
 
                                     {/* Status Action Buttons - Only show if status is pending */}
                                     {otherTeacher.status === "pending" && (
-                                      <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
-                                        <p className="text-xs text-gray-500 flex-1">
+                                      <div className="flex items-center gap-2 pt-3 border-t border-gray-100 dark:border-gray-800">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 flex-1">
                                           Update Status:
                                         </p>
                                         <div className="flex gap-2">
@@ -434,8 +435,8 @@ const OtherTeacher = () => {
                                     {/* Loading indicator */}
                                     {updatingStatus ===
                                       `${subject._id}-${otherTeacher.teacher._id}` && (
-                                        <div className="flex items-center justify-center pt-3 border-t border-gray-100">
-                                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                                        <div className="flex items-center justify-center pt-3 border-t border-gray-100 dark:border-gray-800">
+                                          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                                             <div className="w-3 h-3 border-2 border-gray-300 border-t-indigo-500 rounded-full animate-spin"></div>
                                             Updating status...
                                           </div>
@@ -446,9 +447,9 @@ const OtherTeacher = () => {
                               )}
                             </div>
                           ) : (
-                            <div className="text-center py-6 bg-gray-50 rounded-2xl">
-                              <UserCheck className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                              <p className="text-gray-500 text-sm">
+                            <div className="text-center py-6 bg-gray-50 dark:bg-slate-800/50 rounded-2xl">
+                              <UserCheck className="w-8 h-8 text-gray-400 dark:text-gray-600 mx-auto mb-2" />
+                              <p className="text-gray-500 dark:text-gray-400 text-sm">
                                 No other teachers assigned
                               </p>
                             </div>

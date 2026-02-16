@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -45,6 +46,7 @@ const adminGradients = [
 ];
 
 const AdmineResult = () => {
+  const { darktheme } = useSelector((store) => store.auth);
   const { getAccessTokenSilently } = useAuth0();
   const { quizeId } = useParams();
   const [results, setResults] = useState([]);
@@ -296,7 +298,7 @@ const AdmineResult = () => {
   return (
     <>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-100">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-100 dark:from-slate-950 dark:via-gray-900 dark:to-blue-950 transition-colors duration-500">
         {/* Enhanced Header */}
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-slate-700 via-gray-800 to-slate-900 opacity-95"></div>
@@ -396,12 +398,12 @@ const AdmineResult = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6 mb-8"
+            className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700 p-6 mb-8"
           >
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
               {/* Search */}
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
                   <Search className="w-4 h-4" />
                   Search Students
                 </label>
@@ -410,13 +412,13 @@ const AdmineResult = () => {
                   placeholder="Search by name, email, university number..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-blue-400 transition-all duration-300 font-medium"
+                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-slate-700 rounded-xl bg-white/70 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-800 focus:border-blue-400 dark:text-gray-100 transition-all duration-300 font-medium"
                 />
               </div>
 
               {/* Status Filter */}
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
                   <Filter className="w-4 h-4" />
                   Submission Status
                 </label>
@@ -424,7 +426,7 @@ const AdmineResult = () => {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-green-400 transition-all duration-300 font-medium appearance-none"
+                    className="w-full px-4 py-3 border-2 border-gray-200 dark:border-slate-700 rounded-xl bg-white/70 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-800 focus:border-green-400 dark:text-gray-100 transition-all duration-300 font-medium appearance-none"
                   >
                     <option value="all">All Status</option>
                     <option value="onTime">On Time</option>
@@ -436,7 +438,7 @@ const AdmineResult = () => {
 
               {/* Sort By */}
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
                   <Target className="w-4 h-4" />
                   Sort Results
                 </label>
@@ -444,7 +446,7 @@ const AdmineResult = () => {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-purple-400 transition-all duration-300 font-medium appearance-none"
+                    className="w-full px-4 py-3 border-2 border-gray-200 dark:border-slate-700 rounded-xl bg-white/70 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-800 focus:border-purple-400 dark:text-gray-100 transition-all duration-300 font-medium appearance-none"
                   >
                     <option value="score">Highest Score</option>
                     <option value="name">Student Name</option>
@@ -456,7 +458,7 @@ const AdmineResult = () => {
 
               {/* Actions */}
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
                   <FileText className="w-4 h-4" />
                   Quick Actions
                 </label>
@@ -484,10 +486,10 @@ const AdmineResult = () => {
               <div className="w-28 h-28 bg-gradient-to-br from-gray-200 to-slate-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
                 <Users className="w-14 h-14 text-gray-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-700 mb-2">
+              <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
                 No results found
               </h3>
-              <p className="text-gray-500 text-lg">
+              <p className="text-gray-500 dark:text-gray-400 text-lg">
                 Try adjusting your search or filters
               </p>
             </motion.div>
@@ -520,7 +522,7 @@ const AdmineResult = () => {
                     className="group cursor-pointer"
                     onClick={() => navigate(`/reasult/details/${result?._id}`)}
                   >
-                    <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-white/20 transform hover:scale-105 hover:-translate-y-2 overflow-hidden">
+                    <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-white/20 dark:border-slate-700 transform hover:scale-105 hover:-translate-y-2 overflow-hidden">
                       {/* Student Header */}
                       <div
                         className={`${gradientClass} p-6 relative overflow-hidden`}
@@ -585,26 +587,26 @@ const AdmineResult = () => {
                       <div className="p-6 space-y-4">
                         {/* Quick Stats */}
                         <div className="grid grid-cols-2 gap-3">
-                          <div className="bg-blue-50 rounded-xl p-3">
+                          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3">
                             <div className="flex items-center gap-2 mb-1">
-                              <Award className="w-4 h-4 text-blue-600" />
-                              <span className="text-xs font-semibold text-gray-600">
+                              <Award className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                              <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">
                                 ROLE
                               </span>
                             </div>
-                            <p className="text-sm font-bold text-gray-800">
+                            <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
                               {result.student?.role || "Student"}
                             </p>
                           </div>
 
-                          <div className="bg-purple-50 rounded-xl p-3">
+                          <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-3">
                             <div className="flex items-center gap-2 mb-1">
-                              <Calendar className="w-4 h-4 text-purple-600" />
-                              <span className="text-xs font-semibold text-gray-600">
+                              <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                              <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">
                                 SUBMITTED
                               </span>
                             </div>
-                            <p className="text-sm font-bold text-gray-800">
+                            <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
                               {new Date(
                                 result.submittedAt
                               ).toLocaleDateString()}
@@ -614,12 +616,12 @@ const AdmineResult = () => {
 
                         {/* Answers Summary */}
                         {result.answers && result.answers.length > 0 && (
-                          <div className="bg-gray-50 rounded-xl p-4">
+                          <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4">
                             <div className="flex items-center justify-between mb-3">
-                              <span className="text-sm font-semibold text-gray-700">
+                              <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                                 Answer Summary
                               </span>
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
                                 {result.answers.length} Questions
                               </span>
                             </div>
@@ -634,7 +636,7 @@ const AdmineResult = () => {
                                     key={ans._id}
                                     className="flex items-center justify-between text-sm"
                                   >
-                                    <span className="text-gray-600 truncate flex-1">
+                                    <span className="text-gray-600 dark:text-gray-300 truncate flex-1">
                                       Q{idx + 1}:{" "}
                                       {question?.questionText?.substring(
                                         0,
@@ -651,7 +653,7 @@ const AdmineResult = () => {
                                 );
                               })}
                               {result.answers.length > 3 && (
-                                <div className="text-center text-xs text-gray-500 pt-2">
+                                <div className="text-center text-xs text-gray-500 dark:text-gray-400 pt-2">
                                   +{result.answers.length - 3} more questions
                                 </div>
                               )}
