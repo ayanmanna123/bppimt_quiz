@@ -134,22 +134,22 @@ const CreateMeetingModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                     <div className="flex items-center justify-between mr-8">
                         <DialogTitle className="text-xl">Manage Online Classes</DialogTitle>
                     </div>
-                    <DialogDescription>
+                    <DialogDescription className="dark:text-gray-400">
                         Schedule and manage online classes for this subject.
                     </DialogDescription>
                 </DialogHeader>
 
                 {/* Tabs */}
-                <div className="flex gap-2 p-1 bg-gray-100 rounded-lg mb-4">
+                <div className="flex gap-2 p-1 bg-gray-100 dark:bg-indigo-900/40 rounded-lg mb-4">
                     <button
                         onClick={() => setActiveTab("list")}
-                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${activeTab === "list" ? "bg-white shadow text-blue-600" : "text-gray-500 hover:text-gray-700"}`}
+                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${activeTab === "list" ? "bg-white dark:bg-indigo-800 shadow text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-indigo-300 hover:text-gray-700 dark:hover:text-indigo-200"}`}
                     >
                         Scheduled Classes
                     </button>
                     <button
                         onClick={() => setActiveTab("create")}
-                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${activeTab === "create" ? "bg-white shadow text-blue-600" : "text-gray-500 hover:text-gray-700"}`}
+                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${activeTab === "create" ? "bg-white dark:bg-indigo-800 shadow text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-indigo-300 hover:text-gray-700 dark:hover:text-indigo-200"}`}
                     >
                         Schedule New
                     </button>
@@ -158,21 +158,21 @@ const CreateMeetingModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                 {activeTab === "list" ? (
                     <div className="space-y-4">
                         {meetings.length === 0 ? (
-                            <div className="text-center py-10 text-gray-500">
+                            <div className="text-center py-10 text-gray-500 dark:text-gray-400">
                                 <Video className="w-12 h-12 mx-auto mb-2 opacity-20" />
                                 <p>No meetings scheduled.</p>
-                                <Button variant="link" onClick={() => setActiveTab("create")} className="mt-2">
+                                <Button variant="link" onClick={() => setActiveTab("create")} className="mt-2 dark:text-blue-400">
                                     Schedule one now
                                 </Button>
                             </div>
                         ) : (
                             <div className="space-y-3">
                                 {meetings.map((meeting) => (
-                                    <div key={meeting._id} className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow relative group">
+                                    <div key={meeting._id} className="bg-white dark:bg-indigo-950/40 border border-gray-200 dark:border-indigo-500/20 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow relative group">
                                         <div className="flex justify-between items-start mb-2">
                                             <div>
-                                                <h4 className="font-semibold text-gray-800">{meeting.title}</h4>
-                                                <p className="text-xs text-gray-500">{meeting.description}</p>
+                                                <h4 className="font-semibold text-gray-800 dark:text-white">{meeting.title}</h4>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">{meeting.description}</p>
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <Button
@@ -194,7 +194,7 @@ const CreateMeetingModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                                                 </Button>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-4 text-xs text-gray-600">
+                                        <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-300">
                                             <div className="flex items-center gap-1">
                                                 <Calendar className="w-3 h-3" />
                                                 {new Date(meeting.date).toLocaleDateString()}
@@ -309,7 +309,7 @@ const CreateMeetingModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                     </form>
                 )}
             </DialogContent>
-        </Dialog>
+        </Dialog >
     );
 };
 

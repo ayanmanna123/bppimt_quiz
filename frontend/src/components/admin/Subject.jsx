@@ -121,13 +121,23 @@ const Subject = () => {
   return (
     <>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014] transition-colors duration-700 overflow-hidden">
+        {/* Animated Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-indigo-500/5 dark:to-purple-500/5 pointer-events-none"></div>
+        <div
+          className="absolute inset-0 opacity-40 pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.1) 0%, transparent 50%), 
+                           radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)`,
+          }}
+        ></div>
+
         {/* Header Section */}
-        <div className="p-6">
+        <div className="p-6 relative z-10">
           <div className="flex justify-between items-center mb-8">
             <motion.div
               onClick={() => navigate("/")}
-              className="flex items-center gap-2 text-gray-600 hover:text-purple-600 cursor-pointer transition-all duration-300 p-3 rounded-xl hover:bg-white/70 hover:shadow-md"
+              className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 cursor-pointer transition-all duration-300 p-3 rounded-xl hover:bg-white/70 dark:hover:bg-indigo-900/30 hover:shadow-md"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -138,7 +148,7 @@ const Subject = () => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 onClick={() => navigate("/admin/create/subject")}
-                className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white px-8 py-3 rounded-2xl flex items-center gap-3 transition-all duration-300 shadow-lg hover:shadow-2xl font-semibold"
+                className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white px-8 py-3 rounded-2xl flex items-center gap-3 transition-all duration-300 shadow-lg hover:shadow-2xl shadow-indigo-500/20 dark:shadow-indigo-500/40 font-semibold border-0"
               >
                 <Plus className="w-5 h-5" />
                 Create New Subject
@@ -157,7 +167,7 @@ const Subject = () => {
             >
               <div className="inline-flex items-center gap-4 mb-6">
                 <div className="relative">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 via-violet-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 via-violet-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl shadow-purple-500/20 dark:shadow-purple-500/40">
                     <BookOpen className="w-8 h-8 text-white" />
                   </div>
                   <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
@@ -165,10 +175,10 @@ const Subject = () => {
                   </div>
                 </div>
                 <div className="text-left">
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 dark:from-purple-400 dark:via-violet-400 dark:to-indigo-400 bg-clip-text text-transparent drop-shadow-sm">
                     My Subject Library
                   </h1>
-                  <p className="text-gray-600 text-lg mt-1">
+                  <p className="text-gray-600 dark:text-gray-300 text-lg mt-1">
                     Manage your course subjects and educational content
                   </p>
                 </div>
@@ -176,9 +186,9 @@ const Subject = () => {
             </motion.div>
 
             {/* Floating decorative elements with subject theme */}
-            <div className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-purple-400 to-violet-500 rounded-full opacity-20 blur-xl"></div>
-            <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full opacity-15 blur-2xl"></div>
-            <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-gradient-to-br from-pink-400 to-violet-500 rounded-full opacity-10 blur-lg"></div>
+            <div className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-purple-400 to-violet-500 rounded-full opacity-20 dark:opacity-10 blur-xl"></div>
+            <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full opacity-15 dark:opacity-10 blur-2xl"></div>
+            <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-gradient-to-br from-pink-400 to-violet-500 rounded-full opacity-10 dark:opacity-5 blur-lg"></div>
           </div>
         </div>
 
@@ -193,13 +203,13 @@ const Subject = () => {
                 transition={{ delay: 0.5, duration: 0.5 }}
                 className="mt-10"
               >
-                <div className="w-28 h-28 bg-gradient-to-br from-purple-200 to-violet-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
-                  <BookOpen className="w-14 h-14 text-purple-600" />
+                <div className="w-28 h-28 bg-gradient-to-br from-purple-200 to-violet-300 dark:from-purple-900 dark:to-violet-900 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
+                  <BookOpen className="w-14 h-14 text-purple-600 dark:text-purple-300" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700 mb-2">
+                <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
                   No Subjects Yet
                 </h3>
-                <p className="text-gray-500 text-lg">
+                <p className="text-gray-500 dark:text-gray-400 text-lg">
                   Ready to create your first subject?
                 </p>
               </motion.div>
@@ -225,7 +235,7 @@ const Subject = () => {
                     }}
                     className="group"
                   >
-                    <Card className="overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white border border-gray-100 rounded-[2.5rem] h-full flex flex-col">
+                    <Card className="overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-indigo-950/40 border border-gray-100 dark:border-indigo-500/20 rounded-[2.5rem] h-full flex flex-col backdrop-blur-sm">
                       {/* Premium Header */}
                       <div className={`h-40 bg-gradient-to-r ${theme.gradient} p-8 relative flex flex-col justify-end`}>
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
@@ -242,22 +252,22 @@ const Subject = () => {
                       {/* Details Box Grid */}
                       <CardContent className="p-8 pb-4">
                         <div className="grid grid-cols-2 gap-4 mb-4">
-                          <div className="p-4 rounded-[1.5rem] bg-[#F8FAFC] border border-[#F1F5F9]">
-                            <p className="text-[10px] font-bold text-blue-600 tracking-wider mb-1 uppercase">Code</p>
-                            <p className="text-base font-bold text-gray-800">{subj?.subjectCode}</p>
+                          <div className="p-4 rounded-[1.5rem] bg-[#F8FAFC] dark:bg-indigo-900/40 border border-[#F1F5F9] dark:border-indigo-500/30">
+                            <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 tracking-wider mb-1 uppercase">Code</p>
+                            <p className="text-base font-bold text-gray-800 dark:text-white">{subj?.subjectCode}</p>
                           </div>
-                          <div className="p-4 rounded-[1.5rem] bg-[#FDF2F8] border border-[#FCE7F3]">
-                            <p className="text-[10px] font-bold text-pink-600 tracking-wider mb-1 uppercase">Dept</p>
-                            <p className="text-base font-bold text-gray-800">{subj?.department}</p>
+                          <div className="p-4 rounded-[1.5rem] bg-[#FDF2F8] dark:bg-pink-900/20 border border-[#FCE7F3] dark:border-pink-500/30">
+                            <p className="text-[10px] font-bold text-pink-600 dark:text-pink-400 tracking-wider mb-1 uppercase">Dept</p>
+                            <p className="text-base font-bold text-gray-800 dark:text-white">{subj?.department}</p>
                           </div>
                         </div>
 
-                        <div className="p-5 rounded-[1.5rem] bg-[#F5F3FF] border border-[#EDE9FE] flex items-center justify-between mb-8">
+                        <div className="p-5 rounded-[1.5rem] bg-[#F5F3FF] dark:bg-indigo-900/20 border border-[#EDE9FE] dark:border-indigo-500/20 flex items-center justify-between mb-8">
                           <div>
-                            <p className="text-[10px] font-bold text-indigo-600 tracking-wider mb-1 uppercase">Semester</p>
-                            <p className="text-base font-bold text-gray-800">{subj?.semester}</p>
+                            <p className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 tracking-wider mb-1 uppercase">Semester</p>
+                            <p className="text-base font-bold text-gray-800 dark:text-white">{subj?.semester}</p>
                           </div>
-                          <GraduationCap className="w-6 h-6 text-indigo-400 opacity-60" />
+                          <GraduationCap className="w-6 h-6 text-indigo-400 dark:text-indigo-300 opacity-60" />
                         </div>
 
                         {/* Actions Area */}
@@ -267,7 +277,7 @@ const Subject = () => {
                               e.stopPropagation();
                               navigate(`/admin/createQuize/${subj._id}`);
                             }}
-                            className={`flex-1 ${theme.btnColor} hover:brightness-110 text-white font-bold py-7 rounded-[1.5rem] flex items-center justify-center gap-3 transition-all duration-300 shadow-lg shadow-indigo-100`}
+                            className={`flex-1 ${theme.btnColor} hover:brightness-110 text-white font-bold py-7 rounded-[1.5rem] flex items-center justify-center gap-3 transition-all duration-300 shadow-lg shadow-indigo-100 dark:shadow-none`}
                           >
                             <Plus className="w-5 h-5" />
                             Create Quiz
@@ -277,29 +287,29 @@ const Subject = () => {
                             <DropdownMenuTrigger asChild>
                               <Button
                                 variant="outline"
-                                className="w-16 h-16 rounded-[1.5rem] border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-colors bg-white shadow-sm"
+                                className="w-16 h-16 rounded-[1.5rem] border-gray-100 dark:border-indigo-500/30 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-indigo-900/30 dark:bg-transparent transition-colors bg-white shadow-sm dark:shadow-none"
                               >
-                                <MoreVertical className="w-6 h-6 text-gray-400" />
+                                <MoreVertical className="w-6 h-6 text-gray-400 dark:text-gray-300" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl">
+                            <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl dark:bg-indigo-950 dark:border-indigo-500/30">
                               {[
-                                { icon: FileText, title: "View Notes", color: "text-indigo-500", onClick: () => navigate(`/subject/notes/${subj._id}`) },
-                                { icon: ClipboardList, title: "Assignments", color: "text-pink-500", onClick: () => navigate(`/subject/assignments/${subj._id}`) },
-                                { icon: Eye, title: "View Quizzes", color: "text-emerald-500", onClick: () => navigate(`/Admin/subject/quiz/${subj._id}`) },
-                                { icon: Video, title: "Schedule Meeting", color: "text-violet-500", onClick: () => { setSelectedSubject(subj); setIsMeetingModalOpen(true); } },
-                                { icon: Users, title: "View Attendance", color: "text-cyan-500", onClick: () => navigate(`/attandance/${subj._id}`) },
-                                { icon: Clock, title: "Edit Time Slots", color: "text-amber-500", onClick: () => { setSelectedSubject(subj); setIsTimeSlotModalOpen(true); } },
-                                { icon: BookOpen, title: "Question Bank", color: "text-blue-500", onClick: () => navigate(`/admin/question-bank/${subj._id}`) },
-                                { icon: Video, title: "Chat Group", color: "text-slate-500", onClick: () => setActiveChatSubject(subj) },
+                                { icon: FileText, title: "View Notes", color: "text-indigo-500 dark:text-indigo-400", onClick: () => navigate(`/subject/notes/${subj._id}`) },
+                                { icon: ClipboardList, title: "Assignments", color: "text-pink-500 dark:text-pink-400", onClick: () => navigate(`/subject/assignments/${subj._id}`) },
+                                { icon: Eye, title: "View Quizzes", color: "text-emerald-500 dark:text-emerald-400", onClick: () => navigate(`/Admin/subject/quiz/${subj._id}`) },
+                                { icon: Video, title: "Schedule Meeting", color: "text-violet-500 dark:text-violet-400", onClick: () => { setSelectedSubject(subj); setIsMeetingModalOpen(true); } },
+                                { icon: Users, title: "View Attendance", color: "text-cyan-500 dark:text-cyan-400", onClick: () => navigate(`/attandance/${subj._id}`) },
+                                { icon: Clock, title: "Edit Time Slots", color: "text-amber-500 dark:text-amber-400", onClick: () => { setSelectedSubject(subj); setIsTimeSlotModalOpen(true); } },
+                                { icon: BookOpen, title: "Question Bank", color: "text-blue-500 dark:text-blue-400", onClick: () => navigate(`/admin/question-bank/${subj._id}`) },
+                                { icon: Video, title: "Chat Group", color: "text-slate-500 dark:text-slate-400", onClick: () => setActiveChatSubject(subj) },
                               ].map((action, i) => (
                                 <DropdownMenuItem
                                   key={i}
                                   onClick={(e) => { e.stopPropagation(); action.onClick(); }}
-                                  className="flex items-center gap-3 p-3 cursor-pointer rounded-xl"
+                                  className="flex items-center gap-3 p-3 cursor-pointer rounded-xl dark:focus:bg-indigo-900/50"
                                 >
                                   <action.icon className={`w-5 h-5 ${action.color}`} />
-                                  <span className="font-semibold text-gray-700">{action.title}</span>
+                                  <span className="font-semibold text-gray-700 dark:text-gray-200">{action.title}</span>
                                 </DropdownMenuItem>
                               ))}
                             </DropdownMenuContent>

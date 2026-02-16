@@ -120,12 +120,12 @@ const EditTimeSlotModal = ({ isOpen, onClose, subjectId, subjectName }) => {
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2 text-xl text-emerald-700">
+                    <DialogTitle className="flex items-center gap-2 text-xl text-emerald-700 dark:text-emerald-400">
                         <Clock className="w-6 h-6" />
                         Edit Time Slots
                     </DialogTitle>
-                    <DialogDescription>
-                        Manage the weekly schedule for <span className="font-semibold text-gray-700">{subjectName}</span>.
+                    <DialogDescription className="dark:text-gray-400">
+                        Manage the weekly schedule for <span className="font-semibold text-gray-700 dark:text-gray-200">{subjectName}</span>.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -141,7 +141,7 @@ const EditTimeSlotModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                 ) : (
                     <div className="flex-1 overflow-hidden flex flex-col">
                         <div className="mb-4 flex justify-between items-center">
-                            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                            <Badge variant="outline" className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-700/50">
                                 {timeSlots.length} Active Slots
                             </Badge>
                             <Button
@@ -158,16 +158,16 @@ const EditTimeSlotModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                         <ScrollArea className="flex-1 pr-4 -mr-4">
                             <div className="space-y-4 p-1">
                                 {timeSlots.length === 0 ? (
-                                    <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                    <div className="text-center py-8 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-indigo-900/20 rounded-xl border border-dashed border-gray-200 dark:border-indigo-500/30">
                                         <Calendar className="w-10 h-10 mx-auto mb-2 opacity-50" />
                                         <p>No time slots configured.</p>
                                         <p className="text-sm">Click "Add Slot" to create a schedule.</p>
                                     </div>
                                 ) : (
                                     timeSlots.map((slot, index) => (
-                                        <div key={index} className="flex flex-col sm:flex-row gap-3 p-4 rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow">
+                                        <div key={index} className="flex flex-col sm:flex-row gap-3 p-4 rounded-xl border border-gray-100 dark:border-indigo-500/20 bg-white dark:bg-indigo-950/40 shadow-sm hover:shadow-md transition-shadow">
                                             <div className="flex-1 min-w-[140px]">
-                                                <Label className="text-xs text-gray-500 mb-1.5 block">Day</Label>
+                                                <Label className="text-xs text-gray-500 dark:text-gray-400 mb-1.5 block">Day</Label>
                                                 <Select
                                                     value={slot.dayOfWeek}
                                                     onValueChange={(val) => handleChange(index, "dayOfWeek", val)}
@@ -184,7 +184,7 @@ const EditTimeSlotModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                                             </div>
 
                                             <div className="flex-1">
-                                                <Label className="text-xs text-gray-500 mb-1.5 block">Start Time</Label>
+                                                <Label className="text-xs text-gray-500 dark:text-gray-400 mb-1.5 block">Start Time</Label>
                                                 <Input
                                                     type="time"
                                                     value={slot.startTime}
@@ -194,7 +194,7 @@ const EditTimeSlotModal = ({ isOpen, onClose, subjectId, subjectName }) => {
                                             </div>
 
                                             <div className="flex-1">
-                                                <Label className="text-xs text-gray-500 mb-1.5 block">End Time</Label>
+                                                <Label className="text-xs text-gray-500 dark:text-gray-400 mb-1.5 block">End Time</Label>
                                                 <Input
                                                     type="time"
                                                     value={slot.endTime}

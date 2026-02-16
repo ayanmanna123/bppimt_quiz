@@ -419,11 +419,24 @@ const Quiz = () => {
   };
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014] transition-colors duration-700 overflow-hidden">
+        {/* Animated Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-indigo-500/5 dark:to-purple-500/5 pointer-events-none"></div>
+        <div
+          className="absolute inset-0 opacity-40 pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.1) 0%, transparent 50%), 
+                           radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)`,
+          }}
+        ></div>
+
         {/* Hero Section */}
         <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 opacity-90"></div>
-          <div className="absolute inset-0">
+          {/* <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 opacity-90 dark:opacity-40"></div> */}
+          {/* Replaced solid hero bg with more subtle gradient or remove it to let main bg show */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 via-indigo-600/90 to-purple-600/90 dark:from-indigo-900/50 dark:via-purple-900/50 dark:to-indigo-900/50 backdrop-blur-sm"></div>
+
+          <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-10 left-10 w-32 h-32 border-2 border-white/20 rounded-full animate-pulse"></div>
             <div className="absolute bottom-20 right-20 w-24 h-24 bg-white/10 rounded-full animate-bounce"></div>
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-white/20 rounded-2xl rotate-45 animate-pulse"></div>
@@ -482,64 +495,64 @@ const Quiz = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6 mb-8"
+            className="bg-white/80 dark:bg-indigo-950/20 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-indigo-500/20 p-6 mb-8"
           >
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-indigo-300" />
                 <input
                   type="text"
                   placeholder="Search subjects..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-blue-400 transition-all duration-300 font-medium"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 dark:border-indigo-500/30 rounded-xl bg-white/70 dark:bg-indigo-950/50 hover:bg-white dark:hover:bg-indigo-900/50 focus:bg-white dark:focus:bg-indigo-900/50 focus:border-blue-400 dark:focus:border-indigo-400 transition-all duration-300 font-medium dark:text-gray-100 dark:placeholder-indigo-300/50"
                 />
               </div>
 
               {/* Filter */}
               <div className="relative">
-                <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-indigo-300" />
                 <select
                   value={selectedFilter}
                   onChange={(e) => setSelectedFilter(e.target.value)}
-                  className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-purple-400 transition-all duration-300 font-medium appearance-none"
+                  className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 dark:border-indigo-500/30 rounded-xl bg-white/70 dark:bg-indigo-950/50 hover:bg-white dark:hover:bg-indigo-900/50 focus:bg-white dark:focus:bg-indigo-900/50 focus:border-purple-400 dark:focus:border-indigo-400 transition-all duration-300 font-medium appearance-none dark:text-gray-100"
                 >
-                  <option value="all">All Subjects</option>
-                  <option value="recent">Recent</option>
-                  <option value="favorite">Favorites</option>
+                  <option value="all" className="dark:bg-indigo-950">All Subjects</option>
+                  <option value="recent" className="dark:bg-indigo-950">Recent</option>
+                  <option value="favorite" className="dark:bg-indigo-950">Favorites</option>
                 </select>
-                <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-indigo-300 pointer-events-none" />
               </div>
 
               {/* Sort */}
               <div className="relative">
-                <Target className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Target className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-indigo-300" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-indigo-400 transition-all duration-300 font-medium appearance-none"
+                  className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 dark:border-indigo-500/30 rounded-xl bg-white/70 dark:bg-indigo-950/50 hover:bg-white dark:hover:bg-indigo-900/50 focus:bg-white dark:focus:bg-indigo-900/50 focus:border-indigo-400 dark:focus:border-indigo-400 transition-all duration-300 font-medium appearance-none dark:text-gray-100"
                 >
-                  <option value="name">Sort by Name</option>
-                  <option value="recent">Recently Added</option>
-                  <option value="popular">Most Popular</option>
+                  <option value="name" className="dark:bg-indigo-950">Sort by Name</option>
+                  <option value="recent" className="dark:bg-indigo-950">Recently Added</option>
+                  <option value="popular" className="dark:bg-indigo-950">Most Popular</option>
                 </select>
-                <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-indigo-300 pointer-events-none" />
               </div>
 
               {/* View Mode */}
               <div className="relative">
-                <Grid3X3 className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Grid3X3 className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-indigo-300" />
                 <select
                   value={viewMode}
                   onChange={(e) => setViewMode(e.target.value)}
-                  className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 rounded-xl bg-white/70 hover:bg-white focus:bg-white focus:border-green-400 transition-all duration-300 font-medium appearance-none"
+                  className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 dark:border-indigo-500/30 rounded-xl bg-white/70 dark:bg-indigo-950/50 hover:bg-white dark:hover:bg-indigo-900/50 focus:bg-white dark:focus:bg-indigo-900/50 focus:border-green-400 dark:focus:border-indigo-400 transition-all duration-300 font-medium appearance-none dark:text-gray-100"
                 >
-                  <option value="card">Card View</option>
-                  <option value="list">List View</option>
-                  <option value="compact">Compact</option>
+                  <option value="card" className="dark:bg-indigo-950">Card View</option>
+                  <option value="list" className="dark:bg-indigo-950">List View</option>
+                  <option value="compact" className="dark:bg-indigo-950">Compact</option>
                 </select>
-                <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-indigo-300 pointer-events-none" />
               </div>
             </div>
           </motion.div>
@@ -549,24 +562,24 @@ const Quiz = () => {
         {
           upcomingMeetings.length > 0 && (
             <div className="px-6 mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <Video className="w-6 h-6 text-purple-600" />
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                <Video className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                 Upcoming Live Classes
               </h2>
               <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                 {upcomingMeetings.map((meeting) => (
-                  <Card key={meeting._id} className="min-w-[300px] bg-white border-l-4 border-l-purple-500 shadow-md hover:shadow-lg transition-all">
+                  <Card key={meeting._id} className="min-w-[300px] bg-white dark:bg-indigo-950/40 border-l-4 border-l-purple-500 dark:border-l-purple-400 shadow-md hover:shadow-lg transition-all backdrop-blur-sm">
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-lg font-bold truncate">{meeting.title}</CardTitle>
-                      <CardDescription>{meeting.subject?.subjectName}</CardDescription>
+                      <CardTitle className="text-lg font-bold truncate text-gray-900 dark:text-white">{meeting.title}</CardTitle>
+                      <CardDescription className="text-gray-500 dark:text-indigo-200/70">{meeting.subject?.subjectName}</CardDescription>
                     </CardHeader>
                     <CardContent className="pb-2 text-sm">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Calendar className="w-4 h-4 text-gray-500" />
+                      <div className="flex items-center gap-2 mb-1 text-gray-600 dark:text-gray-300">
+                        <Calendar className="w-4 h-4 text-gray-500 dark:text-indigo-400" />
                         <span>{new Date(meeting.date).toDateString()}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-gray-500" />
+                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                        <Clock className="w-4 h-4 text-gray-500 dark:text-indigo-400" />
                         <span>{meeting.startTime} ({meeting.duration} min)</span>
                       </div>
                     </CardContent>
@@ -576,7 +589,7 @@ const Quiz = () => {
                           Join Live Now
                         </Button>
                       ) : (
-                        <Button disabled className="w-full bg-gray-200 text-gray-500">
+                        <Button disabled className="w-full bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                           {isMeetingFuture(meeting) ? "Scheduled" : "Ended"}
                         </Button>
                       )}
@@ -597,13 +610,13 @@ const Quiz = () => {
               transition={{ delay: 0.5, duration: 0.5 }}
               className="text-center py-16"
             >
-              <div className="w-28 h-28 bg-gradient-to-br from-blue-200 to-indigo-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
-                <BookOpen className="w-14 h-14 text-blue-600" />
+              <div className="w-28 h-28 bg-gradient-to-br from-blue-200 to-indigo-300 dark:from-indigo-900 dark:to-purple-900 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
+                <BookOpen className="w-14 h-14 text-blue-600 dark:text-indigo-300" />
               </div>
-              <h3 className="text-xl font-bold text-gray-700 mb-2">
+              <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
                 No subjects found
               </h3>
-              <p className="text-gray-500 text-lg">
+              <p className="text-gray-500 dark:text-gray-400 text-lg">
                 Try adjusting your search or filters
               </p>
             </motion.div>
@@ -628,19 +641,19 @@ const Quiz = () => {
                     }}
                     className="group"
                   >
-                    <Card className="overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white border border-gray-100 rounded-[2.5rem]">
+                    <Card className="overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-indigo-950/40 border border-gray-100 dark:border-indigo-500/20 rounded-[2.5rem] backdrop-blur-sm">
                       {/* Header Section */}
-                      <div className={`h-40 ${theme.headerBg} p-8 relative flex flex-col justify-between`}>
+                      <div className={`h-40 ${theme.headerBg} dark:bg-gradient-to-br dark:from-indigo-900/40 dark:to-purple-900/40 p-8 relative flex flex-col justify-between`}>
                         <div className="flex justify-between items-start">
-                          <span className={`${theme.badgeBg} text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-wider`}>
+                          <span className={`${theme.badgeBg} dark:bg-indigo-500/80 text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-wider shadow-lg`}>
                             {sub?.subjectCode || "CORE"}
                           </span>
                           <Star
                             onClick={(e) => toggleFavorite(e, sub._id)}
-                            className={`w-5 h-5 cursor-pointer transition-all duration-300 ${favorites.includes(sub._id) ? "fill-yellow-400 text-yellow-400" : "text-gray-300 hover:text-yellow-200"}`}
+                            className={`w-5 h-5 cursor-pointer transition-all duration-300 ${favorites.includes(sub._id) ? "fill-yellow-400 text-yellow-400" : "text-gray-300 dark:text-gray-500 hover:text-yellow-200"}`}
                           />
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-800 tracking-tight">
+                        <h3 className="text-2xl font-bold text-gray-600 dark:text-white tracking-tight line-clamp-2">
                           {sub?.subjectName}
                         </h3>
                       </div>
@@ -649,21 +662,21 @@ const Quiz = () => {
                       <CardContent className="px-8 py-6">
                         <div className="flex items-center justify-between mb-6">
                           <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-full ${theme.headerBg} flex items-center justify-center`}>
-                              <User className={`w-5 h-5 ${theme.badgeBg.replace('bg-', 'text-')}`} />
+                            <div className={`w-10 h-10 rounded-full ${theme.headerBg} dark:bg-indigo-500/20 flex items-center justify-center`}>
+                              <User className={`w-5 h-5 ${theme.badgeBg.replace('bg-', 'text-')} dark:text-indigo-300`} />
                             </div>
                             <div>
-                              <p className="text-[10px] font-bold text-gray-400 tracking-wider">INSTRUCTOR</p>
-                              <p className="text-sm font-semibold text-gray-700">{sub?.createdBy?.fullname || "Instructor"}</p>
+                              <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-wider">INSTRUCTOR</p>
+                              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">{sub?.createdBy?.fullname || "Instructor"}</p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="text-[10px] font-bold text-gray-400 tracking-wider uppercase">Semester</p>
-                            <p className="text-sm font-semibold text-gray-700">{sub?.semester || "N/A"}</p>
+                            <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-wider uppercase">Semester</p>
+                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">{sub?.semester || "N/A"}</p>
                           </div>
                         </div>
 
-                        <div className="h-px bg-gray-100 w-full mb-6"></div>
+                        <div className="h-px bg-gray-100 dark:bg-indigo-500/20 w-full mb-6"></div>
 
                         {/* Actions Area */}
                         <div className="flex items-center gap-3">
@@ -679,39 +692,39 @@ const Quiz = () => {
                             <DropdownMenuTrigger asChild>
                               <Button
                                 variant="outline"
-                                className="w-14 h-14 rounded-2xl border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                                className="w-14 h-14 rounded-2xl border-gray-200 dark:border-indigo-500/30 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-indigo-900/50 dark:bg-transparent transition-colors"
                               >
-                                <MoreVertical className="w-5 h-5 text-gray-500" />
+                                <MoreVertical className="w-5 h-5 text-gray-500 dark:text-indigo-300" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl">
+                            <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl dark:bg-indigo-950 dark:border-indigo-500/30">
                               <DropdownMenuItem
                                 onClick={() => handleAttendanceClick(sub?._id)}
-                                className="flex items-center gap-3 p-3 cursor-pointer rounded-xl"
+                                className="flex items-center gap-3 p-3 cursor-pointer rounded-xl dark:focus:bg-indigo-900/50"
                               >
                                 <ClipboardCheck className="w-5 h-5 text-green-500" />
-                                <span className="font-semibold text-gray-700">Give Attendance</span>
+                                <span className="font-semibold text-gray-700 dark:text-gray-200">Give Attendance</span>
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() => navigate(`/subject/notes/${sub?._id}`)}
-                                className="flex items-center gap-3 p-3 cursor-pointer rounded-xl"
+                                className="flex items-center gap-3 p-3 cursor-pointer rounded-xl dark:focus:bg-indigo-900/50"
                               >
                                 <FileText className="w-5 h-5 text-orange-500" />
-                                <span className="font-semibold text-gray-700">View Notes</span>
+                                <span className="font-semibold text-gray-700 dark:text-gray-200">View Notes</span>
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() => navigate(`/subject/assignments/${sub?._id}`)}
-                                className="flex items-center gap-3 p-3 cursor-pointer rounded-xl"
+                                className="flex items-center gap-3 p-3 cursor-pointer rounded-xl dark:focus:bg-indigo-900/50"
                               >
                                 <ClipboardCheck className="w-5 h-5 text-pink-500" />
-                                <span className="font-semibold text-gray-700">Assignments</span>
+                                <span className="font-semibold text-gray-700 dark:text-gray-200">Assignments</span>
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() => setActiveChatSubject(sub)}
-                                className="flex items-center gap-3 p-3 cursor-pointer rounded-xl"
+                                className="flex items-center gap-3 p-3 cursor-pointer rounded-xl dark:focus:bg-indigo-900/50"
                               >
                                 <Video className="w-5 h-5 text-indigo-500" />
-                                <span className="font-semibold text-gray-700">Chat</span>
+                                <span className="font-semibold text-gray-700 dark:text-gray-200">Chat</span>
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -729,24 +742,24 @@ const Quiz = () => {
       {/* OTP Modal */}
       {
         showOtpModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white p-8 rounded-2xl w-[400px] shadow-2xl">
-              <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">Enter Class OTP</h2>
-              <p className="text-center text-gray-500 mb-6">Enter the 6-digit code shared by your teacher</p>
+          <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm">
+            <div className="bg-white dark:bg-indigo-950 p-8 rounded-2xl w-[400px] shadow-2xl border border-gray-200 dark:border-indigo-500/30">
+              <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">Enter Class OTP</h2>
+              <p className="text-center text-gray-500 dark:text-indigo-200/70 mb-6">Enter the 6-digit code shared by your teacher</p>
 
               <input
                 type="text"
                 maxLength="6"
                 value={otpInput}
                 onChange={(e) => setOtpInput(e.target.value)}
-                className="w-full text-center text-3xl tracking-[1em] font-mono font-bold py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none mb-6"
+                className="w-full text-center text-3xl tracking-[1em] font-mono font-bold py-3 border-2 border-gray-300 dark:border-indigo-500/30 rounded-xl focus:border-blue-500 dark:focus:border-indigo-400 focus:outline-none mb-6 bg-white dark:bg-indigo-900/30 text-gray-800 dark:text-white"
                 placeholder="000000"
               />
 
               <div className="flex gap-4">
                 <button
                   onClick={() => setShowOtpModal(false)}
-                  className="flex-1 py-3 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 transition-colors"
+                  className="flex-1 py-3 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-indigo-900/50 dark:hover:bg-indigo-800/50 dark:text-indigo-200 transition-colors"
                 >
                   Cancel
                 </button>
