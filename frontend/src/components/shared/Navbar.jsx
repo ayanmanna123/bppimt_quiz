@@ -192,8 +192,8 @@ const Navbar = () => {
   return (
     <motion.div
       className={`sticky top-0 z-50 transition-all duration-300 ${scrolled
-        ? "bg-white/90 dark:bg-slate-950/90 backdrop-blur-lg border-b border-slate-200/60 dark:border-slate-800/60 shadow-lg"
-        : "bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm"
+        ? "bg-white/90 dark:bg-[#030014]/90 backdrop-blur-lg border-b border-slate-200/60 dark:border-indigo-500/20 shadow-lg dark:shadow-[0_0_20px_rgba(0,0,0,0.4)]"
+        : "bg-white/80 dark:bg-[#030014]/80 backdrop-blur-sm"
         }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -248,7 +248,7 @@ const Navbar = () => {
                           )}
                         </button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-64 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border border-slate-200/60 dark:border-slate-800/60 shadow-2xl rounded-2xl p-2 z-[60]">
+                      <PopoverContent className="w-64 bg-white/95 dark:bg-[#05001c]/95 backdrop-blur-lg border border-slate-200/60 dark:border-indigo-500/20 shadow-2xl dark:shadow-[0_0_30px_rgba(99,102,241,0.1)] rounded-2xl p-2 z-[60]">
                         <div className="grid gap-1">
                           {[
                             { name: "Welcome Messages", path: "/about/welcome-messages", icon: Info },
@@ -263,10 +263,10 @@ const Navbar = () => {
                             <Link
                               key={subItem.path}
                               to={subItem.path}
-                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
+                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-indigo-500/10 transition-colors group"
                             >
-                              <subItem.icon className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-                              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{subItem.name}</span>
+                              <subItem.icon className="w-4 h-4 text-slate-400 dark:text-indigo-400 group-hover:text-blue-600 dark:group-hover:text-indigo-300 transition-colors" />
+                              <span className="text-sm font-medium text-slate-700 dark:text-indigo-100">{subItem.name}</span>
                             </Link>
                           ))}
                         </div>
@@ -387,7 +387,7 @@ const Navbar = () => {
                 </motion.div>
               </PopoverTrigger>
 
-              <PopoverContent className="w-80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border border-slate-200/60 dark:border-slate-800/60 shadow-2xl rounded-2xl p-6">
+              <PopoverContent className="w-80 bg-white/90 dark:bg-[#05001c]/95 backdrop-blur-lg border border-slate-200/60 dark:border-indigo-500/20 shadow-2xl rounded-2xl p-6 dark:shadow-[0_0_40px_rgba(99,102,241,0.15)]">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -520,7 +520,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <motion.button
-            className="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200"
+            className="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-indigo-500/10 hover:bg-slate-200 dark:hover:bg-indigo-500/20 transition-colors duration-200"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             whileTap={{ scale: 0.95 }}
           >
@@ -560,7 +560,7 @@ const Navbar = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            className="lg:hidden bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg border-t border-slate-200/60 dark:border-slate-800/60"
+            className="lg:hidden bg-white/95 dark:bg-[#030014]/95 backdrop-blur-lg border-t border-slate-200/60 dark:border-indigo-500/20"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}

@@ -73,9 +73,9 @@ const Footerreal = () => {
   ];
 
   return (
-    <footer className="relative bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-gray-800 dark:text-gray-200 border-t border-gray-200/60 dark:border-gray-800/60 transition-colors duration-700 overflow-hidden">
+    <footer className="relative bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014] text-gray-800 dark:text-indigo-200 border-t border-gray-200/60 dark:border-indigo-500/20 transition-colors duration-700 overflow-hidden">
       {/* Animated Background Pattern */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-blue-900/10 dark:to-purple-900/10"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-indigo-500/5 dark:to-purple-500/5"></div>
       <div
         className="absolute inset-0 opacity-30"
         style={{
@@ -121,15 +121,15 @@ const Footerreal = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-400/5 dark:to-purple-400/5 border border-blue-200/50 dark:border-blue-800/30 mb-4">
-            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-indigo-600/10 dark:to-purple-600/10 border border-blue-200/50 dark:border-indigo-500/30 mb-4 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
               CONNECT WITH US
             </span>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 dark:from-slate-100 dark:via-slate-300 dark:to-slate-100 bg-clip-text text-transparent mb-3">
+          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 dark:from-white dark:via-indigo-200 dark:to-white bg-clip-text text-transparent mb-3">
             Stay Connected
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl mx-auto">
+          <p className="text-slate-600 dark:text-indigo-100/70 text-lg max-w-2xl mx-auto">
             Join our community and explore all the resources we have to offer
           </p>
         </motion.div>
@@ -143,7 +143,7 @@ const Footerreal = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="group relative bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 dark:border-slate-800/60 hover:border-slate-300/60 dark:hover:border-slate-700/60 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl"
+              className="group relative bg-white/60 dark:bg-indigo-950/20 backdrop-blur-md rounded-2xl p-6 border border-slate-200/60 dark:border-indigo-500/20 hover:border-slate-300/60 dark:hover:border-indigo-400/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl dark:shadow-[0_0_30px_rgba(99,102,241,0.05)]"
             >
               {/* Glow effect */}
               <div
@@ -152,10 +152,10 @@ const Footerreal = () => {
 
               {/* Icon */}
               <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <div className="w-10 h-10 bg-slate-100 dark:bg-indigo-950/40 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                   <span className="text-xl">{section.icon}</span>
                 </div>
-                <h3 className="font-bold text-lg bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+                <h3 className="font-bold text-lg bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-indigo-200 bg-clip-text text-transparent">
                   {section.title}
                 </h3>
               </div>
@@ -170,7 +170,7 @@ const Footerreal = () => {
                   >
                     <a
                       href={link.href}
-                      className="group/link text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 transition-colors duration-300 flex items-center space-x-2"
+                      className="group/link text-slate-600 dark:text-indigo-200/70 hover:text-slate-800 dark:hover:text-white transition-colors duration-300 flex items-center space-x-2"
                     >
                       <div
                         className={`w-1 h-1 rounded-full bg-gradient-to-r ${section.color} opacity-0 group-hover/link:opacity-100 transition-opacity duration-300`}
@@ -199,7 +199,7 @@ const Footerreal = () => {
       </div>
 
       {/* Bottom Section */}
-      <div className="relative border-t border-gray-200/60 dark:border-gray-800/60 bg-white/40 dark:bg-slate-900/40 backdrop-blur-sm">
+      <div className="relative border-t border-gray-200/60 dark:border-indigo-500/20 bg-white/40 dark:bg-indigo-950/40 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             {/* Legal links */}
@@ -208,13 +208,13 @@ const Footerreal = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="flex flex-wrap gap-6 text-sm text-gray-600 dark:text-gray-400"
+              className="flex flex-wrap gap-6 text-sm text-gray-600 dark:text-indigo-100/60"
             >
               {["Legal", "Privacy Policy", "Cookies", "Accessibility"].map((item, index) => (
                 <motion.a
                   key={item}
                   onClick={() => { navigate("/veryfi") }}
-                  className="relative hover:text-slate-800 dark:hover:text-slate-100 transition-colors duration-300 group"
+                  className="relative hover:text-slate-800 dark:hover:text-white transition-colors duration-300 group"
                   whileHover={{ y: -2 }}
                 >
                   {item}
@@ -235,7 +235,7 @@ const Footerreal = () => {
                 <motion.a
                   key={index}
                   href={social.href}
-                  className={`relative group p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 ${social.hoverColor} hover:text-white transition-all duration-300 hover:shadow-lg`}
+                  className={`relative group p-3 rounded-2xl bg-slate-100 dark:bg-indigo-900/20 ${social.hoverColor} hover:text-white transition-all duration-300 hover:shadow-lg dark:hover:shadow-indigo-500/20`}
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -260,9 +260,9 @@ const Footerreal = () => {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="relative max-w-6xl mx-auto px-6 pb-8 text-center"
       >
-        <div className="inline-flex items-center space-x-2 px-4 py-2 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-full border border-slate-200/60 dark:border-slate-800/60">
+        <div className="inline-flex items-center space-x-2 px-4 py-2 bg-white/60 dark:bg-indigo-950/20 backdrop-blur-sm rounded-full border border-slate-200/60 dark:border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.05)]">
           <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
-          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+          <span className="text-sm text-gray-500 dark:text-indigo-200/60 font-medium">
             © {new Date().getFullYear()} QuizApp — All rights reserved.
           </span>
         </div>

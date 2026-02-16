@@ -115,9 +115,9 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-16 mt-16 transition-colors duration-700 overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-blue-900/10 dark:to-purple-900/10"></div>
+    <footer className="relative bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014] text-gray-800 dark:text-indigo-200 border-t border-gray-200/60 dark:border-indigo-500/20 transition-colors duration-700 overflow-hidden">
+      {/* Animated Background Pattern */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-indigo-500/5 dark:to-purple-500/5"></div>
       <div
         className="absolute inset-0 opacity-40"
         style={{
@@ -149,7 +149,9 @@ const Footer = () => {
           {stats.map((stat, index) => (
             <div
               key={index}
-              className={`group relative bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200/60 dark:border-slate-800/60 hover:border-slate-300/60 dark:hover:border-slate-700/60 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ${stat.glowColor}`}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className={`group relative bg-white/60 dark:bg-indigo-950/10 backdrop-blur-md rounded-2xl p-6 border border-slate-200/60 dark:border-indigo-500/20 hover:border-slate-300/60 dark:hover:border-indigo-400/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl ${stat.glowColor}`}
             >
               {/* Glow effect */}
               <div

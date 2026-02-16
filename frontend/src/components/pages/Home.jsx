@@ -42,10 +42,10 @@ const Home = () => {
 
   return (
     <>
-      {/* Hero Section with Enhanced Background */}
-      <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors duration-700 overflow-hidden">
+      {/* Hero Section with Enhanced Deep Space Background */}
+      <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014] transition-colors duration-700 overflow-hidden">
         {/* Animated Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-blue-900/10 dark:to-purple-900/10"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-indigo-500/5 dark:to-purple-500/5"></div>
         <div
           className="absolute inset-0 opacity-40"
           style={{
@@ -104,19 +104,19 @@ const Home = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="px-4 md:px-20 z-10"
           >
-            {/* Enhanced Title with Gradient */}
+            {/* Enhanced Title with Neon Gradient */}
             <div className="mb-8">
-              <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-400/5 dark:to-purple-400/5 border border-blue-200/50 dark:border-blue-800/30 mb-6">
-                <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-indigo-500/10 dark:to-purple-500/10 border border-blue-200/50 dark:border-indigo-500/30 mb-6 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+                <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
                   SMART LEARNING PLATFORM
                 </span>
               </div>
 
               <h1 className="relative min-h-[120px]">
-                <Suspense fallback={<div className="text-4xl md:text-5xl font-black text-slate-800 dark:text-slate-100 text-center leading-tight">Smart Quiz App<br />for College Mock Tests</div>}>
+                <Suspense fallback={<div className="text-4xl md:text-5xl font-black text-slate-800 dark:text-white text-center leading-tight">Smart Quiz App<br />for College Mock Tests</div>}>
                   <SplitText
                     text=" Smart Quiz App"
-                    className="text-4xl md:text-5xl font-black bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 dark:from-slate-100 dark:via-slate-300 dark:to-slate-100 bg-clip-text text-transparent text-center leading-tight"
+                    className="text-4xl md:text-5xl font-black text-slate-800 dark:text-white text-center leading-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]"
                     delay={100}
                     duration={0.6}
                     ease="power3.out"
@@ -131,7 +131,7 @@ const Home = () => {
                   <br />
                   <SplitText
                     text="for College Mock Tests"
-                    className="text-4xl md:text-5xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent text-center leading-tight"
+                    className="text-4xl md:text-5xl font-black text-blue-600 dark:text-purple-400 text-center leading-tight drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]"
                     delay={100}
                     duration={0.6}
                     ease="power3.out"
@@ -145,14 +145,14 @@ const Home = () => {
                   />
                 </Suspense>
 
-                {/* Glow effect behind text */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 blur-3xl -z-10 opacity-30 dark:opacity-20"></div>
+                {/* Neon Glow effect behind text */}
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/30 via-purple-500/30 to-pink-500/30 blur-[100px] -z-10 opacity-40 dark:opacity-30"></div>
               </h1>
             </div>
 
-            {/* Enhanced Description */}
-            <div className="mb-8 p-6 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-lg">
-              <Suspense fallback={<p className="font-mono text-xl md:text-2xl text-slate-700 dark:text-slate-300">A modern platform designed for students...</p>}>
+            {/* Enhanced Description with Glassmorphism */}
+            <div className="mb-8 p-6 bg-white/60 dark:bg-indigo-950/10 backdrop-blur-md rounded-2xl border border-slate-200/60 dark:border-indigo-500/20 shadow-lg dark:shadow-[0_0_20px_rgba(99,102,241,0.05)]">
+              <Suspense fallback={<p className="font-mono text-xl md:text-2xl text-slate-700 dark:text-indigo-200/80">A modern platform designed for students...</p>}>
                 <TextType
                   text={[
                     "A modern platform designed for students to practice mock tests,",
@@ -164,10 +164,10 @@ const Home = () => {
                   pauseDuration={1500}
                   deletingSpeed={40}
                   loop={true}
-                  className="font-mono text-xl md:text-2xl text-slate-700 dark:text-slate-300"
-                  textColors={[darktheme ? "#cbd5e1" : "#334155"]}
+                  className="font-mono text-xl md:text-2xl text-slate-700 dark:text-indigo-100/90"
+                  textColors={[darktheme ? "#C4B5FD" : "#334155"]}
                   cursorCharacter="|"
-                  cursorClassName="text-blue-600 dark:text-blue-400"
+                  cursorClassName="text-blue-600 dark:text-indigo-400"
                 />
               </Suspense>
             </div>

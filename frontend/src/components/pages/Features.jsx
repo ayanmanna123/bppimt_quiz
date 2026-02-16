@@ -43,9 +43,9 @@ const features = [
 
 const Features = () => {
   return (
-    <section className="relative py-32 bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors duration-700 overflow-hidden">
+    <section className="relative py-32 bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-[#030014] dark:via-[#030014] dark:to-[#05001c] transition-colors duration-700 overflow-hidden">
       {/* Animated Background Pattern */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-blue-900/10 dark:to-purple-900/10"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-indigo-500/5 dark:to-purple-500/5"></div>
       <div
         className="absolute inset-0 opacity-30"
         style={{
@@ -101,15 +101,15 @@ const Features = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-400/5 dark:to-purple-400/5 border border-blue-200/50 dark:border-blue-800/30 mb-6">
-            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-indigo-600/10 dark:to-purple-600/10 border border-blue-200/50 dark:border-indigo-500/30 mb-6 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
               POWERFUL FEATURES
             </span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 dark:from-slate-100 dark:via-slate-300 dark:to-slate-100 bg-clip-text text-transparent mb-6">
+          <h2 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 dark:from-indigo-100 dark:via-purple-100 dark:to-indigo-50 bg-clip-text text-transparent mb-6">
             Why Choose Our Platform?
           </h2>
-          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-indigo-200/70 max-w-3xl mx-auto">
             Discover the advanced features that make our quiz platform the perfect choice for your learning journey
           </p>
         </motion.div>
@@ -139,22 +139,22 @@ const Features = () => {
                 }}
                 viewport={{ once: true, margin: "-100px" }}
               >
-                {/* Background card */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.bgColor} rounded-3xl opacity-50 dark:opacity-20 blur-3xl transform scale-110`}></div>
+                {/* Enhanced Background Glow */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.bgColor} rounded-3xl opacity-50 dark:opacity-30 blur-[80px] transform scale-125`}></div>
 
-                <div className="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-3xl p-8 lg:p-12 border border-slate-200/60 dark:border-slate-800/60 shadow-xl">
+                <div className="relative bg-white/80 dark:bg-indigo-950/20 backdrop-blur-md rounded-3xl p-8 lg:p-12 border border-slate-200/60 dark:border-indigo-500/20 shadow-xl dark:shadow-[0_0_30px_rgba(99,102,241,0.05)]">
                   {/* Icon and Title */}
                   <div className="flex items-center space-x-4 mb-6">
-                    <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center shadow-lg ${feature.glowColor}`}>
+                    <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center shadow-lg ${feature.glowColor} dark:shadow-indigo-500/40`}>
                       <IconComponent className="w-8 h-8 text-white" />
                     </div>
-                    <h3 className="text-3xl lg:text-4xl font-black bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+                    <h3 className="text-3xl lg:text-4xl font-black bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-indigo-200 bg-clip-text text-transparent">
                       {feature.title}
                     </h3>
                   </div>
 
                   {/* Description */}
-                  <p className="text-xl text-slate-700 dark:text-slate-300 mb-8 leading-relaxed">
+                  <p className="text-xl text-slate-700 dark:text-indigo-100/80 mb-8 leading-relaxed">
                     {feature.description}
                   </p>
 
@@ -163,7 +163,7 @@ const Features = () => {
                     {feature.points.map((point, i) => (
                       <motion.div
                         key={i}
-                        className="group flex items-center gap-4 p-4 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 hover:border-slate-300/60 dark:hover:border-slate-600/60 transition-all duration-300 hover:shadow-lg"
+                        className="group flex items-center gap-4 p-4 rounded-2xl bg-white/60 dark:bg-indigo-900/10 border border-slate-200/60 dark:border-indigo-500/20 hover:border-slate-300/60 dark:hover:border-indigo-400/40 transition-all duration-300 hover:shadow-lg dark:hover:shadow-indigo-500/10"
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{
@@ -174,10 +174,10 @@ const Features = () => {
                         viewport={{ once: true }}
                         whileHover={{ scale: 1.02 }}
                       >
-                        <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                        <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${feature.color} flex items-center justify-center shadow-lg dark:shadow-indigo-500/20 group-hover:scale-110 transition-transform duration-300`}>
                           <CheckCircle className="w-5 h-5 text-white" />
                         </div>
-                        <span className="text-lg font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                        <span className="text-lg font-semibold text-slate-800 dark:text-indigo-100 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                           {point}
                         </span>
 
@@ -187,9 +187,9 @@ const Features = () => {
                     ))}
                   </div>
 
-                  {/* Bottom accent */}
+                  {/* Bottom neon accent */}
                   <motion.div
-                    className="mt-8 h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"
+                    className="mt-8 h-1 bg-slate-100 dark:bg-indigo-950/40 rounded-full overflow-hidden"
                     initial={{ scaleX: 0 }}
                     whileInView={{ scaleX: 1 }}
                     viewport={{ once: true }}
@@ -225,11 +225,11 @@ const Features = () => {
                 >
                   {/* Image container with enhanced effects */}
                   <div className="relative">
-                    {/* Glow effect behind image */}
-                    <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-30 blur-2xl rounded-3xl transition-opacity duration-500 scale-110`}></div>
+                    {/* Neon Glow effect behind image */}
+                    <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-40 blur-[40px] rounded-3xl transition-opacity duration-500 scale-110`}></div>
 
-                    {/* Main image */}
-                    <div className="relative bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm rounded-3xl p-6 border border-slate-200/60 dark:border-slate-800/60 shadow-2xl">
+                    {/* Main image with Glassmorphism container */}
+                    <div className="relative bg-white/90 dark:bg-indigo-950/30 backdrop-blur-md rounded-3xl p-6 border border-slate-200/60 dark:border-indigo-500/30 shadow-2xl dark:shadow-[0_0_50px_rgba(99,102,241,0.1)]">
                       <img
                         src={feature.image}
                         alt={feature.title}
@@ -295,11 +295,11 @@ const Features = () => {
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
       >
-        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-3xl p-12 border border-slate-200/60 dark:border-slate-800/60 shadow-xl">
-          <h3 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent mb-4">
+        <div className="bg-white/80 dark:bg-indigo-950/20 backdrop-blur-md rounded-3xl p-12 border border-slate-200/60 dark:border-indigo-500/20 shadow-xl dark:shadow-[0_0_40px_rgba(168,85,247,0.05)]">
+          <h3 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-indigo-200 bg-clip-text text-transparent mb-4">
             Ready to Get Started?
           </h3>
-          <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
+          <p className="text-xl text-slate-600 dark:text-indigo-100/80 mb-8">
             Experience all these amazing features and more. Join thousands of learners today!
           </p>
           <motion.button
