@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
     MessageCircle, Search, MoreVertical,
@@ -29,6 +29,7 @@ import DMChat from './chats/DMChat';
 import CommunityChat from './chats/CommunityChat';
 import SubjectChat from './chats/SubjectChat';
 import StudyRoomChat from './chats/StudyRoomChat';
+import GroupMembersModal from '../chat/GroupMembersModal';
 
 const AllChats = () => {
     const { usere: user } = useSelector(state => state.auth);
@@ -61,6 +62,9 @@ const AllChats = () => {
         handleSelectChat,
         handleSendMessage
     } = useAllChats();
+
+    const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
+    const [memberContext, setMemberContext] = useState(null);
 
     // --- Helpers ---
 
@@ -335,6 +339,19 @@ const AllChats = () => {
                                                         </>
                                                     )}
                                                     <DropdownMenuSeparator className="bg-slate-50 dark:bg-slate-800" />
+                                                    {['subject', 'study-room', 'global'].includes(chat.type) && (
+                                                        <DropdownMenuItem
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setMemberContext(chat);
+                                                                setIsMembersModalOpen(true);
+                                                            }}
+                                                            className="flex items-center gap-2 text-emerald-600 focus:text-emerald-600 focus:bg-emerald-50 dark:focus:bg-emerald-900/20 cursor-pointer py-2.5 rounded-lg mx-1"
+                                                        >
+                                                            <Users className="w-4 h-4" />
+                                                            <span>Group Members</span>
+                                                        </DropdownMenuItem>
+                                                    )}
                                                     <DropdownMenuItem className="flex items-center gap-2 text-slate-600 dark:text-slate-300 focus:bg-slate-50 dark:focus:bg-slate-800 cursor-pointer py-2.5 rounded-lg mx-1">
                                                         <Info className="w-4 h-4 text-slate-400" />
                                                         <span>Chat Info</span>
@@ -372,6 +389,14 @@ const AllChats = () => {
             <div className={`${isMobileChatOpen ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-slate-100 dark:bg-slate-950/50 relative overflow-hidden`}>
                 {renderChatContent()}
             </div>
+
+            <GroupMembersModal
+                isOpen={isMembersModalOpen}
+                onClose={() => setIsMembersModalOpen(false)}
+                subjectId={memberContext?._id}
+                type={memberContext?.type}
+                groupName={memberContext?.name}
+            />
         </div>
     );
 };

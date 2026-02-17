@@ -11,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, Users } from "lucide-react";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Button } from "../ui/button";
 
 const ViewersModal = ({ isOpen, onClose, messageId }) => {
     const [viewers, setViewers] = useState([]);

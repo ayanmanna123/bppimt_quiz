@@ -670,11 +670,49 @@ export const getLinkPreview = async (req, res) => {
     }
 };
 
-// Get all online users
-// Get all online users
+// Get all online users (with context filtering)
 export const getOnlineUsers = async (req, res) => {
     try {
-        const users = await User.find({ isOnline: true })
+        const { subjectId, type, department, semester } = req.query;
+
+        let query = { isOnline: true };
+
+        if (!subjectId || subjectId === "global") {
+            // Already set to global (all online users)
+        } else if (type === 'dm') {
+            // DMs: Show both participants if they are online
+            // Actually, for DMs we usually just show the other user's status in the header separately,
+            // but if we want them in this list too:
+            const Conversation = (await import("../models/Conversation.model.js")).default;
+            const conversation = await Conversation.findById(subjectId);
+            if (conversation) {
+                query._id = { $in: conversation.participants };
+            }
+        } else if (type === 'study-room') {
+            // Study Rooms: Only online members
+            const StudyRoom = (await import("../models/StudyRoom.model.js")).default;
+            const room = await StudyRoom.findById(subjectId);
+            if (room) {
+                query._id = { $in: room.members };
+            }
+        } else {
+            // Subjects: Students in the same dept/sem
+            // Subject model has dept/sem, but we can also filter Users directly if we have the dept/sem from query
+            if (department && semester) {
+                query.department = department;
+                query.semester = semester;
+            } else {
+                // Fallback: Fetch subject to get its dept/sem
+                const Subject = (await import("../models/Subject.model.js")).default;
+                const subject = await Subject.findById(subjectId);
+                if (subject) {
+                    query.department = subject.department;
+                    query.semester = subject.semester;
+                }
+            }
+        }
+
+        const users = await User.find(query)
             .select("fullname picture role _id")
             .lean();
         res.status(200).json(users);
@@ -743,5 +781,47 @@ export const getChatMetadata = async (req, res) => {
     } catch (error) {
         console.error("Error fetching chat metadata:", error);
         res.status(500).json({ message: "Failed to fetch chat metadata" });
+    }
+};
+
+// Get members of a group/subject
+export const getGroupMembers = async (req, res) => {
+    try {
+        const { subjectId } = req.params;
+        const { type } = req.query;
+
+        if (subjectId === "global") {
+            const users = await User.find({ verified: "accept" })
+                .select("fullname picture role _id department semester")
+                .limit(100)
+                .lean();
+            return res.status(200).json(users);
+        }
+
+        if (type === 'study-room') {
+            const StudyRoom = (await import("../models/StudyRoom.model.js")).default;
+            const room = await StudyRoom.findById(subjectId).populate("members", "fullname picture role _id department semester");
+            if (!room) return res.status(404).json({ message: "Room not found" });
+            return res.status(200).json(room.members);
+        }
+
+        if (type === 'subject') {
+            const Subject = (await import("../models/Subject.model.js")).default;
+            const subject = await Subject.findById(subjectId);
+            if (!subject) return res.status(404).json({ message: "Subject not found" });
+
+            const users = await User.find({
+                department: subject.department,
+                semester: subject.semester,
+                verified: "accept"
+            }).select("fullname picture role _id department semester").lean();
+
+            return res.status(200).json(users);
+        }
+
+        res.status(400).json({ message: "Invalid chat type for members list" });
+    } catch (error) {
+        console.error("Error fetching group members:", error);
+        res.status(500).json({ message: "Failed to fetch group members" });
     }
 };

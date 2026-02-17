@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import MessageBubble from "./MessageBubble";
 import ChatInput from "./ChatInput";
 import TypingIndicator from "./TypingIndicator";
-import OnlineUsersBar from "./OnlineUsersBar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 'subject' }) => { // Added type prop
     const { usere } = useSelector((store) => store.auth);
@@ -107,7 +107,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
         try {
             const token = await getAccessTokenSilently();
             const res = await axios.get(
-                `${import.meta.env.VITE_BACKEND_URL}/chat/online/all`,
+                `${import.meta.env.VITE_BACKEND_URL}/chat/online/all?subjectId=${subjectId}&type=${type}${usere?.department ? `&department=${usere.department}&semester=${usere.semester}` : ''}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setOnlineUsers(res.data);
@@ -445,26 +445,60 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                 <div className={`${type === 'dm' ? 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100' : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'} p-4 flex items-center justify-between shrink-0 relative transition-colors`}>
                     {!showSearch ? (
                         <>
-                            <div className="flex items-center gap-2 overflow-hidden flex-1">
-                                <MessageCircle className="w-5 h-5 shrink-0" />
+                            <div className="flex items-center gap-3 overflow-hidden flex-1">
+                                <div className={`${type === 'dm' ? 'bg-indigo-100 text-indigo-600' : 'bg-white/20 text-white'} w-10 h-10 rounded-xl flex items-center justify-center shrink-0`}>
+                                    <MessageCircle className="w-5 h-5" />
+                                </div>
                                 <div className="flex flex-col overflow-hidden">
-                                    <h3 className="font-bold truncate">{subjectName}</h3>
-                                    {type === 'dm' && (
-                                        <span className={`text-[10px] font-medium leading-none ${onlineUsers.some(u => u.fullname === subjectName) ? 'text-green-500' : 'text-slate-400'}`}>
-                                            {onlineUsers.some(u => u.fullname === subjectName) ? 'Online' : 'Offline'}
-                                        </span>
+                                    <h3 className="font-bold truncate text-sm md:text-base">{subjectName}</h3>
+                                    {type === 'dm' ? (
+                                        <div className="flex items-center gap-1.5">
+                                            <div className={`w-1.5 h-1.5 rounded-full ${onlineUsers.some(u => u.fullname === subjectName) ? 'bg-green-400 animate-pulse' : 'bg-slate-400'}`} />
+                                            <span className={`text-[10px] font-medium leading-none ${onlineUsers.some(u => u.fullname === subjectName) ? 'text-green-500' : 'text-slate-400'}`}>
+                                                {onlineUsers.some(u => u.fullname === subjectName) ? 'Active Now' : 'Offline'}
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        onlineUsers.length > 0 && (
+                                            <div className="flex items-center gap-2 mt-0.5">
+                                                <div className="flex -space-x-1.5 overflow-hidden">
+                                                    <TooltipProvider>
+                                                        {onlineUsers.slice(0, 3).map((user) => (
+                                                            <Tooltip key={user._id}>
+                                                                <TooltipTrigger asChild>
+                                                                    <Avatar className="w-5 h-5 border border-white/30 hover:z-10 transition-all cursor-pointer ring-1 ring-black/5">
+                                                                        <AvatarImage src={user.picture} alt={user.fullname} />
+                                                                        <AvatarFallback className="bg-indigo-500 text-[8px] text-white">
+                                                                            {user.fullname?.[0]}
+                                                                        </AvatarFallback>
+                                                                    </Avatar>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent side="bottom" className="text-[10px] py-1 px-2">
+                                                                    {user.fullname}
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        ))}
+                                                    </TooltipProvider>
+                                                </div>
+                                                {onlineUsers.length > 0 && (
+                                                    <span className={`text-[10px] font-bold ${type === 'dm' ? 'text-slate-500' : 'text-white/80'}`}>
+                                                        {onlineUsers.length} <span className="font-normal opacity-70">online</span>
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )
                                     )}
                                 </div>
                             </div>
                             <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="icon" onClick={() => setShowSearch(true)} className={`${type === 'dm' ? 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' : 'text-white hover:bg-white/20'} rounded-full h-8 w-8`}>
-                                    <Search className="w-4 h-4" />
+                                <Button variant="ghost" size="icon" onClick={() => setShowSearch(true)} className={`${type === 'dm' ? 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' : 'text-white hover:bg-white/20'} rounded-full h-9 w-9`}>
+                                    <Search className="w-4.5 h-4.5" />
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     size="icon"
                                     onClick={onClose}
-                                    className={`${type === 'dm' ? 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' : 'text-white hover:bg-white/20'} rounded-full h-8 w-8`}
+                                    className={`${type === 'dm' ? 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' : 'text-white hover:bg-white/20'} rounded-full h-9 w-9`}
                                 >
                                     <X className="w-5 h-5" />
                                 </Button>
@@ -563,8 +597,6 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                     )}
                 </div>
 
-                {/* Online Users Bar - Hide for DMs */}
-                {type !== 'dm' && <OnlineUsersBar users={onlineUsers} />}
 
                 {/* Pinned Messages Banner */}
                 {pinnedMessages.length > 0 && (

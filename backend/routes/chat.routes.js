@@ -1,5 +1,5 @@
 import express from "express";
-import { getChatHistory, togglePinMessage, getPinnedMessages, updateMessage, deleteMessage, getUnseenCount, markMessagesAsRead, getMessageViewers, searchMessages, getLinkPreview, getOnlineUsers, getChatMetadata, muteChat, unmuteChat } from "../controllers/chat.controller.js";
+import { getChatHistory, togglePinMessage, getPinnedMessages, updateMessage, deleteMessage, getUnseenCount, markMessagesAsRead, getMessageViewers, searchMessages, getLinkPreview, getOnlineUsers, getChatMetadata, muteChat, unmuteChat, getGroupMembers } from "../controllers/chat.controller.js";
 
 const router = express.Router();
 
@@ -32,6 +32,9 @@ router.put("/read/:subjectId", markMessagesAsRead);
 
 // Get message viewers
 router.get("/viewers/:messageId", getMessageViewers);
+
+// Get group members
+router.get("/members/:subjectId", getGroupMembers);
 
 // Search messages
 router.get("/search/:subjectId", searchMessages);
