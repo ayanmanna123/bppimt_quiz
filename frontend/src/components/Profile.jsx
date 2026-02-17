@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
 import { motion, animate } from "framer-motion";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setuser } from "../Redux/auth.reducer";
 import { useAuth0 } from "@auth0/auth0-react";
 import UpdateProfilelog from "./UpdateProfilelog";
 import Dashboard from "./pages/Dashboard";
@@ -32,8 +33,9 @@ import {
   Badge,
   Hash,
   Brain,
-
+  Ban,
 } from "lucide-react";
+
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -293,6 +295,51 @@ const Profile = () => {
 
   const handleMessage = () => {
     navigate(`/chats?dm=${conversationId}`);
+  };
+
+  const [isBlocked, setIsBlocked] = useState(false);
+
+  useEffect(() => {
+    if (usere && profileUser) {
+      setIsBlocked(usere.blockedUsers?.includes(profileUser._id));
+    }
+  }, [usere, profileUser]);
+
+  const dispatch = useDispatch();
+
+  const handleBlockUser = async () => {
+    if (!profileUser || actionLoading) return;
+    const confirmMessage = isBlocked ? `Unblock ${profileUser.fullname}?` : `Block ${profileUser.fullname}?`;
+    if (!window.confirm(confirmMessage)) return;
+
+    setActionLoading(true);
+    try {
+      const token = await getAccessTokenSilently();
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/chat/block`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ targetUserId: profileUser._id })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setIsBlocked(data.isBlocked);
+        // [FIX] Update Redux state
+        const updatedUser = { ...usere };
+        if (data.isBlocked) {
+          updatedUser.blockedUsers = [...(updatedUser.blockedUsers || []), profileUser._id];
+        } else {
+          updatedUser.blockedUsers = (updatedUser.blockedUsers || []).filter(id => id !== profileUser._id);
+        }
+        dispatch(setuser(updatedUser));
+      }
+    } catch (error) {
+      console.error("Failed to toggle block", error);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
 
@@ -686,12 +733,36 @@ const Profile = () => {
                       )}
 
                       {friendStatus === 'friends' && (
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={handleMessage}
+                            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+                          >
+                            <MessageSquare className="w-5 h-5" />
+                            Message
+                          </Button>
+                          <Button
+                            onClick={handleBlockUser}
+                            disabled={actionLoading}
+                            variant="outline"
+                            className={`flex-1 font-bold py-3 rounded-xl flex items-center justify-center gap-2 ${isBlocked ? 'text-green-600 border-green-200 hover:bg-green-50' : 'text-red-500 border-red-200 hover:bg-red-50'}`}
+                          >
+                            <Ban className="w-5 h-5" />
+                            {isBlocked ? 'Unblock' : 'Block'}
+                          </Button>
+                        </div>
+                      )}
+
+                      {/* Always show Block option for any non-self profile */}
+                      {friendStatus !== 'friends' && (
                         <Button
-                          onClick={handleMessage}
-                          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+                          onClick={handleBlockUser}
+                          disabled={actionLoading}
+                          variant="ghost"
+                          className={`w-full mt-2 font-bold py-2 rounded-xl flex items-center justify-center gap-2 text-xs opacity-70 hover:opacity-100 ${isBlocked ? 'text-green-600' : 'text-red-500'}`}
                         >
-                          <MessageSquare className="w-5 h-5" />
-                          Message
+                          <Ban className="w-4 h-4" />
+                          {isBlocked ? 'Unblock User' : 'Block User'}
                         </Button>
                       )}
                     </div>

@@ -1,5 +1,5 @@
 import express from "express";
-import { getChatHistory, togglePinMessage, getPinnedMessages, updateMessage, deleteMessage, getUnseenCount, markMessagesAsRead, getMessageViewers, searchMessages, getLinkPreview, getOnlineUsers, getChatMetadata, muteChat, unmuteChat, getGroupMembers } from "../controllers/chat.controller.js";
+import { getChatHistory, togglePinMessage, getPinnedMessages, updateMessage, deleteMessage, getUnseenCount, markMessagesAsRead, getMessageViewers, searchMessages, getLinkPreview, getOnlineUsers, getChatMetadata, muteChat, unmuteChat, getGroupMembers, toggleBlockUser, getConversationDetails } from "../controllers/chat.controller.js";
 
 const router = express.Router();
 
@@ -11,6 +11,9 @@ router.post("/meta", getChatMetadata);
 
 // Get chat history for a subject
 router.get("/:subjectId", getChatHistory);
+
+// Get conversation details
+router.get("/conversation/:conversationId", getConversationDetails);
 
 // Toggle Pin
 router.put("/pin/:messageId", togglePinMessage);
@@ -44,6 +47,9 @@ router.post("/mute", muteChat);
 
 // Unmute chat
 router.post("/unmute", unmuteChat);
+
+// Block user
+router.post("/block", toggleBlockUser);
 
 // Get link preview
 router.get("/link-preview/metadata", getLinkPreview);

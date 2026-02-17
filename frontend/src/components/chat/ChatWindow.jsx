@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSocket } from "../../context/SocketContext";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setuser } from "../../Redux/auth.reducer";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Send, X, MessageCircle, Loader2, Search, ChevronUp, ChevronDown, Clock, User as UserIcon, Pin, Trash, Reply, Smile, Check, CheckCheck } from "lucide-react";
+import { Send, X, MessageCircle, Loader2, Search, ChevronUp, ChevronDown, Clock, User as UserIcon, Pin, Trash, Reply, Smile, Check, CheckCheck, Ban } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,6 +18,10 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
     const { usere } = useSelector((store) => store.auth);
     const socket = useSocket();
     const { getAccessTokenSilently } = useAuth0();
+    const dispatch = useDispatch();
+
+    const [targetUserId, setTargetUserId] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
@@ -136,8 +141,59 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
             fetchPinnedMessages();
             fetchOnlineUsers();
             markAsRead();
+
+            if (type === 'dm') {
+                fetchConversationDetails();
+            }
         }
     }, [subjectId, usere, getAccessTokenSilently]);
+
+    const fetchConversationDetails = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/conversation/${subjectId}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            const other = res.data.participants.find(p => p._id !== usere?._id);
+            if (other) {
+                setTargetUserId(other._id);
+            }
+        } catch (error) {
+            console.error("Failed to fetch conversation details", error);
+        }
+    };
+
+    const handleBlockUser = async () => {
+        if (!targetUserId || actionLoading) return;
+        const isBlocked = usere.blockedUsers?.includes(targetUserId);
+        const confirmMessage = isBlocked ? "Unblock this user?" : "Block this user?";
+        if (!window.confirm(confirmMessage)) return;
+
+        setActionLoading(true);
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/chat/block`,
+                { targetUserId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (res.data) {
+                const updatedUser = { ...usere };
+                if (res.data.isBlocked) {
+                    updatedUser.blockedUsers = [...(updatedUser.blockedUsers || []), targetUserId];
+                } else {
+                    updatedUser.blockedUsers = (updatedUser.blockedUsers || []).filter(id => id !== targetUserId);
+                }
+                dispatch(setuser(updatedUser));
+            }
+        } catch (error) {
+            console.error("Failed to toggle block", error);
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
     // Handle Scroll for Pagination
     const handleScroll = (e) => {
@@ -491,6 +547,26 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                                 </div>
                             </div>
                             <div className="flex items-center gap-1">
+                                {type === 'dm' && targetUserId && (
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    disabled={actionLoading}
+                                                    onClick={handleBlockUser}
+                                                    className={`${usere.blockedUsers?.includes(targetUserId) ? 'text-red-500' : 'text-slate-500 dark:text-slate-400'} hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full h-9 w-9`}
+                                                >
+                                                    <Ban className="w-4.5 h-4.5" />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="bottom" className="text-[10px] py-1 px-2">
+                                                {usere.blockedUsers?.includes(targetUserId) ? 'Unblock User' : 'Block User'}
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                )}
                                 <Button variant="ghost" size="icon" onClick={() => setShowSearch(true)} className={`${type === 'dm' ? 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' : 'text-white hover:bg-white/20'} rounded-full h-9 w-9`}>
                                     <Search className="w-4.5 h-4.5" />
                                 </Button>
@@ -699,15 +775,30 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                 </div>
 
                 {/* Input Area */}
-                <ChatInput
-                    onSendMessage={handleSendMessage}
-                    onTyping={handleTyping}
-                    replyTo={replyTo}
-                    setReplyTo={setReplyTo}
-                    editingMessage={editingMessage}
-                    onUpdateMessage={handleUpdateMessage}
-                    onCancelEdit={() => setEditingMessage(null)}
-                />
+                {type === 'dm' && usere.blockedUsers?.includes(targetUserId) ? (
+                    <div className="p-4 bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-center">
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">You have blocked this user. Unblock to send messages.</p>
+                        <Button
+                            variant="link"
+                            size="sm"
+                            className="text-indigo-600 dark:text-indigo-400 h-auto p-0 mt-1"
+                            onClick={handleBlockUser}
+                            disabled={actionLoading}
+                        >
+                            Unblock Now
+                        </Button>
+                    </div>
+                ) : (
+                    <ChatInput
+                        onSendMessage={handleSendMessage}
+                        onTyping={handleTyping}
+                        replyTo={replyTo}
+                        setReplyTo={setReplyTo}
+                        editingMessage={editingMessage}
+                        onUpdateMessage={handleUpdateMessage}
+                        onCancelEdit={() => setEditingMessage(null)}
+                    />
+                )}
             </div>
         </div>
     );

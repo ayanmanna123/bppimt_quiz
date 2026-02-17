@@ -95,6 +95,12 @@ const userSchema = new mongoose.Schema(
         chatId: { type: String, required: true },
         until: { type: Date, required: true }
       }
+    ],
+    blockedUsers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      }
     ]
   },
   { timestamps: true }

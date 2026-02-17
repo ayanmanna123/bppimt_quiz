@@ -77,6 +77,25 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
             chatData.subjectId = subjectId;
         }
 
+        // [BLOCK CHECK] If DM, check if recipient has blocked sender
+        if (type === 'dm') {
+            const Conversation = (await import("../models/Conversation.model.js")).default;
+            const conversation = await Conversation.findById(subjectId);
+            if (conversation) {
+                const otherParticipantId = conversation.participants.find(p => p.toString() !== senderId.toString());
+                const otherUser = await User.findById(otherParticipantId);
+                if (otherUser && otherUser.blockedUsers.includes(senderId)) {
+                    throw new Error("You are blocked by this user");
+                }
+
+                // Also check if sender has blocked the recipient
+                const sender = await User.findById(senderId);
+                if (sender && sender.blockedUsers.includes(otherParticipantId)) {
+                    throw new Error("You have blocked this user. Unblock to send messages.");
+                }
+            }
+        }
+
         newMessage = new Chat(chatData);
         await newMessage.save();
 
@@ -781,6 +800,59 @@ export const getChatMetadata = async (req, res) => {
     } catch (error) {
         console.error("Error fetching chat metadata:", error);
         res.status(500).json({ message: "Failed to fetch chat metadata" });
+    }
+};
+
+// Toggle Block user
+export const toggleBlockUser = async (req, res) => {
+    try {
+        const { targetUserId } = req.body;
+        const auth0Id = req.auth.payload.sub;
+        const user = await User.findOne({ auth0Id });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user._id.toString() === targetUserId) {
+            return res.status(400).json({ message: "You cannot block yourself" });
+        }
+
+        const isBlocked = user.blockedUsers.includes(targetUserId);
+
+        if (isBlocked) {
+            user.blockedUsers = user.blockedUsers.filter(id => id.toString() !== targetUserId);
+        } else {
+            user.blockedUsers.push(targetUserId);
+        }
+
+        await user.save();
+
+        res.status(200).json({
+            message: isBlocked ? "User unblocked successfully" : "User blocked successfully",
+            isBlocked: !isBlocked
+        });
+    } catch (error) {
+        console.error("Error toggling block:", error);
+        res.status(500).json({ message: "Failed to toggle block" });
+    }
+};
+
+// Get conversation details
+export const getConversationDetails = async (req, res) => {
+    try {
+        const { conversationId } = req.params;
+        const Conversation = (await import("../models/Conversation.model.js")).default;
+        const conversation = await Conversation.findById(conversationId).populate("participants", "fullname picture role _id");
+
+        if (!conversation) {
+            return res.status(404).json({ message: "Conversation not found" });
+        }
+
+        res.status(200).json(conversation);
+    } catch (error) {
+        console.error("Error fetching conversation details:", error);
+        res.status(500).json({ message: "Failed to fetch conversation details" });
     }
 };
 
