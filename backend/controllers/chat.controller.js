@@ -488,7 +488,7 @@ export const getMessageViewers = async (req, res) => {
         const { messageId } = req.params;
 
         const chat = await Chat.findById(messageId)
-            .populate("readBy", "fullname picture email role")
+            .populate("readBy", "fullname picture email role universityNo")
             .lean();
 
         if (!chat) {
@@ -792,7 +792,7 @@ export const getGroupMembers = async (req, res) => {
 
         if (subjectId === "global") {
             const users = await User.find({ verified: "accept" })
-                .select("fullname picture role _id department semester")
+                .select("fullname picture role _id department semester universityNo")
                 .limit(100)
                 .lean();
             return res.status(200).json(users);
@@ -800,7 +800,7 @@ export const getGroupMembers = async (req, res) => {
 
         if (type === 'study-room') {
             const StudyRoom = (await import("../models/StudyRoom.model.js")).default;
-            const room = await StudyRoom.findById(subjectId).populate("members", "fullname picture role _id department semester");
+            const room = await StudyRoom.findById(subjectId).populate("members", "fullname picture role _id department semester universityNo");
             if (!room) return res.status(404).json({ message: "Room not found" });
             return res.status(200).json(room.members);
         }
@@ -814,7 +814,7 @@ export const getGroupMembers = async (req, res) => {
                 department: subject.department,
                 semester: subject.semester,
                 verified: "accept"
-            }).select("fullname picture role _id department semester").lean();
+            }).select("fullname picture role _id department semester universityNo").lean();
 
             return res.status(200).json(users);
         }

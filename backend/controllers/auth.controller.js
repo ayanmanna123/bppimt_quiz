@@ -303,8 +303,11 @@ export const searchUsers = async (req, res) => {
 
 export const getPublicProfile = async (req, res) => {
   try {
-    const { id } = req.params; // This is the universityNo
-    const user = await User.findOne({ universityNo: id }).select(
+    const { id } = req.params;
+    const isObjectId = /^[0-9a-fA-F]{24}$/.test(id);
+    const query = isObjectId ? { _id: id } : { universityNo: id };
+
+    const user = await User.findOne(query).select(
       "-password -__v -auth0Id"
     );
 

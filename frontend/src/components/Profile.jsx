@@ -60,7 +60,7 @@ const Profile = () => {
   const [profileUser, setProfileUser] = useState(null);
 
   useEffect(() => {
-    if (usere && !id) {
+    if (usere && (!id || id === "undefined")) {
       setProfileUser(usere);
     }
   }, [usere, id]);
@@ -72,7 +72,7 @@ const Profile = () => {
         setLoading(true);
 
         // --- PUBLIC PROFILE VIEW (when ID is present) ---
-        if (id) {
+        if (id && id !== "undefined") {
           const res = await fetch(
             `${import.meta.env.VITE_BACKEND_URL}/user/profile/${id}`
           );
@@ -184,7 +184,7 @@ const Profile = () => {
   useEffect(() => {
 
     const fetchRequests = async () => {
-      if (id || !isAuthenticated) return; // Only for own profile
+      if ((id && id !== "undefined") || !isAuthenticated) return; // Only for own profile
       try {
         const token = await getAccessTokenSilently({
           audience: "http://localhost:5000/api/v2",

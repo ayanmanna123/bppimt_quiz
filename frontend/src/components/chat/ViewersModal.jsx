@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
     Dialog,
     DialogContent,
@@ -8,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, Users } from "lucide-react";
+import { Loader2, Users, Clock } from "lucide-react";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "../ui/button";
@@ -16,6 +18,7 @@ import { Button } from "../ui/button";
 const ViewersModal = ({ isOpen, onClose, messageId }) => {
     const [viewers, setViewers] = useState([]);
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
     const { getAccessTokenSilently } = useAuth0();
 
     useEffect(() => {
@@ -68,9 +71,12 @@ const ViewersModal = ({ isOpen, onClose, messageId }) => {
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         key={viewer._id}
-                                        className="flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group cursor-default"
+                                        className="flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group"
                                     >
-                                        <div className="relative">
+                                        <div
+                                            className="relative cursor-pointer"
+                                            onClick={() => navigate(`/profile/${viewer.universityNo || viewer._id}`)}
+                                        >
                                             <Avatar className="h-12 w-12 border-2 border-white dark:border-slate-800 shadow-sm group-hover:scale-105 transition-transform">
                                                 <AvatarImage src={viewer.picture} />
                                                 <AvatarFallback className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 font-bold">
@@ -81,7 +87,10 @@ const ViewersModal = ({ isOpen, onClose, messageId }) => {
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex items-center justify-between">
-                                                <h4 className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                                                <h4
+                                                    className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors cursor-pointer"
+                                                    onClick={() => navigate(`/profile/${viewer.universityNo || viewer._id}`)}
+                                                >
                                                     {viewer.fullname}
                                                 </h4>
                                                 <div className="flex items-center gap-1 text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full text-slate-500 dark:text-slate-400 font-black uppercase tracking-tighter">

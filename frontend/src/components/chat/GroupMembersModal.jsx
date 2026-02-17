@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Dialog,
     DialogContent,
@@ -18,6 +19,7 @@ const GroupMembersModal = ({ isOpen, onClose, subjectId, type, groupName }) => {
     const [members, setMembers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const navigate = useNavigate();
     const { getAccessTokenSilently } = useAuth0();
 
     useEffect(() => {
@@ -106,9 +108,12 @@ const GroupMembersModal = ({ isOpen, onClose, subjectId, type, groupName }) => {
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ delay: idx * 0.03 }}
                                             key={member._id}
-                                            className="flex items-center gap-4 p-3.5 rounded-[1.5rem] hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 transition-all group cursor-default border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/50"
+                                            className="flex items-center gap-4 p-3.5 rounded-[1.5rem] hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 transition-all group border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/50"
                                         >
-                                            <div className="relative">
+                                            <div
+                                                className="relative cursor-pointer"
+                                                onClick={() => navigate(`/profile/${member.universityNo || member._id}`)}
+                                            >
                                                 <Avatar className="h-12 w-12 border-2 border-white dark:border-slate-800 shadow-md group-hover:scale-110 transition-transform duration-300">
                                                     <AvatarImage src={member.picture} />
                                                     <AvatarFallback className="bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/50 dark:to-purple-900/50 text-indigo-600 dark:text-indigo-400 font-bold">
@@ -121,7 +126,10 @@ const GroupMembersModal = ({ isOpen, onClose, subjectId, type, groupName }) => {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center justify-between gap-2">
-                                                    <h4 className="font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                                                    <h4
+                                                        className="font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors cursor-pointer"
+                                                        onClick={() => navigate(`/profile/${member.universityNo || member._id}`)}
+                                                    >
                                                         {member.fullname}
                                                     </h4>
                                                     <div className={`flex items-center gap-1.5 text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider ${member.role === 'teacher'
