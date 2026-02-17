@@ -589,13 +589,15 @@ const Profile = () => {
                       transition={{ type: "spring", stiffness: 300 }}
                     >
                       <Avatar className="h-32 w-32 border-4 border-white dark:border-slate-800 shadow-2xl">
-                        <AvatarImage
-                          className="object-cover"
-                          src={
-                            profileUser?.picture ||
-                            `https://api.dicebear.com/6.x/initials/svg?seed=${profileUser?.fullname}`
-                          }
-                        />
+                        {!isBlocked && (
+                          <AvatarImage
+                            className="object-cover"
+                            src={
+                              profileUser?.picture ||
+                              `https://api.dicebear.com/6.x/initials/svg?seed=${profileUser?.fullname}`
+                            }
+                          />
+                        )}
                         <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                           {profileUser?.fullname?.[0] || "U"}
                         </AvatarFallback>

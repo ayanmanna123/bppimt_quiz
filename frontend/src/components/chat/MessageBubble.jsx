@@ -20,7 +20,8 @@ const MessageBubble = ({
     onPin,
     onEdit,
     onDelete,
-    searchTerm
+    searchTerm,
+    isBlocked
 }) => {
     const [isViewersOpen, setIsViewersOpen] = React.useState(false);
 
@@ -64,7 +65,7 @@ const MessageBubble = ({
                     {showAvatar ? (
                         <div className="relative">
                             <Avatar className="w-8 h-8 border border-slate-200 dark:border-slate-700">
-                                <AvatarImage src={message.sender?.picture} />
+                                {!isBlocked && <AvatarImage src={message.sender?.picture} />}
                                 <AvatarFallback>{message.sender?.fullname?.[0]}</AvatarFallback>
                             </Avatar>
                             {message.sender?.isOnline && (

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
     Dialog,
     DialogContent,
@@ -16,6 +17,7 @@ import { Input } from "../ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 
 const GroupMembersModal = ({ isOpen, onClose, subjectId, type, groupName }) => {
+    const { usere } = useSelector(state => state.auth);
     const [members, setMembers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
@@ -115,7 +117,9 @@ const GroupMembersModal = ({ isOpen, onClose, subjectId, type, groupName }) => {
                                                 onClick={() => navigate(`/profile/${member.universityNo || member._id}`)}
                                             >
                                                 <Avatar className="h-12 w-12 border-2 border-white dark:border-slate-800 shadow-md group-hover:scale-110 transition-transform duration-300">
-                                                    <AvatarImage src={member.picture} />
+                                                    {member.picture && !usere?.blockedUsers?.includes(member._id) && (
+                                                        <AvatarImage src={member.picture} />
+                                                    )}
                                                     <AvatarFallback className="bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/50 dark:to-purple-900/50 text-indigo-600 dark:text-indigo-400 font-bold">
                                                         {member.fullname[0]}
                                                     </AvatarFallback>

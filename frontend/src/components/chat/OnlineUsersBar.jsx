@@ -2,8 +2,10 @@ import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useSelector } from 'react-redux';
 
 const OnlineUsersBar = ({ users }) => {
+    const { usere } = useSelector((state) => state.auth);
     if (!users || users.length === 0) return null;
 
     return (
@@ -20,7 +22,9 @@ const OnlineUsersBar = ({ users }) => {
                                     <TooltipTrigger asChild>
                                         <div className="relative cursor-pointer hover:scale-105 transition-transform group shrink-0">
                                             <Avatar className="w-8 h-8 border-2 border-indigo-500/50 group-hover:border-indigo-400 transition-colors">
-                                                <AvatarImage src={user.picture} alt={user.fullname} />
+                                                {user.picture && !usere?.blockedUsers?.includes(user._id) && (
+                                                    <AvatarImage src={user.picture} alt={user.fullname} />
+                                                )}
                                                 <AvatarFallback className="bg-indigo-600 text-white text-[10px]">
                                                     {user.fullname?.[0]}
                                                 </AvatarFallback>

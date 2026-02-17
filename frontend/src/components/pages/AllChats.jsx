@@ -246,7 +246,9 @@ const AllChats = () => {
                                     >
                                         <div className="relative">
                                             <Avatar className="w-12 h-12 border border-slate-100 dark:border-slate-800">
-                                                <AvatarImage src={chat.avatar} />
+                                                {!(chat.type === 'dm' && user?.blockedUsers?.includes(chat.friendId)) && (
+                                                    <AvatarImage src={chat.avatar} />
+                                                )}
                                                 <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-500 text-white">
                                                     {chat.name.charAt(0)}
                                                 </AvatarFallback>

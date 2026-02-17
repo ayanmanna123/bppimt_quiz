@@ -523,7 +523,9 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                                                             <Tooltip key={user._id}>
                                                                 <TooltipTrigger asChild>
                                                                     <Avatar className="w-5 h-5 border border-white/30 hover:z-10 transition-all cursor-pointer ring-1 ring-black/5">
-                                                                        <AvatarImage src={user.picture} alt={user.fullname} />
+                                                                        {user.picture && !usere.blockedUsers?.includes(user._id) && (
+                                                                            <AvatarImage src={user.picture} alt={user.fullname} />
+                                                                        )}
                                                                         <AvatarFallback className="bg-indigo-500 text-[8px] text-white">
                                                                             {user.fullname?.[0]}
                                                                         </AvatarFallback>
@@ -635,11 +637,11 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                                             }}
                                             className={`w-full p-2.5 text-left hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 transition-colors flex gap-2.5 items-start ${currentSearchIndex === idx ? 'bg-indigo-50 dark:bg-indigo-900/30 border-l-2 border-indigo-600 dark:border-indigo-400' : ''}`}
                                         >
-                                            <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
-                                                {result.sender?.picture ? (
-                                                    <img src={result.sender.picture} alt="" className="w-full h-full rounded-full object-cover" />
+                                            <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center shrink-0 overflow-hidden">
+                                                {result.sender?.picture && !usere.blockedUsers?.includes(result.sender._id) ? (
+                                                    <img src={result.sender.picture} alt="" className="w-full h-full object-cover" />
                                                 ) : (
-                                                    <UserIcon className="w-3.5 h-3.5 text-indigo-600" />
+                                                    <span className="text-[10px] font-bold text-indigo-600">{result.sender?.fullname?.[0]}</span>
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -762,6 +764,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                                                     onEdit={() => onEditMessage(msg)}
                                                     onDelete={() => handleDeleteMessage(msg._id)}
                                                     searchTerm={searchTerm}
+                                                    isBlocked={usere.blockedUsers?.includes(msg.sender?._id)}
                                                 />
                                             </div>
                                         </React.Fragment>
