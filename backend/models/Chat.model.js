@@ -69,6 +69,10 @@ const chatSchema = new mongoose.Schema(
             type: Date,
             default: Date.now,
         },
+        isEncrypted: {
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true }
 );

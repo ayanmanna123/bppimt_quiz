@@ -5,6 +5,7 @@ import Notification from "../models/Notification.model.js";
 import axios from "axios";
 import webpush from "web-push";
 import { sendNotification } from "../utils/notification.util.js";
+import { encrypt, decrypt } from "../utils/encryption.util.js";
 
 // Get chat history for a specific subject or global chat
 export const getChatHistory = async (req, res) => {
@@ -40,17 +41,40 @@ export const getChatHistory = async (req, res) => {
             .sort({ timestamp: -1 }) // Get latest first
             .skip((page - 1) * limit)
             .limit(parseInt(limit))
-            .populate("sender", "fullname picture email role")
+            .populate("sender", "fullname picture email role auth0Id")
             .populate("mentions", "fullname _id")
             .populate({
                 path: "replyTo",
-                select: "sender message attachments",
-                populate: { path: "sender", select: "fullname" }
+                select: "sender message attachments isEncrypted",
+                populate: { path: "sender", select: "fullname auth0Id" }
             })
             .populate("reactions.user", "fullname picture")
             .lean();
 
-        res.status(200).json(messages.reverse());
+        // Decrypt messages if they are encrypted
+        const decryptedMessages = messages.map(msg => {
+            if (msg.isEncrypted && msg.message) {
+                try {
+                    // Use sender's auth0Id as salt
+                    const salt = msg.sender?.auth0Id || '';
+                    msg.message = decrypt(msg.message, salt);
+                } catch (err) {
+                    console.error("Decryption failed for message:", msg._id, err);
+                    msg.message = "[Decryption Failed]";
+                }
+            }
+            if (msg.replyTo && msg.replyTo.isEncrypted && msg.replyTo.message) {
+                try {
+                    const replySalt = msg.replyTo.sender?.auth0Id || '';
+                    msg.replyTo.message = decrypt(msg.replyTo.message, replySalt);
+                } catch (err) {
+                    msg.replyTo.message = "[Decryption Failed]";
+                }
+            }
+            return msg;
+        });
+
+        res.status(200).json(decryptedMessages.reverse());
     } catch (error) {
         console.error("Error fetching chat history:", error);
         res.status(500).json({ message: "Failed to fetch chat history" });
@@ -96,6 +120,23 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
             }
         }
 
+        // Generate generic notification content for DMs
+        const originalMessage = messageContent;
+        let isEncrypted = false;
+
+        if (type === 'dm') {
+            try {
+                const sender = await User.findById(senderId);
+                const salt = sender?.auth0Id || '';
+                chatData.message = encrypt(messageContent, salt);
+                chatData.isEncrypted = true;
+                isEncrypted = true;
+            } catch (err) {
+                console.error("Encryption failed:", err);
+                // Fallback to unencrypted if encryption fails (though it shouldn't if env is set)
+            }
+        }
+
         newMessage = new Chat(chatData);
         await newMessage.save();
 
@@ -123,22 +164,34 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
 
         // Populate details for immediate return to clients
         const populatedMessage = await newMessage.populate([
-            { path: "sender", select: "fullname picture email role" },
+            { path: "sender", select: "fullname picture email role auth0Id" },
             { path: "mentions", select: "fullname _id" },
             {
                 path: "replyTo",
-                select: "sender message attachments",
-                populate: { path: "sender", select: "fullname" }
+                select: "sender message attachments isEncrypted",
+                populate: { path: "sender", select: "fullname auth0Id" }
             }
         ]);
 
-        // --- NOTIFICATION LOGIC ---
+        const returnedMessage = populatedMessage.toObject();
+        if (returnedMessage.isEncrypted) {
+            try {
+                const salt = returnedMessage.sender?.auth0Id || '';
+                returnedMessage.message = decrypt(returnedMessage.message, salt);
+            } catch (err) {
+                returnedMessage.message = "[Decryption Failed]";
+            }
+        }
+
+        return returnedMessage;
         try {
             const senderName = populatedMessage.sender.fullname;
             const notificationTitle = `New Message from ${senderName}`;
-            const notificationBody = messageContent.length > 50
-                ? messageContent.substring(0, 50) + "..."
-                : messageContent;
+            const notificationBody = type === 'dm'
+                ? "Sent you an encrypted message"
+                : (messageContent.length > 50
+                    ? messageContent.substring(0, 50) + "..."
+                    : messageContent);
 
             let url = subjectId === 'global' ? '/community-chat' : `/dashboard/subject/${subjectId}`;
             if (type === 'dm') {
@@ -772,9 +825,20 @@ export const getChatMetadata = async (req, res) => {
             // 1. Last Message
             const lastMsg = await Chat.findOne(query)
                 .sort({ timestamp: -1 })
-                .select("message timestamp sender attachments")
-                .populate("sender", "fullname")
+                .select("message timestamp sender attachments isEncrypted")
+                .populate("sender", "fullname auth0Id")
                 .lean();
+
+            let displayMessage = lastMsg ? (lastMsg.attachments?.length > 0 ? (lastMsg.message || 'Attachment') : lastMsg.message) : null;
+
+            if (lastMsg?.isEncrypted && displayMessage && displayMessage !== 'Attachment') {
+                try {
+                    const salt = lastMsg.sender?.auth0Id || '';
+                    displayMessage = decrypt(displayMessage, salt);
+                } catch (err) {
+                    displayMessage = "[Encrypted Message]";
+                }
+            }
 
             // 2. Unread Count
             const unreadCount = await Chat.countDocuments({
@@ -784,7 +848,7 @@ export const getChatMetadata = async (req, res) => {
             });
 
             return {
-                lastMessage: lastMsg ? (lastMsg.attachments?.length > 0 ? (lastMsg.message || 'Attachment') : lastMsg.message) : null,
+                lastMessage: displayMessage,
                 timestamp: lastMsg?.timestamp || null,
                 sender: lastMsg?.sender?.fullname || null,
                 unreadCount
