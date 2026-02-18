@@ -1,12 +1,10 @@
-import { useDispatch, useSelector } from "react-redux";
-import { setdarktheme } from "@/Redux/auth.reducer";
+import { useTheme } from "../../hooks/useTheme";
 
 export function ThemeToggle() {
-  const dispatch = useDispatch();
-  const { darktheme } = useSelector((store) => store.auth);
+  const { isDark, setTheme } = useTheme();
 
   const handleThemeChange = () => {
-    dispatch(setdarktheme(!darktheme));
+    setTheme(isDark ? "light" : "dark");
   };
 
   return (
@@ -17,14 +15,14 @@ export function ThemeToggle() {
     >
       {/* Background - Sky/Night transition */}
       <div
-        className={`absolute inset-0 transition-all duration-700 ${darktheme
-            ? "bg-gradient-to-b from-slate-900 via-indigo-900 to-slate-800"
-            : "bg-gradient-to-b from-sky-400 via-sky-300 to-sky-200"
+        className={`absolute inset-0 transition-all duration-700 ${isDark
+          ? "bg-gradient-to-b from-slate-900 via-indigo-900 to-slate-800"
+          : "bg-gradient-to-b from-sky-400 via-sky-300 to-sky-200"
           }`}
       />
 
       {/* Stars (dark mode only) with twinkling effect */}
-      {darktheme && (
+      {isDark && (
         <>
           <div
             className="absolute top-1 left-3 w-0.5 h-0.5 bg-white rounded-full animate-pulse"
@@ -42,7 +40,7 @@ export function ThemeToggle() {
       )}
 
       {/* Clouds (light mode only) */}
-      {!darktheme && (
+      {!isDark && (
         <>
           <div className="absolute top-1 left-4 w-4 h-1 bg-white/60 rounded-full blur-sm" />
           <div className="absolute top-0.5 right-5 w-3 h-1 bg-white/60 rounded-full blur-sm" />
@@ -51,18 +49,18 @@ export function ThemeToggle() {
 
       {/* Ground/Landscape */}
       <div
-        className={`absolute bottom-0 left-0 right-0 h-2.5 transition-all duration-700 ${darktheme
-            ? "bg-gradient-to-b from-green-900 via-green-950 to-slate-900"
-            : "bg-gradient-to-b from-green-500 via-green-600 to-green-700"
+        className={`absolute bottom-0 left-0 right-0 h-2.5 transition-all duration-700 ${isDark
+          ? "bg-gradient-to-b from-green-900 via-green-950 to-slate-900"
+          : "bg-gradient-to-b from-green-500 via-green-600 to-green-700"
           }`}
       >
         {/* Hills */}
         <div
-          className={`absolute bottom-0 -left-1 w-5 h-2 rounded-t-full transition-colors duration-700 ${darktheme ? "bg-green-800/80" : "bg-green-400/80"
+          className={`absolute bottom-0 -left-1 w-5 h-2 rounded-t-full transition-colors duration-700 ${isDark ? "bg-green-800/80" : "bg-green-400/80"
             }`}
         />
         <div
-          className={`absolute bottom-0 right-4 w-3 h-1 rounded-t-full transition-colors duration-700 ${darktheme ? "bg-green-800/70" : "bg-green-400/70"
+          className={`absolute bottom-0 right-4 w-3 h-1 rounded-t-full transition-colors duration-700 ${isDark ? "bg-green-800/70" : "bg-green-400/70"
             }`}
         />
       </div>
@@ -71,19 +69,19 @@ export function ThemeToggle() {
       <div className="absolute bottom-2.5 right-2">
         {/* Trunk */}
         <div
-          className={`w-0.5 h-1 rounded-sm transition-colors duration-700 mx-auto ${darktheme ? "bg-amber-900" : "bg-amber-800"
+          className={`w-0.5 h-1 rounded-sm transition-colors duration-700 mx-auto ${isDark ? "bg-amber-900" : "bg-amber-800"
             }`}
         />
         {/* Leaves */}
         <div
-          className={`absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full transition-colors duration-700 ${darktheme ? "bg-green-800" : "bg-green-600"
+          className={`absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full transition-colors duration-700 ${isDark ? "bg-green-800" : "bg-green-600"
             }`}
         />
       </div>
 
       {/* Sun (light mode) */}
       <div
-        className={`absolute top-1.5 right-4 transition-all duration-700 ${!darktheme ? "opacity-100 scale-100" : "opacity-0 scale-0"
+        className={`absolute top-1.5 right-4 transition-all duration-700 ${!isDark ? "opacity-100 scale-100" : "opacity-0 scale-0"
           }`}
       >
         <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-400 shadow-sm shadow-yellow-300/60" />
@@ -91,22 +89,22 @@ export function ThemeToggle() {
 
       {/* Moon (dark mode) */}
       <div
-        className={`absolute top-1 left-3 w-2.5 h-2.5 rounded-full transition-all duration-700 ${darktheme
-            ? "bg-gradient-to-br from-slate-200 to-slate-300 opacity-100 scale-100 shadow-sm shadow-slate-400/50"
-            : "bg-slate-300 opacity-0 scale-0"
+        className={`absolute top-1 left-3 w-2.5 h-2.5 rounded-full transition-all duration-700 ${isDark
+          ? "bg-gradient-to-br from-slate-200 to-slate-300 opacity-100 scale-100 shadow-sm shadow-slate-400/50"
+          : "bg-slate-300 opacity-0 scale-0"
           }`}
       />
 
       {/* Sliding Toggle Circle */}
       <div
-        className={`absolute top-1 w-5 h-5 rounded-full shadow-lg transition-all duration-700 ease-in-out ${darktheme
-            ? "left-1 bg-gradient-to-br from-slate-100 to-slate-200"
-            : "left-[calc(100%-1.25rem-4px)] bg-gradient-to-br from-white to-gray-50"
+        className={`absolute top-1 w-5 h-5 rounded-full shadow-lg transition-all duration-700 ease-in-out ${isDark
+          ? "left-1 bg-gradient-to-br from-slate-100 to-slate-200"
+          : "left-[calc(100%-1.25rem-4px)] bg-gradient-to-br from-white to-gray-50"
           }`}
       >
         {/* Icon on toggle */}
         <div className="absolute inset-0 flex items-center justify-center">
-          {darktheme ? (
+          {isDark ? (
             <svg
               className="w-3 h-3 text-indigo-900"
               fill="currentColor"

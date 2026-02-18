@@ -43,7 +43,7 @@ const teacherPatterns = [
 ];
 
 const TeacherCreateQuiz = () => {
-  const { darktheme } = useSelector((store) => store.auth);
+  // const { darktheme } = useSelector((store) => store.auth);
   const { getAccessTokenSilently } = useAuth0();
   const [quizzes, setQuizzes] = useState([]);
   const navigate = useNavigate();

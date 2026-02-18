@@ -36,7 +36,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
 const ResultDetails = () => {
-  const { darktheme } = useSelector((store) => store.auth);
+  // const { darktheme } = useSelector((store) => store.auth);
   const { getAccessTokenSilently } = useAuth0();
   const { resultId } = useParams();
   const navigate = useNavigate();

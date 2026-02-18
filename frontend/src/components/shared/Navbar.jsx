@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target, FileText, ShoppingBag, Settings, ChevronLeft } from "lucide-react";
+import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target, FileText, ShoppingBag, Settings, ChevronLeft, Sun, Moon, Laptop } from "lucide-react";
 import PushNotificationManager from "../PushNotificationManager";
 import { useSocket } from "../../context/SocketContext";
 import axios from "axios";
@@ -19,11 +19,13 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import NotificationDropdown from "./NotificationDropdown";
 import { ThemeToggle } from "./theme-toggle";
+import { useTheme } from "../../hooks/useTheme";
 
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const { logout, loginWithRedirect, isAuthenticated, user } = useAuth0();
+  const { theme, setTheme } = useTheme();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -502,6 +504,31 @@ const Navbar = () => {
                         </div>
 
                         <div className="space-y-6">
+                          <div>
+                            <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                              Appearance
+                            </p>
+                            <div className="grid grid-cols-3 gap-2">
+                              {[
+                                { id: 'light', icon: Sun, label: 'Light' },
+                                { id: 'dark', icon: Moon, label: 'Dark' },
+                                { id: 'system', icon: Laptop, label: 'System' }
+                              ].map(({ id, icon: Icon, label }) => (
+                                <button
+                                  key={id}
+                                  onClick={() => setTheme(id)}
+                                  className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all duration-200 ${theme === id
+                                      ? "bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-400"
+                                      : "border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                    }`}
+                                >
+                                  <Icon className="w-5 h-5 mb-1" />
+                                  <span className="text-xs font-medium">{label}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
                           <div>
                             <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
                               Notifications

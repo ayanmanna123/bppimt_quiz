@@ -39,7 +39,7 @@ const resultPatterns = [
 ];
 
 const Result = () => {
-  const { darktheme } = useSelector((store) => store.auth);
+  // const { darktheme } = useSelector((store) => store.auth);
   const { getAccessTokenSilently } = useAuth0();
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);

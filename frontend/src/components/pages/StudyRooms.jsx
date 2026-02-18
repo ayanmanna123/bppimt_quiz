@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const StudyRooms = () => {
-    const { darktheme } = useSelector((store) => store.auth);
+    // const { darktheme } = useSelector((store) => store.auth);
     const { getAccessTokenSilently } = useAuth0();
     const navigate = useNavigate();
     const [rooms, setRooms] = useState([]);

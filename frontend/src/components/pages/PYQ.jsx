@@ -15,7 +15,7 @@ import {
 import { toast } from "sonner";
 
 const PYQ = () => {
-    const { darktheme } = useSelector((store) => store.auth);
+    // const { darktheme } = useSelector((store) => store.auth);
     const [selectedYear, setSelectedYear] = useState("");
     const [selectedStream, setSelectedStream] = useState("");
     const [selectedSemester, setSelectedSemester] = useState("");

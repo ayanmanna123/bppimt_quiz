@@ -46,7 +46,7 @@ const adminGradients = [
 ];
 
 const AdmineResult = () => {
-  const { darktheme } = useSelector((store) => store.auth);
+  // const { darktheme } = useSelector((store) => store.auth);
   const { getAccessTokenSilently } = useAuth0();
   const { quizeId } = useParams();
   const [results, setResults] = useState([]);

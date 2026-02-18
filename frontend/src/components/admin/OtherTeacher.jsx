@@ -46,7 +46,7 @@ const subjectPatterns = [
 ];
 
 const OtherTeacher = () => {
-  const { darktheme } = useSelector((store) => store.auth);
+  // const { darktheme } = useSelector((store) => store.auth);
   const { getAccessTokenSilently } = useAuth0();
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);

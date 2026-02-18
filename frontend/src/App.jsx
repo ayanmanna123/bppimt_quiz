@@ -58,18 +58,20 @@ import CubeLoader from "./components/shared/CubeLoader";
 // Simple loading fallback
 const LoadingFallback = () => null;
 
+import { useTheme } from "./hooks/useTheme";
+
 function App() {
-  const { darktheme } = useSelector((store) => store.auth);
+  const { isDark } = useTheme();
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     const root = document.documentElement;
-    if (darktheme) {
+    if (isDark) {
       root.classList.add("dark");
     } else {
       root.classList.remove("dark");
     }
-  }, [darktheme]);
+  }, [isDark]);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 3000);

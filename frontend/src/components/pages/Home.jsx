@@ -11,8 +11,10 @@ const Footer = lazy(() => import("./Footer"));
 const Footerreal = lazy(() => import("./Footerreal"));
 const Calendar = lazy(() => import("./Calendar"));
 
+import { useTheme } from "../../hooks/useTheme";
+
 const Home = () => {
-  const { darktheme } = useSelector((store) => store.auth);
+  const { isDark } = useTheme();
   const { getAccessTokenSilently } = useAuth0();
 
   const updateProfile = async () => {
@@ -165,7 +167,7 @@ const Home = () => {
                   deletingSpeed={40}
                   loop={true}
                   className="font-mono text-xl md:text-2xl text-slate-700 dark:text-indigo-100/90"
-                  textColors={[darktheme ? "#C4B5FD" : "#334155"]}
+                  textColors={[isDark ? "#C4B5FD" : "#334155"]}
                   cursorCharacter="|"
                   cursorClassName="text-blue-600 dark:text-indigo-400"
                 />
