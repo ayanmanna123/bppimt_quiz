@@ -1,4 +1,6 @@
 import { useState, lazy, Suspense, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Users, BookOpen, Trophy, ShoppingBag, ArrowRight, Zap, GraduationCap } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -16,6 +18,7 @@ import { useTheme } from "../../hooks/useTheme";
 const Home = () => {
   const { isDark } = useTheme();
   const { getAccessTokenSilently } = useAuth0();
+  const navigate = useNavigate();
 
   const updateProfile = async () => {
     try {
@@ -110,15 +113,15 @@ const Home = () => {
             <div className="mb-8">
               <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-indigo-500/10 dark:to-purple-500/10 border border-blue-200/50 dark:border-indigo-500/30 mb-6 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
                 <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
-                  SMART LEARNING PLATFORM
+                  THE ULTIMATE STUDENT ECOSYSTEM
                 </span>
               </div>
 
               <h1 className="relative min-h-[120px]">
                 <Suspense fallback={<div className="text-4xl md:text-5xl font-black text-slate-800 dark:text-white text-center leading-tight">Smart Quiz App<br />for College Mock Tests</div>}>
                   <SplitText
-                    text=" Smart Quiz App"
-                    className="text-4xl md:text-5xl font-black text-slate-800 dark:text-white text-center leading-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                    text="Your Digital Campus"
+                    className="text-4xl md:text-6xl font-black text-slate-800 dark:text-white text-center leading-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]"
                     delay={100}
                     duration={0.6}
                     ease="power3.out"
@@ -132,8 +135,8 @@ const Home = () => {
                   />
                   <br />
                   <SplitText
-                    text="for College Mock Tests"
-                    className="text-4xl md:text-5xl font-black text-blue-600 dark:text-purple-400 text-center leading-tight drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]"
+                    text="All in One Place"
+                    className="text-4xl md:text-6xl font-black text-blue-600 dark:text-purple-400 text-center leading-tight drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]"
                     delay={100}
                     duration={0.6}
                     ease="power3.out"
@@ -157,9 +160,9 @@ const Home = () => {
               <Suspense fallback={<p className="font-mono text-xl md:text-2xl text-slate-700 dark:text-indigo-200/80">A modern platform designed for students...</p>}>
                 <TextType
                   text={[
-                    "A modern platform designed for students to practice mock tests,",
-                    "improve skills, track progress, identify weaknesses, and build confidence,",
-                    "helping them prepare effectively and achieve success in exams.",
+                    "Master your subjects with AI-driven quizzes,",
+                    "Buy and sell resources in the student marketplace,",
+                    "Collaborate with peers in study rooms and global chat.",
                   ]}
                   typingSpeed={75}
                   as="span"
@@ -174,38 +177,41 @@ const Home = () => {
               </Suspense>
             </div>
 
-            {/* Enhanced Button */}
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Button
-                className="group relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white rounded-2xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 border-0"
-                onClick={updateProfile}
+            {/* Enhanced Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <span className="relative z-10 flex items-center space-x-2">
-                  <span>View Pricing</span>
-                  <motion.svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    whileHover={{ x: 5 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 8l4 4m0 0l-4 4m4-4H3"
-                    />
-                  </motion.svg>
-                </span>
+                <Button
+                  className="group relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white rounded-2xl px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 border-0"
+                  onClick={() => navigate('/dashbord')}
+                >
+                  <span className="relative z-10 flex items-center space-x-2">
+                    <Zap className="w-5 h-5 fill-current" />
+                    <span>Start Learning</span>
+                  </span>
+                  {/* Button glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+                </Button>
+              </motion.div>
 
-                {/* Button glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
-              </Button>
-            </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  variant="outline"
+                  className="group relative bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-2 border-slate-200 dark:border-indigo-500/30 text-slate-700 dark:text-indigo-300 rounded-2xl px-8 py-6 text-lg font-semibold shadow-lg hover:border-purple-500 dark:hover:border-purple-500 transition-all duration-300"
+                  onClick={() => navigate('/store')}
+                >
+                  <span className="relative z-10 flex items-center space-x-2">
+                    <ShoppingBag className="w-5 h-5" />
+                    <span>Visit Store</span>
+                  </span>
+                </Button>
+              </motion.div>
+            </div>
           </motion.div>
 
           {/* Enhanced Image Section */}
@@ -270,6 +276,32 @@ const Home = () => {
               />
             </div>
           </motion.div>
+        </div>
+      </div>
+
+      <div className="relative py-10 bg-white/50 dark:bg-[#05001c]/50 backdrop-blur-md border-y border-slate-200/50 dark:border-indigo-500/10">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
+          {[
+            { label: "Active Students", value: "1,200+", icon: Users, color: "text-blue-500" },
+            { label: "Practice Quizzes", value: "500+", icon: BookOpen, color: "text-purple-500" },
+            { label: "Study Resources", value: "850+", icon: GraduationCap, color: "text-pink-500" },
+            { label: "Trophies Earned", value: "3,400+", icon: Trophy, color: "text-amber-500" }
+          ].map((stat, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="flex flex-col items-center justify-center p-4"
+            >
+              <div className={`p-3 rounded-2xl bg-slate-100 dark:bg-indigo-900/20 mb-3 ${stat.color} bg-opacity-10`}>
+                <stat.icon className={`w-8 h-8 ${stat.color}`} />
+              </div>
+              <h3 className="text-3xl font-bold text-slate-800 dark:text-white mb-1">{stat.value}</h3>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
+            </motion.div>
+          ))}
         </div>
       </div>
 

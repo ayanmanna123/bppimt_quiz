@@ -518,8 +518,8 @@ const Navbar = () => {
                                   key={id}
                                   onClick={() => setTheme(id)}
                                   className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all duration-200 ${theme === id
-                                      ? "bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-400"
-                                      : "border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                    ? "bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-400"
+                                    : "border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                                     }`}
                                 >
                                   <Icon className="w-5 h-5 mb-1" />
@@ -576,10 +576,7 @@ const Navbar = () => {
             </AnimatePresence>
           </motion.button>
 
-          {/* Mobile Theme Toggle */}
-          <div className="lg:hidden ml-2">
-            <ThemeToggle />
-          </div>
+
         </div>
       </nav>
 

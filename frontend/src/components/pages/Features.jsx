@@ -1,43 +1,85 @@
 "use client";
 import { motion } from "framer-motion";
-import { Shield, Brain, Award, CheckCircle } from "lucide-react";
+import { Shield, Brain, Award, CheckCircle, ShoppingBag, MessageCircle, BookOpen } from "lucide-react";
 
 const features = [
   {
-    title: "Safe & Secure",
+    title: "Smart Quiz System",
     description:
-      "Your privacy and data are protected with top-notch security measures on our website.",
-    points: ["Data encryption", "Secure login", "Trusted platform"],
-    image: "/img4.png",
-    icon: Shield,
+      "Subject-wise quizzes, weak area analysis, and adaptive learning to master your subjects.",
+    points: ["Topic-wise Tests", "Weakness Analysis", "Performance Tracking"],
+    imageLight: "/Smart_Quiz_System_light.png",
+    imageDark: "/Smart_Quiz_System_dark.png",
+    icon: Brain,
+    color: "from-violet-500 to-purple-600",
+    bgColor: "from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20",
+    glowColor: "shadow-violet-500/25",
+    accentColor: "violet",
+  },
+  {
+    title: "Student Marketplace",
+    description:
+      "Buy and sell study materials, instruments, and books within your college community safely.",
+    points: ["Secure Trading", "Verified Students", "Easy Listing"],
+    imageLight: "/Student_Marketplace_light.png",
+    imageDark: "/Student_Marketplace_dark.png",
+    icon: ShoppingBag,
     color: "from-emerald-500 to-teal-600",
     bgColor: "from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20",
     glowColor: "shadow-emerald-500/25",
     accentColor: "emerald",
   },
   {
-    title: "AI-Powered Features",
+    title: "Community & Chat",
     description:
-      "Experience smarter quizzes with AI that adapts to your learning needs and provides personalized recommendations.",
-    points: ["Smart suggestions", "Adaptive learning", "AI insights"],
-    image: "/img5.jpg",
-    icon: Brain,
-    color: "from-blue-500 to-indigo-600",
-    bgColor: "from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20",
+      "Connect with peers, join study rooms, and discuss topics in real-time global and private chats.",
+    points: ["Global Chat", "Study Rooms", "Peer Support"],
+    imageLight: "/Community_&_Chat_light.png",
+    imageDark: "/Community_&_Chat_dark.png",
+    icon: MessageCircle,
+    color: "from-blue-500 to-cyan-600",
+    bgColor: "from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20",
     glowColor: "shadow-blue-500/25",
     accentColor: "blue",
   },
   {
-    title: "Certificate on Completion",
+    title: "Study Resources",
     description:
-      "Get rewarded for your efforts! Receive a certificate after completing quizzes successfully.",
-    points: ["Verified certificate", "Shareable achievement", "Boost your resume"],
-    image: "/img7.png",
+      "Access Previous Year Questions (PYQs), subject notes, and assignments all in one place.",
+    points: ["PYQ Repository", "Subject Notes", "Assignment Help"],
+    imageLight: "/Study_Resources_light.png",
+    imageDark: "/Study_Resources_dark.png",
+    icon: BookOpen,
+    color: "from-amber-500 to-orange-600",
+    bgColor: "from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20",
+    glowColor: "shadow-amber-500/25",
+    accentColor: "amber",
+  },
+  {
+    title: "Certificates & Rewards",
+    description:
+      "Earn certificates for completed quizzes and track your academic milestones.",
+    points: ["Completion Certificates", "Achievement Badges", "Skill Verification"],
+    imageLight: "/Certificates_&_Rewards_light.png",
+    imageDark: "/Certificates_&_Rewards_dark.png",
     icon: Award,
-    color: "from-purple-500 to-pink-600",
-    bgColor: "from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20",
-    glowColor: "shadow-purple-500/25",
-    accentColor: "purple",
+    color: "from-pink-500 to-rose-600",
+    bgColor: "from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20",
+    glowColor: "shadow-pink-500/25",
+    accentColor: "pink",
+  },
+  {
+    title: "Secure Platform",
+    description:
+      "Your data and interactions are protected with enterprise-grade security and encryption.",
+    points: ["End-to-End Encryption", "Verified Users", "Data Privacy"],
+    imageLight: "/Secure_Platform_light.png",
+    imageDark: "/Secure_Platform_dark.png",
+    icon: Shield,
+    color: "from-slate-500 to-gray-600",
+    bgColor: "from-slate-50 to-gray-50 dark:from-slate-900/20 dark:to-gray-900/20",
+    glowColor: "shadow-slate-500/25",
+    accentColor: "slate",
   },
 ];
 
@@ -203,7 +245,7 @@ const Features = () => {
               {/* Enhanced image section */}
               <div className="flex-1 flex justify-center relative">
                 <motion.div
-                  className="relative group"
+                  className="relative group w-full"
                   initial={{
                     opacity: 0,
                     x: isEven ? 80 : -80,
@@ -224,27 +266,43 @@ const Features = () => {
 
                 >
                   {/* Image container with enhanced effects */}
-                  <div className="relative">
+                  <div className="relative isolate">
                     {/* Neon Glow effect behind image */}
-                    <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-40 blur-[40px] rounded-3xl transition-opacity duration-500 scale-110`}></div>
+                    <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-40 blur-[40px] rounded-3xl transition-opacity duration-500 scale-110 -z-10`}></div>
 
-                    {/* Main image with Glassmorphism container */}
-                    <div className="relative bg-white/90 dark:bg-indigo-950/30 backdrop-blur-md rounded-3xl p-6 border border-slate-200/60 dark:border-indigo-500/30 shadow-2xl dark:shadow-[0_0_50px_rgba(99,102,241,0.1)]">
-                      <img
-                        src={feature.image}
-                        alt={feature.title}
-                        className="w-full h-auto max-w-md rounded-2xl drop-shadow-xl"
-                        loading="lazy"
-                        style={{
-                          aspectRatio: "1/1",
-                          objectFit: "contain"
-                        }}
-                      />
+                    {/* Main image container */}
+                    <div className="relative w-full aspect-square max-w-md mx-auto">
+                      {/* Using CSS grid to stack images perfectly */}
+                      <div className="grid grid-cols-1 grid-rows-1">
+                        {/* Light Mode Image */}
+                        <div className="col-start-1 row-start-1 transition-opacity duration-300 ease-in-out dark:opacity-0 opacity-100">
+                          <div className="relative bg-white/90 backdrop-blur-md rounded-3xl p-6 border border-slate-200/60 shadow-2xl h-full flex items-center justify-center">
+                            <img
+                              src={feature.imageLight}
+                              alt={`${feature.title} Light`}
+                              className="w-full h-auto rounded-2xl drop-shadow-xl"
+                              loading="lazy"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Dark Mode Image */}
+                        <div className="col-start-1 row-start-1 transition-opacity duration-300 ease-in-out dark:opacity-100 opacity-0">
+                          <div className="relative bg-indigo-950/30 backdrop-blur-md rounded-3xl p-6 border dark:border-indigo-500/30 shadow-2xl dark:shadow-[0_0_50px_rgba(99,102,241,0.1)] h-full flex items-center justify-center">
+                            <img
+                              src={feature.imageDark}
+                              alt={`${feature.title} Dark`}
+                              className="w-full h-auto rounded-2xl drop-shadow-xl"
+                              loading="lazy"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Floating particles around image */}
                     <motion.div
-                      className={`absolute -top-4 -right-4 w-6 h-6 bg-gradient-to-r ${feature.color} rounded-full opacity-60`}
+                      className={`absolute -top-4 -right-4 w-6 h-6 bg-gradient-to-r ${feature.color} rounded-full opacity-60 z-20`}
                       animate={{
                         y: [0, -15, 0],
                         opacity: [0.6, 1, 0.6],
@@ -256,7 +314,7 @@ const Features = () => {
                       }}
                     />
                     <motion.div
-                      className={`absolute -bottom-6 -left-6 w-4 h-4 bg-gradient-to-r ${feature.color} rounded-full opacity-50`}
+                      className={`absolute -bottom-6 -left-6 w-4 h-4 bg-gradient-to-r ${feature.color} rounded-full opacity-50 z-20`}
                       animate={{
                         x: [0, 15, 0],
                         opacity: [0.5, 0.8, 0.5],
@@ -268,7 +326,7 @@ const Features = () => {
                       }}
                     />
                     <motion.div
-                      className="absolute top-1/2 -left-8 w-3 h-3 bg-gradient-to-r from-white to-slate-200 dark:from-slate-400 dark:to-slate-600 rounded-full opacity-70"
+                      className="absolute top-1/2 -left-8 w-3 h-3 bg-gradient-to-r from-white to-slate-200 dark:from-slate-400 dark:to-slate-600 rounded-full opacity-70 z-20"
                       animate={{
                         y: [0, -10, 0],
                         x: [0, -5, 0],
