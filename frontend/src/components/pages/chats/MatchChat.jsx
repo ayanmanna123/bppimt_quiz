@@ -9,6 +9,7 @@ const MatchChat = ({ chat, onClose }) => {
             isOverlay={false}
             onClose={onClose}
             type="match"
+            initialTargetUserId={chat.friendId}
         />
     );
 };

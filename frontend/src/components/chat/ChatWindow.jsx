@@ -14,13 +14,13 @@ import ChatInput from "./ChatInput";
 import TypingIndicator from "./TypingIndicator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 'subject' }) => { // Added type prop
+const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 'subject', initialTargetUserId = null }) => { // Added type and initialTargetUserId props
     const { usere } = useSelector((store) => store.auth);
     const socket = useSocket();
     const { getAccessTokenSilently } = useAuth0();
     const dispatch = useDispatch();
 
-    const [targetUserId, setTargetUserId] = useState(null);
+    const [targetUserId, setTargetUserId] = useState(initialTargetUserId);
     const [actionLoading, setActionLoading] = useState(false);
 
     const [messages, setMessages] = useState([]);
@@ -515,9 +515,9 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                                     {type === 'match' && <p className="text-[10px] text-pink-500 font-bold uppercase tracking-wider">Soul Match Connect</p>}
                                     {(type === 'dm' || type === 'match') ? (
                                         <div className="flex items-center gap-1.5">
-                                            <div className={`w-1.5 h-1.5 rounded-full ${onlineUsers.some(u => u.fullname === subjectName) ? 'bg-green-400 animate-pulse' : 'bg-slate-400'}`} />
-                                            <span className={`text-[10px] font-medium leading-none ${onlineUsers.some(u => u.fullname === subjectName) ? 'text-green-500' : 'text-slate-400'}`}>
-                                                {onlineUsers.some(u => u.fullname === subjectName) ? 'Active Now' : 'Offline'}
+                                            <div className={`w-1.5 h-1.5 rounded-full ${onlineUsers.some(u => targetUserId ? u._id === targetUserId : (u.fullname === subjectName || u.fullname === subjectName?.replace('Match: ', ''))) ? 'bg-green-400 animate-pulse' : 'bg-slate-400'}`} />
+                                            <span className={`text-[10px] font-medium leading-none ${onlineUsers.some(u => targetUserId ? u._id === targetUserId : (u.fullname === subjectName || u.fullname === subjectName?.replace('Match: ', ''))) ? 'text-green-500' : 'text-slate-400'}`}>
+                                                {onlineUsers.some(u => targetUserId ? u._id === targetUserId : (u.fullname === subjectName || u.fullname === subjectName?.replace('Match: ', ''))) ? 'Active Now' : 'Offline'}
                                             </span>
                                         </div>
                                     ) : (
