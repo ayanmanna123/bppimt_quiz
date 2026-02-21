@@ -101,10 +101,67 @@ const userSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       }
-    ]
+    ],
+    // Dating Specific Fields
+    datingPhotos: [
+      {
+        type: String,
+      }
+    ],
+    bio: {
+      type: String,
+      trim: true,
+      maxLength: 500,
+    },
+    interests: [
+      {
+        type: String,
+      }
+    ],
+    age: {
+      type: Number,
+      min: 18,
+    },
+    job: {
+      type: String,
+      trim: true,
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+    },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        default: [0, 0], // [longitude, latitude]
+      }
+    },
+    datingPreferences: {
+      gender: {
+        type: String,
+        enum: ["male", "female", "other", "all"],
+        default: "all",
+      },
+      ageRange: {
+        min: { type: Number, default: 18 },
+        max: { type: Number, default: 100 },
+      },
+      maxDistance: {
+        type: Number,
+        default: 50, // in kilometers
+      }
+    }
   },
   { timestamps: true }
 );
+
+// Add 2dsphere index for location-based search
+userSchema.index({ location: "2dsphere" });
 
 const User = mongoose.model("User", userSchema);
 export default User;

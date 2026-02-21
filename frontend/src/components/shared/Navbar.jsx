@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target, FileText, ShoppingBag, Settings, ChevronLeft, Sun, Moon, Laptop } from "lucide-react";
+import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target, FileText, ShoppingBag, Settings, ChevronLeft, Sun, Moon, Laptop, Heart } from "lucide-react";
 import PushNotificationManager from "../PushNotificationManager";
 import { useSocket } from "../../context/SocketContext";
 import axios from "axios";
@@ -155,6 +155,7 @@ const Navbar = () => {
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Store", path: "/store", icon: ShoppingBag },
     { name: "Chats", path: "/chats", icon: MessageCircle },
+    { name: "Dating", path: "/dating", icon: Heart },
   ];
 
   const adminNavItems = [
@@ -167,6 +168,7 @@ const Navbar = () => {
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Store", path: "/store", icon: ShoppingBag },
     { name: "Chats", path: "/chats", icon: MessageCircle },
+    { name: "Dating", path: "/dating", icon: Heart },
   ];
   const adminNavitem = [
     { name: "Home", path: "/", icon: Home },
@@ -176,6 +178,7 @@ const Navbar = () => {
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Store", path: "/store", icon: ShoppingBag },
     { name: "Chats", path: "/chats", icon: MessageCircle },
+    { name: "Dating", path: "/dating", icon: Heart },
   ];
 
   const navItems =

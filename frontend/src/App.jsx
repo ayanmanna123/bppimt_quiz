@@ -51,6 +51,10 @@ const Store = lazy(() => import("./components/store/Store"));
 const ProductDetails = lazy(() => import("./components/store/ProductDetails"));
 const SellProduct = lazy(() => import("./components/store/SellProduct"));
 const StoreChat = lazy(() => import("./components/store/StoreChat"));
+const DatingHome = lazy(() => import("./components/pages/dating/DatingHome"));
+const DatingProfileEditor = lazy(() => import("./components/pages/dating/DatingProfileEditor"));
+const DatingMatches = lazy(() => import("./components/pages/dating/DatingMatches"));
+
 
 
 import CubeLoader from "./components/shared/CubeLoader";
@@ -296,6 +300,20 @@ function App() {
 
           ),
         },
+        // Dating Routes
+        {
+          path: "/dating",
+          element: <DatingHome />,
+        },
+        {
+          path: "/dating/profile",
+          element: <DatingProfileEditor />,
+        },
+        {
+          path: "/dating/matches",
+          element: <DatingMatches />,
+        },
+
 
       ],
     },
