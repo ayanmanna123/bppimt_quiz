@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Send, X, MessageCircle, Loader2, Search, ChevronUp, ChevronDown, Clock, User as UserIcon, Pin, Trash, Reply, Smile, Check, CheckCheck, Ban } from "lucide-react";
+import { Send, X, MessageCircle, Loader2, Search, ChevronUp, ChevronDown, Clock, User as UserIcon, Pin, Trash, Reply, Smile, Check, CheckCheck, Ban, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -142,7 +142,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
             fetchOnlineUsers();
             markAsRead();
 
-            if (type === 'dm') {
+            if (type === 'dm' || type === 'match') {
                 fetchConversationDetails();
             }
         }
@@ -158,6 +158,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
             const other = res.data.participants.find(p => p._id !== usere?._id);
             if (other) {
                 setTargetUserId(other._id);
+                // If it's a match and we don't have the match date, we could set it here
             }
         } catch (error) {
             console.error("Failed to fetch conversation details", error);
@@ -498,16 +499,21 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
         <div className={containerClass}>
             <div className="w-full h-full flex flex-col overflow-hidden">
                 {/* Header */}
-                <div className={`${type === 'dm' ? 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100' : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'} p-4 flex items-center justify-between shrink-0 relative transition-colors`}>
+                <div className={`${(type === 'dm' || type === 'match') ? 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100' : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'} p-4 flex items-center justify-between shrink-0 relative transition-colors`}>
                     {!showSearch ? (
                         <>
                             <div className="flex items-center gap-3 overflow-hidden flex-1">
-                                <div className={`${type === 'dm' ? 'bg-indigo-100 text-indigo-600' : 'bg-white/20 text-white'} w-10 h-10 rounded-xl flex items-center justify-center shrink-0`}>
-                                    <MessageCircle className="w-5 h-5" />
+                                <div className={`${(type === 'dm' || type === 'match') ? 'bg-indigo-100 text-indigo-600' : 'bg-white/20 text-white'} w-10 h-10 rounded-xl flex items-center justify-center shrink-0`}>
+                                    {type === 'match' ? (
+                                        <Heart className="w-5 h-5 text-pink-500 fill-current" />
+                                    ) : (
+                                        <MessageCircle className="w-5 h-5" />
+                                    )}
                                 </div>
                                 <div className="flex flex-col overflow-hidden">
                                     <h3 className="font-bold truncate text-sm md:text-base">{subjectName}</h3>
-                                    {type === 'dm' ? (
+                                    {type === 'match' && <p className="text-[10px] text-pink-500 font-bold uppercase tracking-wider">Soul Match Connect</p>}
+                                    {(type === 'dm' || type === 'match') ? (
                                         <div className="flex items-center gap-1.5">
                                             <div className={`w-1.5 h-1.5 rounded-full ${onlineUsers.some(u => u.fullname === subjectName) ? 'bg-green-400 animate-pulse' : 'bg-slate-400'}`} />
                                             <span className={`text-[10px] font-medium leading-none ${onlineUsers.some(u => u.fullname === subjectName) ? 'text-green-500' : 'text-slate-400'}`}>
@@ -526,7 +532,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                                                                         {user.picture && !usere.blockedUsers?.includes(user._id) && (
                                                                             <AvatarImage src={user.picture} alt={user.fullname} />
                                                                         )}
-                                                                        <AvatarFallback className="bg-indigo-500 text-[8px] text-white">
+                                                                        <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-500 text-[8px] text-white">
                                                                             {user.fullname?.[0]}
                                                                         </AvatarFallback>
                                                                     </Avatar>
@@ -539,7 +545,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                                                     </TooltipProvider>
                                                 </div>
                                                 {onlineUsers.length > 0 && (
-                                                    <span className={`text-[10px] font-bold ${type === 'dm' ? 'text-slate-500' : 'text-white/80'}`}>
+                                                    <span className={`text-[10px] font-bold ${(type === 'dm' || type === 'match') ? 'text-slate-500' : 'text-white/80'}`}>
                                                         {onlineUsers.length} <span className="font-normal opacity-70">online</span>
                                                     </span>
                                                 )}
@@ -549,7 +555,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                                 </div>
                             </div>
                             <div className="flex items-center gap-1">
-                                {type === 'dm' && targetUserId && (
+                                {(type === 'dm' || type === 'match') && targetUserId && (
                                     <TooltipProvider>
                                         <Tooltip>
                                             <TooltipTrigger asChild>
@@ -569,14 +575,14 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                                         </Tooltip>
                                     </TooltipProvider>
                                 )}
-                                <Button variant="ghost" size="icon" onClick={() => setShowSearch(true)} className={`${type === 'dm' ? 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' : 'text-white hover:bg-white/20'} rounded-full h-9 w-9`}>
+                                <Button variant="ghost" size="icon" onClick={() => setShowSearch(true)} className={`${(type === 'dm' || type === 'match') ? 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' : 'text-white hover:bg-white/20'} rounded-full h-9 w-9`}>
                                     <Search className="w-4.5 h-4.5" />
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     size="icon"
                                     onClick={onClose}
-                                    className={`${type === 'dm' ? 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' : 'text-white hover:bg-white/20'} rounded-full h-9 w-9`}
+                                    className={`${(type === 'dm' || type === 'match') ? 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' : 'text-white hover:bg-white/20'} rounded-full h-9 w-9`}
                                 >
                                     <X className="w-5 h-5" />
                                 </Button>
@@ -697,9 +703,10 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                 )}
 
                 {/* Messages Area */}
-                <div className="flex-1 overflow-hidden bg-slate-50 dark:bg-slate-950 relative flex flex-col transition-colors">
+                <div className={`flex-1 overflow-hidden relative flex flex-col transition-colors ${(type === 'dm' || type === 'match') ? "bg-[url('https://web.whatsapp.com/img/bg-chat-tile-dark_a4be512e7195b6b733d9110b408f9640.png')] bg-repeat bg-opacity-5 dark:bg-opacity-10" : "bg-slate-50 dark:bg-slate-950"}`}>
+                    {(type === 'dm' || type === 'match') && <div className="absolute inset-0 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-[1px] transition-colors"></div>}
                     <div
-                        className="flex-1 p-4 overflow-y-auto"
+                        className="flex-1 p-4 overflow-y-auto relative z-10"
                         onScroll={handleScroll}
                         ref={scrollViewportRef}
                     >
@@ -778,7 +785,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                 </div>
 
                 {/* Input Area */}
-                {type === 'dm' && usere.blockedUsers?.includes(targetUserId) ? (
+                {(type === 'dm' || type === 'match') && usere.blockedUsers?.includes(targetUserId) ? (
                     <div className="p-4 bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-center">
                         <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">You have blocked this user. Unblock to send messages.</p>
                         <Button

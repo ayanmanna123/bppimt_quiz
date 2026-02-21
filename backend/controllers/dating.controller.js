@@ -163,7 +163,7 @@ export const handleSwipe = async (req, res) => {
                     message: `You have a new match with ${currentUser.fullname}!`,
                     type: "match",
                     relatedId: match._id,
-                    onModel: "User", // Or create a Match model entry in onModel enum if needed
+                    onModel: "Match",
                     url: "/dating/matches",
                     io
                 });
@@ -174,7 +174,7 @@ export const handleSwipe = async (req, res) => {
                     message: `It's a match! You are now connected with someone new.`,
                     type: "match",
                     relatedId: match._id,
-                    onModel: "User",
+                    onModel: "Match",
                     url: "/dating/matches",
                     io
                 });

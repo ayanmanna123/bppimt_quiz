@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNotification } from '../../context/NotificationContext';
-import { Bell, Check, Trash2, X, BookOpen, GraduationCap, MessageSquare, ClipboardList, Info, AlertTriangle, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Bell, Check, Trash2, X, BookOpen, GraduationCap, MessageSquare, ClipboardList, Info, AlertTriangle, AlertCircle, CheckCircle2, Heart } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,6 +23,7 @@ const NotificationItem = ({ notification, onMarkRead, onDelete }) => {
             case 'subject': return <BookOpen className="h-4 w-4 text-blue-500" />;
             case 'chat': return <MessageSquare className="h-4 w-4 text-green-500" />;
             case 'assignment': return <ClipboardList className="h-4 w-4 text-orange-500" />;
+            case 'match': return <Heart className="h-4 w-4 text-pink-500 fill-current" />;
             case 'success': return <CheckCircle2 className="h-4 w-4 text-emerald-500" />;
             case 'error': return <AlertCircle className="h-4 w-4 text-rose-500" />;
             case 'warning': return <AlertTriangle className="h-4 w-4 text-amber-500" />;
@@ -45,6 +46,8 @@ const NotificationItem = ({ notification, onMarkRead, onDelete }) => {
             navigate(`/dashboard`); // Fallback until deep link is stable
         } else if (notification.type === 'chat') {
             navigate(notification.url || '/chats');
+        } else if (notification.type === 'match') {
+            navigate(notification.url || '/dating/matches');
         }
     };
 

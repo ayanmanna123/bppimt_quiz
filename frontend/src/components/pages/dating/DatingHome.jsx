@@ -35,15 +35,17 @@ const DatingHome = () => {
             socket.on('newNotification', (notification) => {
                 if (notification.type === 'match') {
                     // Show match overlay
-                    // We might not have the full match object here, but we can set enough to trigger the UI
+                    // notification.relatedId contains the match ID
+                    // We can potentially fetch more info or just show a generic 'new match' UI
                     setShowMatch({
+                        _id: notification.relatedId,
                         users: [
-                            { fullname: 'someone' }, // Fallback if we don't have sender details in notification
-                        ]
+                            { fullname: 'New Match' },
+                        ],
+                        url: notification.url || '/dating/matches'
                     });
                 }
             });
-
             return () => socket.off('newNotification');
         }
     }, [socket]);
@@ -239,7 +241,15 @@ const DatingHome = () => {
 
                             <div className="flex flex-col gap-4">
                                 <button
-                                    onClick={() => setShowMatch(null)}
+                                    onClick={() => {
+                                        if (showMatch.conversationId) {
+                                            const conversationId = showMatch.conversationId?._id || showMatch.conversationId;
+                                            navigate(`/chats?conversationId=${conversationId}`);
+                                        } else {
+                                            navigate('/dating/matches');
+                                        }
+                                        setShowMatch(null);
+                                    }}
                                     className="neon-button w-full"
                                 >
                                     Send a Message

@@ -46,7 +46,9 @@ const DatingMatches = () => {
 
     const openChat = (match) => {
         // Navigating to the existing chat system with the conversation ID
-        navigate(`/chats?conversationId=${match.conversationId}`);
+        // match.conversationId is populated in the backend, so we need to access its _id
+        const conversationId = match.conversationId?._id || match.conversationId;
+        navigate(`/chats?conversationId=${conversationId}`);
     };
 
     if (loading) return <div className="dating-container flex items-center justify-center pt-20">Loading...</div>;

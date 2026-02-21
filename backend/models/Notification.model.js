@@ -25,7 +25,7 @@ const notificationSchema = new mongoose.Schema(
         onModel: {
             type: String,
             required: false,
-            enum: ['Subject', 'Quiz', 'User', 'Note', 'Assignment', 'Chat', 'Result', 'Match']
+            enum: ['Subject', 'Quiz', 'User', 'Note', 'Assignment', 'Chat', 'Result', 'Match', 'Conversation']
         },
         url: {
             type: String, // [NEW] Added for deep linking and matching
