@@ -4,7 +4,8 @@ import { useAuth0 } from '@auth0/auth0-react';
 import DatingWelcomePopup from './DatingWelcomePopup';
 import './../../../styles/dating.css';
 import { useEffect } from 'react';
-import { Briefcase, Filter, Heart, MapPin, User, X } from 'lucide-react';
+import { useSocket } from '../../../context/SocketContext';
+import { Briefcase, Filter, Heart, MapPin, User, X, MessageSquare, Star } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import TinderCard from 'react-tinder-card';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +14,7 @@ import React, { useMemo, useRef } from 'react';
 const DatingHome = () => {
     const { getAccessTokenSilently } = useAuth0();
     const navigate = useNavigate();
+    const socket = useSocket();
     const [users, setUsers] = useState([]);
     const [lastDirection, setLastDirection] = useState();
     const [loading, setLoading] = useState(true);
@@ -28,7 +30,23 @@ const DatingHome = () => {
     useEffect(() => {
         fetchDiscoveries();
         checkFirstTime();
-    }, []);
+
+        if (socket) {
+            socket.on('newNotification', (notification) => {
+                if (notification.type === 'match') {
+                    // Show match overlay
+                    // We might not have the full match object here, but we can set enough to trigger the UI
+                    setShowMatch({
+                        users: [
+                            { fullname: 'someone' }, // Fallback if we don't have sender details in notification
+                        ]
+                    });
+                }
+            });
+
+            return () => socket.off('newNotification');
+        }
+    }, [socket]);
 
     const checkFirstTime = () => {
         const hasJoinedJourney = localStorage.getItem('dating_journey_joined');
@@ -102,9 +120,26 @@ const DatingHome = () => {
             {/* Header */}
             <div className="max-w-md mx-auto px-6 mb-8 flex justify-between items-center">
                 <h1 className="text-3xl font-black neon-text-pink italic tracking-tighter">BPPIMT Date</h1>
-                <button className="p-2 rounded-full glass-morphism text-pink-400">
-                    <Filter className="w-6 h-6" />
-                </button>
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => navigate('/dating/likes')}
+                        className="p-2 rounded-full glass-morphism text-yellow-400 hover:scale-110 transition-transform active:scale-90"
+                    >
+                        <Star className="w-6 h-6" />
+                    </button>
+                    <button
+                        onClick={() => navigate('/dating/matches')}
+                        className="p-2 rounded-full glass-morphism text-purple-400 hover:scale-110 transition-transform active:scale-90"
+                    >
+                        <MessageSquare className="w-6 h-6" />
+                    </button>
+                    <button
+                        onClick={() => navigate('/dating/profile')}
+                        className="p-2 rounded-full glass-morphism text-pink-400 hover:scale-110 transition-transform active:scale-90"
+                    >
+                        <Filter className="w-6 h-6" />
+                    </button>
+                </div>
             </div>
 
             {/* Cards Container */}

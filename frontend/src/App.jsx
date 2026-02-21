@@ -54,6 +54,7 @@ const StoreChat = lazy(() => import("./components/store/StoreChat"));
 const DatingHome = lazy(() => import("./components/pages/dating/DatingHome"));
 const DatingProfileEditor = lazy(() => import("./components/pages/dating/DatingProfileEditor"));
 const DatingMatches = lazy(() => import("./components/pages/dating/DatingMatches"));
+const DatingLikes = lazy(() => import("./components/pages/dating/DatingLikes"));
 
 
 
@@ -312,6 +313,10 @@ function App() {
         {
           path: "/dating/matches",
           element: <DatingMatches />,
+        },
+        {
+          path: "/dating/likes",
+          element: <DatingLikes />,
         },
 
 

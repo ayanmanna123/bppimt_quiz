@@ -4,7 +4,8 @@ import {
     updateDatingProfile,
     getDiscoveryUsers,
     handleSwipe,
-    getMyMatches
+    getMyMatches,
+    getLikesSentToMe
 } from "../controllers/dating.controller.js";
 
 const router = express.Router();
@@ -15,5 +16,6 @@ router.put("/profile", updateDatingProfile);
 router.get("/discovery", getDiscoveryUsers);
 router.post("/swipe", handleSwipe);
 router.get("/matches", getMyMatches);
+router.get("/likes", getLikesSentToMe);
 
 export default router;

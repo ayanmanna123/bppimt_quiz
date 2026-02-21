@@ -13,7 +13,7 @@ const notificationSchema = new mongoose.Schema(
         },
         type: {
             type: String,
-            enum: ["info", "warning", "error", "success", "chat", "assignment", "quiz", "subject", "note"],
+            enum: ["info", "warning", "error", "success", "chat", "assignment", "quiz", "subject", "note", "match"],
             default: "info",
         },
         relatedId: {
@@ -25,7 +25,7 @@ const notificationSchema = new mongoose.Schema(
         onModel: {
             type: String,
             required: false,
-            enum: ['Subject', 'Quiz', 'User', 'Note', 'Assignment', 'Chat', 'Result']
+            enum: ['Subject', 'Quiz', 'User', 'Note', 'Assignment', 'Chat', 'Result', 'Match']
         },
         url: {
             type: String, // [NEW] Added for deep linking and matching

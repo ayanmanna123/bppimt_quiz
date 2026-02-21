@@ -2,17 +2,31 @@ import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
 import './../../../styles/dating.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useSocket } from '../../../context/SocketContext';
+import { Heart, MessageCircle, X } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const DatingMatches = () => {
     const { getAccessTokenSilently } = useAuth0();
+    const socket = useSocket();
     const [matches, setMatches] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchMatches();
-    }, []);
+
+        if (socket) {
+            socket.on('newNotification', (notification) => {
+                if (notification.type === 'match') {
+                    fetchMatches();
+                }
+            });
+
+            return () => socket.off('newNotification');
+        }
+    }, [socket]);
 
     const fetchMatches = async () => {
         try {

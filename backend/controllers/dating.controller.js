@@ -3,6 +3,7 @@ import Swipe from "../models/Swipe.model.js";
 import Match from "../models/Match.model.js";
 import Conversation from "../models/Conversation.model.js";
 import mongoose from "mongoose";
+import { sendNotification } from "../utils/notification.util.js";
 
 // Helper to calculate distance (in case it's needed elsewhere besides query)
 const deg2rad = (deg) => deg * (Math.PI / 180);
@@ -116,6 +117,7 @@ export const handleSwipe = async (req, res) => {
     try {
         const auth0Id = req.auth.sub;
         const { swipedUserId, type } = req.body; // type: 'like' or 'pass'
+        const io = req.app.get('io');
 
         if (!['like', 'pass'].includes(type)) {
             return res.status(400).json({ message: "Invalid swipe type", success: false });
@@ -154,7 +156,28 @@ export const handleSwipe = async (req, res) => {
                     conversationId: conversation._id
                 });
 
-                // Note: In a real app, you'd send a push notification here
+                // 3. Send Real-time Notifications using the system
+                await sendNotification({
+                    recipientId: swipedUserId,
+                    senderId: currentUser._id,
+                    message: `You have a new match with ${currentUser.fullname}!`,
+                    type: "match",
+                    relatedId: match._id,
+                    onModel: "User", // Or create a Match model entry in onModel enum if needed
+                    url: "/dating/matches",
+                    io
+                });
+
+                await sendNotification({
+                    recipientId: currentUser._id,
+                    senderId: swipedUserId,
+                    message: `It's a match! You are now connected with someone new.`,
+                    type: "match",
+                    relatedId: match._id,
+                    onModel: "User",
+                    url: "/dating/matches",
+                    io
+                });
             }
         }
 
@@ -200,6 +223,37 @@ export const getMyMatches = async (req, res) => {
         });
     } catch (error) {
         console.error("Get Matches Error:", error);
+        res.status(500).json({ message: "Internal server error", success: false });
+    }
+};
+
+export const getLikesSentToMe = async (req, res) => {
+    try {
+        const auth0Id = req.auth.sub;
+        const currentUser = await User.findOne({ auth0Id });
+        if (!currentUser) return res.status(404).json({ message: "User not found", success: false });
+
+        // 1. Get IDs of users who I have already swiped (liked or passed)
+        const mySwipes = await Swipe.find({ swiper: currentUser._id }).distinct("swipedUser");
+
+        // 2. Find users who liked me AND I haven't swiped on them yet
+        const likes = await Swipe.find({
+            swipedUser: currentUser._id,
+            type: 'like',
+            swiper: { $nin: mySwipes }
+        }).populate({
+            path: 'swiper',
+            select: 'fullname picture bio age department semester datingPhotos interests job gender'
+        });
+
+        const usersWhoLikedMe = likes.map(l => l.swiper).filter(u => u !== null);
+
+        return res.status(200).json({
+            success: true,
+            users: usersWhoLikedMe
+        });
+    } catch (error) {
+        console.error("Get Likes Error:", error);
         res.status(500).json({ message: "Internal server error", success: false });
     }
 };
