@@ -5,7 +5,8 @@ import {
     getDiscoveryUsers,
     handleSwipe,
     getMyMatches,
-    getLikesSentToMe
+    getLikesSentToMe,
+    getAllCollegeMatches
 } from "../controllers/dating.controller.js";
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.get("/discovery", getDiscoveryUsers);
 router.post("/swipe", handleSwipe);
 router.get("/matches", getMyMatches);
 router.get("/likes", getLikesSentToMe);
+router.get("/all-matches", getAllCollegeMatches);
 
 export default router;

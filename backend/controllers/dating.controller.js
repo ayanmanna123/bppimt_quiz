@@ -257,3 +257,23 @@ export const getLikesSentToMe = async (req, res) => {
         res.status(500).json({ message: "Internal server error", success: false });
     }
 };
+
+export const getAllCollegeMatches = async (req, res) => {
+    try {
+        const matches = await Match.find()
+            .sort({ createdAt: -1 })
+            .limit(20)
+            .populate({
+                path: "users",
+                select: "fullname picture"
+            });
+
+        return res.status(200).json({
+            success: true,
+            matches
+        });
+    } catch (error) {
+        console.error("Get All College Matches Error:", error);
+        res.status(500).json({ message: "Internal server error", success: false });
+    }
+};

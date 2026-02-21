@@ -80,3 +80,31 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
 }
+
+/* Utilities */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+@keyframes pulse-pink {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 127, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 127, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 127, 0);
+    }
+}
+
+.pulse-pink {
+    animation: pulse-pink 2s infinite;
+}

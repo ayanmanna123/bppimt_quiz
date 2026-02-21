@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import React, { useMemo, useRef } from 'react';
 
 const DatingHome = () => {
-    const { getAccessTokenSilently } = useAuth0();
+    const { getAccessTokenSilently, user } = useAuth0();
     const navigate = useNavigate();
     const socket = useSocket();
     const [users, setUsers] = useState([]);
@@ -20,6 +20,8 @@ const DatingHome = () => {
     const [loading, setLoading] = useState(true);
     const [showMatch, setShowMatch] = useState(null);
     const [isWelcomeOpen, setIsWelcomeOpen] = useState(false);
+    const [newMatches, setNewMatches] = useState([]);
+    const [globalMatches, setGlobalMatches] = useState([]);
 
     // Refs for programmatic swiping
     const childRefs = useMemo(
@@ -29,11 +31,14 @@ const DatingHome = () => {
 
     useEffect(() => {
         fetchDiscoveries();
+        fetchNewMatches();
+        fetchGlobalMatches();
         checkFirstTime();
 
         if (socket) {
             socket.on('newNotification', (notification) => {
                 if (notification.type === 'match') {
+                    fetchNewMatches();
                     // Show match overlay
                     // notification.relatedId contains the match ID
                     // We can potentially fetch more info or just show a generic 'new match' UI
@@ -75,6 +80,42 @@ const DatingHome = () => {
             console.error("Error fetching discoveries:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchNewMatches = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/dating/matches`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.data.success) {
+                const now = new Date();
+                const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+                const recentMatches = response.data.matches.filter(match => {
+                    const matchDate = new Date(match.createdAt);
+                    return matchDate > twentyFourHoursAgo;
+                });
+
+                setNewMatches(recentMatches);
+            }
+        } catch (error) {
+            console.error("Error fetching new matches:", error);
+        }
+    };
+
+    const fetchGlobalMatches = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/dating/all-matches`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.data.success) {
+                setGlobalMatches(response.data.matches);
+            }
+        } catch (error) {
+            console.error("Error fetching global matches:", error);
         }
     };
 
@@ -143,6 +184,116 @@ const DatingHome = () => {
                     </button>
                 </div>
             </div>
+
+            {/* New Matches Section */}
+            {newMatches.length > 0 && (
+                <div className="max-w-md mx-auto px-6 mb-8 mt-2">
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-pink-500/80 mb-6 flex items-center justify-center gap-2">
+                        Recent Matches
+                    </h2>
+                    <div className="flex gap-8 overflow-x-auto py-4 px-2 no-scrollbar">
+                        {newMatches.map((match) => (
+                            <div
+                                key={match._id}
+                                onClick={() => navigate(`/chats?conversationId=${match.conversationId?._id || match.conversationId}`)}
+                                className="flex-shrink-0 flex flex-col items-center gap-3 group cursor-pointer"
+                            >
+                                <div className="match-circle-wrapper relative flex items-center justify-center">
+                                    {/* Circle background with glow */}
+                                    <div className="absolute inset-0 rounded-full bg-pink-500/10 blur-xl group-hover:bg-pink-500/20 transition-all"></div>
+
+                                    <div className="relative flex items-center bg-[#1a1a2e] p-2 rounded-full border border-white/10 shadow-2xl">
+                                        {/* My Avatar */}
+                                        <div className="w-12 h-12 rounded-full border-2 border-[#1a1a2e] overflow-hidden z-10 shadow-lg">
+                                            <img
+                                                src={user?.picture || "/api/placeholder/100/100"}
+                                                alt="Me"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+
+                                        {/* Heart Icon between */}
+                                        <div className="mx-[-8px] z-20 bg-pink-500 p-1.5 rounded-full shadow-lg pulse-pink">
+                                            <Heart className="w-3 h-3 text-white fill-current" />
+                                        </div>
+
+                                        {/* Match Avatar */}
+                                        <div className="w-12 h-12 rounded-full border-2 border-[#1a1a2e] overflow-hidden z-10 shadow-lg">
+                                            <img
+                                                src={match.otherUser?.picture || "/api/placeholder/100/100"}
+                                                alt={match.otherUser?.fullname}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col items-center leading-tight">
+                                    <span className="text-[11px] font-bold text-white group-hover:text-pink-400 transition-colors">
+                                        {(user?.nickname || user?.name?.split(' ')[0] || 'Me')} & {(match.otherUser?.fullname?.split(' ')[0] || 'User')}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Global College Matches Section */}
+            {globalMatches.length > 0 && (
+                <div className="max-w-md mx-auto px-6 mb-8 mt-2">
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-6 flex items-center justify-center gap-2">
+                        <span className="w-8 h-[1px] bg-white/10"></span>
+                        Happening in College
+                        <span className="w-8 h-[1px] bg-white/10"></span>
+                    </h2>
+                    <div className="flex gap-8 overflow-x-auto py-4 px-2 no-scrollbar">
+                        {globalMatches.map((match) => {
+                            const user1 = match.users[0];
+                            const user2 = match.users[1];
+                            if (!user1 || !user2) return null;
+
+                            return (
+                                <div
+                                    key={match._id}
+                                    className="flex-shrink-0 flex flex-col items-center gap-3 opacity-60 hover:opacity-100 transition-opacity"
+                                >
+                                    <div className="match-circle-wrapper relative flex items-center justify-center scale-90">
+                                        <div className="relative flex items-center bg-white/5 p-2 rounded-full border border-white/5">
+                                            {/* User 1 Avatar */}
+                                            <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden z-10">
+                                                <img
+                                                    src={user1.picture || "/api/placeholder/100/100"}
+                                                    alt={user1.fullname}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
+
+                                            {/* Heart Icon between */}
+                                            <div className="mx-[-6px] z-20 bg-pink-500/20 p-1 rounded-full">
+                                                <Heart className="w-2.5 h-2.5 text-pink-500 fill-current" />
+                                            </div>
+
+                                            {/* User 2 Avatar */}
+                                            <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden z-10">
+                                                <img
+                                                    src={user2.picture || "/api/placeholder/100/100"}
+                                                    alt={user2.fullname}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-center leading-tight">
+                                        <span className="text-[10px] font-medium text-white/50">
+                                            {user1.fullname?.split(' ')[0]} & {user2.fullname?.split(' ')[0]}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
 
             {/* Cards Container */}
             <div className="flex justify-center items-center h-[600px] relative">
