@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from 'axios';
 import { useSocket } from "../context/SocketContext";
@@ -11,6 +12,8 @@ const useAllChats = () => {
     const { usere: user } = useSelector(state => state.auth);
     const { getAccessTokenSilently } = useAuth0();
     const socket = useSocket();
+    const [searchParams] = useSearchParams();
+    const urlConversationId = searchParams.get('conversationId');
 
     // UI State
     const [activeTab, setActiveTab] = useState('all'); // all, unread, groups
@@ -40,6 +43,16 @@ const useAllChats = () => {
             fetchOnlineUsers();
         }
     }, [user]);
+
+    // Auto-select chat from URL
+    useEffect(() => {
+        if (!loading && urlConversationId && chats.length > 0) {
+            const chatToSelect = chats.find(c => String(c._id) === String(urlConversationId));
+            if (chatToSelect) {
+                handleSelectChat(chatToSelect);
+            }
+        }
+    }, [loading, urlConversationId, chats.length]);
 
     const fetchOnlineUsers = async () => {
         try {
@@ -137,8 +150,32 @@ const useAllChats = () => {
                 friendId: friend.user._id
             }));
 
+            // 6. Dating Matches
+            let matchChats = [];
+            try {
+                const matchesRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/dating/matches`, { headers });
+                matchChats = (matchesRes.data.matches || []).map(match => ({
+                    _id: match.conversationId?._id || match.conversationId,
+                    type: 'match',
+                    name: `Match: ${match.otherUser?.fullname || 'Unknown'}`,
+                    avatar: match.otherUser?.picture,
+                    lastMessage: null,
+                    timestamp: match.createdAt || new Date().toISOString(),
+                    unreadCount: 0,
+                    isOnline: false,
+                    friendId: match.otherUser?._id
+                }));
+            } catch (err) {
+                console.error("Failed to fetch match chats", err);
+            }
 
-            const standardChatIds = ['global', ...subjects.map(s => s._id), ...studyRooms.map(r => r._id), ...friendsChats.map(f => f._id)];
+            const standardChatIds = [
+                'global',
+                ...subjects.map(s => s._id),
+                ...studyRooms.map(r => r._id),
+                ...friendsChats.map(f => f._id),
+                ...matchChats.map(m => m._id)
+            ];
 
             let metadata = {};
             try {
@@ -151,12 +188,12 @@ const useAllChats = () => {
                 console.error("Failed to fetch chat metadata", err);
             }
 
-            // Merge Metadata
-            const mergedStandardChats = [globalChat, ...subjectChats, ...studyRooms, ...friendsChats].map(chat => {
+            // Merge Metadata for all standard and match chats
+            const mergedChats = [globalChat, ...subjectChats, ...studyRooms, ...friendsChats, ...matchChats].map(chat => {
                 const meta = metadata[chat._id];
                 return {
                     ...chat,
-                    lastMessage: meta?.lastMessage || null,
+                    lastMessage: meta?.lastMessage || chat.lastMessage,
                     timestamp: meta?.timestamp || chat.timestamp,
                     unreadCount: meta?.unreadCount || 0,
                     senderName: meta?.sender || null
@@ -164,7 +201,7 @@ const useAllChats = () => {
             });
 
             // Combine all
-            const all = [...storeChats, ...mergedStandardChats];
+            const all = [...storeChats, ...mergedChats];
 
             // Sort by latest (Newest timestamp first)
             all.sort((a, b) => {

@@ -1,17 +1,17 @@
 import React from 'react';
 import ChatWindow from '../../chat/ChatWindow';
 
-const DMChat = ({ chat, onClose }) => {
+const MatchChat = ({ chat, onClose }) => {
     return (
         <ChatWindow
             subjectId={chat._id}
             subjectName={chat.name}
             isOverlay={false}
             onClose={onClose}
-            type="dm"
+            type="match"
             initialTargetUserId={chat.friendId}
         />
     );
 };
 
-export default DMChat;
+export default MatchChat;

@@ -123,6 +123,7 @@ export const NotificationProvider = ({ children }) => {
         if (!socket) return;
 
         const handleNewNotification = (notification) => {
+            console.log("NotificationContext: Received newNotification", notification);
             setNotifications(prev => [notification, ...prev]);
             setUnreadCount(prev => prev + 1);
 

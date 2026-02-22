@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import {
     MessageCircle, Search, MoreVertical,
     Users, Hash, ShoppingBag, Loader2,
-    BellOff, Bell, Clock, Info, Lock
+    BellOff, Bell, Clock, Info, Lock, Heart
 } from 'lucide-react';
 import {
     DropdownMenu,
@@ -26,6 +26,7 @@ import useAllChats from '../../hooks/useAllChats';
 // Sub Components
 import ProductChat from './chats/ProductChat';
 import DMChat from './chats/DMChat';
+import MatchChat from './chats/MatchChat';
 import CommunityChat from './chats/CommunityChat';
 import SubjectChat from './chats/SubjectChat';
 import StudyRoomChat from './chats/StudyRoomChat';
@@ -74,6 +75,7 @@ const AllChats = () => {
             case 'subject': return <Hash className="w-5 h-5" />;
             case 'study-room': return <Users className="w-5 h-5" />;
             case 'store': return <ShoppingBag className="w-5 h-5" />;
+            case 'match': return <Heart className="w-5 h-5 text-pink-500 fill-current" />;
             default: return <MessageCircle className="w-5 h-5" />;
         }
     };
@@ -93,6 +95,7 @@ const AllChats = () => {
         if (chat.type === 'subject') return chat.code || 'Course';
         if (chat.type === 'study-room') return `${chat.members || 0} Members`;
         if (chat.type === 'dm') return 'Start a conversation';
+        if (chat.type === 'match') return "You matched! Send a message";
         return 'All Community';
     };
 
@@ -119,6 +122,8 @@ const AllChats = () => {
             matchesTab = ['subject', 'study-room', 'global'].includes(chat.type);
         } else if (activeTab === 'store') {
             matchesTab = chat.type === 'store';
+        } else if (activeTab === 'dating') {
+            matchesTab = chat.type === 'match';
         }
 
         return matchesSearch && matchesTab;
@@ -157,6 +162,8 @@ const AllChats = () => {
                 return <StudyRoomChat chat={selectedChat} onClose={handleClose} />;
             case 'dm':
                 return <DMChat chat={selectedChat} onClose={handleClose} />;
+            case 'match':
+                return <MatchChat chat={selectedChat} onClose={handleClose} />;
             case 'store':
                 return (
                     <ProductChat
@@ -213,7 +220,7 @@ const AllChats = () => {
 
                 {/* Filter Tabs */}
                 <div className="flex items-center gap-2 px-4 py-2 border-b border-slate-100 dark:border-slate-800 overflow-x-auto no-scrollbar bg-white dark:bg-slate-900">
-                    {['All', 'Unread', 'Groups', 'Store'].map(tab => (
+                    {['All', 'Unread', 'Groups', 'Store', 'Dating'].map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab.toLowerCase())}
@@ -236,7 +243,7 @@ const AllChats = () => {
                     ) : (
                         <div className="divide-y divide-slate-50 dark:divide-slate-800">
                             {filteredChats.map(chat => {
-                                const isOnline = chat.type === 'dm' && onlineUsers.some(u => u._id === chat.friendId);
+                                const isOnline = (chat.type === 'dm' || chat.type === 'match') && onlineUsers.some(u => u._id === chat.friendId);
                                 return (
                                     <div
                                         key={chat._id}
@@ -275,7 +282,7 @@ const AllChats = () => {
                                                 )}
                                             </div>
                                             <p className="text-sm text-slate-500 dark:text-slate-400 truncate flex items-center gap-2">
-                                                {chat.type === 'dm' && (
+                                                {(chat.type === 'dm' || chat.type === 'match') && (
                                                     <span className={`text-[10px] font-bold ${isOnline ? 'text-green-500' : 'text-slate-400 dark:text-slate-600'}`}>
                                                         {isOnline ? 'Online' : 'Offline'}
                                                     </span>
