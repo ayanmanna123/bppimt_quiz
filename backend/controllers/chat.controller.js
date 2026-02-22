@@ -31,7 +31,7 @@ export const getChatHistory = async (req, res) => {
         let query = {};
         if (subjectId === "global") {
             query = { isGlobal: true };
-        } else if (type === 'dm' || type === 'match') {
+        } else if (type === 'dm') {
             query = { conversationId: subjectId };
         } else {
             query = { subjectId };
@@ -101,8 +101,8 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
             chatData.subjectId = subjectId;
         }
 
-        // [BLOCK CHECK] If DM/Match, check if recipient has blocked sender
-        if (type === 'dm' || type === 'match') {
+        // [BLOCK CHECK] If DM, check if recipient has blocked sender
+        if (type === 'dm') {
             const Conversation = (await import("../models/Conversation.model.js")).default;
             const conversation = await Conversation.findById(subjectId);
             if (conversation) {
@@ -124,7 +124,7 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
         const originalMessage = messageContent;
         let isEncrypted = false;
 
-        if (type === 'dm' || type === 'match') {
+        if (type === 'dm') {
             try {
                 const sender = await User.findById(senderId);
                 const salt = sender?.auth0Id || '';
@@ -140,8 +140,8 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
         newMessage = new Chat(chatData);
         await newMessage.save();
 
-        // Update Conversation last message if it's a DM/Match
-        if (type === 'dm' || type === 'match') {
+        // Update Conversation last message if it's a DM
+        if (type === 'dm') {
             // We need to import Conversation but cyclic dependency might be an issue if not careful
             // Dynamic import or assume it's loaded? 
             // Better to skip importing here and let the import at top handle it
@@ -183,6 +183,7 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
             }
         }
 
+        return returnedMessage;
         try {
             const senderName = populatedMessage.sender.fullname;
             const notificationTitle = `New Message from ${senderName}`;
@@ -193,7 +194,7 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
                     : messageContent);
 
             let url = subjectId === 'global' ? '/community-chat' : `/dashboard/subject/${subjectId}`;
-            if (type === 'dm' || type === 'match') {
+            if (type === 'dm') {
                 url = `/chat/dm/${subjectId}`;
             } else if (type === 'study-room') {
                 url = `/study-room/${subjectId}`;
@@ -239,7 +240,7 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
         }
         // -------------------------------
 
-        return returnedMessage;
+        return populatedMessage;
     } catch (error) {
         console.error("Error saving message:", error);
         return null;
@@ -750,8 +751,10 @@ export const getOnlineUsers = async (req, res) => {
 
         if (!subjectId || subjectId === "global") {
             // Already set to global (all online users)
-        } else if (type === 'dm' || type === 'match') {
+        } else if (type === 'dm') {
             // DMs: Show both participants if they are online
+            // Actually, for DMs we usually just show the other user's status in the header separately,
+            // but if we want them in this list too:
             const Conversation = (await import("../models/Conversation.model.js")).default;
             const conversation = await Conversation.findById(subjectId);
             if (conversation) {

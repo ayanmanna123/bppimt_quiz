@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 
 export const initSupportBot = async () => {
     try {
-        console.log("✅ Initializing SupportBot with local knowledge base...");
+        console.log("Initializing SupportBot with local knowledge base...");
         // Resolve absolute path to chatbot_kb.json
         const kbPath = path.join(__dirname, "../data/chatbot_kb.json");
 
@@ -86,3 +86,4 @@ export const handleChat = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
     }
 };
+// Trigger restart

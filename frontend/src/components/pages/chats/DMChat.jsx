@@ -9,7 +9,6 @@ const DMChat = ({ chat, onClose }) => {
             isOverlay={false}
             onClose={onClose}
             type="dm"
-            initialTargetUserId={chat.friendId}
         />
     );
 };
