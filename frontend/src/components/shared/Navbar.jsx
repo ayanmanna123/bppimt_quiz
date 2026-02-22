@@ -155,7 +155,7 @@ const Navbar = () => {
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Store", path: "/store", icon: ShoppingBag },
     { name: "Chats", path: "/chats", icon: MessageCircle },
-    { name: "Dating", path: "/dating", icon: Heart },
+
   ];
 
   const adminNavItems = [
@@ -168,7 +168,7 @@ const Navbar = () => {
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Store", path: "/store", icon: ShoppingBag },
     { name: "Chats", path: "/chats", icon: MessageCircle },
-    { name: "Dating", path: "/dating", icon: Heart },
+
   ];
   const adminNavitem = [
     { name: "Home", path: "/", icon: Home },
@@ -178,7 +178,7 @@ const Navbar = () => {
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Store", path: "/store", icon: ShoppingBag },
     { name: "Chats", path: "/chats", icon: MessageCircle },
-    { name: "Dating", path: "/dating", icon: Heart },
+
   ];
 
   const navItems =
