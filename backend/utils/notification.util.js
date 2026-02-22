@@ -40,7 +40,6 @@ export const sendNotification = async ({
     url = "/",
     io
 }) => {
-    console.log(`Sending notification to ${recipientId}: ${message} (type: ${type})`);
     try {
         // 1. Save to Database
         const notification = new Notification({
@@ -57,7 +56,6 @@ export const sendNotification = async ({
         // 2. Send Real-time Notification via Socket.io
         if (io) {
             // Emitting to the room named after the recipient's User ID
-            console.log(`Emitting newNotification to room: ${recipientId.toString()}`);
             io.to(recipientId.toString()).emit("newNotification", notification);
         }
 
