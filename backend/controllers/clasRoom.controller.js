@@ -51,6 +51,7 @@ export const giveAttandance = async (req, res) => {
     );
 
     if (distance > 100) {
+      console.log(`[Attendance Failed] User: ${userId} is too far: ${Math.round(distance)}m`);
       return res.status(403).json({
         success: false,
         message: `You are too far from the classroom (${Math.round(
@@ -62,6 +63,7 @@ export const giveAttandance = async (req, res) => {
     // ✅ Face Verification Check
     const { faceDescriptor } = req.body;
     if (!user.faceDescriptor || user.faceDescriptor.length === 0) {
+      console.log(`[Attendance Failed] User: ${userId} has no face enrolled`);
       return res.status(400).json({
         success: false,
         message: "Face not enrolled. Please enroll your face in the profile section first."
@@ -69,6 +71,7 @@ export const giveAttandance = async (req, res) => {
     }
 
     if (!faceDescriptor) {
+      console.log(`[Attendance Failed] User: ${userId} face verification data missing`);
       return res.status(400).json({
         success: false,
         message: "Face verification data missing."
@@ -76,7 +79,10 @@ export const giveAttandance = async (req, res) => {
     }
 
     const faceDistance = getEuclideanDistance(user.faceDescriptor, faceDescriptor);
+    console.log(`[Attendance] Face Match Score: ${faceDistance.toFixed(4)} (Threshold: 0.6)`);
+
     if (faceDistance > 0.6) {
+      console.log(`[Attendance Failed] User: ${userId} face mismatch: ${faceDistance.toFixed(4)}`);
       return res.status(403).json({
         success: false,
         message: "Face verification failed. Please try again with proper lighting."

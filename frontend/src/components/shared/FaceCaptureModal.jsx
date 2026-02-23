@@ -1,36 +1,149 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
-import { loadModels, getFaceDescriptor } from '../services/FaceService';
+import * as faceapi from '@vladmandic/face-api';
+import { loadModels, getFaceDescriptor, calculateEAR } from '../services/FaceService';
 import { Button } from '../ui/button';
-import { Camera, X, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import { Camera, X, CheckCircle2, AlertCircle, RefreshCw, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FaceCaptureModal = ({ isOpen, onClose, onCapture, title = "Face Verification" }) => {
     const webcamRef = useRef(null);
+    const canvasRef = useRef(null);
     const [isModelsLoaded, setIsModelsLoaded] = useState(false);
     const [error, setError] = useState(null);
     const [isCapturing, setIsCapturing] = useState(false);
     const [capturedDescriptor, setCapturedDescriptor] = useState(null);
     const [capturedImage, setCapturedImage] = useState(null);
 
+    // Liveness states
+    const [isLivenessPassed, setIsLivenessPassed] = useState(false);
+    const [blinkCount, setBlinkCount] = useState(0);
+    const [livenessStatus, setLivenessStatus] = useState("Initializing...");
+    const [lastEar, setLastEar] = useState(0);
+    const monitorRef = useRef(null);
+    const earHistory = useRef([]);
+
     useEffect(() => {
         if (isOpen && !isModelsLoaded) {
-            loadModels().then(() => setIsModelsLoaded(true)).catch(err => setError("Failed to load face detection models"));
+            loadModels()
+                .then(() => {
+                    setIsModelsLoaded(true);
+                    setLivenessStatus("Please blink to verify you're human");
+                })
+                .catch(err => setError("Failed to load face detection models"));
         }
-    }, [isOpen]);
+
+        if (isOpen && isModelsLoaded && !isLivenessPassed) {
+            startLivenessMonitor();
+        }
+
+        return () => stopLivenessMonitor();
+    }, [isOpen, isModelsLoaded, isLivenessPassed]);
+
+    const startLivenessMonitor = () => {
+        if (monitorRef.current) return;
+
+        const checkLiveness = async () => {
+            if (!webcamRef.current || !webcamRef.current.video) return;
+
+            try {
+                const video = webcamRef.current.video;
+                if (video.readyState !== 4) {
+                    monitorRef.current = setTimeout(checkLiveness, 100);
+                    return;
+                }
+
+                // Use fast mode (TinyFaceDetector) for the liveness loop
+                const result = await getFaceDescriptor(video, true);
+
+                // Draw landmarks for debug visualization
+                if (canvasRef.current && result && result.landmarks) {
+                    const displaySize = { width: video.videoWidth, height: video.videoHeight };
+
+                    if (canvasRef.current.width !== displaySize.width) {
+                        canvasRef.current.width = displaySize.width;
+                        canvasRef.current.height = displaySize.height;
+                    }
+
+                    const ctx = canvasRef.current.getContext('2d');
+                    ctx.clearRect(0, 0, displaySize.width, displaySize.height);
+
+                    const resizedLandmarks = faceapi.resizeResults(result.landmarks, displaySize);
+
+                    // Use a bright color for debugging
+                    ctx.strokeStyle = '#00ff00';
+                    ctx.fillStyle = '#00ff00';
+                    faceapi.draw.drawFaceLandmarks(canvasRef.current, resizedLandmarks);
+
+                    const ear = calculateEAR(result.landmarks);
+                    setLastEar(ear);
+
+                    ctx.fillStyle = ear < 0.25 ? "#ef4444" : "#22c55e";
+                    ctx.font = 'bold 20px sans-serif';
+                    ctx.fillText(`EAR: ${ear.toFixed(3)}`, 20, displaySize.height - 30);
+                }
+
+                if (result) {
+                    const ear = calculateEAR(result.landmarks);
+                    // Log EAR to console for the user to see
+                    console.log(`[Liveness] EAR: ${ear.toFixed(4)} | History: ${earHistory.current.length} | Blink: ${blinkCount}`);
+
+                    if (ear < 0.25) {
+                        earHistory.current.push(true);
+                        if (earHistory.current.length === 1) console.log("[Liveness] Eye drop detected!");
+                    } else if (ear > 0.23) {
+                        if (earHistory.current.length > 0) {
+                            console.log("[Liveness] Eye recovery detected! SUCCESS.");
+                            setBlinkCount(prev => {
+                                const newCount = prev + 1;
+                                if (newCount >= 1) {
+                                    setIsLivenessPassed(true);
+                                    setLivenessStatus("Liveness Verified!");
+                                    stopLivenessMonitor();
+                                }
+                                return newCount;
+                            });
+                            earHistory.current = [];
+                        }
+                    }
+                } else {
+                    if (canvasRef.current) {
+                        const ctx = canvasRef.current.getContext('2d');
+                        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+                    }
+                }
+            } catch (err) {
+                console.error("[Liveness] Monitor error:", err);
+            }
+
+            if (!isLivenessPassed) {
+                // reduced from 150ms to 60ms for better responsiveness
+                monitorRef.current = setTimeout(checkLiveness, 60);
+            }
+        };
+
+        checkLiveness();
+    };
+
+    const stopLivenessMonitor = () => {
+        if (monitorRef.current) {
+            clearTimeout(monitorRef.current);
+            monitorRef.current = null;
+        }
+    };
 
     const handleCapture = async () => {
-        if (!webcamRef.current) return;
+        if (!webcamRef.current || !isLivenessPassed) return;
 
         setIsCapturing(true);
         setError(null);
 
         try {
             const video = webcamRef.current.video;
-            const descriptor = await getFaceDescriptor(video);
+            const result = await getFaceDescriptor(video);
 
-            if (descriptor) {
-                setCapturedDescriptor(descriptor);
+            if (result && result.descriptor) {
+                setCapturedDescriptor(result.descriptor);
                 setCapturedImage(webcamRef.current.getScreenshot());
             } else {
                 setError("Face not detected. Please make sure your face is visible and properly lit.");
@@ -52,6 +165,9 @@ const FaceCaptureModal = ({ isOpen, onClose, onCapture, title = "Face Verificati
         setCapturedDescriptor(null);
         setCapturedImage(null);
         setError(null);
+        setIsLivenessPassed(false);
+        setBlinkCount(0);
+        earHistory.current = [];
     };
 
     if (!isOpen) return null;
@@ -120,15 +236,34 @@ const FaceCaptureModal = ({ isOpen, onClose, onCapture, title = "Face Verificati
                                         className="w-full h-full object-cover"
                                         videoConstraints={{ width: 400, height: 400, facingMode: "user" }}
                                     />
-                                    <div className="absolute inset-0 border-2 border-white/30 rounded-full m-8 border-dashed pointer-events-none"></div>
+                                    <canvas
+                                        ref={canvasRef}
+                                        className="absolute inset-0 w-full h-full pointer-events-none"
+                                    />
+                                    {!isLivenessPassed && (
+                                        <div className="absolute inset-0 border-4 border-indigo-500/50 rounded-full m-8 border-dashed animate-pulse pointer-events-none"></div>
+                                    )}
                                 </div>
-                                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium text-center">
-                                    Position your face inside the circle and click the button below.
-                                </p>
+                                <div className="flex flex-col items-center gap-2">
+                                    <div className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 ${isLivenessPassed ? 'bg-green-100 text-green-700' : 'bg-indigo-100 text-indigo-700'}`}>
+                                        {isLivenessPassed ? <CheckCircle2 className="w-4 h-4" /> : <Eye className="w-4 h-4 animate-bounce" />}
+                                        {livenessStatus}
+                                    </div>
+                                    {!isLivenessPassed && (
+                                        <div className="flex flex-col items-center">
+                                            <p className="text-slate-500 dark:text-slate-400 text-xs font-medium text-center">
+                                                Blink detected: {blinkCount}/1
+                                            </p>
+                                            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
+                                                Sensitivity: {lastEar.toFixed(3)} (Needs &lt; 0.25)
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
                                 <Button
                                     onClick={handleCapture}
-                                    disabled={isCapturing}
-                                    className="w-full bg-indigo-600 hover:bg-indigo-700 py-6 rounded-2xl font-bold text-lg shadow-lg"
+                                    disabled={isCapturing || !isLivenessPassed}
+                                    className={`w-full py-6 rounded-2xl font-bold text-lg shadow-lg transition-all ${isLivenessPassed ? 'bg-indigo-600 hover:bg-indigo-700 opacity-100' : 'bg-slate-400 cursor-not-allowed opacity-50'}`}
                                 >
                                     {isCapturing ? (
                                         <>
