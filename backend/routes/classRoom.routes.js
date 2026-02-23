@@ -8,6 +8,10 @@ import {
   generateOtp,
   giveOtpAttendance,
   checkActiveOtp,
+  generateQrCodeToken,
+  giveQrAttendance,
+  checkQrStatus,
+  stopQrAttendance,
   updateTimeSlots,
   enrollFace,
 } from "../controllers/clasRoom.controller.js";
@@ -24,6 +28,13 @@ classroomRoute.post("/give-attandance-manuly", isAuthenticated, markManualAttend
 classroomRoute.post("/generate-otp", isAuthenticated, generateOtp);
 classroomRoute.post("/give-attandance-otp", isAuthenticated, giveOtpAttendance);
 classroomRoute.get("/check-otp-status/:subjectId", isAuthenticated, checkActiveOtp);
+
+// QR Routes
+classroomRoute.post("/generate-qr", isAuthenticated, generateQrCodeToken);
+classroomRoute.post("/give-attandance-qr", isAuthenticated, giveQrAttendance);
+classroomRoute.get("/check-qr-status/:subjectId", isAuthenticated, checkQrStatus);
+classroomRoute.post("/stop-qr/:subjectId", isAuthenticated, stopQrAttendance);
+
 classroomRoute.put("/update-time-slots/:subjectId", isAuthenticated, updateTimeSlots);
 
 export default classroomRoute;

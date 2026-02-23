@@ -4,6 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useParams } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { QRCodeSVG } from "qrcode.react";
 
 import { Howl } from "howler";
 import {
@@ -20,7 +21,12 @@ import {
   ChevronRight,
   ShieldCheck,
   Clock,
-  AlertCircle
+  AlertCircle,
+  QrCode,
+  Scan,
+  Maximize2,
+  Minimize2,
+  StopCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useSocket } from "../../context/SocketContext";
@@ -228,6 +234,59 @@ const AttendanceSheet = () => {
     }
   };
 
+  // ✅ QR Code Logic
+  const [generatedQrToken, setGeneratedQrToken] = useState(null);
+  const [qrExpiresAt, setQrExpiresAt] = useState(null);
+  const [isQrFullScreen, setIsQrFullScreen] = useState(false);
+
+  const generateQrAuth = async (date) => {
+    try {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v2",
+      });
+
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/attandance/generate-qr`,
+        { subjectId, targetDate: date },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data.success) {
+        setGeneratedQrToken(res.data.token);
+        setQrExpiresAt(new Date(res.data.expiresAt));
+        setIsQrFullScreen(true); // ✅ Open full screen after generation
+        toast.success(`QR Code Generated for ${date}! Valid for 5 minutes.`);
+      }
+    } catch (error) {
+      console.error("Error generating QR:", error);
+      toast.error("Failed to generate QR Code");
+    }
+  };
+
+  const handleStopQrAttendance = async () => {
+    try {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v2",
+      });
+
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/attandance/stop-qr/${subjectId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data.success) {
+        setGeneratedQrToken(null);
+        setQrExpiresAt(null);
+        setIsQrFullScreen(false);
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.error("Error stopping QR attendance:", error);
+      toast.error("Failed to stop QR attendance");
+    }
+  };
+
   // ✅ Attendance Toggle Logic
   const [isAttendanceEnabled, setIsAttendanceEnabled] = useState(false);
 
@@ -374,6 +433,44 @@ const AttendanceSheet = () => {
                 </div>
                 <div className="relative z-10 bg-indigo-50 dark:bg-indigo-900/20 px-8 py-3 rounded-xl border border-indigo-100 dark:border-indigo-800 shadow-inner">
                   <span className="text-5xl font-mono font-black text-indigo-600 dark:text-indigo-400 tracking-[0.2em]">{generatedOtp}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* QR Code Banner - Floating Card */}
+          {generatedQrToken && (
+            <div className="mb-8 transform transition-all duration-500 ease-out translate-y-0 opacity-100">
+              <div className="bg-white dark:bg-slate-900/60 rounded-2xl shadow-xl border-l-8 border-green-500 p-6 flex items-center justify-between relative overflow-hidden group">
+                <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-green-50 to-transparent dark:from-green-900/10 opacity-50 z-0 group-hover:w-full transition-all duration-700"></div>
+                <div className="relative z-10 flex gap-6 items-center">
+                  <div className="bg-white p-3 rounded-xl shadow-inner border border-green-100">
+                    <QRCodeSVG value={generatedQrToken} size={120} level="H" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-3 text-green-700 dark:text-green-400 mb-1">
+                      <QrCode className="w-6 h-6" />
+                      <h3 className="text-lg font-bold uppercase tracking-wider">Active QR Attendance</h3>
+                    </div>
+                    <p className="text-gray-500 dark:text-gray-400 flex items-center gap-2 text-sm font-medium">
+                      <Clock className="w-4 h-4" /> Expires at {qrExpiresAt?.toLocaleTimeString()}
+                    </p>
+                    <p className="text-xs text-green-600 dark:text-green-500 mt-2 font-mono break-all max-w-xs transition-all opacity-40 hover:opacity-100 italic">
+                      Token: {generatedQrToken}
+                    </p>
+                  </div>
+                </div>
+                <div className="relative z-10 hidden sm:block">
+                  <div className="text-center px-4 flex flex-col gap-2">
+                    <button
+                      onClick={() => setIsQrFullScreen(true)}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-xl shadow-lg transition-all flex items-center gap-2 font-bold"
+                    >
+                      <Maximize2 className="w-5 h-5" />
+                      FULLSCREEN
+                    </button>
+                    <p className="text-xs text-gray-500 uppercase tracking-tighter">Click to show students</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -526,6 +623,13 @@ const AttendanceSheet = () => {
                 <ShieldCheck className="w-4 h-4" />
                 <span>Generate OTP</span>
               </button>
+              <button
+                onClick={() => generateQrAuth(selectedDate)}
+                className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-700 shadow-md shadow-green-200 transition-all text-sm"
+              >
+                <QrCode className="w-4 h-4" />
+                <span>Generate QR</span>
+              </button>
             </div>
 
             {/* Modal Body - Scrollable */}
@@ -595,6 +699,52 @@ const AttendanceSheet = () => {
                   <span>Save Changes</span>
                 )}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Full Screen QR Display Modal */}
+      {isQrFullScreen && generatedQrToken && (
+        <div className="fixed inset-0 z-[100] bg-white dark:bg-slate-950 flex flex-col items-center justify-center p-8 animate-in fade-in zoom-in duration-300">
+          <div className="absolute top-8 right-8 flex gap-4">
+            <button
+              onClick={() => setIsQrFullScreen(false)}
+              className="bg-gray-100 dark:bg-slate-800 p-4 rounded-2xl text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-all shadow-lg"
+              title="Minimize"
+            >
+              <Minimize2 className="w-6 h-6" />
+            </button>
+            <button
+              onClick={handleStopQrAttendance}
+              className="bg-red-100 dark:bg-red-900/30 p-4 rounded-2xl text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-all shadow-lg border border-red-200 dark:border-red-800 flex items-center gap-2"
+            >
+              <StopCircle className="w-6 h-6" />
+              <span className="font-bold">STOP ATTENDANCE</span>
+            </button>
+          </div>
+
+          <div className="flex flex-col items-center max-w-2xl w-full text-center">
+            <div className="mb-8">
+              <h2 className="text-4xl font-black text-indigo-600 dark:text-indigo-400 tracking-tight uppercase mb-2">Scan to mark attendance</h2>
+              <div className="flex items-center justify-center gap-2 text-gray-500 dark:text-gray-400">
+                <Clock className="w-5 h-5" />
+                <span className="text-xl font-medium">Expires at {qrExpiresAt?.toLocaleTimeString()}</span>
+              </div>
+            </div>
+
+            <div className="bg-white p-12 rounded-[3rem] shadow-2xl border-4 border-indigo-600 dark:border-indigo-400 mb-12 transform hover:scale-105 transition-transform duration-500">
+              <QRCodeSVG value={generatedQrToken} size={400} level="H" includeMargin={true} />
+            </div>
+
+            <div className="space-y-4">
+              <div className="text-6xl font-black text-gray-900 dark:text-white tracking-widest animate-pulse">SCAN ME</div>
+              <div className="h-2 w-48 bg-indigo-600 dark:bg-indigo-400 mx-auto rounded-full"></div>
+              <p className="text-gray-500 dark:text-gray-300 font-medium text-lg">Position your camera towards the QR code</p>
+            </div>
+
+            <div className="mt-12 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-100 dark:border-indigo-800 opacity-60">
+              <p className="text-sm font-mono text-indigo-600 dark:text-indigo-400">Token ID: {generatedQrToken}</p>
             </div>
           </div>
         </div>

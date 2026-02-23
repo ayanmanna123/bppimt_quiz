@@ -163,14 +163,7 @@ export const giveAttandance = async (req, res) => {
     await classRoom.save();
 
     // ✅ Emit Socket Event for real-time update
-    const io = req.app.get("io");
-    if (io) {
-      console.log(`[Socket] Emitting attendanceUpdate for subject: ${subjectid}`);
-      io.to(subjectid.toString()).emit("attendanceUpdate", {
-        subjectId: subjectid,
-        date: new Date().toLocaleDateString(),
-      });
-    }
+    emitAttendanceUpdate(req, subjectid, new Date());
 
     return res.status(200).json({
       success: true,
@@ -184,6 +177,56 @@ export const giveAttandance = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+/**
+ * Helper: Emit socket update for attendance
+ */
+const emitAttendanceUpdate = (req, subjectId, date) => {
+  const io = req.app.get("io");
+  if (io) {
+    console.log(`[Socket] Emitting attendanceUpdate for subject: ${subjectId}`);
+    io.to(subjectId.toString()).emit("attendanceUpdate", {
+      subjectId: subjectId,
+      date: new Date(date).toLocaleDateString(),
+    });
+  }
+};
+
+/**
+ * Helper: Mark attendance for a student on a specific date
+ */
+const markAttendanceHelper = async (classroom, studentId, targetDate) => {
+  const dateString = new Date(targetDate).toDateString();
+
+  let attendanceForDay = classroom.attendance.find(
+    (a) => new Date(a.date).toDateString() === dateString
+  );
+
+  if (!attendanceForDay) {
+    classroom.attendance.push({
+      date: targetDate,
+      records: [],
+    });
+    attendanceForDay = classroom.attendance[classroom.attendance.length - 1];
+  }
+
+  const alreadyMarked = attendanceForDay.records.some(
+    (r) => r.student.toString() === studentId.toString()
+  );
+
+  if (alreadyMarked) {
+    return { success: false, message: `Attendance already marked for ${dateString}` };
+  }
+
+  attendanceForDay.records.push({
+    student: studentId,
+    markedAt: new Date(),
+  });
+
+  classroom.markModified("attendance");
+  await classroom.save();
+  return { success: true, date: targetDate };
 };
 
 /**
@@ -659,54 +702,21 @@ export const giveOtpAttendance = async (req, res) => {
       });
     }
 
-    // ✅ Use the Teacher's Target Date for this OTP
-    const targetDate = classroom.otpTargetDate || new Date();
-    const dateString = new Date(targetDate).toDateString();
+    const result = await markAttendanceHelper(classroom, user._id, targetDate);
 
-    let attendanceForToday = classroom.attendance.find(
-      (a) => new Date(a.date).toDateString() === dateString
-    );
-
-    if (!attendanceForToday) {
-      classroom.attendance.push({
-        date: targetDate, // Use the stored target date
-        records: [],
-      });
-      attendanceForToday = classroom.attendance[classroom.attendance.length - 1];
-    }
-
-    const alreadyMarked = attendanceForToday.records.some(
-      (r) => r.student.toString() === user._id.toString()
-    );
-
-    if (alreadyMarked) {
+    if (!result.success) {
       return res.status(400).json({
         success: false,
-        message: `Attendance already marked for ${dateString}`,
+        message: result.message,
       });
     }
 
-    attendanceForToday.records.push({
-      student: user._id,
-      markedAt: new Date(),
-    });
-
-    classroom.markModified("attendance");
-    await classroom.save();
-
-    // ✅ Emit Socket Event for real-time update
-    const io = req.app.get("io");
-    if (io) {
-      console.log(`[Socket] Emitting attendanceUpdate for subject: ${subjectid}`);
-      io.to(subjectid.toString()).emit("attendanceUpdate", {
-        subjectId: subjectid,
-        date: new Date(targetDate).toLocaleDateString(),
-      });
-    }
+    // ✅ Emit Socket Event
+    emitAttendanceUpdate(req, subjectid, targetDate);
 
     return res.status(200).json({
       success: true,
-      message: `Attendance marked successfully for ${dateString}!`,
+      message: `Attendance marked successfully for ${new Date(targetDate).toDateString()}!`,
     });
   } catch (error) {
     console.error("Error giving OTP attendance:", error);
@@ -750,6 +760,164 @@ export const checkActiveOtp = async (req, res) => {
       message: "Server error checking OTP status",
       error: error.message,
     });
+  }
+};
+
+// ------------------------------------------------------------------
+// ✅ QR Code Based Attendance System
+// ------------------------------------------------------------------
+
+/**
+ * Generate a unique token for QR code attendance
+ */
+export const generateQrCodeToken = async (req, res) => {
+  try {
+    const teacherId = req.auth?.sub;
+    const { subjectId, targetDate } = req.body;
+
+    if (!subjectId) {
+      return res.status(400).json({ success: false, message: "Subject ID is required" });
+    }
+
+    const teacher = await User.findOne({ auth0Id: teacherId });
+    if (!teacher) return res.status(404).json({ message: "Teacher not found" });
+
+    const classroom = await ClassRoom.findOne({ subject: subjectId, teacher: teacher._id });
+    if (!classroom) return res.status(404).json({ success: false, message: "Classroom not found" });
+
+    // Generate a unique token (random string + timestamp)
+    const token = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+    const attDate = targetDate ? new Date(targetDate) : new Date();
+
+    classroom.qrCodeToken = token;
+    classroom.qrCodeExpiresAt = expiresAt;
+    classroom.qrCodeTargetDate = attDate;
+    await classroom.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "QR Token generated successfully",
+      token,
+      expiresAt,
+      targetDate: attDate
+    });
+  } catch (error) {
+    console.error("Error generating QR token:", error);
+    return res.status(500).json({ success: false, message: "Server error generating QR token" });
+  }
+};
+
+/**
+ * Student marks attendance by scanning QR code and providing location
+ */
+export const giveQrAttendance = async (req, res) => {
+  try {
+    const userId = req.auth?.sub;
+    const { subjectid, token, latitude, longitude } = req.body;
+
+    if (!subjectid || !token || !latitude || !longitude) {
+      return res.status(400).json({
+        success: false,
+        message: "Subject ID, Token, and Location are required",
+      });
+    }
+
+    const user = await User.findOne({ auth0Id: userId });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    const classroom = await ClassRoom.findOne({ subject: subjectid });
+    if (!classroom) return res.status(404).json({ success: false, message: "Classroom not found" });
+
+    // ✅ Validate QR Token
+    if (!classroom.qrCodeToken || classroom.qrCodeToken !== token) {
+      return res.status(400).json({ success: false, message: "Invalid QR code. Please scan again." });
+    }
+
+    // ✅ Validate Expiration
+    if (new Date() > new Date(classroom.qrCodeExpiresAt)) {
+      return res.status(400).json({ success: false, message: "QR code has expired. Ask teacher to regenerate." });
+    }
+
+    // ✅ Check location proximity (≤100 meters)
+    const [classLng, classLat] = classroom.location.coordinates;
+    const distance = getDistanceFromLatLonInMeters(latitude, longitude, classLat, classLng);
+
+    if (distance > 100) {
+      return res.status(403).json({
+        success: false,
+        message: `Too far from classroom (${Math.round(distance)}m). Range: 100m.`,
+      });
+    }
+
+    // ✅ Mark Attendance
+    const targetDate = classroom.qrCodeTargetDate || new Date();
+    const result = await markAttendanceHelper(classroom, user._id, targetDate);
+
+    if (!result.success) {
+      return res.status(400).json({ success: false, message: result.message });
+    }
+
+    // ✅ Emit Socket Event
+    emitAttendanceUpdate(req, subjectid, targetDate);
+
+    return res.status(200).json({
+      success: true,
+      message: `Attendance marked via QR successfully!`,
+    });
+  } catch (error) {
+    console.error("Error giving QR attendance:", error);
+    return res.status(500).json({ success: false, message: "Server error marking attendance" });
+  }
+};
+
+/**
+ * Check if there is an active QR session
+ */
+export const checkQrStatus = async (req, res) => {
+  try {
+    const { subjectId } = req.params;
+    const classroom = await ClassRoom.findOne({ subject: subjectId });
+
+    if (!classroom) return res.status(200).json({ success: true, hasActiveQr: false });
+
+    const hasActiveQr = classroom.qrCodeToken && new Date() < new Date(classroom.qrCodeExpiresAt);
+
+    return res.status(200).json({
+      success: true,
+      hasActiveQr: !!hasActiveQr,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Error checking QR status" });
+  }
+};
+
+/**
+ * Invalidate the active QR session
+ */
+export const stopQrAttendance = async (req, res) => {
+  try {
+    const { subjectId } = req.params;
+    const teacherId = req.auth?.sub;
+
+    const teacher = await User.findOne({ auth0Id: teacherId });
+    if (!teacher) return res.status(404).json({ message: "Teacher not found" });
+
+    const classroom = await ClassRoom.findOne({ subject: subjectId, teacher: teacher._id });
+    if (!classroom) return res.status(404).json({ success: false, message: "Classroom not found" });
+
+    classroom.qrCodeToken = null;
+    classroom.qrCodeExpiresAt = null;
+    classroom.qrCodeTargetDate = null;
+    await classroom.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "QR Attendance stopped successfully",
+    });
+  } catch (error) {
+    console.error("Error stopping QR attendance:", error);
+    return res.status(500).json({ success: false, message: "Error stopping QR attendance" });
   }
 };
 
