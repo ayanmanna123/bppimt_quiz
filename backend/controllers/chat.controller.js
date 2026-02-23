@@ -183,7 +183,97 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
             }
         }
 
-        // -------------------------------
+        // --- [RESTORED & IMPROVED] NOTIFICATION LOGIC ---
+        try {
+            const senderName = populatedMessage.sender.fullname;
+            const notificationBody = type === 'dm'
+                ? "Sent you an encrypted message"
+                : (messageContent.length > 50
+                    ? messageContent.substring(0, 50) + "..."
+                    : messageContent);
+
+            let url = subjectId === 'global' ? '/community-chat' : `/dashboard/subject/${subjectId}`;
+            if (type === 'dm') {
+                url = `/chat/dm/${subjectId}`;
+            } else if (type === 'study-room') {
+                url = `/study-room/${subjectId}`;
+            }
+
+            let recipients = [];
+
+            if (type === 'dm') {
+                // For DM, notify the other participant
+                const Conversation = (await import("../models/Conversation.model.js")).default;
+                const conversation = await Conversation.findById(subjectId);
+                if (conversation) {
+                    const otherParticipantId = conversation.participants.find(p => p.toString() !== senderId.toString());
+                    if (otherParticipantId) recipients.push(otherParticipantId);
+                }
+            } else if (type === 'study-room') {
+                // For Study Room, notify all members except sender
+                const StudyRoom = (await import("../models/StudyRoom.model.js")).default;
+                const room = await StudyRoom.findById(subjectId);
+                if (room) {
+                    recipients = room.members.filter(m => m.toString() !== senderId.toString());
+                }
+            } else if (subjectId === 'global') {
+                // For Global, notify users (we might want to limit this or only notify if opted-in)
+                // For now, let's follow the previous logic of identifying others
+                const otherUsers = await User.find({
+                    _id: { $ne: senderId },
+                    role: { $in: ['student', 'teacher'] } // Sample filter
+                }, "_id");
+                recipients = otherUsers.map(u => u._id);
+            } else {
+                // For regular Subject chats
+                const Subject = (await import("../models/Subject.model.js")).default;
+                const subject = await Subject.findById(subjectId);
+                if (subject) {
+                    // Notify students in that dept/sem
+                    const students = await User.find({
+                        department: subject.department,
+                        semester: subject.semester,
+                        role: 'student',
+                        _id: { $ne: senderId }
+                    }, "_id");
+
+                    // Also notify involved teachers
+                    const teachers = [subject.createdBy, ...subject.otherTeachers.map(t => t.teacher)]
+                        .filter(tid => tid && tid.toString() !== senderId.toString());
+
+                    recipients = [...new Set([...students.map(s => s._id), ...teachers])];
+                }
+            }
+
+            // Exclude users who have muted this chat
+            const finalRecipients = await User.find({
+                _id: { $in: recipients },
+                mutedChats: {
+                    $not: {
+                        $elemMatch: {
+                            chatId: subjectId,
+                            until: { $gt: new Date() }
+                        }
+                    }
+                }
+            }, "_id");
+
+            for (const recipient of finalRecipients) {
+                await sendNotification({
+                    recipientId: recipient._id,
+                    senderId: senderId,
+                    message: `${senderName}: ${notificationBody}`,
+                    type: "chat",
+                    relatedId: newMessage._id,
+                    onModel: "Chat",
+                    url,
+                    io
+                });
+            }
+        } catch (notifyError) {
+            console.error("Error sending notifications in saveMessage:", notifyError);
+        }
+        // ------------------------------------------------
 
         return returnedMessage;
     } catch (error) {
