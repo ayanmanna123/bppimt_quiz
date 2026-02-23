@@ -101,7 +101,15 @@ const userSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       }
-    ]
+    ],
+    faceDescriptor: {
+      type: [Number], // 128-float embedding
+      default: undefined
+    },
+    facePhoto: {
+      type: String, // Cloudinary URL
+      default: undefined
+    }
   },
   { timestamps: true }
 );

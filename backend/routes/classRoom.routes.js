@@ -9,11 +9,13 @@ import {
   giveOtpAttendance,
   checkActiveOtp,
   updateTimeSlots,
+  enrollFace,
 } from "../controllers/clasRoom.controller.js";
 
 const classroomRoute = express.Router();
 
 classroomRoute.post("/give-attandance", isAuthenticated, giveAttandance);
+classroomRoute.post("/enroll-face", isAuthenticated, enrollFace);
 classroomRoute.get("/get-subject/:subjectId", isAuthenticated, getAttandance);
 classroomRoute.get("/total-attandance", isAuthenticated, getAttandanceforStudent)
 classroomRoute.post("/give-attandance-manuly", isAuthenticated, markManualAttendance)

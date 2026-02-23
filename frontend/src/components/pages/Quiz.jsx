@@ -46,6 +46,7 @@ import { setsubjectByquiry } from "../../Redux/subject.reducer";
 import axios from "axios";
 import { toast } from "sonner";
 import { useSocket } from "../../context/SocketContext";
+import FaceCaptureModal from "../shared/FaceCaptureModal";
 // Student-focused gradient combinations
 const studentGradients = [
   "bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600",
@@ -101,6 +102,8 @@ import ChatWindow from "../chat/ChatWindow";
 
 const Quiz = () => {
   const { usere } = useSelector((store) => store.auth);
+  const [isFaceModalOpen, setIsFaceModalOpen] = useState(false);
+  const [currentAttendanceSubId, setCurrentAttendanceSubId] = useState(null);
   const socket = useSocket();
   const [upcomingMeetings, setUpcomingMeetings] = useState([]);
 
@@ -360,8 +363,9 @@ const Quiz = () => {
         // 2a. If OTP is active -> Show OTP Modal
         initiateAttendance(subId);
       } else {
-        // 2b. If NO OTP -> Normal Location-based Attendance
-        handleNormalAttendance(subId);
+        // 2b. If NO OTP -> Face Verification first
+        setCurrentAttendanceSubId(subId);
+        setIsFaceModalOpen(true);
       }
     } catch (error) {
       console.error("Error checking attendance mode:", error);
@@ -369,9 +373,9 @@ const Quiz = () => {
     }
   };
 
-  const handleNormalAttendance = (subId) => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser");
+  const handleNormalAttendance = (subId, faceDescriptor = null) => {
+    if (!faceDescriptor) {
+      toast.error("Face verification required");
       return;
     }
 
@@ -391,6 +395,7 @@ const Quiz = () => {
               subjectid: subId,
               latitude,
               longitude,
+              faceDescriptor,
             },
             {
               headers: { Authorization: `Bearer ${token}` },
@@ -783,6 +788,17 @@ const Quiz = () => {
           />
         )
       }
+      <FaceCaptureModal
+        isOpen={isFaceModalOpen}
+        onClose={() => {
+          setIsFaceModalOpen(false);
+          setCurrentAttendanceSubId(null);
+        }}
+        onCapture={(descriptor) => {
+          handleNormalAttendance(currentAttendanceSubId, descriptor);
+        }}
+        title="Verify Your Face"
+      />
     </>
   );
 };

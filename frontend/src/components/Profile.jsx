@@ -9,6 +9,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 import UpdateProfilelog from "./UpdateProfilelog";
 import Dashboard from "./pages/Dashboard";
 import Calendar from "../components/pages/Calendar";
+import FaceCaptureModal from "./shared/FaceCaptureModal";
+import axios from "axios";
+import { toast } from "sonner";
+import { Howl } from "howler";
 import {
   User,
   UserPlus,
@@ -34,12 +38,14 @@ import {
   Hash,
   Brain,
   Ban,
+  CheckCircle2,
 } from "lucide-react";
 
 
 const Profile = () => {
   const navigate = useNavigate();
   const [open, setopen] = useState(false);
+  const [isFaceModalOpen, setIsFaceModalOpen] = useState(false);
   const { usere } = useSelector((store) => store.auth);
   const { getAccessTokenSilently, isAuthenticated, loginWithRedirect, user } =
     useAuth0();
@@ -339,6 +345,36 @@ const Profile = () => {
       console.error("Failed to toggle block", error);
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleFaceEnrollment = async (descriptor, image) => {
+    try {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v2",
+      });
+
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/attandance/enroll-face`,
+        { faceDescriptor: descriptor, facePhoto: image },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data.success) {
+        toast.success("Face enrolled successfully!");
+        const { Howl } = await import("howler");
+        const sound = new Howl({
+          src: ["/notification.wav"],
+          volume: 0.7,
+        });
+        sound.play();
+
+        const updatedUser = { ...usere, faceDescriptor: descriptor, facePhoto: image };
+        dispatch(setuser(updatedUser));
+      }
+    } catch (error) {
+      console.error("Error enrolling face:", error);
+      toast.error(error.response?.data?.message || "Failed to enroll face");
     }
   };
 
@@ -673,7 +709,7 @@ const Profile = () => {
 
                   {/* Edit Button */}
                   {/* Edit Button - Only show if not viewing a public profile */}
-                  {!id && (
+                  {(!id || id === "undefined" || (usere && profileUser && usere._id === profileUser._id)) && (
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -685,6 +721,32 @@ const Profile = () => {
                         <Edit3 className="w-5 h-5" />
                         Edit Profile
                         <Sparkles className="w-4 h-4" />
+                      </Button>
+                    </motion.div>
+                  )}
+
+                  {(!id || id === "undefined" || (usere && profileUser && usere._id === profileUser._id)) && usere?.role === "student" && (
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="mt-4"
+                    >
+                      <Button
+                        onClick={() => setIsFaceModalOpen(true)}
+                        variant="outline"
+                        className={`w-full py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 shadow-md ${usere?.faceDescriptor ? 'border-green-500 text-green-600' : 'border-indigo-500 text-indigo-600'}`}
+                      >
+                        {usere?.faceDescriptor ? (
+                          <>
+                            <CheckCircle2 className="w-5 h-5" />
+                            Update Enrolled Face
+                          </>
+                        ) : (
+                          <>
+                            <Camera className="w-5 h-5" />
+                            Enroll Face for Attendance
+                          </>
+                        )}
                       </Button>
                     </motion.div>
                   )}
@@ -890,6 +952,12 @@ const Profile = () => {
 
       <Calendar />
       <UpdateProfilelog open={open} setopen={setopen} />
+      <FaceCaptureModal
+        isOpen={isFaceModalOpen}
+        onClose={() => setIsFaceModalOpen(false)}
+        onCapture={handleFaceEnrollment}
+        title="Enroll Your Face"
+      />
 
       {/* Enhanced Custom Styles */}
       <style>{`

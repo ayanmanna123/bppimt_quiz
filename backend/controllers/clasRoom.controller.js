@@ -59,6 +59,30 @@ export const giveAttandance = async (req, res) => {
       });
     }
 
+    // ✅ Face Verification Check
+    const { faceDescriptor } = req.body;
+    if (!user.faceDescriptor || user.faceDescriptor.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Face not enrolled. Please enroll your face in the profile section first."
+      });
+    }
+
+    if (!faceDescriptor) {
+      return res.status(400).json({
+        success: false,
+        message: "Face verification data missing."
+      });
+    }
+
+    const faceDistance = getEuclideanDistance(user.faceDescriptor, faceDescriptor);
+    if (faceDistance > 0.6) {
+      return res.status(403).json({
+        success: false,
+        message: "Face verification failed. Please try again with proper lighting."
+      });
+    }
+
     // ✅ Get current weekday (e.g., "Monday") in IST
     const currentWeekDay = new Date().toLocaleString("en-US", {
       weekday: "long",
@@ -141,6 +165,59 @@ export const giveAttandance = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server error while marking attendance",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Helper: Calculate Euclidean Distance between two descriptors
+ */
+function getEuclideanDistance(desc1, desc2) {
+  if (!desc1 || !desc2 || desc1.length !== desc2.length) return 1.0;
+  let sum = 0;
+  for (let i = 0; i < desc1.length; i++) {
+    sum += Math.pow(desc1[i] - desc2[i], 2);
+  }
+  return Math.sqrt(sum);
+}
+
+/**
+ * Enroll Face for Student
+ */
+export const enrollFace = async (req, res) => {
+  try {
+    const userId = req.auth?.sub;
+    const { faceDescriptor, facePhoto } = req.body;
+
+    if (!faceDescriptor || !Array.isArray(faceDescriptor)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid face descriptor is required",
+      });
+    }
+
+    const user = await User.findOne({ auth0Id: userId });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    user.faceDescriptor = faceDescriptor;
+    if (facePhoto) {
+      user.facePhoto = facePhoto;
+    }
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Face enrolled successfully",
+    });
+  } catch (error) {
+    console.error("Error enrolling face:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error during face enrollment",
       error: error.message,
     });
   }
