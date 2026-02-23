@@ -787,12 +787,19 @@ export const generateQrCodeToken = async (req, res) => {
 
     // Generate a unique token (random string + timestamp)
     const token = Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // Global session expiry (5 mins)
+    // Set global session expiry only if not already set or expired
+    const now = new Date();
+    let expiresAt = classroom.qrCodeExpiresAt;
+
+    if (!expiresAt || now > new Date(expiresAt)) {
+      expiresAt = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes from start
+    }
+
     const attDate = targetDate ? new Date(targetDate) : new Date();
 
     // Rotate active tokens: Add new, keep last 2 (current + 1 previous for lag)
     if (!classroom.activeQrTokens) classroom.activeQrTokens = [];
-    classroom.activeQrTokens.push({ token, createdAt: new Date() });
+    classroom.activeQrTokens.push({ token, createdAt: now });
 
     if (classroom.activeQrTokens.length > 2) {
       classroom.activeQrTokens = classroom.activeQrTokens.slice(-2);

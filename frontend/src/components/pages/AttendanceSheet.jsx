@@ -238,8 +238,44 @@ const AttendanceSheet = () => {
   const [generatedQrToken, setGeneratedQrToken] = useState(null);
   const [qrExpiresAt, setQrExpiresAt] = useState(null);
   const [isQrFullScreen, setIsQrFullScreen] = useState(false);
+  const [qrCountdown, setQrCountdown] = useState("");
   const qrRefreshInterval = useRef(null);
 
+  useEffect(() => {
+    let timer;
+    if (generatedQrToken && qrExpiresAt) {
+      const updateTimer = () => {
+        const now = new Date().getTime();
+        const distance = qrExpiresAt.getTime() - now;
+
+        if (distance <= 0) {
+          setQrCountdown("EXPIRED");
+          if (timer) clearInterval(timer);
+
+          // Clear states immediately for instant UI response
+          setGeneratedQrToken(null);
+          setQrExpiresAt(null);
+          setIsQrFullScreen(false);
+
+          handleStopQrAttendance(true); // Call stop API in background
+          return;
+        }
+
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        setQrCountdown(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+      };
+
+      updateTimer();
+      timer = setInterval(updateTimer, 1000);
+    }
+
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [generatedQrToken, qrExpiresAt]);
+
+  // QR Token Rotation Interval
   useEffect(() => {
     return () => {
       if (qrRefreshInterval.current) clearInterval(qrRefreshInterval.current);
@@ -274,6 +310,7 @@ const AttendanceSheet = () => {
 
       // Initial fetch
       await fetchNewToken();
+      setSelectedDate(date); // Ensure date is set for student counter
       setIsQrFullScreen(true);
       toast.success(`QR Attendance Started for ${date}! Refreshing every 10s.`);
 
@@ -286,13 +323,18 @@ const AttendanceSheet = () => {
     }
   };
 
-  const handleStopQrAttendance = async () => {
+  const handleStopQrAttendance = async (isAuto = false) => {
     try {
-      // Clear rotation interval
+      // 1. Clear intervals immediately
       if (qrRefreshInterval.current) {
         clearInterval(qrRefreshInterval.current);
         qrRefreshInterval.current = null;
       }
+
+      // 2. Optimistic UI reset if requested or manually stopped
+      setGeneratedQrToken(null);
+      setQrExpiresAt(null);
+      setIsQrFullScreen(false);
 
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v2",
@@ -304,15 +346,12 @@ const AttendanceSheet = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      if (res.data.success) {
-        setGeneratedQrToken(null);
-        setQrExpiresAt(null);
-        setIsQrFullScreen(false);
+      if (res.data.success && !isAuto) {
         toast.success(res.data.message);
       }
     } catch (error) {
       console.error("Error stopping QR attendance:", error);
-      toast.error("Failed to stop QR attendance");
+      if (!isAuto) toast.error("Failed to stop QR attendance on server");
     }
   };
 
@@ -482,7 +521,9 @@ const AttendanceSheet = () => {
                       <h3 className="text-lg font-bold uppercase tracking-wider">Active QR Attendance</h3>
                     </div>
                     <p className="text-gray-500 dark:text-gray-400 flex items-center gap-2 text-sm font-medium">
-                      <Clock className="w-4 h-4" /> Expires at {qrExpiresAt?.toLocaleTimeString()}
+                      <Clock className="w-4 h-4" />
+                      <span className="text-indigo-600 dark:text-indigo-400 font-mono font-bold tracking-wider">{qrCountdown}</span>
+                      <span className="opacity-50">/ Expires at {qrExpiresAt?.toLocaleTimeString()}</span>
                     </p>
                     <p className="text-xs text-green-600 dark:text-green-500 mt-2 font-mono break-all max-w-xs transition-all opacity-40 hover:opacity-100 italic">
                       Token: {generatedQrToken}
@@ -735,45 +776,81 @@ const AttendanceSheet = () => {
 
       {/* ✅ Full Screen QR Display Modal */}
       {isQrFullScreen && generatedQrToken && (
-        <div className="fixed inset-0 z-[100] bg-white dark:bg-slate-950 flex flex-col items-center justify-center p-8 animate-in fade-in zoom-in duration-300">
-          <div className="absolute top-8 right-8 flex gap-4">
-            <button
-              onClick={() => setIsQrFullScreen(false)}
-              className="bg-gray-100 dark:bg-slate-800 p-4 rounded-2xl text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-all shadow-lg"
-              title="Minimize"
-            >
-              <Minimize2 className="w-6 h-6" />
-            </button>
-            <button
-              onClick={handleStopQrAttendance}
-              className="bg-red-100 dark:bg-red-900/30 p-4 rounded-2xl text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-all shadow-lg border border-red-200 dark:border-red-800 flex items-center gap-2"
-            >
-              <StopCircle className="w-6 h-6" />
-              <span className="font-bold">STOP ATTENDANCE</span>
-            </button>
-          </div>
+        <div className="fixed inset-0 z-[100] bg-white dark:bg-slate-950 flex flex-col items-center justify-between overflow-hidden animate-in fade-in zoom-in duration-300 h-screen">
+          {/* Sticky Stats Header */}
+          <div className="w-full bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-gray-100 dark:border-slate-800 z-[110] px-6 sm:px-12 py-3 flex flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-4 sm:gap-8">
+              <div className="flex flex-col items-start leading-none">
+                <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                  <Clock className="w-5 h-5 sm:w-6 sm:h-6" />
+                  <span className="text-xl sm:text-2xl font-black font-mono tracking-tighter">
+                    {qrCountdown || "00:00"}
+                  </span>
+                </div>
+                <p className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest hidden sm:block">Remaining</p>
+              </div>
 
-          <div className="flex flex-col items-center max-w-2xl w-full text-center">
-            <div className="mb-8">
-              <h2 className="text-4xl font-black text-indigo-600 dark:text-indigo-400 tracking-tight uppercase mb-2">Scan to mark attendance</h2>
-              <div className="flex items-center justify-center gap-2 text-gray-500 dark:text-gray-400">
-                <Clock className="w-5 h-5" />
-                <span className="text-xl font-medium">Expires at {qrExpiresAt?.toLocaleTimeString()}</span>
+              <div className="h-8 w-px bg-gray-200 dark:bg-slate-800"></div>
+
+              <div className="flex flex-col items-start leading-none">
+                <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <span className="text-2xl sm:text-3xl font-black tracking-tighter text-indigo-600 dark:text-indigo-400">
+                    {students.filter(s => s[selectedDate] === "P").length}
+                  </span>
+                  <Users className="w-5 h-5 sm:w-6 sm:h-6" />
+                </div>
+                <p className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest hidden sm:block">Present</p>
               </div>
             </div>
 
-            <div className="bg-white p-12 rounded-[3rem] shadow-2xl border-4 border-indigo-600 dark:border-indigo-400 mb-12 transform hover:scale-105 transition-transform duration-500">
-              <QRCodeSVG value={generatedQrToken} size={400} level="H" includeMargin={true} />
+            <div className="flex gap-2">
+              <button
+                onClick={() => setIsQrFullScreen(false)}
+                className="bg-gray-100 dark:bg-slate-800 p-2 sm:p-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-all font-bold text-xs flex items-center gap-2 border border-gray-200 dark:border-slate-700"
+              >
+                <Minimize2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden md:inline">MINIMIZE</span>
+              </button>
+              <button
+                onClick={handleStopQrAttendance}
+                className="bg-red-600 hover:bg-red-700 text-white p-2 sm:p-3 px-4 sm:px-6 rounded-xl transition-all font-bold text-xs shadow-lg shadow-red-200 dark:shadow-none flex items-center gap-2"
+              >
+                <StopCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>STOP</span>
+              </button>
             </div>
+          </div>
 
-            <div className="space-y-4">
-              <div className="text-6xl font-black text-gray-900 dark:text-white tracking-widest animate-pulse">SCAN ME</div>
-              <div className="h-2 w-48 bg-indigo-600 dark:bg-indigo-400 mx-auto rounded-full"></div>
-              <p className="text-gray-500 dark:text-gray-300 font-medium text-lg">Position your camera towards the QR code</p>
+          <div className="flex-1 flex flex-col sm:flex-row items-center justify-center w-full px-6 gap-8 overflow-hidden min-h-0">
+            {/* Left Side: Rotated Message */}
+
+
+            {/* Center: Massive QR Code */}
+            <div className="flex-1 flex items-center justify-center min-h-0 w-full relative">
+
+
+              <div className="bg-white p-[3px] rounded-[1.5rem] sm:rounded-[3rem] shadow-2xl border-[6px] sm:border-[12px] border-indigo-600 dark:border-indigo-400 flex items-center justify-center h-fit max-h-[85vh] aspect-square transform transition-transform duration-500 hover:scale-[1.01] relative z-10">
+                <QRCodeSVG
+                  value={generatedQrToken}
+                  className="w-full h-full"
+                  size={1000}
+                  level="H"
+                  includeMargin={false}
+                />
+              </div>
+
+
             </div>
+          </div>
 
-            <div className="mt-12 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-100 dark:border-indigo-800 opacity-60">
-              <p className="text-sm font-mono text-indigo-600 dark:text-indigo-400">Token ID: {generatedQrToken}</p>
+          <div className="w-full py-4 px-8 border-t border-gray-100 dark:border-slate-900 flex justify-center gap-6 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-gray-400">
+            <div className="flex items-center gap-2 bg-gray-50 dark:bg-slate-900/50 px-3 py-1 rounded-lg">
+              <Calendar className="w-3 h-3 text-indigo-500" />
+              <span>{selectedDate}</span>
+            </div>
+            <div className="flex items-center gap-2 bg-gray-50 dark:bg-slate-900/50 px-3 py-1 rounded-lg italic">
+              <Clock className="w-3 h-3 text-gray-400" />
+              <span>Closes at {qrExpiresAt?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
             </div>
           </div>
         </div>
