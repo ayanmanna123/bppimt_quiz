@@ -16,6 +16,7 @@ self.addEventListener('push', (event) => {
         body: data.body || 'You have a new update.',
         icon: '/pwa-192x192.png',
         badge: '/pwa-192x192.png',
+        data: data.data || {} // Include data for click handling
     };
 
     event.waitUntil(self.registration.showNotification(title, options));
