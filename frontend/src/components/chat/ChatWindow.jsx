@@ -847,7 +847,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                         onSendMessage={handleSendMessage}
                         onTyping={handleTyping}
                         replyTo={replyTo}
-                        setReplyTo={setReplyTo}
+                        onCancelReply={() => setReplyTo(null)}
                         editingMessage={editingMessage}
                         onUpdateMessage={handleUpdateMessage}
                         onCancelEdit={() => setEditingMessage(null)}
