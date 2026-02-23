@@ -568,7 +568,7 @@ export const searchStoreMessages = async (req, res) => {
         const { conversationId } = req.params;
         const { query } = req.query;
 
-        if (!query) return res.status(200).json([]);
+        if (!query) return res.status(200).json({ success: true, messages: [] });
 
         const messages = await StoreMessage.find({
             conversationId,

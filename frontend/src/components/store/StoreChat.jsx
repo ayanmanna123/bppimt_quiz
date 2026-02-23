@@ -260,8 +260,8 @@ const StoreChat = () => {
         const el = messageRefs.current[id];
         if (el) {
             el.scrollIntoView({ behavior: "smooth", block: "center" });
-            el.classList.add("bg-indigo-50");
-            setTimeout(() => el.classList.remove("bg-indigo-50"), 2000);
+            el.classList.add("bg-yellow-200", "dark:bg-yellow-900", "p-1", "rounded", "transition-all");
+            setTimeout(() => el.classList.remove("bg-yellow-200", "dark:bg-yellow-900", "p-1", "rounded"), 3000);
         }
     };
 
@@ -269,7 +269,7 @@ const StoreChat = () => {
         if (currentSearchIndex >= 0 && searchResults[currentSearchIndex]) {
             jumpToMessage(searchResults[currentSearchIndex]._id);
         }
-    }, [currentSearchIndex]);
+    }, [currentSearchIndex, searchResults]);
 
     const handleReaction = async (msgId, emoji) => {
         // Optimistic update
@@ -366,8 +366,9 @@ const StoreChat = () => {
 
     // Filter Sidebar
     const filteredConversations = conversations.filter(conv => {
-        const otherUser = conv.participants.find(p => p._id !== user?._id);
-        const term = sidebarSearchTerm.toLowerCase();
+        const otherUser = conv.participants.find(p => p._id?.toString() !== user?._id?.toString());
+        const term = sidebarSearchTerm.toLowerCase().trim();
+        if (!term) return true;
         return otherUser?.fullname?.toLowerCase().includes(term) || conv.product?.title?.toLowerCase().includes(term);
     });
 
@@ -395,7 +396,7 @@ const StoreChat = () => {
                     <div className="divide-y divide-slate-100">
                         {filteredConversations.length > 0 ? (
                             filteredConversations.map(conv => {
-                                const otherUser = conv.participants.find(p => p._id !== user?._id);
+                                const otherUser = conv.participants.find(p => p._id?.toString() !== user?._id?.toString());
                                 const isActive = activeConversation?._id === conv._id;
                                 return (
                                     <div
@@ -476,11 +477,11 @@ const StoreChat = () => {
                                             </span>
                                         )}
                                         <div className="flex">
-                                            <Button size="icon" variant="ghost" className="h-8 w-6 hover:bg-slate-200 dark:hover:bg-slate-700" onClick={() => setCurrentSearchIndex((prev) => (prev + 1) % searchResults.length)}>
-                                                <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-                                            </Button>
                                             <Button size="icon" variant="ghost" className="h-8 w-6 hover:bg-slate-200 dark:hover:bg-slate-700" onClick={() => setCurrentSearchIndex((prev) => (prev - 1 + searchResults.length) % searchResults.length)}>
                                                 <ChevronUp className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                                            </Button>
+                                            <Button size="icon" variant="ghost" className="h-8 w-6 hover:bg-slate-200 dark:hover:bg-slate-700" onClick={() => setCurrentSearchIndex((prev) => (prev + 1) % searchResults.length)}>
+                                                <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                                             </Button>
                                         </div>
                                         <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-sm" onClick={() => {
