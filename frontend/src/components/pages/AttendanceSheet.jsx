@@ -23,6 +23,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { toast } from "sonner";
+import { useSocket } from "../../context/SocketContext";
 
 const monthNames = [
   "January",
@@ -49,74 +50,99 @@ const AttendanceSheet = () => {
 
   const { getAccessTokenSilently } = useAuth0();
   const { subjectId } = useParams();
+  const socket = useSocket(); // ✅ Access socket instance
 
   // ✅ Fetch attendance data
-  useEffect(() => {
-    const fetchAttendance = async () => {
-      try {
-        const token = await getAccessTokenSilently({
-          audience: "http://localhost:5000/api/v2",
-        });
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL
-          }/attandance/get-subject/${subjectId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+  const fetchAttendance = async () => {
+    try {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v2",
+      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL
+        }/attandance/get-subject/${subjectId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-        const { totalStudent, subject } = res.data;
+      const { totalStudent, subject } = res.data;
 
-        const currentYear = new Date().getFullYear(); // ✅ Get current year dynamically
+      const currentYear = new Date().getFullYear(); // ✅ Get current year dynamically
 
-        const monthsData = Array.from({ length: 12 }, (_, i) => {
-          const daysInMonth = new Date(currentYear, i + 1, 0).getDate();
-          return {
-            month: i + 1,
-            days: Array.from({ length: daysInMonth }, (_, d) => {
-              const dateObj = new Date(currentYear, i, d + 1);
-              const dateStr = dateObj.toLocaleDateString();
-              return { date: dateStr };
-            }),
-          };
-        });
+      const monthsData = Array.from({ length: 12 }, (_, i) => {
+        const daysInMonth = new Date(currentYear, i + 1, 0).getDate();
+        return {
+          month: i + 1,
+          days: Array.from({ length: daysInMonth }, (_, d) => {
+            const dateObj = new Date(currentYear, i, d + 1);
+            const dateStr = dateObj.toLocaleDateString();
+            return { date: dateStr };
+          }),
+        };
+      });
 
-        const attendanceMap = {};
-        subject.attendance.forEach((day) => {
-          const dateStr = new Date(day.date).toLocaleDateString();
-          attendanceMap[dateStr] = day.records.map((r) => r.student._id);
-        });
+      const attendanceMap = {};
+      subject.attendance.forEach((day) => {
+        const dateStr = new Date(day.date).toLocaleDateString();
+        attendanceMap[dateStr] = day.records.map((r) => r.student._id);
+      });
 
-        const studentArr = totalStudent.map((stu) => {
-          const attendanceObj = {};
-          monthsData.forEach((month) => {
-            month.days.forEach((day) => {
-              if (attendanceMap[day.date]) {
-                const isPresent = attendanceMap[day.date].includes(stu._id);
-                attendanceObj[day.date] = isPresent ? "P" : "A";
-              } else {
-                attendanceObj[day.date] = "";
-              }
-            });
+      const studentArr = totalStudent.map((stu) => {
+        const attendanceObj = {};
+        monthsData.forEach((month) => {
+          month.days.forEach((day) => {
+            if (attendanceMap[day.date]) {
+              const isPresent = attendanceMap[day.date].includes(stu._id);
+              attendanceObj[day.date] = isPresent ? "P" : "A";
+            } else {
+              attendanceObj[day.date] = "";
+            }
           });
-          return {
-            _id: stu._id,
-            fullname: stu.fullname,
-            universityNo: stu.universityNo,
-            ...attendanceObj,
-          };
         });
+        return {
+          _id: stu._id,
+          fullname: stu.fullname,
+          universityNo: stu.universityNo,
+          ...attendanceObj,
+        };
+      });
 
-        setMonths(monthsData);
-        setStudents(
-          studentArr.sort((a, b) =>
-            a.universityNo.localeCompare(b.universityNo)
-          )
-        );
-      } catch (error) {
-        console.error("Error fetching attendance:", error);
-      }
-    };
+      setMonths(monthsData);
+      setStudents(
+        studentArr.sort((a, b) =>
+          a.universityNo.localeCompare(b.universityNo)
+        )
+      );
+    } catch (error) {
+      console.error("Error fetching attendance:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchAttendance();
   }, [subjectId, getAccessTokenSilently]);
+
+  // ✅ Socket integration for real-time updates
+  useEffect(() => {
+    if (socket && subjectId) {
+      // Join the subject-specific room
+      socket.emit("joinSubject", { subjectId, type: "subject" });
+
+      // Listen for updates
+      const handleUpdate = (data) => {
+        console.log("[Socket] Received attendanceUpdate:", data);
+        if (data.subjectId === subjectId) {
+          fetchAttendance(); // Refresh data
+          toast.info("Attendance data updated in real-time");
+        }
+      };
+
+      socket.on("attendanceUpdate", handleUpdate);
+
+      return () => {
+        socket.off("attendanceUpdate", handleUpdate);
+      };
+    }
+  }, [socket, subjectId]);
 
   // ✅ Popup open handler
   const handleDateClick = (date) => {

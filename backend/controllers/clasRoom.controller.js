@@ -162,6 +162,16 @@ export const giveAttandance = async (req, res) => {
     classRoom.markModified("attendance");
     await classRoom.save();
 
+    // ✅ Emit Socket Event for real-time update
+    const io = req.app.get("io");
+    if (io) {
+      console.log(`[Socket] Emitting attendanceUpdate for subject: ${subjectid}`);
+      io.to(subjectid.toString()).emit("attendanceUpdate", {
+        subjectId: subjectid,
+        date: new Date().toLocaleDateString(),
+      });
+    }
+
     return res.status(200).json({
       success: true,
       message: "Attendance marked successfully",
@@ -503,6 +513,16 @@ export const markManualAttendance = async (req, res) => {
 
     await classroom.save();
 
+    // ✅ Emit Socket Event for real-time update
+    const io = req.app.get("io");
+    if (io) {
+      console.log(`[Socket] Emitting attendanceUpdate for subject: ${subjectId}`);
+      io.to(subjectId.toString()).emit("attendanceUpdate", {
+        subjectId: subjectId,
+        date: new Date(date).toLocaleDateString(),
+      });
+    }
+
     res.status(200).json({
       success: true,
       message: "Manual attendance marked successfully",
@@ -673,6 +693,16 @@ export const giveOtpAttendance = async (req, res) => {
 
     classroom.markModified("attendance");
     await classroom.save();
+
+    // ✅ Emit Socket Event for real-time update
+    const io = req.app.get("io");
+    if (io) {
+      console.log(`[Socket] Emitting attendanceUpdate for subject: ${subjectid}`);
+      io.to(subjectid.toString()).emit("attendanceUpdate", {
+        subjectId: subjectid,
+        date: new Date(targetDate).toLocaleDateString(),
+      });
+    }
 
     return res.status(200).json({
       success: true,
