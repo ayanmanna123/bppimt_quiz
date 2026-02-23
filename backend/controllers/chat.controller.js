@@ -314,6 +314,53 @@ export const addReaction = async (messageId, userId, emoji) => {
     }
 };
 
+// Standard controller for reactions
+export const reactMessage = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const { userId, emoji } = req.body;
+
+        const chat = await Chat.findById(messageId);
+        if (!chat) return res.status(404).json({ message: "Message not found" });
+
+        // Check if user already reacted with this emoji (toggle logic)
+        const existingReactionIndex = chat.reactions.findIndex(
+            (r) => r.user.toString() === userId && r.emoji === emoji
+        );
+
+        if (existingReactionIndex > -1) {
+            // Remove reaction if it exists (toggle off)
+            chat.reactions.splice(existingReactionIndex, 1);
+        } else {
+            // Add reaction (toggle on)
+            chat.reactions.push({ user: userId, emoji });
+        }
+
+        await chat.save();
+        const populatedChat = await chat.populate([
+            { path: "sender", select: "fullname picture role" },
+            { path: "reactions.user", select: "fullname picture" },
+            { path: "mentions", select: "fullname _id" },
+            {
+                path: "replyTo",
+                select: "sender message attachments",
+                populate: { path: "sender", select: "fullname" }
+            }
+        ]);
+
+        // Notify clients via Socket
+        const io = req.app.get("io");
+        if (io) {
+            io.to(chat.subjectId || chat.conversationId || "global").emit("messageUpdated", populatedChat);
+        }
+
+        res.status(200).json(populatedChat);
+    } catch (error) {
+        console.error("Error reacting to message:", error);
+        res.status(500).json({ message: "Failed to react to message" });
+    }
+};
+
 // Remove a reaction
 export const removeReaction = async (messageId, userId, emoji) => {
     try {

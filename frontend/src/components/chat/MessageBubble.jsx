@@ -157,11 +157,23 @@ const MessageBubble = ({
 
                     {/* Reactions Display */}
                     {message.reactions && message.reactions.length > 0 && (
-                        <div className={`absolute -bottom-3 ${isMe ? "left-0" : "right-0"} flex gap-1`}>
-                            {message.reactions.map((r, i) => (
-                                <span key={i} className="text-xs bg-white dark:bg-slate-800 shadow-sm rounded-full px-1 border border-slate-100 dark:border-slate-700" title={r.user?.fullname}>
-                                    {r.emoji}
-                                </span>
+                        <div className={`absolute -bottom-3 ${isMe ? "right-0" : "left-0"} flex flex-wrap gap-1 z-10`}>
+                            {Object.values(message.reactions.reduce((acc, r) => {
+                                const key = r.emoji;
+                                if (!acc[key]) acc[key] = { emoji: key, count: 0, users: [] };
+                                acc[key].count += 1;
+                                if (r.user?.fullname) acc[key].users.push(r.user.fullname);
+                                return acc;
+                            }, {})).map((group, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => onReact(group.emoji)}
+                                    className={`flex items-center gap-1 text-[10px] bg-white dark:bg-slate-800 shadow-sm rounded-full px-1.5 py-0.5 border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors`}
+                                    title={group.users.join(", ")}
+                                >
+                                    <span>{group.emoji}</span>
+                                    {group.count > 1 && <span className="font-bold opacity-70">{group.count}</span>}
+                                </button>
                             ))}
                         </div>
                     )}
@@ -212,7 +224,7 @@ const MessageBubble = ({
 
                                 <div className="flex justify-between px-2 py-1">
                                     {["👍", "❤️", "😂", "😮"].map(emoji => (
-                                        <button key={emoji} onClick={() => onReact(message._id, emoji)} className="hover:scale-110 transition-transform">
+                                        <button key={emoji} onClick={() => onReact(emoji)} className="hover:scale-110 transition-transform">
                                             {emoji}
                                         </button>
                                     ))}

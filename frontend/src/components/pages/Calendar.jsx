@@ -14,7 +14,6 @@ import {
   isSameDay,
   startOfWeek,
   endOfWeek,
-  addDays,
   parseISO,
 } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
@@ -254,7 +253,7 @@ const Calendar = () => {
                   <p>No quizzes found for this month.</p>
                 </div>
               ) : (
-                quizzes.map((quiz, quizIndex) => (
+                quizzes.map((quiz) => (
                   <div key={quiz._id} className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden transition-colors">
                     <div className="bg-gray-50 dark:bg-slate-800/50 px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
                       <div>
@@ -348,56 +347,85 @@ const Calendar = () => {
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6">
       <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-slate-800/20 overflow-hidden transition-colors">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row items-center justify-between p-6 md:p-8 bg-gradient-to-r from-gray-50 to-white dark:from-slate-800 dark:to-slate-900 border-b border-gray-100 dark:border-slate-800 transition-colors">
-          <div className="mb-4 md:mb-0 text-center md:text-left">
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-              Quiz Calendar
-            </h1>
-            <p className="text-gray-500 mt-1 flex items-center gap-2 justify-center md:justify-start">
-              <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md text-xs font-semibold">{usere?.department}</span>
-              <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-md text-xs font-semibold">{usere?.semester} Semester</span>
-            </p>
-          </div>
+        {/* Moodle-style Header */}
+        <div className="p-4 md:p-8 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 transition-colors">
+          <div className="flex flex-col gap-6">
+            {/* Title and New Event Button */}
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <h1 className="text-3xl font-semibold text-gray-800 dark:text-gray-100">
+                Calendar
+              </h1>
+              <div className="flex items-center gap-2">
+                <button className="px-4 py-2 bg-[#0070bc] hover:bg-[#005a96] text-white rounded-lg font-medium transition-colors shadow-sm">
+                  New event
+                </button>
+                {usere?.role === "teacher" && (
+                  <button
+                    onClick={() => setShowAllQuestions(true)}
+                    className="p-2 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                    title="All Questions"
+                  >
+                    <FileText className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
+            </div>
 
-          <div className="flex items-center gap-4">
-            {usere?.role === "teacher" && (
-              <button
-                onClick={() => setShowAllQuestions(true)}
-                className="px-4 py-2 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900 rounded-xl font-semibold shadow-sm hover:shadow-md hover:bg-blue-50 dark:hover:bg-slate-700 transition-all flex items-center gap-2"
-              >
-                <FileText className="w-4 h-4" />
-                <span className="hidden sm:inline">All Questions</span>
-              </button>
-            )}
+            {/* Filters */}
+            <div className="flex flex-wrap gap-3">
+              <div className="relative min-w-[140px]">
+                <select className="w-full p-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer">
+                  <option>Month</option>
+                  <option>Table</option>
+                  <option>Upcoming</option>
+                </select>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                  <ChevronRight className="w-4 h-4 rotate-90" />
+                </div>
+              </div>
+              <div className="relative min-w-[200px] flex-1 md:flex-none">
+                <select className="w-full p-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer">
+                  <option>All courses</option>
+                  <option>{usere?.department} - {usere?.semester} Sem</option>
+                </select>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                  <ChevronRight className="w-4 h-4 rotate-90" />
+                </div>
+              </div>
+            </div>
 
-            <div className="flex items-center gap-6 bg-white dark:bg-slate-800 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 transition-colors">
+            {/* Navigation */}
+            <div className="flex items-center justify-between mt-2 border-t border-gray-50 dark:border-slate-800 pt-4">
               <button
                 onClick={() => navigateMonth(-1)}
-                className="p-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl transition-colors text-gray-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
+                className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors text-sm md:text-base"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-4 h-4" />
+                <span>{format(subMonths(currentDate, 1), "MMMM")}</span>
               </button>
-              <div className="text-lg font-bold text-gray-800 dark:text-white min-w-[140px] text-center">
+
+              <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100">
                 {format(currentDate, "MMMM yyyy")}
-              </div>
+              </h2>
+
               <button
                 onClick={() => navigateMonth(1)}
-                className="p-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl transition-colors text-gray-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
+                className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors text-sm md:text-base"
               >
-                <ChevronRight className="w-5 h-5" />
+                <span>{format(addMonths(currentDate, 1), "MMMM")}</span>
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
         </div>
 
         {/* Calendar Grid */}
-        <div className="p-6 md:p-8">
-          <div className="grid grid-cols-7 gap-4 mb-4">
+        <div className="p-2 md:p-8">
+          <div className="grid grid-cols-7 gap-1 md:gap-4 mb-4">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div
                 key={day}
-                className="text-center font-semibold text-gray-400 text-sm uppercase tracking-wider"
+                className="text-center font-semibold text-gray-500 dark:text-slate-400 text-[10px] md:text-sm uppercase tracking-wider"
               >
                 {day}
               </div>
@@ -413,7 +441,7 @@ const Calendar = () => {
               animate="center"
               exit="exit"
               transition={{ type: "tween", duration: 0.3 }}
-              className="grid grid-cols-7 gap-4"
+              className="grid grid-cols-7 gap-1 md:gap-4"
             >
               {daysInMonth.map((date, idx) => {
                 const dayQuizzes = getQuizzesForDate(date);
@@ -423,52 +451,66 @@ const Calendar = () => {
                 return (
                   <div
                     key={idx}
-                    className={`min-h-[120px] rounded-2xl p-3 border transition-all duration-300 group relative
+                    className={`min-h-[60px] md:min-h-[120px] rounded-xl md:rounded-2xl p-1 md:p-3 border transition-all duration-300 group relative
                     ${!isCurrentMonth
-                        ? "bg-gray-50/50 dark:bg-slate-800/20 border-transparent opacity-40 hover:opacity-100"
-                        : "bg-white dark:bg-slate-900 border-gray-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-800 hover:shadow-lg hover:-translate-y-1 hover:z-20"
+                        ? "bg-gray-50/30 dark:bg-slate-800/10 border-transparent opacity-30"
+                        : "bg-white dark:bg-slate-900 border-gray-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-800"
                       }
-                    ${isToday ? "ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-900 bg-blue-50/30 dark:bg-blue-900/10 z-10" : "z-0"}
+                    ${isToday ? "ring-1 md:ring-2 ring-blue-500 ring-offset-1 md:ring-offset-2 dark:ring-offset-slate-900 z-10" : "z-0"}
                   `}
                   >
-                    <div className="flex justify-between items-start mb-2">
+                    <div className="flex flex-col items-center md:items-start h-full">
                       <span
-                        className={`text-sm font-semibold w-7 h-7 flex items-center justify-center rounded-full transition-colors
+                        className={`text-xs md:text-sm font-semibold w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded-full transition-colors
                         ${isToday
-                            ? "bg-blue-600 text-white shadow-blue-200 dark:shadow-blue-900/50 shadow-lg"
+                            ? "bg-[#0070bc] text-white"
                             : isCurrentMonth
-                              ? "text-gray-700 dark:text-slate-300 group-hover:bg-gray-100 dark:group-hover:bg-slate-800"
+                              ? "text-gray-700 dark:text-slate-300"
                               : "text-gray-400 dark:text-slate-600"
                           }
                       `}
                       >
                         {format(date, "d")}
                       </span>
-                      {dayQuizzes.length > 0 && (
-                        <span className="flex h-2 w-2 relative">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                        </span>
-                      )}
-                    </div>
 
-                    <div className="space-y-1.5 max-h-[85px] overflow-y-auto pr-1 custom-scrollbar">
-                      {dayQuizzes.map((q) => (
-                        <motion.button
-                          key={q._id}
-                          onClick={() => setSelectedQuiz(q)}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          className="w-full text-left p-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg transition-all"
-                        >
-                          <p className="text-[10px] font-bold truncate leading-tight">
-                            {q.title}
-                          </p>
-                          <p className="text-[9px] opacity-90 truncate">
-                            {q.time} min • {q.marks / q.totalQuestions || 0}m/q
-                          </p>
-                        </motion.button>
-                      ))}
+                      {/* Event indicators */}
+                      <div className="mt-1 w-full space-y-1 overflow-hidden">
+                        {dayQuizzes.length > 0 && (
+                          <div className="flex flex-wrap justify-center md:justify-start gap-1">
+                            {/* Mobile: Dots */}
+                            <div className="md:hidden flex gap-0.5">
+                              {dayQuizzes.map((q) => (
+                                <div key={q._id} className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                              ))}
+                            </div>
+
+                            {/* Desktop: Full Labels */}
+                            <div className="hidden md:block w-full space-y-1">
+                              {dayQuizzes.map((q) => (
+                                <motion.button
+                                  key={q._id}
+                                  onClick={() => setSelectedQuiz(q)}
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  className="w-full text-left p-1 rounded bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 transition-all overflow-hidden"
+                                >
+                                  <p className="text-[9px] font-bold truncate leading-tight">
+                                    {q.title}
+                                  </p>
+                                </motion.button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Mobile Click Overlay */}
+                      {dayQuizzes.length > 0 && (
+                        <button
+                          onClick={() => setSelectedQuiz(dayQuizzes[0])}
+                          className="md:hidden absolute inset-0 z-20"
+                        />
+                      )}
                     </div>
                   </div>
                 );

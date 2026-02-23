@@ -1,5 +1,5 @@
 import express from "express";
-import { getChatHistory, togglePinMessage, getPinnedMessages, updateMessage, deleteMessage, getUnseenCount, markMessagesAsRead, getMessageViewers, searchMessages, getLinkPreview, getOnlineUsers, getChatMetadata, muteChat, unmuteChat, getGroupMembers, toggleBlockUser, getConversationDetails } from "../controllers/chat.controller.js";
+import { getChatHistory, togglePinMessage, getPinnedMessages, updateMessage, deleteMessage, getUnseenCount, markMessagesAsRead, getMessageViewers, searchMessages, getLinkPreview, getOnlineUsers, getChatMetadata, muteChat, unmuteChat, getGroupMembers, toggleBlockUser, getConversationDetails, reactMessage } from "../controllers/chat.controller.js";
 
 const router = express.Router();
 
@@ -23,6 +23,9 @@ router.get("/pinned/:subjectId", getPinnedMessages);
 
 // Update Message
 router.put("/:messageId", updateMessage);
+
+// React to message
+router.put("/react/:messageId", reactMessage);
 
 // Delete Message
 router.delete("/:messageId", deleteMessage);
