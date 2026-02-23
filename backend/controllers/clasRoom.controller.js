@@ -786,11 +786,18 @@ export const generateQrCodeToken = async (req, res) => {
     if (!classroom) return res.status(404).json({ success: false, message: "Classroom not found" });
 
     // Generate a unique token (random string + timestamp)
-    const token = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+    const token = Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // Global session expiry (5 mins)
     const attDate = targetDate ? new Date(targetDate) : new Date();
 
-    classroom.qrCodeToken = token;
+    // Rotate active tokens: Add new, keep last 2 (current + 1 previous for lag)
+    if (!classroom.activeQrTokens) classroom.activeQrTokens = [];
+    classroom.activeQrTokens.push({ token, createdAt: new Date() });
+
+    if (classroom.activeQrTokens.length > 2) {
+      classroom.activeQrTokens = classroom.activeQrTokens.slice(-2);
+    }
+
     classroom.qrCodeExpiresAt = expiresAt;
     classroom.qrCodeTargetDate = attDate;
     await classroom.save();
@@ -829,12 +836,20 @@ export const giveQrAttendance = async (req, res) => {
     const classroom = await ClassRoom.findOne({ subject: subjectid });
     if (!classroom) return res.status(404).json({ success: false, message: "Classroom not found" });
 
-    // ✅ Validate QR Token
-    if (!classroom.qrCodeToken || classroom.qrCodeToken !== token) {
-      return res.status(400).json({ success: false, message: "Invalid QR code. Please scan again." });
+    // ✅ Validate QR Token against active tokens list
+    const validToken = classroom.activeQrTokens.find(t => t.token === token);
+
+    if (!validToken) {
+      return res.status(400).json({ success: false, message: "Invalid or expired QR code. Please scan the current code on teacher's screen." });
     }
 
-    // ✅ Validate Expiration
+    // ✅ Strict Validation: Token should be very fresh (within 15s)
+    const tokenAge = (Date.now() - new Date(validToken.createdAt).getTime()) / 1000;
+    if (tokenAge > 15) {
+      return res.status(400).json({ success: false, message: "This QR code has already regenerated. Please scan the newest one." });
+    }
+
+    // ✅ Validate Global Session Expiration
     if (new Date() > new Date(classroom.qrCodeExpiresAt)) {
       return res.status(400).json({ success: false, message: "QR code has expired. Ask teacher to regenerate." });
     }
@@ -881,7 +896,7 @@ export const checkQrStatus = async (req, res) => {
 
     if (!classroom) return res.status(200).json({ success: true, hasActiveQr: false });
 
-    const hasActiveQr = classroom.qrCodeToken && new Date() < new Date(classroom.qrCodeExpiresAt);
+    const hasActiveQr = classroom.activeQrTokens?.length > 0 && new Date() < new Date(classroom.qrCodeExpiresAt);
 
     return res.status(200).json({
       success: true,
@@ -906,7 +921,7 @@ export const stopQrAttendance = async (req, res) => {
     const classroom = await ClassRoom.findOne({ subject: subjectId, teacher: teacher._id });
     if (!classroom) return res.status(404).json({ success: false, message: "Classroom not found" });
 
-    classroom.qrCodeToken = null;
+    classroom.activeQrTokens = [];
     classroom.qrCodeExpiresAt = null;
     classroom.qrCodeTargetDate = null;
     await classroom.save();

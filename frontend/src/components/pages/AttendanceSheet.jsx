@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useParams } from "react-router-dom";
@@ -238,33 +238,62 @@ const AttendanceSheet = () => {
   const [generatedQrToken, setGeneratedQrToken] = useState(null);
   const [qrExpiresAt, setQrExpiresAt] = useState(null);
   const [isQrFullScreen, setIsQrFullScreen] = useState(false);
+  const qrRefreshInterval = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (qrRefreshInterval.current) clearInterval(qrRefreshInterval.current);
+    };
+  }, []);
 
   const generateQrAuth = async (date) => {
     try {
+      // Clear existing interval if any
+      if (qrRefreshInterval.current) clearInterval(qrRefreshInterval.current);
+
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v2",
       });
 
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/attandance/generate-qr`,
-        { subjectId, targetDate: date },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const fetchNewToken = async () => {
+        try {
+          const res = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/attandance/generate-qr`,
+            { subjectId, targetDate: date },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
 
-      if (res.data.success) {
-        setGeneratedQrToken(res.data.token);
-        setQrExpiresAt(new Date(res.data.expiresAt));
-        setIsQrFullScreen(true); // ✅ Open full screen after generation
-        toast.success(`QR Code Generated for ${date}! Valid for 5 minutes.`);
-      }
+          if (res.data.success) {
+            setGeneratedQrToken(res.data.token);
+            setQrExpiresAt(new Date(res.data.expiresAt));
+          }
+        } catch (error) {
+          console.error("Error refreshing QR token:", error);
+        }
+      };
+
+      // Initial fetch
+      await fetchNewToken();
+      setIsQrFullScreen(true);
+      toast.success(`QR Attendance Started for ${date}! Refreshing every 10s.`);
+
+      // Setup interval for rotation (every 10 seconds)
+      qrRefreshInterval.current = setInterval(fetchNewToken, 10000);
+
     } catch (error) {
-      console.error("Error generating QR:", error);
-      toast.error("Failed to generate QR Code");
+      console.error("Error starting QR attendance:", error);
+      toast.error("Failed to start QR attendance");
     }
   };
 
   const handleStopQrAttendance = async () => {
     try {
+      // Clear rotation interval
+      if (qrRefreshInterval.current) {
+        clearInterval(qrRefreshInterval.current);
+        qrRefreshInterval.current = null;
+      }
+
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v2",
       });
