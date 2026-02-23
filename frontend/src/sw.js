@@ -8,18 +8,22 @@ self.skipWaiting();
 clientsClaim();
 
 self.addEventListener('push', (event) => {
-    const data = event.data.json();
-    console.log('Push received...', data);
+    try {
+        const data = event.data.json();
+        console.log('Push received...', data);
 
-    const title = data.title || 'New Notification';
-    const options = {
-        body: data.body || 'You have a new update.',
-        icon: '/pwa-192x192.png',
-        badge: '/pwa-192x192.png',
-        data: data.data || {} // Include data for click handling
-    };
+        const title = data.title || 'New Notification';
+        const options = {
+            body: data.body || 'You have a new update.',
+            icon: '/pwa-192x192.png',
+            badge: '/pwa-192x192.png',
+            data: data.data || {} // Include data for click handling
+        };
 
-    event.waitUntil(self.registration.showNotification(title, options));
+        event.waitUntil(self.registration.showNotification(title, options));
+    } catch (err) {
+        console.error('Error in push event handler:', err);
+    }
 });
 
 self.addEventListener('notificationclick', (event) => {

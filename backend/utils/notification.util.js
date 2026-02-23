@@ -76,15 +76,26 @@ export const sendNotification = async ({
                 }
             });
 
-            const promises = subscriptions.map((sub) =>
-                webpush.sendNotification(sub, payload).catch(async (err) => {
-                    console.error("Error sending push notification:", err);
-                    if (err.statusCode === 410 || err.statusCode === 404) {
-                        // Subscription has expired or is no longer valid
-                        await NotificationSubscription.deleteOne({ _id: sub._id });
+            const promises = subscriptions.map((sub) => {
+                const subObj = {
+                    endpoint: sub.endpoint,
+                    keys: {
+                        p256dh: sub.keys.p256dh,
+                        auth: sub.keys.auth
                     }
-                })
-            );
+                };
+                console.log(`Attempting to send push to endpoint: ${sub.endpoint.substring(0, 30)}...`);
+                return webpush.sendNotification(subObj, payload)
+                    .then(() => console.log("Push notification sent successfully"))
+                    .catch(async (err) => {
+                        console.error("Error sending push notification:", err.statusCode, err.message || err);
+                        if (err.statusCode === 410 || err.statusCode === 404) {
+                            // Subscription has expired or is no longer valid
+                            console.log(`Removing expired subscription: ${sub._id}`);
+                            await NotificationSubscription.deleteOne({ _id: sub._id });
+                        }
+                    });
+            });
 
             await Promise.all(promises);
         }
