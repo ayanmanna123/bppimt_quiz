@@ -251,6 +251,13 @@ const AttendanceSheet = () => {
         if (distance <= 0) {
           setQrCountdown("EXPIRED");
           if (timer) clearInterval(timer);
+
+          // Clear states immediately for instant UI response
+          setGeneratedQrToken(null);
+          setQrExpiresAt(null);
+          setIsQrFullScreen(false);
+
+          handleStopQrAttendance(true); // Call stop API in background
           return;
         }
 
@@ -316,13 +323,18 @@ const AttendanceSheet = () => {
     }
   };
 
-  const handleStopQrAttendance = async () => {
+  const handleStopQrAttendance = async (isAuto = false) => {
     try {
-      // Clear rotation interval
+      // 1. Clear intervals immediately
       if (qrRefreshInterval.current) {
         clearInterval(qrRefreshInterval.current);
         qrRefreshInterval.current = null;
       }
+
+      // 2. Optimistic UI reset if requested or manually stopped
+      setGeneratedQrToken(null);
+      setQrExpiresAt(null);
+      setIsQrFullScreen(false);
 
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v2",
@@ -334,15 +346,12 @@ const AttendanceSheet = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      if (res.data.success) {
-        setGeneratedQrToken(null);
-        setQrExpiresAt(null);
-        setIsQrFullScreen(false);
+      if (res.data.success && !isAuto) {
         toast.success(res.data.message);
       }
     } catch (error) {
       console.error("Error stopping QR attendance:", error);
-      toast.error("Failed to stop QR attendance");
+      if (!isAuto) toast.error("Failed to stop QR attendance on server");
     }
   };
 
@@ -813,12 +822,14 @@ const AttendanceSheet = () => {
           </div>
 
           <div className="flex-1 flex flex-col sm:flex-row items-center justify-center w-full px-6 gap-8 overflow-hidden min-h-0">
-            {/* Left Side: Instructions */}
+            {/* Left Side: Rotated Message */}
 
 
-            {/* Center/Right: Massive QR Code */}
-            <div className="flex-1 flex items-center justify-center min-h-0 w-full">
-              <div className="bg-white p-2 rounded-[2rem] sm:rounded-[4rem] shadow-2xl border-[10px] sm:border-[20px] border-indigo-600 dark:border-indigo-400 flex items-center justify-center h-full max-h-[85vh] aspect-square transform transition-transform duration-500 hover:scale-[1.01]">
+            {/* Center: Massive QR Code */}
+            <div className="flex-1 flex items-center justify-center min-h-0 w-full relative">
+
+
+              <div className="bg-white p-[3px] rounded-[1.5rem] sm:rounded-[3rem] shadow-2xl border-[6px] sm:border-[12px] border-indigo-600 dark:border-indigo-400 flex items-center justify-center h-fit max-h-[85vh] aspect-square transform transition-transform duration-500 hover:scale-[1.01] relative z-10">
                 <QRCodeSVG
                   value={generatedQrToken}
                   className="w-full h-full"
@@ -827,6 +838,8 @@ const AttendanceSheet = () => {
                   includeMargin={false}
                 />
               </div>
+
+
             </div>
           </div>
 
