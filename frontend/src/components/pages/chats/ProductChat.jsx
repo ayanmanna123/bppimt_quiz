@@ -169,8 +169,17 @@ const ProductChat = ({
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-hidden relative bg-[url('https://web.whatsapp.com/img/bg-chat-tile-dark_a4be512e7195b6b733d9110b408f9640.png')] bg-repeat bg-opacity-5 dark:bg-opacity-10 transition-colors">
-                <div className="absolute inset-0 bg-slate-100/90 dark:bg-slate-950/90 backdrop-blur-[1px] transition-colors"></div>
+            <div
+                className={`flex-1 overflow-hidden relative transition-colors ${!user?.chatBackground ? "bg-[url('https://web.whatsapp.com/img/bg-chat-tile-dark_a4be512e7195b6b733d9110b408f9640.png')] bg-repeat bg-opacity-5 dark:bg-opacity-10" : ""}`}
+                style={user?.chatBackground ? {
+                    backgroundImage: `url(${user.chatBackground})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                } : {}}
+            >
+                <div className={`absolute inset-0 transition-colors ${user?.chatBackground ? "bg-black/10 dark:bg-black/20" : "bg-slate-100/90 dark:bg-slate-950/90 backdrop-blur-[1px]"}`}></div>
+
 
                 <div className="relative h-full flex flex-col">
                     <ScrollArea className="h-full p-4">

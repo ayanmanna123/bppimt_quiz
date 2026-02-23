@@ -748,7 +748,15 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                 )}
 
                 {/* Messages Area */}
-                <div className="flex-1 overflow-hidden bg-slate-50 dark:bg-slate-950 relative flex flex-col transition-colors">
+                <div
+                    className="flex-1 overflow-hidden bg-slate-50 dark:bg-slate-950 relative flex flex-col transition-colors"
+                    style={usere?.chatBackground ? {
+                        backgroundImage: `url(${usere.chatBackground})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                    } : {}}
+                >
                     <div
                         className="flex-1 p-4 overflow-y-auto"
                         onScroll={handleScroll}

@@ -11,12 +11,12 @@ import {
   searchUsers,
   getPublicProfile,
 } from "../controllers/auth.controller.js";
-import { singleUpload } from "../middlewares/multer.js";
+import { singleUpload, multiUpload } from "../middlewares/multer.js";
 
 const userrouter = express.Router();
 
 userrouter.post("/createuser", isAuthenticated, creatuser);
-userrouter.put("/updateuser", isAuthenticated, singleUpload, updatesem);
+userrouter.put("/updateuser", isAuthenticated, multiUpload, updatesem);
 
 userrouter.get("/:email", isAuthenticated, getUserByEmail);
 userrouter.get("/teacher/all", getallteacher);

@@ -517,7 +517,15 @@ const StoreChat = () => {
                         )}
 
                         {/* Messages List */}
-                        <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50 dark:bg-slate-950/50 transition-colors">
+                        <div
+                            className="flex-1 overflow-y-auto p-6 bg-slate-50/50 dark:bg-slate-950/50 transition-colors"
+                            style={user?.chatBackground ? {
+                                backgroundImage: `url(${user.chatBackground})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                backgroundRepeat: 'no-repeat'
+                            } : {}}
+                        >
                             {loadingMessages ? (
                                 <div className="h-full flex items-center justify-center">
                                     <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
