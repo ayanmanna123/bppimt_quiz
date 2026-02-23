@@ -60,7 +60,8 @@ const AllChats = () => {
         handleMuteChat,
         handleUnmuteChat,
         handleSelectChat,
-        handleSendMessage
+        handleSendMessage,
+        handleReaction
     } = useAllChats();
 
     const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
@@ -173,6 +174,7 @@ const AllChats = () => {
                         onTyping={handleTyping}
                         onUpdateMessage={handleUpdateMessage}
                         onDeleteMessage={handleDeleteMessage}
+                        onReact={handleReaction}
                         onClose={handleClose}
                         messagesEndRef={messagesEndRef}
                     />

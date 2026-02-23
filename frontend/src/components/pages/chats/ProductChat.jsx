@@ -23,6 +23,7 @@ const ProductChat = ({
     onTyping,
     onUpdateMessage,
     onDeleteMessage,
+    onReact,
     onClose,
     messagesEndRef
 }) => {
@@ -105,6 +106,7 @@ const ProductChat = ({
                                             showAvatar={showAvatar}
                                             showSenderName={false}
                                             onReply={() => setReplyTo(msg)}
+                                            onReact={(emoji) => onReact(msg._id, emoji)}
                                             onEdit={(msg) => setEditingMessage(msg)}
                                             onDelete={(id) => onDeleteMessage(id)}
                                         />

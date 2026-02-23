@@ -287,27 +287,30 @@ export const addReaction = async (messageId, userId, emoji) => {
         const chat = await Chat.findById(messageId);
         if (!chat) return null;
 
-        // Check if user already reacted with this emoji
-        const existingReaction = chat.reactions.find(r => r.user.toString() === userId && r.emoji === emoji);
-        if (existingReaction) return chat;
+        // Check if user already reacted with this emoji (toggle logic)
+        const existingReactionIndex = chat.reactions.findIndex(
+            (r) => r.user.toString() === userId && r.emoji === emoji
+        );
 
-        // Remove any other reaction by this user if you want single reaction restriction, 
-        // OR let them have multiple. Let's filter out previous reaction by same user to limit to 1 per user for now, or just push.
-        // Let's allow one reaction per user for simplicity (like Slack main reaction, or replace it)
-        // Actually, usually users can react with multiple DIFFERENT emojis.
-        // But if they react with SAME emoji, it's a toggle.
-
-        // Remove existing reaction if it matches (toggle behavior handled in frontend usually, but here we just add)
-        // If we want to replace the user's reaction completely (single reaction per user):
-        // chat.reactions = chat.reactions.filter(r => r.user.toString() !== userId);
-
-        // If we want to allow multiple emojis but not duplicates:
-        if (!chat.reactions.some(r => r.user.toString() === userId && r.emoji === emoji)) {
+        if (existingReactionIndex > -1) {
+            // Remove reaction if it exists (toggle off)
+            chat.reactions.splice(existingReactionIndex, 1);
+        } else {
+            // Add reaction (toggle on)
             chat.reactions.push({ user: userId, emoji });
         }
 
         await chat.save();
-        return await chat.populate("reactions.user", "fullname picture");
+        return await chat.populate([
+            { path: "sender", select: "fullname picture role auth0Id" },
+            { path: "reactions.user", select: "fullname picture" },
+            { path: "mentions", select: "fullname _id" },
+            {
+                path: "replyTo",
+                select: "sender message attachments isEncrypted",
+                populate: { path: "sender", select: "fullname auth0Id" }
+            }
+        ]);
     } catch (error) {
         console.error("Error adding reaction:", error);
         return null;
@@ -467,7 +470,22 @@ export const togglePinMessage = async (req, res) => {
         chat.isPinned = !chat.isPinned;
         await chat.save();
 
-        const populatedChat = await chat.populate("sender", "fullname picture role");
+        const populatedChat = await chat.populate([
+            { path: "sender", select: "fullname picture role auth0Id" },
+            { path: "reactions.user", select: "fullname picture" },
+            { path: "mentions", select: "fullname _id" },
+            {
+                path: "replyTo",
+                select: "sender message attachments isEncrypted",
+                populate: { path: "sender", select: "fullname auth0Id" }
+            }
+        ]);
+
+        // Notify clients via Socket
+        const io = req.app.get("io");
+        if (io) {
+            io.to(chat.subjectId || chat.conversationId || "global").emit("messageUpdated", populatedChat);
+        }
 
         res.status(200).json(populatedChat);
     } catch (error) {

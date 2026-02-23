@@ -272,28 +272,60 @@ const StoreChat = () => {
     }, [currentSearchIndex]);
 
     const handleReaction = async (msgId, emoji) => {
+        // Optimistic update
+        const targetMsg = messages.find(m => m._id === msgId);
+        if (targetMsg && user) {
+            const existingReactionIndex = targetMsg.reactions?.findIndex(
+                r => (r.user?._id || r.user) === user._id && r.emoji === emoji
+            );
+
+            let updatedReactions = [...(targetMsg.reactions || [])];
+            if (existingReactionIndex > -1) {
+                updatedReactions.splice(existingReactionIndex, 1);
+            } else {
+                updatedReactions.push({ user: user._id, emoji });
+            }
+
+            setMessages(prev => prev.map(msg =>
+                msg._id === msgId ? { ...msg, reactions: updatedReactions } : msg
+            ));
+        }
+
         try {
             const token = await getAccessTokenSilently();
-            // Toggle logic: Check if I already reacted with this emoji
-            const msg = messages.find(m => m._id === msgId);
-            const hasReacted = msg?.reactions?.some(r => r.user?._id === user._id && r.emoji === emoji) ||
-                msg?.reactions?.some(r => r.user === user._id && r.emoji === emoji); // Handle populated/unpopulated
-
-            if (hasReacted) {
-                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/store/message/unreact/${msgId}`, { emoji }, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-            } else {
-                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/store/message/react/${msgId}`, { emoji }, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-            }
+            await axios.put(`${import.meta.env.VITE_BACKEND_URL}/store/message/react/${msgId}`, { emoji }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
         } catch (e) {
-            console.error(e);
+            console.error("Failed to react:", e);
+            // Re-fetch to sync if failed
+            if (activeConversation) {
+                handleSelectConversation(activeConversation._id);
+            }
         }
     };
 
     const handlePin = async (msgId) => {
+        // Optimistic update
+        const targetMsg = messages.find(m => m._id === msgId);
+        if (targetMsg) {
+            const updatedIsPinned = !targetMsg.isPinned;
+
+            // Update messages list
+            setMessages(prev => prev.map(msg => msg._id === msgId ? { ...msg, isPinned: updatedIsPinned } : msg));
+
+            // Update pinned messages section
+            if (updatedIsPinned) {
+                setPinnedMessages(prev => {
+                    const exists = prev.find(p => p._id === msgId);
+                    if (exists) return prev;
+                    return [{ ...targetMsg, isPinned: true }, ...prev];
+                });
+            } else {
+                setPinnedMessages(prev => prev.filter(p => p._id !== msgId));
+            }
+        }
+
         try {
             const token = await getAccessTokenSilently();
             await axios.put(`${import.meta.env.VITE_BACKEND_URL}/store/message/pin/${msgId}`, {}, {
@@ -301,6 +333,10 @@ const StoreChat = () => {
             });
         } catch (e) {
             console.error(e);
+            // Re-fetch to sync if failed
+            if (activeConversation) {
+                handleSelectConversation(activeConversation._id);
+            }
         }
     };
 

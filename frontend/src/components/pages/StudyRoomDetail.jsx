@@ -87,8 +87,27 @@ const StudyRoomDetail = () => {
             }
         };
 
+        const handleMessageUpdated = (updatedMsg) => {
+            if (updatedMsg.subjectId === roomId) {
+                setMessages(prev => prev.map(m => m._id === updatedMsg._id ? updatedMsg : m));
+            }
+        };
+
+        const handleMessageDeleted = ({ messageId, subjectId }) => {
+            if (subjectId === roomId) {
+                setMessages(prev => prev.filter(m => m._id !== messageId));
+            }
+        };
+
         socket.on("receiveMessage", handleReceiveMessage);
-        return () => socket.off("receiveMessage", handleReceiveMessage);
+        socket.on("messageUpdated", handleMessageUpdated);
+        socket.on("messageDeleted", handleMessageDeleted);
+
+        return () => {
+            socket.off("receiveMessage", handleReceiveMessage);
+            socket.off("messageUpdated", handleMessageUpdated);
+            socket.off("messageDeleted", handleMessageDeleted);
+        };
     }, [socket, roomId]);
 
     // Initial scroll to bottom
@@ -99,6 +118,39 @@ const StudyRoomDetail = () => {
             }, 200);
         }
     }, [loading]);
+
+    const handleReaction = async (messageId, emoji) => {
+        // Optimistic update
+        const targetMsg = messages.find(m => m._id === messageId);
+        if (targetMsg) {
+            const existingReactionIndex = targetMsg.reactions?.findIndex(
+                r => (r.user?._id || r.user) === usere._id && r.emoji === emoji
+            );
+
+            let updatedReactions = [...(targetMsg.reactions || [])];
+            if (existingReactionIndex > -1) {
+                updatedReactions.splice(existingReactionIndex, 1);
+            } else {
+                updatedReactions.push({ user: usere._id, emoji });
+            }
+
+            setMessages(prev => prev.map(msg =>
+                msg._id === messageId ? { ...msg, reactions: updatedReactions } : msg
+            ));
+        }
+
+        try {
+            const token = await getAccessTokenSilently();
+            await axios.put(`${import.meta.env.VITE_BACKEND_URL}/chat/react/${messageId}`,
+                { emoji, userId: usere._id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+        } catch (error) {
+            console.error("Failed to react", error);
+            // Re-sync on failure
+            fetchRoomData();
+        }
+    };
 
     // Scroll to bottom on new messages
     useEffect(() => {
@@ -372,6 +424,11 @@ const StudyRoomDetail = () => {
                                             isMe={isMe}
                                             showAvatar={showAvatar}
                                             showSenderName={showAvatar}
+                                            onReact={(emoji) => handleReaction(msg._id, emoji)}
+                                            onReply={() => {
+                                                // If we decide to add reply support later
+                                                toast.info("Reply feature coming soon to Study Rooms");
+                                            }}
                                         />
                                     );
                                 })}

@@ -383,11 +383,27 @@ const useAllChats = () => {
             }
         };
 
+        const handleStoreMessageUpdated = (updatedMsg) => {
+            const conversationId = updatedMsg.conversationId;
+            if (activeChatId === conversationId) {
+                const normalized = { ...updatedMsg, message: updatedMsg.content, isStore: true };
+                setMessages(prev => prev.map(m => m._id === updatedMsg._id ? normalized : m));
+            }
+        };
+
+        const handleStoreMessageDeleted = ({ messageId, conversationId }) => {
+            if (activeChatId === conversationId) {
+                setMessages(prev => prev.filter(m => m._id !== messageId));
+            }
+        };
+
         socket.on("receiveMessage", handleReceiveMessage);
         socket.on("newStoreMessage", handleStoreMessage);
         socket.on("typingUpdate", handleTypingUpdate);
         socket.on("messageUpdated", handleMessageUpdated);
         socket.on("messageDeleted", handleMessageDeleted);
+        socket.on("storeMessageUpdated", handleStoreMessageUpdated);
+        socket.on("storeMessageDeleted", handleStoreMessageDeleted);
         socket.on("updatePresence", handleUpdatePresence);
         socket.on("messagesRead", handleMessagesRead);
 
@@ -397,6 +413,8 @@ const useAllChats = () => {
             socket.off("typingUpdate", handleTypingUpdate);
             socket.off("messageUpdated", handleMessageUpdated);
             socket.off("messageDeleted", handleMessageDeleted);
+            socket.off("storeMessageUpdated", handleStoreMessageUpdated);
+            socket.off("storeMessageDeleted", handleStoreMessageDeleted);
             socket.off("updatePresence", handleUpdatePresence);
             socket.off("messagesRead", handleMessagesRead);
         };
@@ -557,6 +575,47 @@ const useAllChats = () => {
         }
     };
 
+    const handleReaction = async (msgId, emoji) => {
+        if (!selectedChat) return;
+
+        // Optimistic update
+        const targetMsg = messages.find(m => m._id === msgId);
+        if (targetMsg && user) {
+            const userIdStr = user._id;
+            const existingReactionIndex = targetMsg.reactions?.findIndex(
+                r => (r.user?._id || r.user) === userIdStr && r.emoji === emoji
+            );
+
+            let updatedReactions = [...(targetMsg.reactions || [])];
+            if (existingReactionIndex > -1) {
+                updatedReactions.splice(existingReactionIndex, 1);
+            } else {
+                updatedReactions.push({ user: user._id, emoji });
+            }
+
+            setMessages(prev => prev.map(msg =>
+                msg._id === msgId ? { ...msg, reactions: updatedReactions } : msg
+            ));
+        }
+
+        try {
+            const token = await getAccessTokenSilently();
+            if (selectedChat.type === 'store') {
+                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/store/message/react/${msgId}`, { emoji }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            } else {
+                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/chat/react/${msgId}`, { emoji, userId: user._id }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            }
+        } catch (error) {
+            console.error("Failed to react", error);
+            // Re-fetch to sync if failed
+            handleSelectChat(selectedChat);
+        }
+    };
+
     return {
         chats,
         loading,
@@ -583,7 +642,8 @@ const useAllChats = () => {
         handleUpdateMessage,
         handleDeleteMessage,
         handleMuteChat,
-        handleUnmuteChat
+        handleUnmuteChat,
+        handleReaction
     };
 };
 
