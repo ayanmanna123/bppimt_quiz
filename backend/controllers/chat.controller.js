@@ -183,64 +183,9 @@ export const saveMessage = async (subjectId, senderId, messageContent, mentions 
             }
         }
 
-        return returnedMessage;
-        try {
-            const senderName = populatedMessage.sender.fullname;
-            const notificationTitle = `New Message from ${senderName}`;
-            const notificationBody = type === 'dm'
-                ? "Sent you an encrypted message"
-                : (messageContent.length > 50
-                    ? messageContent.substring(0, 50) + "..."
-                    : messageContent);
-
-            let url = subjectId === 'global' ? '/community-chat' : `/dashboard/subject/${subjectId}`;
-            if (type === 'dm') {
-                url = `/chat/dm/${subjectId}`;
-            } else if (type === 'study-room') {
-                url = `/study-room/${subjectId}`;
-            }
-
-            // Create persistent notification in DB (also handles real-time socket and web push)
-            // We need to find recipients. For group chat, it's everyone else.
-            // But usually we only notify if mentioned or for all? 
-            // The user says "i see 6 unread message in chat but not in notification tab".
-            // So they expect chat messages to show up there.
-
-            // For now, let's notify the room (or specific mentions if we want to be less noisy).
-            // Looking at previous logic, it sent push to EVERYONE except sender.
-            let recipientQuery = { _id: { $ne: senderId } };
-
-            // [MUTE CHECK] Filter out users who have muted this chat
-            const otherUsers = await User.find({
-                ...recipientQuery,
-                mutedChats: {
-                    $not: {
-                        $elemMatch: {
-                            chatId: subjectId,
-                            until: { $gt: new Date() }
-                        }
-                    }
-                }
-            }, "_id");
-
-            for (const user of otherUsers) {
-                await sendNotification({
-                    recipientId: user._id,
-                    senderId: senderId,
-                    message: `${senderName}: ${notificationBody}`,
-                    type: "chat",
-                    relatedId: newMessage._id,
-                    onModel: "Chat",
-                    url,
-                    io
-                });
-            }
-        } catch (notifyError) {
-            console.error("Error sending notifications:", notifyError);
-        }
         // -------------------------------
 
-        return populatedMessage;
+        return returnedMessage;
     } catch (error) {
         console.error("Error saving message:", error);
         return null;
