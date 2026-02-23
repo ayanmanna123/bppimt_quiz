@@ -47,6 +47,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useSocket } from "../../context/SocketContext";
 import FaceCaptureModal from "../shared/FaceCaptureModal";
+import QrScannerModal from "../shared/QrScannerModal";
 // Student-focused gradient combinations
 const studentGradients = [
   "bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600",
@@ -121,6 +122,7 @@ const Quiz = () => {
   const [targetSubjectId, setTargetSubjectId] = useState(null);
   const [otpInput, setOtpInput] = useState("");
   const [activeChatSubject, setActiveChatSubject] = useState(null);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
   // Favorites Logic (LocalStorage)
   const [favorites, setFavorites] = useState(() => {
@@ -351,6 +353,18 @@ const Quiz = () => {
         audience: "http://localhost:5000/api/v2",
       });
 
+      // 0. Check if there is an active QR code
+      const qrRes = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/attandance/check-qr-status/${subId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (qrRes.data.success && qrRes.data.hasActiveQr) {
+        setTargetSubjectId(subId);
+        setIsQrModalOpen(true);
+        return;
+      }
+
       // 1. Check if there is an active OTP
       const res = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/attandance/check-otp-status/${subId}`,
@@ -371,6 +385,50 @@ const Quiz = () => {
       console.error("Error checking attendance mode:", error);
       toast.error("Failed to check attendance mode");
     }
+  };
+
+  const handleQrScanSuccess = (scannedToken) => {
+    setIsQrModalOpen(false);
+    toast.info("QR Scanned! Fetching your location for verification...");
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const token = await getAccessTokenSilently({
+            audience: "http://localhost:5000/api/v2",
+          });
+
+          const res = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/attandance/give-attandance-qr`,
+            {
+              subjectid: targetSubjectId,
+              token: scannedToken,
+              latitude,
+              longitude,
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+          if (res.data.success) {
+            toast.success(res.data.message);
+            const { Howl } = await import("howler");
+            const sound = new Howl({
+              src: ["/notification.wav"],
+              volume: 0.7,
+            });
+            sound.play();
+          }
+        } catch (error) {
+          const msg = error?.response?.data?.message || "QR attendance failed";
+          toast.error(msg);
+        }
+      },
+      (error) => {
+        console.error("Location error:", error);
+        toast.error("Unable to retrieve location. GPS is required for QR attendance.");
+      }
+    );
   };
 
   const handleNormalAttendance = (subId, faceDescriptor = null) => {
@@ -798,6 +856,11 @@ const Quiz = () => {
           handleNormalAttendance(currentAttendanceSubId, descriptor);
         }}
         title="Verify Your Face"
+      />
+      <QrScannerModal
+        isOpen={isQrModalOpen}
+        onClose={() => setIsQrModalOpen(false)}
+        onScanSuccess={handleQrScanSuccess}
       />
     </>
   );

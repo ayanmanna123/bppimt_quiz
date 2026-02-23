@@ -42,6 +42,14 @@ const classroomSchema = new mongoose.Schema({
   currentOtp: { type: String, default: null },
   otpExpiresAt: { type: Date, default: null },
   otpTargetDate: { type: Date, default: null },
+  activeQrTokens: [
+    {
+      token: { type: String, required: true },
+      createdAt: { type: Date, default: Date.now },
+    },
+  ],
+  qrCodeExpiresAt: { type: Date, default: null },
+  qrCodeTargetDate: { type: Date, default: null },
   isAttendanceEnabled: { type: Boolean, default: false },
   timeSlots: [
     {
