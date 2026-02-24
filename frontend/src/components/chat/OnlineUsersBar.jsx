@@ -9,7 +9,7 @@ const OnlineUsersBar = ({ users }) => {
     if (!users || users.length === 0) return null;
 
     return (
-        <div className="bg-indigo-700/30 dark:bg-indigo-900/40 backdrop-blur-md border-b border-white/10 py-2.5 px-4 shrink-0 transition-colors">
+        <div className="bg-indigo-700/30 dark:bg-indigo-900/40 backdrop-blur-md border-b border-white/10 py-1.5 px-4 shrink-0 transition-colors">
             <div className="flex items-center gap-3">
                 <span className="text-[10px] font-bold text-indigo-200 dark:text-indigo-300 uppercase tracking-widest shrink-0">
                     Online Now

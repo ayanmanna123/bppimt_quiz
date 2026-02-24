@@ -549,7 +549,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
         <div className={containerClass}>
             <div className="w-full h-full flex flex-col overflow-hidden">
                 {/* Header */}
-                <div className={`${type === 'dm' ? 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100' : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'} p-4 flex items-center justify-between shrink-0 relative transition-colors`}>
+                <div className={`${type === 'dm' ? 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100' : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'} py-2.5 px-4 flex items-center justify-between shrink-0 relative transition-colors`}>
                     {!showSearch ? (
                         <>
                             <div className="flex items-center gap-3 overflow-hidden flex-1">
@@ -727,14 +727,14 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                 </div>
 
 
-                {/* Pinned Messages Banner */}
+                {/* Pinned Messages Banner (Merged) */}
                 {pinnedMessages.length > 0 && (
-                    <div className="bg-indigo-50 dark:bg-indigo-900/20 border-b border-indigo-100 dark:border-indigo-900/50 p-2 flex items-center justify-between shrink-0 transition-colors">
+                    <div className={`${type === 'dm' ? 'bg-slate-50 dark:bg-slate-800/50' : 'bg-white/10 backdrop-blur-sm border-t border-white/10'} py-1.5 px-4 flex items-center justify-between shrink-0 transition-colors`}>
                         <div className="flex items-center gap-2 overflow-hidden flex-1">
-                            <Pin className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0 fill-current" />
-                            <div className="flex flex-col">
-                                <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Pinned Message</span>
-                                <p className="text-[11px] text-indigo-900 dark:text-indigo-200 truncate font-medium">
+                            <Pin className={`w-3.5 h-3.5 ${type === 'dm' ? 'text-indigo-600' : 'text-white/80'} shrink-0 fill-current`} />
+                            <div className="flex items-center gap-2 overflow-hidden">
+                                <span className={`text-[9px] font-bold ${type === 'dm' ? 'text-indigo-600' : 'text-white/90'} uppercase tracking-wider shrink-0`}>Pin:</span>
+                                <p className={`text-[11px] ${type === 'dm' ? 'text-slate-700' : 'text-white'} truncate font-medium`}>
                                     {pinnedMessages[0].message}
                                 </p>
                             </div>

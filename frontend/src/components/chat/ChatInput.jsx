@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import EmojiPicker from "emoji-picker-react";
-import { Send, Paperclip, Smile, X, Loader2, Mic, Square } from "lucide-react";
+import { Send, Paperclip, Smile, X, Loader2, Mic, Square, MoreHorizontal, AudioLines } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Popover,
@@ -333,7 +333,7 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
     };
 
     return (
-        <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 relative">
+        <div className="p-2 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 relative">
             {/* Mention Popover */}
             {showMentions && mentionUsers.length > 0 && (
                 <div className="absolute bottom-full left-4 mb-2 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 w-64 max-h-48 overflow-y-auto z-50">
@@ -395,102 +395,100 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
                 </div>
             )}
 
-            <div className="flex items-end gap-2">
-                {/* File Button */}
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                />
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploading || !!editingMessage}
-                >
-                    <Paperclip className="w-5 h-5" />
-                </Button>
+            <div className="flex items-end gap-1 md:gap-2">
+                {/* Action Menu (Unified Desktop & Mobile) */}
+                <div className="flex items-center">
 
-                {/* Mic Button */}
-                {!message.trim() && !attachment && !editingMessage && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={`${isRecording ? "text-red-500 animate-pulse bg-red-50 dark:bg-red-900/20" : "text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
-                        onClick={isRecording ? stopRecording : startRecording}
-                        disabled={uploading}
-                    >
-                        {isRecording ? <Square className="w-5 h-5 fill-current" /> : <Mic className="w-5 h-5" />}
-                    </Button>
-                )}
+                    {/* Action Menu (Unified) */}
+                    <div className="flex items-center">
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="ghost" size="icon" className="text-slate-400 dark:text-slate-500 hover:text-indigo-600 focus-visible:ring-0">
+                                    <MoreHorizontal className="w-6 h-6" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent side="top" align="start" className="w-56 p-2 bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 shadow-xl rounded-2xl overflow-hidden mb-2">
+                                <div className="grid grid-cols-4 gap-1">
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={handleFileSelect}
+                                    />
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="text-slate-400 dark:text-slate-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={uploading || !!editingMessage}
+                                    >
+                                        <Paperclip className="w-5 h-5" />
+                                    </Button>
 
+                                    {!message.trim() && !attachment && !editingMessage && (
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className={`${isRecording ? "text-red-500 animate-pulse bg-red-50 dark:bg-red-900/20" : "text-slate-400 dark:text-slate-500 hover:bg-red-50 dark:hover:bg-red-900/20"}`}
+                                            onClick={isRecording ? stopRecording : startRecording}
+                                            disabled={uploading}
+                                        >
+                                            {isRecording ? <Square className="w-5 h-5 fill-current" /> : <Mic className="w-5 h-5" />}
+                                        </Button>
+                                    )}
 
-                {/* AI Enhancement Popover */}
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className={`text-slate-400 dark:text-slate-500 hover:text-indigo-500 transition-all ${isEnhancing ? 'animate-spin' : ''}`}
-                            disabled={!message.trim() || isEnhancing}
-                        >
-                            <Send className="w-5 h-5 rotate-[-45deg] blur-[0.5px] opacity-70" style={{ filter: 'drop-shadow(0 0 2px #6366f1)' }} />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent side="top" align="center" className="w-48 p-1 bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 shadow-xl rounded-xl overflow-hidden">
-                        <div className="p-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-50 dark:border-slate-700 mb-1">
-                            AI Enhancement
-                        </div>
-                        <button
-                            onClick={() => enhanceText('grammar')}
-                            className="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-slate-700 dark:text-slate-200 rounded-lg transition-colors flex items-center gap-2"
-                        >
-                            <span>✨</span> Fix Grammar
-                        </button>
-                        <button
-                            onClick={() => enhanceText('vocab')}
-                            className="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-slate-700 dark:text-slate-200 rounded-lg transition-colors flex items-center gap-2"
-                        >
-                            <span>📚</span> Better Vocab
-                        </button>
-                        <button
-                            onClick={() => enhanceText('translate')}
-                            className="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-slate-700 dark:text-slate-200 rounded-lg transition-colors flex items-center gap-2"
-                        >
-                            <span>🌍</span> Translate to EN
-                        </button>
-                    </PopoverContent>
-                </Popover>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className={`${isListening ? "text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20" : "text-slate-400 dark:text-slate-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"}`}
+                                        onClick={toggleListening}
+                                        title="Voice Typing"
+                                    >
+                                        <AudioLines className="w-5 h-5" />
+                                    </Button>
 
-                {/* Voice Typing Button */}
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`${isListening ? "text-indigo-600 bg-indigo-50 animate-pulse dark:bg-indigo-900/30" : "text-slate-400 dark:text-slate-500 hover:text-indigo-600"}`}
-                    onClick={toggleListening}
-                    title="Voice Typing"
-                >
-                    <Mic className="w-5 h-5" />
-                </Button>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="text-slate-400 dark:text-slate-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20">
+                                                <Smile className="w-5 h-5" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent side="top" align="center" className="w-auto p-0 border-none shadow-none z-[60]">
+                                            <EmojiPicker
+                                                onEmojiClick={(e) => setMessage((prev) => prev + e.emoji)}
+                                                width={280}
+                                                height={350}
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
 
-                {/* Emoji Picker */}
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-slate-400 dark:text-slate-500 hover:text-yellow-500">
-                            <Smile className="w-5 h-5" />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent side="top" align="start" className="w-auto p-0 border-none shadow-none">
-                        <EmojiPicker
-                            onEmojiClick={(e) => setMessage((prev) => prev + e.emoji)}
-                            width={300}
-                            height={400}
-                        />
-                    </PopoverContent>
-                </Popover>
+                                <div className="mt-2 border-t border-slate-50 dark:border-slate-700 pt-2 px-1">
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-2">AI Tools</p>
+                                    <div className="flex flex-col gap-1">
+                                        <button
+                                            onClick={() => enhanceText('grammar')}
+                                            disabled={!message.trim() || isEnhancing}
+                                            className="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-slate-700 dark:text-slate-200 rounded-lg transition-colors flex items-center justify-between disabled:opacity-50"
+                                        >
+                                            <span className="flex items-center gap-2"><span>✨</span> Grammar</span>
+                                            {isEnhancing && <Loader2 className="w-3 h-3 animate-spin" />}
+                                        </button>
+                                        <button
+                                            onClick={() => enhanceText('vocab')}
+                                            disabled={!message.trim() || isEnhancing}
+                                            className="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-slate-700 dark:text-slate-200 rounded-lg transition-colors flex items-center justify-between disabled:opacity-50"
+                                        >
+                                            <span className="flex items-center gap-2"><span>📚</span> Vocab</span>
+                                            {isEnhancing && <Loader2 className="w-3 h-3 animate-spin" />}
+                                        </button>
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                </div>
 
                 {/* Text Area or Recording UI */}
                 <div className="flex-1 relative">
@@ -506,9 +504,9 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
                             onChange={handleChange}
                             onKeyDown={handleKeyDown}
                             placeholder={editingMessage ? "Edit message..." : "Type a message..."}
-                            className="w-full bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 transition-all resize-none min-h-[48px] max-h-32"
+                            className="w-full bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 transition-all resize-none min-h-[40px] max-h-32"
                             rows={1}
-                            style={{ height: "auto", minHeight: "48px" }}
+                            style={{ height: "auto", minHeight: "40px" }}
                         />
                     )}
                 </div>
@@ -517,7 +515,7 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
                 <Button
                     onClick={handleSend}
                     disabled={(!message.trim() && !attachment) || uploading}
-                    className={`h-12 w-12 rounded-xl text-white shadow-lg disabled:opacity-50 disabled:shadow-none transition-all p-0 flex items-center justify-center shrink-0 ${editingMessage ? "bg-yellow-500 hover:bg-yellow-600" : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:hue-rotate-15"}`}
+                    className={`h-10 w-10 rounded-xl text-white shadow-lg disabled:opacity-50 disabled:shadow-none transition-all p-0 flex items-center justify-center shrink-0 ${editingMessage ? "bg-yellow-500 hover:bg-yellow-600" : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:hue-rotate-15"}`}
                 >
                     {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : editingMessage ? <span className="text-xs font-bold">Save</span> : <Send className="w-5 h-5 fill-current" />}
                 </Button>

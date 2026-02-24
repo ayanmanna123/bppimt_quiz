@@ -448,7 +448,7 @@ const GlobalChat = () => {
         <div className="flex flex-col h-[calc(100vh-64px)] w-full bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
             <div className="bg-white dark:bg-slate-950 w-full h-full flex flex-col overflow-hidden border-t border-slate-200 dark:border-slate-800">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex items-center justify-between text-white shrink-0 relative">
+                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 py-2.5 px-4 flex items-center justify-between text-white shrink-0 relative">
                     {!showSearch ? (
                         <>
                             <div className="flex items-center gap-3">
@@ -557,28 +557,29 @@ const GlobalChat = () => {
                     )}
                 </div>
 
-                {/* Online Users Bar */}
-                <OnlineUsersBar users={onlineUsers} />
-
-                {/* Pinned Messages Banner */}
+                {/* Pinned Messages Banner (Merged into Header area) */}
                 {pinnedMessages.length > 0 && (
-                    <div className="bg-indigo-50 dark:bg-indigo-900/20 border-b border-indigo-100 dark:border-indigo-900/30 p-2 flex items-center justify-between shrink-0">
+                    <div className="bg-gradient-to-r from-indigo-600/90 to-purple-600/90 backdrop-blur-sm border-t border-white/10 py-1.5 px-4 flex items-center justify-between shrink-0">
                         <div className="flex items-center gap-2 overflow-hidden flex-1">
-                            <Pin className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0 fill-current" />
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Pinned Message</span>
-                                <p className="text-xs text-indigo-900 dark:text-indigo-200 truncate font-medium">
+                            <Pin className="w-3.5 h-3.5 text-white/80 shrink-0 fill-current" />
+                            <div className="flex items-center gap-2 overflow-hidden">
+                                <span className="text-[9px] font-bold text-white/90 uppercase tracking-wider shrink-0">Pin:</span>
+                                <p className="text-[11px] text-white truncate font-medium">
                                     {pinnedMessages[0].message}
                                 </p>
                             </div>
                         </div>
                         {pinnedMessages.length > 1 && (
-                            <span className="text-[10px] bg-indigo-200 dark:bg-indigo-800 text-indigo-700 dark:text-indigo-200 px-1.5 py-0.5 rounded-full ml-2">
+                            <span className="text-[9px] bg-white/20 text-white px-1.5 py-0.5 rounded-full ml-2">
                                 +{pinnedMessages.length - 1}
                             </span>
                         )}
                     </div>
                 )}
+
+                {/* Online Users Bar */}
+                <OnlineUsersBar users={onlineUsers} />
+
 
                 {/* Messages Area */}
                 <div className="flex-1 overflow-hidden bg-slate-50 dark:bg-slate-950 relative flex flex-col">
