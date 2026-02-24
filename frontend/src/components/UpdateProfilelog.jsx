@@ -32,7 +32,9 @@ const UpdateProfilelog = ({ open, setopen }) => {
   const [semester, setsemester] = useState("");
   const [name, setname] = useState("");
   const [file, setFile] = useState(null);
+  const [bgFile, setBgFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [bgPreview, setBgPreview] = useState(null);
 
   const dispatch = useDispatch();
   const { getAccessTokenSilently } = useAuth0();
@@ -43,6 +45,14 @@ const UpdateProfilelog = ({ open, setopen }) => {
     if (selectedFile) {
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
+    }
+  };
+
+  const handleBgChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setBgFile(selectedFile);
+      setBgPreview(URL.createObjectURL(selectedFile));
     }
   };
 
@@ -58,6 +68,9 @@ const UpdateProfilelog = ({ open, setopen }) => {
       formData.append("sem", semester || usere?.semester);
       if (file) {
         formData.append("file", file);
+      }
+      if (bgFile) {
+        formData.append("chatBackground", bgFile);
       }
 
       const res = await axios.put(
@@ -183,6 +196,27 @@ const UpdateProfilelog = ({ open, setopen }) => {
                   </DropdownMenuRadioGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
+            </div>
+
+            {/* Chat Background Input */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="chat-bg" className="text-right text-slate-700 dark:text-slate-300">
+                Chat BG
+              </Label>
+              <div className="col-span-3 flex items-center gap-3">
+                <Input
+                  id="chat-bg"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleBgChange}
+                  className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white file:text-indigo-600 dark:file:text-indigo-400"
+                />
+                {(bgPreview || usere?.chatBackground) && (
+                  <div className="w-10 h-10 rounded border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0">
+                    <img src={bgPreview || usere.chatBackground} alt="" className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

@@ -244,6 +244,18 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
 
             if (isGlobalMessage || isSubjectMessage || isConversationMessage) {
                 setMessages(prev => prev.map(msg => msg._id === updatedMsg._id ? updatedMsg : msg));
+
+                // Sync pinned messages
+                if (updatedMsg.isPinned) {
+                    setPinnedMessages(prev => {
+                        if (prev.find(p => p._id === updatedMsg._id)) {
+                            return prev.map(p => p._id === updatedMsg._id ? updatedMsg : p);
+                        }
+                        return [updatedMsg, ...prev].slice(0, 5);
+                    });
+                } else {
+                    setPinnedMessages(prev => prev.filter(p => p._id !== updatedMsg._id));
+                }
             }
         };
 
@@ -425,15 +437,54 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
     };
 
     const handleTogglePin = async (messageId) => {
+        // Optimistic update
+        const targetMsg = messages.find(m => m._id === messageId);
+        if (targetMsg) {
+            const updatedIsPinned = !targetMsg.isPinned;
+
+            // Update messages list
+            setMessages(prev => prev.map(msg => msg._id === messageId ? { ...msg, isPinned: updatedIsPinned } : msg));
+
+            // Update pinned messages section
+            if (updatedIsPinned) {
+                setPinnedMessages(prev => {
+                    const exists = prev.find(p => p._id === messageId);
+                    if (exists) return prev;
+                    return [{ ...targetMsg, isPinned: true }, ...prev].slice(0, 5);
+                });
+            } else {
+                setPinnedMessages(prev => prev.filter(p => p._id !== messageId));
+            }
+        }
+
         try {
             const token = await getAccessTokenSilently();
-            await axios.put(
+            const res = await axios.put(
                 `${import.meta.env.VITE_BACKEND_URL}/chat/pin/${messageId}`,
                 { userId: usere._id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
+
+            // Sync with final server state
+            const finalMsg = res.data;
+            setMessages(prev => prev.map(msg => msg._id === messageId ? finalMsg : msg));
+            if (finalMsg.isPinned) {
+                setPinnedMessages(prev => {
+                    if (prev.find(p => p._id === messageId)) {
+                        return prev.map(p => p._id === messageId ? finalMsg : p);
+                    }
+                    return [finalMsg, ...prev].slice(0, 5);
+                });
+            } else {
+                setPinnedMessages(prev => prev.filter(p => p._id !== messageId));
+            }
+
+            socket.emit("messageUpdated", finalMsg);
         } catch (error) {
             console.error("Failed to toggle pin", error);
+            // Rollback on error
+            fetchHistory(1);
+            fetchPinnedMessages();
         }
     };
 
@@ -697,7 +748,15 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                 )}
 
                 {/* Messages Area */}
-                <div className="flex-1 overflow-hidden bg-slate-50 dark:bg-slate-950 relative flex flex-col transition-colors">
+                <div
+                    className="flex-1 overflow-hidden bg-slate-50 dark:bg-slate-950 relative flex flex-col transition-colors"
+                    style={usere?.chatBackground ? {
+                        backgroundImage: `url(${usere.chatBackground})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                    } : {}}
+                >
                     <div
                         className="flex-1 p-4 overflow-y-auto"
                         onScroll={handleScroll}
@@ -796,7 +855,7 @@ const ChatWindow = ({ subjectId, subjectName, onClose, isOverlay = true, type = 
                         onSendMessage={handleSendMessage}
                         onTyping={handleTyping}
                         replyTo={replyTo}
-                        setReplyTo={setReplyTo}
+                        onCancelReply={() => setReplyTo(null)}
                         editingMessage={editingMessage}
                         onUpdateMessage={handleUpdateMessage}
                         onCancelEdit={() => setEditingMessage(null)}

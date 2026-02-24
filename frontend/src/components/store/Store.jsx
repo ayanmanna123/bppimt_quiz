@@ -91,8 +91,8 @@ const Store = () => {
 
     return (
         <div className="flex h-[calc(100vh-64px)] bg-slate-50 dark:bg-slate-950 overflow-hidden transition-colors duration-500">
-            {/* Sidebar Filters */}
-            <aside className="w-80 bg-white dark:bg-slate-900 border-r border-border dark:border-slate-800 flex-col hidden md:flex shrink-0 transition-colors">
+            {/* Sidebar Filters - Hidden on small screens, shown as modal or toggle later if needed */}
+            <aside className="w-80 bg-white dark:bg-slate-900 border-r border-border dark:border-slate-800 flex-col hidden lg:flex shrink-0 transition-colors">
                 <div className="p-6 border-b border-border dark:border-slate-800">
                     <div className="flex items-center gap-2 font-bold text-lg text-foreground dark:text-slate-100">
                         <Filter className="w-5 h-5 text-primary" /> Filters
@@ -174,39 +174,39 @@ const Store = () => {
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50 dark:bg-slate-950/50 transition-colors">
                 {/* Header Toolbar */}
-                <div className="h-20 bg-white dark:bg-slate-900 border-b border-border dark:border-slate-800 flex items-center justify-between px-8 shrink-0 transition-colors">
-                    <div>
+                <div className="min-h-20 bg-white dark:bg-slate-900 border-b border-border dark:border-slate-800 flex flex-col md:flex-row items-center justify-between px-4 md:px-8 py-4 gap-4 shrink-0 transition-colors">
+                    <div className="text-center md:text-left">
                         <h1 className="text-2xl font-black bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                             Campus Store
                         </h1>
                         <p className="text-sm text-muted-foreground font-medium mt-1">
-                            {products.length} {products.length === 1 ? 'item' : 'items'} available for sale
+                            {products.length} {products.length === 1 ? 'item' : 'items'} available
                         </p>
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="flex flex-wrap justify-center gap-2 md:gap-3 w-full md:w-auto">
                         <Button
                             variant={viewMode === 'my_listings' ? "secondary" : "ghost"}
-                            className="font-semibold"
+                            className="font-semibold flex-1 md:flex-none h-10"
                             onClick={() => setViewMode(viewMode === 'all' ? 'my_listings' : 'all')}
                         >
-                            {viewMode === 'all' ? 'My Ads' : 'Browse Store'}
+                            {viewMode === 'all' ? 'My Ads' : 'Browse'}
                         </Button>
-                        <Link to="/store/sell">
-                            <Button className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700 text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 font-bold">
-                                <Plus className="w-4 h-4 mr-2" /> Sell Product
+                        <Link to="/store/sell" className="flex-1 md:flex-none">
+                            <Button className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700 text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 font-bold h-10">
+                                <Plus className="w-4 h-4 mr-1 md:mr-2" /> <span className="text-xs md:text-sm">Sell</span>
                             </Button>
                         </Link>
-                        <Link to="/store/chat">
-                            <Button variant="outline" className="border-border dark:border-slate-700 text-foreground dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold transition-colors">
-                                <MessageCircle className="w-4 h-4 mr-2" /> Chats
+                        <Link to="/store/chat" className="flex-1 md:flex-none">
+                            <Button variant="outline" className="w-full border-border dark:border-slate-700 text-foreground dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold transition-colors h-10">
+                                <MessageCircle className="w-4 h-4 mr-1 md:mr-2" /> <span className="text-xs md:text-sm">Chats</span>
                             </Button>
                         </Link>
                     </div>
                 </div>
 
                 {/* Product Grid */}
-                <div className="flex-1 overflow-y-auto p-8">
+                <div className="flex-1 overflow-y-auto p-4 md:p-8">
                     {loading ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (

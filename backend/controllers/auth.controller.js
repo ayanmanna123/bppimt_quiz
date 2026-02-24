@@ -94,12 +94,22 @@ export const updatesem = async (req, res) => {
       });
     }
 
-    // ✅ Only run file upload if file exists
-    if (req.file) {
-      const fileUri = getDataUri(req.file);
-      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-      if (cloudResponse.secure_url) {
-        user.picture = cloudResponse.secure_url;
+    // ✅ Handle multiple files (profile picture and chat background)
+    if (req.files) {
+      if (req.files.file && req.files.file[0]) {
+        const fileUri = getDataUri(req.files.file[0]);
+        const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+        if (cloudResponse.secure_url) {
+          user.picture = cloudResponse.secure_url;
+        }
+      }
+
+      if (req.files.chatBackground && req.files.chatBackground[0]) {
+        const bgUri = getDataUri(req.files.chatBackground[0]);
+        const bgCloudResponse = await cloudinary.uploader.upload(bgUri.content);
+        if (bgCloudResponse.secure_url) {
+          user.chatBackground = bgCloudResponse.secure_url;
+        }
       }
     }
 

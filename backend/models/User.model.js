@@ -109,6 +109,10 @@ const userSchema = new mongoose.Schema(
     facePhoto: {
       type: String, // Cloudinary URL
       default: undefined
+    },
+    chatBackground: {
+      type: String, // Cloudinary URL for chat background
+      default: ""
     }
   },
   { timestamps: true }

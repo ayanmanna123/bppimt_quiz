@@ -15,7 +15,11 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
     const [attachment, setAttachment] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
+    const [isListening, setIsListening] = useState(false);
     const [recordingDuration, setRecordingDuration] = useState(0);
+
+    // AI states
+    const [isEnhancing, setIsEnhancing] = useState(false);
 
     // Mention states
     const [showMentions, setShowMentions] = useState(false);
@@ -25,10 +29,64 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
 
     const fileInputRef = useRef(null);
     const mediaRecorderRef = useRef(null);
+    const recognitionRef = useRef(null);
     const audioChunksRef = useRef([]);
     const timerRef = useRef(null);
     const textareaRef = useRef(null);
     const { getAccessTokenSilently } = useAuth0();
+
+    // Initialize Speech Recognition
+    useEffect(() => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+
+                if (finalTranscript) {
+                    setMessage(prev => prev + (prev ? ' ' : '') + finalTranscript);
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error", event.error);
+                setIsListening(false);
+            };
+
+            recognition.onend = () => {
+                setIsListening(false);
+            };
+
+            recognitionRef.current = recognition;
+        }
+    }, []);
+
+    const toggleListening = () => {
+        if (isListening) {
+            recognitionRef.current?.stop();
+            setIsListening(false);
+        } else {
+            if (!recognitionRef.current) {
+                alert("Speech recognition is not supported in this browser.");
+                return;
+            }
+            recognitionRef.current.start();
+            setIsListening(true);
+        }
+    };
 
     // Populate input when editing
     useEffect(() => {
@@ -232,6 +290,28 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
         };
     }, []);
 
+    const enhanceText = async (type) => {
+        if (!message.trim() || isEnhancing) return;
+        setIsEnhancing(true);
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ai/enhance`, {
+                text: message,
+                type
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (res.data.success) {
+                setMessage(res.data.enhancedText);
+            }
+        } catch (error) {
+            console.error("Enhancement failed", error);
+        } finally {
+            setIsEnhancing(false);
+        }
+    };
+
     const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
@@ -347,6 +427,54 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
                     </Button>
                 )}
 
+
+                {/* AI Enhancement Popover */}
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={`text-slate-400 dark:text-slate-500 hover:text-indigo-500 transition-all ${isEnhancing ? 'animate-spin' : ''}`}
+                            disabled={!message.trim() || isEnhancing}
+                        >
+                            <Send className="w-5 h-5 rotate-[-45deg] blur-[0.5px] opacity-70" style={{ filter: 'drop-shadow(0 0 2px #6366f1)' }} />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent side="top" align="center" className="w-48 p-1 bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 shadow-xl rounded-xl overflow-hidden">
+                        <div className="p-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-50 dark:border-slate-700 mb-1">
+                            AI Enhancement
+                        </div>
+                        <button
+                            onClick={() => enhanceText('grammar')}
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-slate-700 dark:text-slate-200 rounded-lg transition-colors flex items-center gap-2"
+                        >
+                            <span>✨</span> Fix Grammar
+                        </button>
+                        <button
+                            onClick={() => enhanceText('vocab')}
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-slate-700 dark:text-slate-200 rounded-lg transition-colors flex items-center gap-2"
+                        >
+                            <span>📚</span> Better Vocab
+                        </button>
+                        <button
+                            onClick={() => enhanceText('translate')}
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-slate-700 dark:text-slate-200 rounded-lg transition-colors flex items-center gap-2"
+                        >
+                            <span>🌍</span> Translate to EN
+                        </button>
+                    </PopoverContent>
+                </Popover>
+
+                {/* Voice Typing Button */}
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`${isListening ? "text-indigo-600 bg-indigo-50 animate-pulse dark:bg-indigo-900/30" : "text-slate-400 dark:text-slate-500 hover:text-indigo-600"}`}
+                    onClick={toggleListening}
+                    title="Voice Typing"
+                >
+                    <Mic className="w-5 h-5" />
+                </Button>
 
                 {/* Emoji Picker */}
                 <Popover>

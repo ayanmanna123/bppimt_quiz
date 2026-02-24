@@ -260,8 +260,8 @@ const StoreChat = () => {
         const el = messageRefs.current[id];
         if (el) {
             el.scrollIntoView({ behavior: "smooth", block: "center" });
-            el.classList.add("bg-indigo-50");
-            setTimeout(() => el.classList.remove("bg-indigo-50"), 2000);
+            el.classList.add("bg-yellow-200", "dark:bg-yellow-900", "p-1", "rounded", "transition-all");
+            setTimeout(() => el.classList.remove("bg-yellow-200", "dark:bg-yellow-900", "p-1", "rounded"), 3000);
         }
     };
 
@@ -269,31 +269,63 @@ const StoreChat = () => {
         if (currentSearchIndex >= 0 && searchResults[currentSearchIndex]) {
             jumpToMessage(searchResults[currentSearchIndex]._id);
         }
-    }, [currentSearchIndex]);
+    }, [currentSearchIndex, searchResults]);
 
     const handleReaction = async (msgId, emoji) => {
+        // Optimistic update
+        const targetMsg = messages.find(m => m._id === msgId);
+        if (targetMsg && user) {
+            const existingReactionIndex = targetMsg.reactions?.findIndex(
+                r => (r.user?._id || r.user) === user._id && r.emoji === emoji
+            );
+
+            let updatedReactions = [...(targetMsg.reactions || [])];
+            if (existingReactionIndex > -1) {
+                updatedReactions.splice(existingReactionIndex, 1);
+            } else {
+                updatedReactions.push({ user: user._id, emoji });
+            }
+
+            setMessages(prev => prev.map(msg =>
+                msg._id === msgId ? { ...msg, reactions: updatedReactions } : msg
+            ));
+        }
+
         try {
             const token = await getAccessTokenSilently();
-            // Toggle logic: Check if I already reacted with this emoji
-            const msg = messages.find(m => m._id === msgId);
-            const hasReacted = msg?.reactions?.some(r => r.user?._id === user._id && r.emoji === emoji) ||
-                msg?.reactions?.some(r => r.user === user._id && r.emoji === emoji); // Handle populated/unpopulated
-
-            if (hasReacted) {
-                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/store/message/unreact/${msgId}`, { emoji }, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-            } else {
-                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/store/message/react/${msgId}`, { emoji }, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-            }
+            await axios.put(`${import.meta.env.VITE_BACKEND_URL}/store/message/react/${msgId}`, { emoji }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
         } catch (e) {
-            console.error(e);
+            console.error("Failed to react:", e);
+            // Re-fetch to sync if failed
+            if (activeConversation) {
+                handleSelectConversation(activeConversation._id);
+            }
         }
     };
 
     const handlePin = async (msgId) => {
+        // Optimistic update
+        const targetMsg = messages.find(m => m._id === msgId);
+        if (targetMsg) {
+            const updatedIsPinned = !targetMsg.isPinned;
+
+            // Update messages list
+            setMessages(prev => prev.map(msg => msg._id === msgId ? { ...msg, isPinned: updatedIsPinned } : msg));
+
+            // Update pinned messages section
+            if (updatedIsPinned) {
+                setPinnedMessages(prev => {
+                    const exists = prev.find(p => p._id === msgId);
+                    if (exists) return prev;
+                    return [{ ...targetMsg, isPinned: true }, ...prev];
+                });
+            } else {
+                setPinnedMessages(prev => prev.filter(p => p._id !== msgId));
+            }
+        }
+
         try {
             const token = await getAccessTokenSilently();
             await axios.put(`${import.meta.env.VITE_BACKEND_URL}/store/message/pin/${msgId}`, {}, {
@@ -301,6 +333,10 @@ const StoreChat = () => {
             });
         } catch (e) {
             console.error(e);
+            // Re-fetch to sync if failed
+            if (activeConversation) {
+                handleSelectConversation(activeConversation._id);
+            }
         }
     };
 
@@ -330,8 +366,9 @@ const StoreChat = () => {
 
     // Filter Sidebar
     const filteredConversations = conversations.filter(conv => {
-        const otherUser = conv.participants.find(p => p._id !== user?._id);
-        const term = sidebarSearchTerm.toLowerCase();
+        const otherUser = conv.participants.find(p => p._id?.toString() !== user?._id?.toString());
+        const term = sidebarSearchTerm.toLowerCase().trim();
+        if (!term) return true;
         return otherUser?.fullname?.toLowerCase().includes(term) || conv.product?.title?.toLowerCase().includes(term);
     });
 
@@ -359,7 +396,7 @@ const StoreChat = () => {
                     <div className="divide-y divide-slate-100">
                         {filteredConversations.length > 0 ? (
                             filteredConversations.map(conv => {
-                                const otherUser = conv.participants.find(p => p._id !== user?._id);
+                                const otherUser = conv.participants.find(p => p._id?.toString() !== user?._id?.toString());
                                 const isActive = activeConversation?._id === conv._id;
                                 return (
                                     <div
@@ -440,11 +477,11 @@ const StoreChat = () => {
                                             </span>
                                         )}
                                         <div className="flex">
-                                            <Button size="icon" variant="ghost" className="h-8 w-6 hover:bg-slate-200 dark:hover:bg-slate-700" onClick={() => setCurrentSearchIndex((prev) => (prev + 1) % searchResults.length)}>
-                                                <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-                                            </Button>
                                             <Button size="icon" variant="ghost" className="h-8 w-6 hover:bg-slate-200 dark:hover:bg-slate-700" onClick={() => setCurrentSearchIndex((prev) => (prev - 1 + searchResults.length) % searchResults.length)}>
                                                 <ChevronUp className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                                            </Button>
+                                            <Button size="icon" variant="ghost" className="h-8 w-6 hover:bg-slate-200 dark:hover:bg-slate-700" onClick={() => setCurrentSearchIndex((prev) => (prev + 1) % searchResults.length)}>
+                                                <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                                             </Button>
                                         </div>
                                         <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-sm" onClick={() => {
@@ -480,7 +517,15 @@ const StoreChat = () => {
                         )}
 
                         {/* Messages List */}
-                        <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50 dark:bg-slate-950/50 transition-colors">
+                        <div
+                            className="flex-1 overflow-y-auto p-6 bg-slate-50/50 dark:bg-slate-950/50 transition-colors"
+                            style={user?.chatBackground ? {
+                                backgroundImage: `url(${user.chatBackground})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                backgroundRepeat: 'no-repeat'
+                            } : {}}
+                        >
                             {loadingMessages ? (
                                 <div className="h-full flex items-center justify-center">
                                     <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />

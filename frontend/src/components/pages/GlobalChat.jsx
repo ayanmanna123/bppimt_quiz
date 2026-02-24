@@ -645,7 +645,7 @@ const GlobalChat = () => {
                                                     showAvatar={showAvatar}
                                                     showSenderName={showSenderName}
                                                     onReply={setReplyTo}
-                                                    onReact={handleReaction}
+                                                    onReact={(emoji) => handleReaction(msg._id, emoji)}
                                                     onPin={usere.role === 'teacher' ? handlePinMessage : null}
                                                     onEdit={onEditMessage}
                                                     onDelete={handleDeleteMessage}

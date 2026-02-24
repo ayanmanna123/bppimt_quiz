@@ -14,8 +14,7 @@ import {
     deleteStoreMessage,
     updateStoreMessage,
     togglePinStoreMessage,
-    addStoreReaction,
-    removeStoreReaction,
+    reactToStoreMessage,
     searchStoreMessages,
     markStoreMessagesAsRead
 } from "../controllers/store.controller.js";
@@ -52,8 +51,7 @@ router.put("/message/read/:conversationId", markStoreMessagesAsRead);
 router.delete("/message/:messageId", deleteStoreMessage);
 router.put("/message/:messageId", updateStoreMessage);
 router.put("/message/pin/:messageId", togglePinStoreMessage);
-router.put("/message/react/:messageId", addStoreReaction);
-router.put("/message/unreact/:messageId", removeStoreReaction);
+router.put("/message/react/:messageId", reactToStoreMessage);
 router.get("/search/:conversationId", searchStoreMessages);
 
 export default router;

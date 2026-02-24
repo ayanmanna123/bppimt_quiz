@@ -512,7 +512,7 @@ export const togglePinStoreMessage = async (req, res) => {
     }
 };
 
-export const addStoreReaction = async (req, res) => {
+export const reactToStoreMessage = async (req, res) => {
     try {
         const { messageId } = req.params;
         const { emoji } = req.body;
@@ -523,11 +523,20 @@ export const addStoreReaction = async (req, res) => {
         const message = await StoreMessage.findById(messageId);
         if (!message) return res.status(404).json({ message: "Message not found" });
 
-        // Check duplicates
-        if (!message.reactions.some(r => r.user.toString() === user._id.toString() && r.emoji === emoji)) {
+        // Toggle logic: Check if user already reacted with this emoji
+        const existingReactionIndex = message.reactions.findIndex(
+            (r) => r.user.toString() === user._id.toString() && r.emoji === emoji
+        );
+
+        if (existingReactionIndex > -1) {
+            // Remove reaction (toggle off)
+            message.reactions.splice(existingReactionIndex, 1);
+        } else {
+            // Add reaction (toggle on)
             message.reactions.push({ user: user._id, emoji });
-            await message.save();
         }
+
+        await message.save();
 
         const populatedMessage = await message.populate([
             { path: "sender", select: "fullname picture" },
@@ -549,7 +558,7 @@ export const addStoreReaction = async (req, res) => {
 
         res.status(200).json({ success: true, message: populatedMessage });
     } catch (error) {
-        console.error("Error adding reaction:", error);
+        console.error("Error reacting to store message:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -559,7 +568,7 @@ export const searchStoreMessages = async (req, res) => {
         const { conversationId } = req.params;
         const { query } = req.query;
 
-        if (!query) return res.status(200).json([]);
+        if (!query) return res.status(200).json({ success: true, messages: [] });
 
         const messages = await StoreMessage.find({
             conversationId,
@@ -575,6 +584,7 @@ export const searchStoreMessages = async (req, res) => {
     }
 };
 
+// DEPRECATED: Standard consolidated reactToStoreMessage should be used
 export const removeStoreReaction = async (req, res) => {
     try {
         const { messageId } = req.params;
