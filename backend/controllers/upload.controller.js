@@ -27,7 +27,9 @@ export const uploadFile = async (req, res) => {
         res.status(200).json({
             url: ikResponse.url,
             fileId: ikResponse.fileId,
-            type: type
+            type: type,
+            name: req.file.originalname,
+            size: ikResponse.size
         });
     } catch (error) {
         console.error("Error uploading file to ImageKit:", error);

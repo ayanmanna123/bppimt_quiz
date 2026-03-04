@@ -1,6 +1,6 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Smile, Reply, Pin, Edit2, Trash2, Eye, Check, CheckCheck } from "lucide-react";
+import { Smile, Reply, Pin, Edit2, Trash2, Eye, Check, CheckCheck, FileText } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -24,6 +24,28 @@ const MessageBubble = ({
     isBlocked
 }) => {
     const [isViewersOpen, setIsViewersOpen] = React.useState(false);
+
+    // Helper to format file size
+    const formatFileSize = (bytes) => {
+        if (!bytes) return "";
+        if (bytes < 1024) return bytes + " B";
+        const kb = bytes / 1024;
+        if (kb < 1024) return kb.toFixed(1) + " kB";
+        const mb = kb / 1024;
+        return mb.toFixed(1) + " MB";
+    };
+
+    // Helper to get icon and color for file types
+    const getFileDetails = (url, type) => {
+        const ext = url?.toLowerCase().split('?')[0].split('.').pop();
+        if (ext === 'pdf' || type === 'pdf') return { icon: "PDF", color: "bg-red-500", label: "PDF" };
+        if (['doc', 'docx'].includes(ext)) return { icon: "W", color: "bg-blue-600", label: "DOCX" };
+        if (['xls', 'xlsx'].includes(ext)) return { icon: "X", color: "bg-green-600", label: "XLSX" };
+        if (['ppt', 'pptx'].includes(ext)) return { icon: "P", color: "bg-orange-600", label: "PPTX" };
+        if (['zip', 'rar', '7z'].includes(ext)) return { icon: "ZIP", color: "bg-amber-600", label: "ARCHIVE" };
+        if (['txt', 'md'].includes(ext)) return { icon: "TXT", color: "bg-slate-500", label: "TEXT" };
+        return { icon: "FILE", color: "bg-indigo-500", label: ext?.toUpperCase() || "FILE" };
+    };
 
     // Helper to render mentions, links, and search highlighting
     const renderContent = (text, mentions, searchTerm) => {
@@ -116,6 +138,62 @@ const MessageBubble = ({
                             {message.attachments.map((att, i) => (
                                 att.type === 'image' ? (
                                     <img key={i} src={att.url} alt="attachment" className="rounded-lg max-h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => window.open(att.url, '_blank')} />
+                                ) : (att.type === 'pdf' || (att.url && att.url.toLowerCase().split('?')[0].endsWith('.pdf'))) ? (
+                                    <div key={i} className={`flex flex-col rounded-xl overflow-hidden border ${isMe ? "bg-white/10 border-white/20" : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"} max-w-[280px] shadow-sm`}>
+                                        {/* Thumbnail / First Page Preview */}
+                                        <div
+                                            className="h-32 bg-slate-100 dark:bg-slate-800 relative cursor-pointer group flex items-center justify-center"
+                                            onClick={() => window.open(att.url, '_blank')}
+                                        >
+                                            <img
+                                                src={att.url.includes('ik.imagekit.io') ? `${att.url}${att.url.includes('?') ? '&' : '?'}tr=f-jpg,pg-1,w-300,h-150,cm-pad_resize,bg-FFFFFF` : att.url}
+                                                alt="PDF Preview"
+                                                className="w-full h-full object-cover relative z-10"
+                                                onError={(e) => {
+                                                    e.target.style.display = 'none';
+                                                }}
+                                            />
+                                            {/* Fallback Icon (Visible if image fails) */}
+                                            <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-800">
+                                                <FileText className="w-10 h-10 text-slate-400 dark:text-slate-600" />
+                                            </div>
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center z-20">
+                                                <Eye className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" />
+                                            </div>
+                                        </div>
+
+                                        {/* File Info */}
+                                        <div className="p-3 flex flex-col gap-2">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-8 h-10 bg-red-500 rounded flex items-center justify-center shrink-0">
+                                                    <span className="text-[10px] font-bold text-white uppercase italic">PDF</span>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className={`text-xs font-semibold truncate ${isMe ? "text-white" : "text-slate-800 dark:text-slate-200"}`}>
+                                                        {decodeURIComponent(att.url.split('/').pop().split('?')[0]) || "Document.pdf"}
+                                                    </p>
+                                                    <p className={`text-[10px] ${isMe ? "text-white/60" : "text-slate-500"}`}>PDF Document</p>
+                                                </div>
+                                            </div>
+
+                                            {/* Actions */}
+                                            <div className="flex gap-2 pt-1 border-t border-white/10 dark:border-slate-800">
+                                                <button
+                                                    onClick={() => window.open(att.url, '_blank')}
+                                                    className={`flex-1 py-1 text-[11px] font-medium rounded transition-colors ${isMe ? "bg-white/20 hover:bg-white/30 text-white" : "text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30"}`}
+                                                >
+                                                    Open
+                                                </button>
+                                                <a
+                                                    href={att.url + (att.url.includes('?') ? '&' : '?') + 'ik-attachment=true'}
+                                                    download
+                                                    className={`flex-1 py-1 text-center text-[11px] font-medium rounded transition-colors ${isMe ? "bg-white/20 hover:bg-white/30 text-white" : "text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30"}`}
+                                                >
+                                                    Save as...
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 ) : att.type === 'audio' ? (
                                     <div key={i} className="flex items-center gap-2 min-w-[200px] bg-white/10 dark:bg-black/20 p-1 rounded-lg">
                                         <audio
@@ -125,9 +203,41 @@ const MessageBubble = ({
                                         />
                                     </div>
                                 ) : (
-                                    <a key={i} href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs underline bg-black/10 dark:bg-white/10 p-1 rounded">
-                                        View Attachment
-                                    </a>
+                                    <div key={i} className={`flex flex-col rounded-xl overflow-hidden border ${isMe ? "bg-white/10 border-white/20" : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"} min-w-[240px] max-w-[280px] shadow-sm`}>
+                                        <div className="p-3 flex flex-col gap-2">
+                                            <div className="flex items-center gap-3">
+                                                {/* File icon */}
+                                                <div className={`w-10 h-10 ${getFileDetails(att.url, att.type).color} rounded-lg flex items-center justify-center shrink-0 shadow-sm`}>
+                                                    <span className="text-[11px] font-bold text-white uppercase italic">{getFileDetails(att.url, att.type).icon}</span>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className={`text-sm font-semibold truncate ${isMe ? "text-white" : "text-slate-800 dark:text-slate-200"}`}>
+                                                        {att.name || decodeURIComponent(att.url.split('/').pop().split('?')[0]) || "Document"}
+                                                    </p>
+                                                    <p className={`text-[10px] ${isMe ? "text-white/60" : "text-slate-500"}`}>
+                                                        {getFileDetails(att.url, att.type).label} {att.size ? ` • ${formatFileSize(att.size)}` : ''}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Actions */}
+                                            <div className="flex gap-2 pt-1 border-t border-white/10 dark:border-slate-800">
+                                                <button
+                                                    onClick={() => window.open(att.url, '_blank')}
+                                                    className={`flex-1 py-1.5 text-[11px] font-medium rounded transition-colors ${isMe ? "bg-white/20 hover:bg-white/30 text-white" : "text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30"}`}
+                                                >
+                                                    Open
+                                                </button>
+                                                <a
+                                                    href={att.url + (att.url.includes('?') ? '&' : '?') + 'ik-attachment=true'}
+                                                    download
+                                                    className={`flex-1 py-1.5 text-center text-[11px] font-medium rounded transition-colors ${isMe ? "bg-white/20 hover:bg-white/30 text-white" : "text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30"}`}
+                                                >
+                                                    Save as...
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 )
                             ))}
                         </div>
