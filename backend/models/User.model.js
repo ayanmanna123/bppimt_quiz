@@ -107,11 +107,11 @@ const userSchema = new mongoose.Schema(
       default: undefined
     },
     facePhoto: {
-      type: String, // Cloudinary URL
+      type: String, // ImageKit URL
       default: undefined
     },
     chatBackground: {
-      type: String, // Cloudinary URL for chat background
+      type: String, // ImageKit URL for chat background
       default: ""
     }
   },
