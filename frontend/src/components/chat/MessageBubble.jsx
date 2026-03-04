@@ -142,23 +142,44 @@ const MessageBubble = ({
                                     <div key={i} className={`flex flex-col rounded-xl overflow-hidden border ${isMe ? "bg-white/10 border-white/20" : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"} max-w-[280px] shadow-sm`}>
                                         {/* Thumbnail / First Page Preview */}
                                         <div
-                                            className="h-32 bg-slate-100 dark:bg-slate-800 relative cursor-pointer group flex items-center justify-center"
+                                            className="h-48 bg-slate-100 dark:bg-slate-800 relative cursor-pointer group flex items-center justify-center rounded-t-xl"
                                             onClick={() => window.open(att.url, '_blank')}
                                         >
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800 animate-pulse z-0">
+                                                <FileText className="w-12 h-12 text-slate-300 dark:text-slate-700 mb-2" />
+                                                <span className="text-[10px] text-slate-400 dark:text-slate-600 font-medium">Generating Preview...</span>
+                                            </div>
                                             <img
-                                                src={att.url.includes('ik.imagekit.io') ? `${att.url}${att.url.includes('?') ? '&' : '?'}tr=f-jpg,pg-1,w-300,h-150,cm-pad_resize,bg-FFFFFF` : att.url}
+                                                src={att.url.includes('ik.imagekit.io')
+                                                    ? `${att.url.split('?')[0]}?tr=f-jpg,pg-1,w-500,cm-pad_resize,bg-FFFFFF`
+                                                    : att.url}
                                                 alt="PDF Preview"
-                                                className="w-full h-full object-cover relative z-10"
+                                                className="w-full h-full object-contain relative z-10 transition-opacity duration-500 opacity-0"
+                                                onLoad={(e) => {
+                                                    e.target.classList.remove('opacity-0');
+                                                    // Hide the loading state siblings
+                                                    if (e.target.parentElement.firstChild) {
+                                                        e.target.parentElement.firstChild.style.display = 'none';
+                                                    }
+                                                }}
                                                 onError={(e) => {
                                                     e.target.style.display = 'none';
+                                                    const loader = e.target.parentElement.firstChild;
+                                                    if (loader) {
+                                                        loader.classList.remove('animate-pulse');
+                                                        loader.style.display = 'flex';
+                                                        loader.querySelector('svg').classList.add('text-slate-400');
+                                                        loader.querySelector('span').textContent = "Preview Unavailable";
+                                                    }
                                                 }}
                                             />
-                                            {/* Fallback Icon (Visible if image fails) */}
-                                            <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-800">
-                                                <FileText className="w-10 h-10 text-slate-400 dark:text-slate-600" />
+                                            <div className="absolute top-3 left-3 z-20 bg-red-600 text-[10px] font-extrabold text-white px-2 py-0.5 rounded shadow-lg uppercase tracking-tight">
+                                                Page 1
                                             </div>
-                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center z-20">
-                                                <Eye className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" />
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center z-20">
+                                                <div className="bg-white/20 backdrop-blur-md rounded-full p-3 opacity-0 group-hover:opacity-100 transform scale-90 group-hover:scale-100 transition-all">
+                                                    <Eye className="w-8 h-8 text-white drop-shadow-md" />
+                                                </div>
                                             </div>
                                         </div>
 
