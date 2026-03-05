@@ -20,7 +20,9 @@ const storeMessageSchema = new mongoose.Schema(
         attachments: [
             {
                 url: { type: String, required: true },
-                type: { type: String, enum: ['image', 'video', 'file', 'audio'], default: 'image' },
+                type: { type: String, enum: ['image', 'video', 'file', 'audio', 'pdf', 'non-image'], default: 'image' },
+                name: { type: String },
+                size: { type: Number },
                 publicId: { type: String }
             }
         ],

@@ -1,9 +1,8 @@
-
 import Submission from "../models/Submission.model.js";
 import Assignment from "../models/Assignment.model.js";
 import User from "../models/User.model.js";
 import getDataUri from "../utils/datauri.js";
-import cloudinary from "../utils/cloudinary.js";
+import imagekit from "../utils/imagekit.js";
 import archiver from "archiver";
 import axios from "axios";
 
@@ -42,39 +41,17 @@ export const submitHomework = async (req, res) => {
         // For now, simple create.
 
         const fileUri = getDataUri(file);
-        const isPdf = file.mimetype === "application/pdf";
-        const isImage = file.mimetype.startsWith("image/");
 
-        const uploadOptions = {
-            folder: "bppimt_quiz_submissions",
-            resource_type: isPdf ? "image" : "auto",
-        };
-
-        let cloudResponse;
-
-        if (isPdf) {
-            cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-                ...uploadOptions,
-                pages: true // request pages info just in case, facilitates consistent handling
-            });
-        } else if (isImage) {
-            cloudResponse = await cloudinary.uploader.upload(fileUri.content, uploadOptions);
-        } else {
-            // For other file types (zip, docx, etc.), use raw
-            // Note: 'auto' might interpret correctly, but explicit raw is safer for non-media
-            cloudResponse = await new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream({ ...uploadOptions, resource_type: 'raw' }, (error, result) => {
-                    if (error) reject(error);
-                    else resolve(result);
-                });
-                stream.end(file.buffer);
-            });
-        }
+        const ikResponse = await imagekit.upload({
+            file: fileUri.content,
+            fileName: file.originalname,
+            folder: "/bppimt_quiz_submissions"
+        });
 
         const submission = await Submission.create({
             assignment: assignmentId,
             student: user._id,
-            fileUrl: cloudResponse.secure_url,
+            fileUrl: ikResponse.url,
             originalFileName: file.originalname,
         });
 

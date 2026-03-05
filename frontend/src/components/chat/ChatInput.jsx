@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import EmojiPicker from "emoji-picker-react";
-import { Send, Paperclip, Smile, X, Loader2, Mic, Square, MoreHorizontal, AudioLines } from "lucide-react";
+import { Send, Paperclip, Smile, X, Loader2, Mic, Square, MoreHorizontal, AudioLines, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Popover,
@@ -202,7 +202,9 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
             setAttachment({
                 url: res.data.url,
                 type: res.data.type, // 'image', etc.
-                publicId: res.data.publicId
+                publicId: res.data.publicId,
+                name: res.data.name,
+                size: res.data.size
             });
 
         } catch (error) {
@@ -383,11 +385,18 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
 
             {/* Attachment Preview */}
             {attachment && (
-                <div className="relative inline-block mb-2">
-                    <img src={attachment.url} alt="preview" className="h-16 w-16 object-cover rounded-lg border border-slate-200 dark:border-slate-700" />
+                <div className="relative inline-block mb-2 group">
+                    {attachment.type === 'image' ? (
+                        <img src={attachment.url} alt="preview" className="h-16 w-16 object-cover rounded-lg border border-slate-200 dark:border-slate-700" />
+                    ) : (
+                        <div className="h-16 px-3 flex items-center gap-2 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 max-w-[200px]">
+                            <FileText className="w-8 h-8 text-indigo-500 shrink-0" />
+                            <span className="text-xs text-slate-600 dark:text-slate-300 truncate">Attachment</span>
+                        </div>
+                    )}
                     <button
                         onClick={() => setAttachment(null)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 shadow-sm hover:bg-red-600"
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 shadow-sm hover:bg-red-600 z-10"
                     >
                         <X className="w-3 h-3" />
                     </button>
@@ -413,7 +422,6 @@ const ChatInput = ({ onSendMessage, onTyping, replyTo, onCancelReply, editingMes
                                         type="file"
                                         ref={fileInputRef}
                                         className="hidden"
-                                        accept="image/*"
                                         onChange={handleFileSelect}
                                     />
                                     <Button

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target, FileText, ShoppingBag, Settings, ChevronLeft, Sun, Moon, Laptop } from "lucide-react";
+import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target, FileText, ShoppingBag, Settings, ChevronLeft, Sun, Moon, Laptop, Cpu } from "lucide-react";
 import PushNotificationManager from "../PushNotificationManager";
 import { useSocket } from "../../context/SocketContext";
 import axios from "axios";
@@ -152,6 +152,7 @@ const Navbar = () => {
     { name: "Result", path: "/reasult", icon: BarChart3 },
     { name: "Attendance", path: "/StudentAttendanceSummary", icon: BookOpen },
     { name: "PYQ", path: "/pyq", icon: FileText },
+    { name: "Projects", path: "/projects", icon: Cpu },
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Store", path: "/store", icon: ShoppingBag },
     { name: "Chats", path: "/chats", icon: MessageCircle },
@@ -164,6 +165,7 @@ const Navbar = () => {
     { name: "Result", path: "/admin/allquiz", icon: BarChart3 },
     { name: "PYQ", path: "/pyq", icon: FileText },
     { name: "Contributed Teacher", path: "/admin/othersubject", icon: GraduationCap },
+    { name: "Projects", path: "/projects", icon: Cpu },
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Store", path: "/store", icon: ShoppingBag },
     { name: "Chats", path: "/chats", icon: MessageCircle },
@@ -173,6 +175,7 @@ const Navbar = () => {
     { name: "About Us", path: "/about", icon: User },
     { name: "Subject", path: "/admine/only/subject", icon: BookOpen },
     { name: "Un authorize", path: "/notvarifieduser", icon: BarChart3 },
+    { name: "Projects", path: "/projects", icon: Cpu },
     { name: "Study Rooms", path: "/study-rooms", icon: Users },
     { name: "Store", path: "/store", icon: ShoppingBag },
     { name: "Chats", path: "/chats", icon: MessageCircle },
@@ -331,7 +334,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
 
           {/* Theme Toggle */}
-           
+
 
           {/* Notification Dropdown */}
           {isAuthenticated && <NotificationDropdown />}

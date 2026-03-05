@@ -34,6 +34,7 @@ import { initSupportBot } from "./controllers/chatbot.controller.js";
 import storeRoute from "./routes/store.routes.js";
 import friendRoute from "./routes/friend.routes.js";
 import aiRoute from "./routes/ai.routes.js";
+import projectRoute from "./routes/project.routes.js";
 
 dotenv.config();
 connectToMongo();
@@ -148,6 +149,7 @@ app.use("/api/v1/chatbot", jwtMiddleware, chatbotRoute);
 app.use("/api/v1/store", jwtMiddleware, storeRoute);
 app.use("/api/v1/friend", friendRoute); // Auth is handled inside the route file
 app.use("/api/v1/ai", jwtMiddleware, aiRoute);
+app.use("/api/v1/projects", projectRoute);
 
 
 /* =========================

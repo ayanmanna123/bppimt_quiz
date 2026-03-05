@@ -5,7 +5,7 @@ import Subject from "../models/Subject.model.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import getDataUri from "../utils/datauri.js";
-import cloudinary from "../utils/cloudinary.js";
+import imagekit from "../utils/imagekit.js";
 
 dotenv.config();
 function isCollegeEmail(email) {
@@ -94,21 +94,29 @@ export const updatesem = async (req, res) => {
       });
     }
 
-    // ✅ Handle multiple files (profile picture and chat background)
+    // Handle multiple files (profile picture and chat background)
     if (req.files) {
       if (req.files.file && req.files.file[0]) {
         const fileUri = getDataUri(req.files.file[0]);
-        const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-        if (cloudResponse.secure_url) {
-          user.picture = cloudResponse.secure_url;
+        const ikResponse = await imagekit.upload({
+          file: fileUri.content,
+          fileName: req.files.file[0].originalname,
+          folder: "/bppimt_quiz/profile_pics"
+        });
+        if (ikResponse.url) {
+          user.picture = ikResponse.url;
         }
       }
 
       if (req.files.chatBackground && req.files.chatBackground[0]) {
         const bgUri = getDataUri(req.files.chatBackground[0]);
-        const bgCloudResponse = await cloudinary.uploader.upload(bgUri.content);
-        if (bgCloudResponse.secure_url) {
-          user.chatBackground = bgCloudResponse.secure_url;
+        const bgIkResponse = await imagekit.upload({
+          file: bgUri.content,
+          fileName: req.files.chatBackground[0].originalname,
+          folder: "/bppimt_quiz/chat_backgrounds"
+        });
+        if (bgIkResponse.url) {
+          user.chatBackground = bgIkResponse.url;
         }
       }
     }

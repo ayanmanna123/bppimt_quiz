@@ -51,6 +51,7 @@ const Store = lazy(() => import("./components/store/Store"));
 const ProductDetails = lazy(() => import("./components/store/ProductDetails"));
 const SellProduct = lazy(() => import("./components/store/SellProduct"));
 const StoreChat = lazy(() => import("./components/store/StoreChat"));
+const ProjectBank = lazy(() => import("./components/pages/ProjectBank"));
 
 
 import CubeLoader from "./components/shared/CubeLoader";
@@ -295,6 +296,10 @@ function App() {
             <StoreChat />
 
           ),
+        },
+        {
+          path: "/projects",
+          element: <ProjectBank />,
         },
 
       ],

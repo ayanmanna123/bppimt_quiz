@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { FileText, Download, Trash2, ArrowLeft, Upload, BookOpen } from 'lucide-react';
+import { FileText, Download, Trash2, ArrowLeft, Upload, BookOpen, Eye } from 'lucide-react';
 import { motion } from "framer-motion";
 
 const SubjectNotes = () => {
@@ -100,32 +100,6 @@ const SubjectNotes = () => {
         }
     }
 
-    const handlePreviewPdf = async (noteId) => {
-        try {
-            const toastId = toast.loading("Generating PDF preview...");
-
-            // We can use the public endpoint directly since we made it public (or use token if we reverted that, but likely public for now based on previous steps)
-            // Using axios to fetch blob
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/note/${noteId}/download/pdf`, {
-                responseType: 'blob'
-            });
-
-            const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
-            const pdfUrl = window.URL.createObjectURL(pdfBlob);
-
-            toast.dismiss(toastId);
-            window.open(pdfUrl, '_blank');
-
-            // Optional: revoke URL after some time to free memory, but tricky if user keeps tab open. 
-            // Often acceptable to let it be for the session or revoke on component unmount if stored.
-            // For a simple open, we might not revoke immediately.
-            setTimeout(() => window.URL.revokeObjectURL(pdfUrl), 60000); // Revoke after 1 minute
-
-        } catch (error) {
-            console.error("PDF Preview Error:", error);
-            toast.error("Failed to load PDF preview");
-        }
-    };
 
 
     return (
@@ -244,37 +218,27 @@ const SubjectNotes = () => {
                                     </div>
 
                                     <div className="flex gap-2">
-                                        {isPdf ? (
-                                            <>
-                                                <a
-                                                    href={`${import.meta.env.VITE_BACKEND_URL}/note/${note._id}/download`}
-                                                    download
-                                                >
-                                                    <Button size="sm" className="bg-white hover:bg-indigo-50 text-indigo-600 border border-indigo-200 shadow-sm rounded-xl">
-                                                        <Download className="mr-2 h-4 w-4" />
-                                                        ZIP
-                                                    </Button>
-                                                </a>
-                                                <Button
-                                                    size="sm"
-                                                    onClick={() => handlePreviewPdf(note._id)}
-                                                    className="bg-white hover:bg-red-50 text-red-600 border border-red-200 shadow-sm rounded-xl"
-                                                >
-                                                    <FileText className="mr-2 h-4 w-4" />
-                                                    Preview PDF
-                                                </Button>
-                                            </>
-                                        ) : (
-                                            <a
-                                                href={note.fileUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
+                                        {(isPdf || isImage) && (
+                                            <Button
+                                                size="sm"
+                                                onClick={() => window.open(note.fileUrl, '_blank')}
+                                                className="bg-white hover:bg-red-50 text-red-600 border border-red-200 shadow-sm rounded-xl"
                                             >
-                                                <Button size="sm" variant="outline" className="text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 dark:hover:bg-indigo-900/30">
-                                                    View
-                                                </Button>
-                                            </a>
+                                                <Eye className="mr-2 h-4 w-4" />
+                                                Preview
+                                            </Button>
                                         )}
+                                        <a
+                                            href={note.fileUrl + (note.fileUrl.includes('?') ? '&' : '?') + 'ik-attachment=true'}
+                                            download={note.title}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <Button size="sm" className="bg-white hover:bg-indigo-50 text-indigo-600 border border-indigo-200 shadow-sm rounded-xl">
+                                                <Download className="mr-2 h-4 w-4" />
+                                                Download
+                                            </Button>
+                                        </a>
                                     </div>
                                 </div>
                             </motion.div>

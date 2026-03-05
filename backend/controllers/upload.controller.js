@@ -1,4 +1,4 @@
-import cloudinary from "../utils/cloudinary.js";
+import imagekit from "../utils/imagekit.js";
 import getDataUri from "../utils/datauri.js";
 
 export const uploadFile = async (req, res) => {
@@ -8,28 +8,31 @@ export const uploadFile = async (req, res) => {
         }
 
         const fileUri = getDataUri(req.file);
-        let resourceType = "auto";
-        // Explicitly handle audio to ensure correct resource type in Cloudinary response if needed, 
-        // though 'auto' usually works, identifying it as 'video' type in Cloudinary often.
-        // We will rely on mime type to set our internal type.
 
-        const mycloud = await cloudinary.uploader.upload(fileUri.content, {
-            folder: "bppimt_quiz/chat_attachments",
-            resource_type: "auto"
+        const ikResponse = await imagekit.upload({
+            file: fileUri.content, // base64 string
+            fileName: req.file.originalname,
+            folder: "/bppimt_quiz/chat_attachments"
         });
 
-        let type = mycloud.resource_type;
+        let type = ikResponse.fileType; // 'image', 'non-image'
         if (req.file.mimetype.startsWith("audio/")) {
             type = "audio";
+        } else if (req.file.mimetype.startsWith("video/")) {
+            type = "video";
+        } else if (req.file.mimetype === "application/pdf") {
+            type = "pdf";
         }
 
         res.status(200).json({
-            url: mycloud.secure_url,
-            publicId: mycloud.public_id,
-            type: type
+            url: ikResponse.url,
+            fileId: ikResponse.fileId,
+            type: type,
+            name: req.file.originalname,
+            size: ikResponse.size
         });
     } catch (error) {
-        console.error("Error uploading file:", error);
+        console.error("Error uploading file to ImageKit:", error);
         res.status(500).json({ message: "File upload failed" });
     }
 };

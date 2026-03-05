@@ -1,9 +1,9 @@
 import Product from "../models/Product.model.js";
 import StoreConversation from "../models/StoreConversation.model.js";
 import StoreMessage from "../models/StoreMessage.model.js";
-import cloudinary from "../utils/cloudinary.js";
+import imagekit from "../utils/imagekit.js";
 import getDataUri from "../utils/datauri.js";
-import User from "../models/User.model.js"; // For populating user details if needed
+import User from "../models/User.model.js";
 import Notification from "../models/Notification.model.js";
 import { sendNotification } from "../utils/notification.util.js";
 
@@ -25,13 +25,15 @@ export const createProduct = async (req, res) => {
 
         const imageUrls = [];
 
-        // Upload images to Cloudinary
+        // Upload images to ImageKit
         for (const file of files) {
             const fileUri = getDataUri(file);
-            const mycloud = await cloudinary.uploader.upload(fileUri.content, {
-                folder: "bppimt_quiz/store_products",
+            const ikResponse = await imagekit.upload({
+                file: fileUri.content,
+                fileName: file.originalname,
+                folder: "/bppimt_quiz/store_products"
             });
-            imageUrls.push(mycloud.secure_url);
+            imageUrls.push(ikResponse.url);
         }
 
         const auth0Id = req.auth.payload.sub;
@@ -149,7 +151,7 @@ export const deleteProduct = async (req, res) => {
             return res.status(403).json({ message: "Not authorized to delete this product" });
         }
 
-        // Optional: Delete images from Cloudinary here to save space
+        // Optional: Delete images from ImageKit here to save space
 
         await Product.findByIdAndDelete(req.params.id);
         res.status(200).json({ success: true, message: "Product deleted successfully" });
