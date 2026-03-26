@@ -312,10 +312,10 @@ const AttendanceSheet = () => {
       await fetchNewToken();
       setSelectedDate(date); // Ensure date is set for student counter
       setIsQrFullScreen(true);
-      toast.success(`QR Attendance Started for ${date}! Refreshing every 10s.`);
+      toast.success(`QR Attendance Started for ${date}! Refreshing every 5s.`);
 
-      // Setup interval for rotation (every 10 seconds)
-      qrRefreshInterval.current = setInterval(fetchNewToken, 10000);
+      // Setup interval for rotation (every 5 seconds)
+      qrRefreshInterval.current = setInterval(fetchNewToken, 5000);
 
     } catch (error) {
       console.error("Error starting QR attendance:", error);
