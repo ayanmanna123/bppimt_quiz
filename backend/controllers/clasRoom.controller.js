@@ -2,182 +2,6 @@ import ClassRoom from "../models/classRoom.model.js";
 import Subject from "../models/Subject.model.js";
 import User from "../models/User.model.js";
 
-export const giveAttandance = async (req, res) => {
-  try {
-    const userId = req.auth?.sub;
-    const { latitude, longitude, subjectid } = req.body;
-
-    if (!latitude || !longitude) {
-      return res.status(400).json({
-        success: false,
-        message: "Location (latitude, longitude) is required",
-      });
-    }
-
-    // Find user
-    const user = await User.findOne({ auth0Id: userId });
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    // Find subject
-    const subject = await Subject.findById(subjectid);
-    if (!subject) {
-      return res.status(404).json({
-        success: false,
-        message: "Subject not found",
-      });
-    }
-
-    // Find classroom
-    const classRoom = await ClassRoom.findOne({ subject: subject._id });
-    if (!classRoom) {
-      return res.status(404).json({
-        success: false,
-        message: "Classroom not found for this subject",
-      });
-    }
-
-    // ✅ Check location proximity (≤10 meters)
-    const [classLng, classLat] = classRoom.location.coordinates;
-    const distance = getDistanceFromLatLonInMeters(
-      latitude,
-      longitude,
-      classLat,
-      classLng
-    );
-
-    if (distance > 100) {
-      console.log(`[Attendance Failed] User: ${userId} is too far: ${Math.round(distance)}m`);
-      return res.status(403).json({
-        success: false,
-        message: `You are too far from the classroom (${Math.round(
-          distance
-        )}m away). Allowed range: 100m.`,
-      });
-    }
-
-    // ✅ Face Verification Check
-    const { faceDescriptor } = req.body;
-    if (!user.faceDescriptor || user.faceDescriptor.length === 0) {
-      console.log(`[Attendance Failed] User: ${userId} has no face enrolled`);
-      return res.status(400).json({
-        success: false,
-        message: "Face not enrolled. Please enroll your face in the profile section first."
-      });
-    }
-
-    if (!faceDescriptor) {
-      console.log(`[Attendance Failed] User: ${userId} face verification data missing`);
-      return res.status(400).json({
-        success: false,
-        message: "Face verification data missing."
-      });
-    }
-
-    const faceDistance = getEuclideanDistance(user.faceDescriptor, faceDescriptor);
-    console.log(`[Attendance] Face Match Score: ${faceDistance.toFixed(4)} (Threshold: 0.6)`);
-
-    if (faceDistance > 0.6) {
-      console.log(`[Attendance Failed] User: ${userId} face mismatch: ${faceDistance.toFixed(4)}`);
-      return res.status(403).json({
-        success: false,
-        message: "Face verification failed. Please try again with proper lighting."
-      });
-    }
-
-    // ✅ Get current weekday (e.g., "Monday") in IST
-    const currentWeekDay = new Date().toLocaleString("en-US", {
-      weekday: "long",
-      timeZone: "Asia/Kolkata",
-    });
-
-    // ✅ Get current time in HH:mm format in IST
-    const timeOptions = {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-      timeZone: "Asia/Kolkata"
-    };
-    const formatter = new Intl.DateTimeFormat('en-US', timeOptions);
-    const parts = formatter.formatToParts(new Date());
-    const hour = parts.find(p => p.type === 'hour').value;
-    const minute = parts.find(p => p.type === 'minute').value;
-    const currentTime = `${hour}:${minute}`;
-
-    // ✅ Check if there’s a time slot that matches both weekday and time
-    const isWithinSlot = classRoom.timeSlots.some((slot) => {
-      return (
-        slot.dayOfWeek === currentWeekDay &&
-        isTimeBetween(currentTime, slot.startTime, slot.endTime)
-      );
-    });
-
-    if (!isWithinSlot) {
-      console.log(`[Attendance Failed] User: ${userId}, Subject: ${subjectid}`);
-      console.log(`[Attendance Failed] Server Time: ${currentWeekDay} ${currentTime}`);
-      console.log(`[Attendance Failed] Available Slots:`, JSON.stringify(classRoom.timeSlots));
-      return res.status(403).json({
-        success: false,
-        message: "Attendance time is not active right now (wrong day or time).",
-      });
-    }
-
-    // ✅ Mark attendance if not already marked
-    const today = new Date().toDateString();
-
-    let attendanceForToday = classRoom.attendance.find(
-      (a) => new Date(a.date).toDateString() === today
-    );
-
-    if (!attendanceForToday) {
-      classRoom.attendance.push({
-        date: new Date(),
-        records: [],
-      });
-
-      attendanceForToday =
-        classRoom.attendance[classRoom.attendance.length - 1];
-    }
-
-    const alreadyMarked = attendanceForToday.records.some(
-      (r) => r.student.toString() === user._id.toString()
-    );
-
-    if (alreadyMarked) {
-      return res.status(400).json({
-        success: false,
-        message: "Attendance already marked for today",
-      });
-    }
-
-    attendanceForToday.records.push({
-      student: user._id,
-      markedAt: new Date(),
-    });
-
-    classRoom.markModified("attendance");
-    await classRoom.save();
-
-    // ✅ Emit Socket Event for real-time update
-    emitAttendanceUpdate(req, subjectid, new Date());
-
-    return res.status(200).json({
-      success: true,
-      message: "Attendance marked successfully",
-    });
-  } catch (error) {
-    console.error("Error marking attendance:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error while marking attendance",
-      error: error.message,
-    });
-  }
-};
 
 /**
  * Helper: Emit socket update for attendance
@@ -229,58 +53,7 @@ const markAttendanceHelper = async (classroom, studentId, targetDate) => {
   return { success: true, date: targetDate };
 };
 
-/**
- * Helper: Calculate Euclidean Distance between two descriptors
- */
-function getEuclideanDistance(desc1, desc2) {
-  if (!desc1 || !desc2 || desc1.length !== desc2.length) return 1.0;
-  let sum = 0;
-  for (let i = 0; i < desc1.length; i++) {
-    sum += Math.pow(desc1[i] - desc2[i], 2);
-  }
-  return Math.sqrt(sum);
-}
 
-/**
- * Enroll Face for Student
- */
-export const enrollFace = async (req, res) => {
-  try {
-    const userId = req.auth?.sub;
-    const { faceDescriptor, facePhoto } = req.body;
-
-    if (!faceDescriptor || !Array.isArray(faceDescriptor)) {
-      return res.status(400).json({
-        success: false,
-        message: "Valid face descriptor is required",
-      });
-    }
-
-    const user = await User.findOne({ auth0Id: userId });
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    user.faceDescriptor = faceDescriptor;
-    if (facePhoto) {
-      user.facePhoto = facePhoto;
-    }
-
-    await user.save();
-
-    return res.status(200).json({
-      success: true,
-      message: "Face enrolled successfully",
-    });
-  } catch (error) {
-    console.error("Error enrolling face:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error during face enrollment",
-      error: error.message,
-    });
-  }
-};
 
 /**
  * Calculate distance between two coordinates (meters)
@@ -587,183 +360,6 @@ export const markManualAttendance = async (req, res) => {
 };
 
 // ------------------------------------------------------------------
-// ✅ OTP Based Attendance System
-// ------------------------------------------------------------------
-
-/**
- * Generate a 6-digit OTP for a specific classroom
- * Only accessible by Teacher
- */
-export const generateOtp = async (req, res) => {
-  try {
-    const teacherId = req.auth?.sub; // Auth0 ID
-    const { subjectId, targetDate } = req.body;
-
-    if (!subjectId) {
-      return res.status(400).json({
-        success: false,
-        message: "Subject ID is required",
-      });
-    }
-
-    // specific teacher check
-    const teacher = await User.findOne({ auth0Id: teacherId });
-    if (!teacher) {
-      return res.status(404).json({ message: "Teacher not found" });
-    }
-
-    const classroom = await ClassRoom.findOne({
-      subject: subjectId,
-      teacher: teacher._id,
-    });
-
-    if (!classroom) {
-      return res.status(404).json({
-        success: false,
-        message: "Classroom not found for this subject/teacher",
-      });
-    }
-
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // Set expiration to 5 minutes from now
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
-
-    // ✅ Use provided target date or default to now
-    const attDate = targetDate ? new Date(targetDate) : new Date();
-
-    classroom.currentOtp = otp;
-    classroom.otpExpiresAt = expiresAt;
-    classroom.otpTargetDate = attDate;
-    await classroom.save();
-
-    return res.status(200).json({
-      success: true,
-      message: "OTP generated successfully",
-      otp,
-      expiresAt,
-      targetDate: attDate
-    });
-  } catch (error) {
-    console.error("Error generating OTP:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error generating OTP",
-      error: error.message,
-    });
-  }
-};
-
-/**
- * Student gives attendance using OTP
- * No Location Check | No Weekday Check | No Time Slot Check
- */
-export const giveOtpAttendance = async (req, res) => {
-  try {
-    const userId = req.auth?.sub;
-    const { subjectid, otp } = req.body;
-
-    if (!subjectid || !otp) {
-      return res.status(400).json({
-        success: false,
-        message: "Subject ID and OTP are required",
-      });
-    }
-
-    // Find User
-    const user = await User.findOne({ auth0Id: userId });
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    // Find Classroom
-    const classroom = await ClassRoom.findOne({ subject: subjectid });
-    if (!classroom) {
-      return res.status(404).json({
-        success: false,
-        message: "Classroom not found for this subject",
-      });
-    }
-
-    // ✅ Validate OTP
-    if (!classroom.currentOtp || classroom.currentOtp !== otp) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid OTP. Please ask your teacher for the correct code.",
-      });
-    }
-
-    // ✅ Validate Expiration
-    if (new Date() > new Date(classroom.otpExpiresAt)) {
-      return res.status(400).json({
-        success: false,
-        message: "OTP has expired. Please ask for a new one.",
-      });
-    }
-
-    const result = await markAttendanceHelper(classroom, user._id, targetDate);
-
-    if (!result.success) {
-      return res.status(400).json({
-        success: false,
-        message: result.message,
-      });
-    }
-
-    // ✅ Emit Socket Event
-    emitAttendanceUpdate(req, subjectid, targetDate);
-
-    return res.status(200).json({
-      success: true,
-      message: `Attendance marked successfully for ${new Date(targetDate).toDateString()}!`,
-    });
-  } catch (error) {
-    console.error("Error giving OTP attendance:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error marking attendance",
-      error: error.message,
-    });
-  }
-};
-
-/**
- * Check if there is an active OTP for the given subject
- */
-export const checkActiveOtp = async (req, res) => {
-  try {
-    const { subjectId } = req.params;
-
-    const classroom = await ClassRoom.findOne({ subject: subjectId });
-
-    if (!classroom) {
-      return res.status(200).json({
-        success: true,
-        hasActiveOtp: false,
-        message: "No classroom found",
-      });
-    }
-
-    // Check if OTP exists and is not expired
-    const hasActiveOtp =
-      classroom.currentOtp && new Date() < new Date(classroom.otpExpiresAt);
-
-    return res.status(200).json({
-      success: true,
-      hasActiveOtp: !!hasActiveOtp,
-    });
-  } catch (error) {
-    console.error("Error checking OTP status:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error checking OTP status",
-      error: error.message,
-    });
-  }
-};
-
-// ------------------------------------------------------------------
 // ✅ QR Code Based Attendance System
 // ------------------------------------------------------------------
 
@@ -795,6 +391,7 @@ export const generateQrCodeToken = async (req, res) => {
       expiresAt = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes from start
     }
 
+    // Safely parse an ISO standard string if explicitly requested by frontend
     const attDate = targetDate ? new Date(targetDate) : new Date();
 
     // Rotate active tokens: Add new, keep last 2 (current + 1 previous for lag)
@@ -828,12 +425,12 @@ export const generateQrCodeToken = async (req, res) => {
 export const giveQrAttendance = async (req, res) => {
   try {
     const userId = req.auth?.sub;
-    const { subjectid, token, latitude, longitude } = req.body;
+    const { subjectid, token } = req.body;
 
-    if (!subjectid || !token || !latitude || !longitude) {
+    if (!subjectid || !token) {
       return res.status(400).json({
         success: false,
-        message: "Subject ID, Token, and Location are required",
+        message: "Subject ID and Token are required",
       });
     }
 
@@ -859,17 +456,6 @@ export const giveQrAttendance = async (req, res) => {
     // ✅ Validate Global Session Expiration
     if (new Date() > new Date(classroom.qrCodeExpiresAt)) {
       return res.status(400).json({ success: false, message: "QR code has expired. Ask teacher to regenerate." });
-    }
-
-    // ✅ Check location proximity (≤100 meters)
-    const [classLng, classLat] = classroom.location.coordinates;
-    const distance = getDistanceFromLatLonInMeters(latitude, longitude, classLat, classLng);
-
-    if (distance > 100) {
-      return res.status(403).json({
-        success: false,
-        message: `Too far from classroom (${Math.round(distance)}m). Range: 100m.`,
-      });
     }
 
     // ✅ Mark Attendance

@@ -29,7 +29,7 @@
   },
   {
     "question": "How does attendance work?",
-    "answer": "Attendance is taken using an OTP and location verification. Teachers enable attendance (Live Mode) and provide an OTP valid for 5 minutes. Students must be within the specified classroom location and enter the correct OTP to be marked present."
+    "answer": "Attendance is taken using QR code or Face Verification along with location verification. Teachers enable attendance (Live Mode). Students must be physically present within the specified classroom location."
   },
   {
     "question": "Can teachers mark attendance manually?",
@@ -37,7 +37,7 @@
   },
   {
     "question": "What is the difference between Live and Offline attendance?",
-    "answer": "In 'Live' mode, students can mark their own attendance using an OTP. In 'Offline' mode, the teacher must manually mark attendance for each student."
+    "answer": "In 'Live' mode, students can mark their own attendance using QR code or Face Verification. In 'Offline' mode, the teacher must manually mark attendance for each student."
   },
   {
     "question": "How do I export attendance data?",
@@ -261,7 +261,7 @@
   },
   {
     "question": "What is the 'Attendance Sheet'?",
-    "answer": "It is a record of your presence in different classes, tracked via the OTP and location system."
+    "answer": "It is a record of your presence in different classes, tracked via the QR, face verification, and location system."
   },
   {
     "question": "How do I find my department and semester?",
@@ -334,14 +334,6 @@
   {
     "question": "Why does it say 'Attendance time is not active'?",
     "answer": "You can only mark attendance during the specific day and time slots scheduled by your teacher. Please check the timetable."
-  },
-  {
-    "question": "I see 'Invalid OTP' when trying to give attendance.",
-    "answer": "The OTP you entered is incorrect. Please ask your teacher for the current 6-digit code displayed on their screen."
-  },
-  {
-    "question": "What does 'OTP has expired' mean?",
-    "answer": "OTPs are valid for only 5 minutes. If it has expired, please ask your teacher to generate a new one."
   },
   {
     "question": "Why can't I upload my assignment?",

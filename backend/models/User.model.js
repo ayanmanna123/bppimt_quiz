@@ -102,14 +102,7 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       }
     ],
-    faceDescriptor: {
-      type: [Number], // 128-float embedding
-      default: undefined
-    },
-    facePhoto: {
-      type: String, // ImageKit URL
-      default: undefined
-    },
+
     chatBackground: {
       type: String, // ImageKit URL for chat background
       default: ""

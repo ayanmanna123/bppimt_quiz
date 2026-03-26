@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { QRCodeSVG } from "qrcode.react";
@@ -50,23 +50,37 @@ const AttendanceSheet = () => {
   const [students, setStudents] = useState([]);
   const [months, setMonths] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedIsoDate, setSelectedIsoDate] = useState(null);
   const [selectedAttendance, setSelectedAttendance] = useState({});
   const [showPopup, setShowPopup] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
   const { subjectId } = useParams();
+  const location = useLocation();
+  const qrStartedRef = useRef(false);
+
+  // Auto-start QR functionality if steered from the dashboard Quick Action
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get("startQr") === "true" && !qrStartedRef.current) {
+      qrStartedRef.current = true;
+      // Small timeout to allow auth0 token to be ready if needed
+      setTimeout(() => {
+        generateQrAuth(new Date().toLocaleDateString(), new Date().toISOString());
+      }, 500);
+    }
+  }, [location.search]);
   const socket = useSocket(); // ✅ Access socket instance
 
   // ✅ Fetch attendance data
-  const fetchAttendance = async () => {
+  const fetchAttendance = useCallback(async () => {
     try {
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v2",
       });
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL
-        }/attandance/get-subject/${subjectId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/attandance/get-subject/${subjectId}?_t=${new Date().getTime()}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -81,7 +95,7 @@ const AttendanceSheet = () => {
           days: Array.from({ length: daysInMonth }, (_, d) => {
             const dateObj = new Date(currentYear, i, d + 1);
             const dateStr = dateObj.toLocaleDateString();
-            return { date: dateStr };
+            return { date: dateStr, iso: dateObj.toISOString() };
           }),
         };
       });
@@ -121,11 +135,11 @@ const AttendanceSheet = () => {
     } catch (error) {
       console.error("Error fetching attendance:", error);
     }
-  };
+  }, [subjectId, getAccessTokenSilently]);
 
   useEffect(() => {
     fetchAttendance();
-  }, [subjectId, getAccessTokenSilently]);
+  }, [fetchAttendance]);
 
   // ✅ Socket integration for real-time updates
   useEffect(() => {
@@ -148,11 +162,12 @@ const AttendanceSheet = () => {
         socket.off("attendanceUpdate", handleUpdate);
       };
     }
-  }, [socket, subjectId]);
+  }, [socket, subjectId, fetchAttendance]);
 
   // ✅ Popup open handler
-  const handleDateClick = (date) => {
+  const handleDateClick = (date, isoDate) => {
     setSelectedDate(date);
+    if (isoDate) setSelectedIsoDate(isoDate);
     const initial = {};
     students.forEach((stu) => {
       initial[stu._id] = stu[date] || "";
@@ -206,34 +221,6 @@ const AttendanceSheet = () => {
       setIsUpdating(false);
     }
   };
-
-  // ✅ Generate OTP
-  const [generatedOtp, setGeneratedOtp] = useState(null);
-  const [otpExpiresAt, setOtpExpiresAt] = useState(null);
-
-  const generateOtpAuth = async (date) => {
-    try {
-      const token = await getAccessTokenSilently({
-        audience: "http://localhost:5000/api/v2",
-      });
-
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/attandance/generate-otp`,
-        { subjectId, targetDate: date }, // ✅ Pass selected date
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (res.data.success) {
-        setGeneratedOtp(res.data.otp);
-        setOtpExpiresAt(new Date(res.data.expiresAt));
-        toast.success(`OTP Generated for ${date}! Valid for 5 minutes.`);
-      }
-    } catch (error) {
-      console.error("Error generating OTP:", error);
-      toast.error("Failed to generate OTP");
-    }
-  };
-
   // ✅ QR Code Logic
   const [generatedQrToken, setGeneratedQrToken] = useState(null);
   const [qrExpiresAt, setQrExpiresAt] = useState(null);
@@ -282,7 +269,7 @@ const AttendanceSheet = () => {
     };
   }, []);
 
-  const generateQrAuth = async (date) => {
+  const generateQrAuth = async (dateStr, isoDateStr) => {
     try {
       // Clear existing interval if any
       if (qrRefreshInterval.current) clearInterval(qrRefreshInterval.current);
@@ -295,7 +282,7 @@ const AttendanceSheet = () => {
         try {
           const res = await axios.post(
             `${import.meta.env.VITE_BACKEND_URL}/attandance/generate-qr`,
-            { subjectId, targetDate: date },
+            { subjectId, targetDate: isoDateStr || new Date().toISOString() },
             { headers: { Authorization: `Bearer ${token}` } }
           );
 
@@ -310,12 +297,12 @@ const AttendanceSheet = () => {
 
       // Initial fetch
       await fetchNewToken();
-      setSelectedDate(date); // Ensure date is set for student counter
+      setSelectedDate(dateStr || new Date().toLocaleDateString()); // Ensure date is set for student counter strictly 
       setIsQrFullScreen(true);
-      toast.success(`QR Attendance Started for ${date}! Refreshing every 5s.`);
+      toast.success(`QR Attendance Started! Refreshing every 10s.`);
 
       // Setup interval for rotation (every 5 seconds)
-      qrRefreshInterval.current = setInterval(fetchNewToken, 5000);
+      qrRefreshInterval.current = setInterval(fetchNewToken, 10000);
 
     } catch (error) {
       console.error("Error starting QR attendance:", error);
@@ -466,14 +453,6 @@ const AttendanceSheet = () => {
 
             {/* Action Bar */}
             <div className="flex flex-wrap gap-4 items-center">
-              <div className="flex items-center gap-3 bg-white/50 dark:bg-slate-800/40 px-4 py-2 rounded-xl border border-white/10 dark:border-slate-700 backdrop-blur-sm">
-                <div className={`w-3 h-3 rounded-full shadow-inner ${isAttendanceEnabled ? "bg-green-400 animate-pulse box-shadow-green" : "bg-red-400"}`} />
-                <span className="font-semibold text-sm uppercase tracking-wider text-gray-700 dark:text-gray-200">{isAttendanceEnabled ? "Live" : "Offline"}</span>
-                <label className="relative inline-flex items-center cursor-pointer ml-2">
-                  <input type="checkbox" checked={isAttendanceEnabled} onChange={handleToggleAttendance} className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-400 dark:bg-slate-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                </label>
-              </div>
 
               <button
                 onClick={exportToExcel}
@@ -484,27 +463,6 @@ const AttendanceSheet = () => {
               </button>
             </div>
           </div>
-
-          {/* OTP Banner - Floating Card */}
-          {generatedOtp && (
-            <div className="mb-8 transform transition-all duration-500 ease-out translate-y-0 opacity-100">
-              <div className="bg-white dark:bg-slate-900/60 rounded-2xl shadow-xl border-l-8 border-indigo-500 p-6 flex items-center justify-between relative overflow-hidden group">
-                <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-indigo-50 to-transparent dark:from-indigo-900/10 opacity-50 z-0 group-hover:w-full transition-all duration-700"></div>
-                <div className="relative z-10">
-                  <div className="flex items-center gap-3 text-indigo-700 dark:text-indigo-400 mb-1">
-                    <ShieldCheck className="w-6 h-6" />
-                    <h3 className="text-lg font-bold uppercase tracking-wider">Active Session Code</h3>
-                  </div>
-                  <p className="text-gray-500 dark:text-gray-400 flex items-center gap-2 text-sm font-medium">
-                    <Clock className="w-4 h-4" /> Expires at {otpExpiresAt?.toLocaleTimeString()}
-                  </p>
-                </div>
-                <div className="relative z-10 bg-indigo-50 dark:bg-indigo-900/20 px-8 py-3 rounded-xl border border-indigo-100 dark:border-indigo-800 shadow-inner">
-                  <span className="text-5xl font-mono font-black text-indigo-600 dark:text-indigo-400 tracking-[0.2em]">{generatedOtp}</span>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* QR Code Banner - Floating Card */}
           {generatedQrToken && (
@@ -561,15 +519,14 @@ const AttendanceSheet = () => {
                     </h3>
                   </div>
                   <button
-                    onClick={() =>
-                      handleDateClick(
-                        new Date(
-                          new Date().getFullYear(),
-                          month.month - 1,
-                          new Date().getDate()
-                        ).toLocaleDateString()
-                      )
-                    }
+                    onClick={() => {
+                      const d = new Date(
+                        new Date().getFullYear(),
+                        month.month - 1,
+                        new Date().getDate()
+                      );
+                      handleDateClick(d.toLocaleDateString(), d.toISOString());
+                    }}
                     className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold transition-all shadow-md shadow-indigo-200 dark:shadow-indigo-900/50"
                   >
                     <span>+ Mark Attendance</span>
@@ -591,7 +548,7 @@ const AttendanceSheet = () => {
                           {month.days.map((day) => (
                             <th
                               key={day.date}
-                              onClick={() => handleDateClick(day.date)}
+                              onClick={() => handleDateClick(day.date, day.iso)}
                               className="px-2 py-3 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors min-w-[40px] border-r border-gray-100 dark:border-slate-800 last:border-r-0 group"
                             >
                               <div className="flex flex-col items-center gap-1">
@@ -687,14 +644,7 @@ const AttendanceSheet = () => {
                 </p>
               </div>
               <button
-                onClick={() => generateOtpAuth(selectedDate)}
-                className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all text-sm"
-              >
-                <ShieldCheck className="w-4 h-4" />
-                <span>Generate OTP</span>
-              </button>
-              <button
-                onClick={() => generateQrAuth(selectedDate)}
+                onClick={() => generateQrAuth(selectedDate, selectedIsoDate)}
                 className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-700 shadow-md shadow-green-200 transition-all text-sm"
               >
                 <QrCode className="w-4 h-4" />

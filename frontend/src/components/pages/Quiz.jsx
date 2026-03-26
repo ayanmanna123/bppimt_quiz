@@ -46,7 +46,6 @@ import { setsubjectByquiry } from "../../Redux/subject.reducer";
 import axios from "axios";
 import { toast } from "sonner";
 import { useSocket } from "../../context/SocketContext";
-import FaceCaptureModal from "../shared/FaceCaptureModal";
 import QrScannerModal from "../shared/QrScannerModal";
 // Student-focused gradient combinations
 const studentGradients = [
@@ -118,9 +117,7 @@ const Quiz = () => {
   const dispatch = useDispatch();
   // Filter and search logic
   const { getAccessTokenSilently } = useAuth0();
-  const [showOtpModal, setShowOtpModal] = useState(false);
   const [targetSubjectId, setTargetSubjectId] = useState(null);
-  const [otpInput, setOtpInput] = useState("");
   const [activeChatSubject, setActiveChatSubject] = useState(null);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
@@ -197,13 +194,6 @@ const Quiz = () => {
         return "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
     }
   };
-
-  const initiateAttendance = (subId) => {
-    setTargetSubjectId(subId);
-    setShowOtpModal(true);
-    setOtpInput("");
-  };
-
   const isMeetingLive = (meeting) => {
     // Basic check: is today and time is within range?
     // Parsing "YYYY-MM-DD" and "HH:mm"
@@ -279,46 +269,6 @@ const Quiz = () => {
       }
     }
   }, [socket]);
-
-  const submitOtpAttendance = async () => {
-    try {
-      if (!otpInput) {
-        toast.error("Please enter the OTP");
-        return;
-      }
-
-      const token = await getAccessTokenSilently({
-        audience: "http://localhost:5000/api/v2",
-      });
-
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/attandance/give-attandance-otp`,
-        {
-          otp: otpInput,
-          subjectid: targetSubjectId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log(res.data);
-      toast.success(res.data.message);
-      const { Howl } = await import("howler");
-      const sound = new Howl({
-        src: ["/notification.wav"],
-        volume: 0.7,
-      });
-      sound.play();
-      setShowOtpModal(false);
-    } catch (error) {
-      const msg = error?.response?.data?.message || error.message;
-      toast.error(msg);
-      console.error("Error marking attendance:", error);
-    }
-  };
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
@@ -365,121 +315,46 @@ const Quiz = () => {
         return;
       }
 
-      // 1. Check if there is an active OTP
-      const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/attandance/check-otp-status/${subId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (res.data.success && res.data.hasActiveOtp) {
-        // 2a. If OTP is active -> Show OTP Modal
-        initiateAttendance(subId);
-      } else {
-        // 2b. If NO OTP -> Face Verification first
-        setCurrentAttendanceSubId(subId);
-        setIsFaceModalOpen(true);
-      }
+      toast.error("No active attendance session is running.");
     } catch (error) {
       console.error("Error checking attendance mode:", error);
       toast.error("Failed to check attendance mode");
     }
   };
 
-  const handleQrScanSuccess = (scannedToken) => {
+  const handleQrScanSuccess = async (scannedToken) => {
     setIsQrModalOpen(false);
-    toast.info("QR Scanned! Fetching your location for verification...");
+    toast.info("QR Scanned! Processing attendance...");
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        try {
-          const token = await getAccessTokenSilently({
-            audience: "http://localhost:5000/api/v2",
-          });
+    try {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v2",
+      });
 
-          const res = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/attandance/give-attandance-qr`,
-            {
-              subjectid: targetSubjectId,
-              token: scannedToken,
-              latitude,
-              longitude,
-            },
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/attandance/give-attandance-qr`,
+        {
+          subjectid: targetSubjectId,
+          token: scannedToken,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-          if (res.data.success) {
-            toast.success(res.data.message);
-            const { Howl } = await import("howler");
-            const sound = new Howl({
-              src: ["/notification.wav"],
-              volume: 0.7,
-            });
-            sound.play();
-          }
-        } catch (error) {
-          const msg = error?.response?.data?.message || "QR attendance failed";
-          toast.error(msg);
-        }
-      },
-      (error) => {
-        console.error("Location error:", error);
-        toast.error("Unable to retrieve location. GPS is required for QR attendance.");
+      if (res.data.success) {
+        toast.success(res.data.message);
+        const { Howl } = await import("howler");
+        const sound = new Howl({
+          src: ["/notification.wav"],
+          volume: 0.7,
+        });
+        sound.play();
       }
-    );
-  };
-
-  const handleNormalAttendance = (subId, faceDescriptor = null) => {
-    if (!faceDescriptor) {
-      toast.error("Face verification required");
-      return;
+    } catch (error) {
+      const msg = error?.response?.data?.message || "QR attendance failed";
+      toast.error(msg);
     }
-
-    toast.info("Fetching your location...");
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        try {
-          const token = await getAccessTokenSilently({
-            audience: "http://localhost:5000/api/v2",
-          });
-
-          const res = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/attandance/give-attandance`,
-            {
-              subjectid: subId,
-              latitude,
-              longitude,
-              faceDescriptor,
-            },
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-
-          if (res.data.success) {
-            toast.success(res.data.message);
-            const { Howl } = await import("howler");
-            const sound = new Howl({
-              src: ["/notification.wav"],
-              volume: 0.7,
-            });
-            sound.play();
-          }
-        } catch (error) {
-          const msg = error?.response?.data?.message || "Attendance failed";
-          toast.error(msg);
-        }
-      },
-      (error) => {
-        console.error("Location error:", error);
-        toast.error("Unable to retrieve your location. Please enable location access.");
-      }
-    );
   };
+
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014] transition-colors duration-700 overflow-hidden">
@@ -802,41 +677,6 @@ const Quiz = () => {
         </div>
       </div >
 
-      {/* OTP Modal */}
-      {
-        showOtpModal && (
-          <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-indigo-950 p-8 rounded-2xl w-[400px] shadow-2xl border border-gray-200 dark:border-indigo-500/30">
-              <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">Enter Class OTP</h2>
-              <p className="text-center text-gray-500 dark:text-indigo-200/70 mb-6">Enter the 6-digit code shared by your teacher</p>
-
-              <input
-                type="text"
-                maxLength="6"
-                value={otpInput}
-                onChange={(e) => setOtpInput(e.target.value)}
-                className="w-full text-center text-3xl tracking-[1em] font-mono font-bold py-3 border-2 border-gray-300 dark:border-indigo-500/30 rounded-xl focus:border-blue-500 dark:focus:border-indigo-400 focus:outline-none mb-6 bg-white dark:bg-indigo-900/30 text-gray-800 dark:text-white"
-                placeholder="000000"
-              />
-
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setShowOtpModal(false)}
-                  className="flex-1 py-3 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-indigo-900/50 dark:hover:bg-indigo-800/50 dark:text-indigo-200 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={submitOtpAttendance}
-                  className="flex-1 py-3 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
-                >
-                  Submit
-                </button>
-              </div>
-            </div>
-          </div>
-        )
-      }
       {
         activeChatSubject && (
           <ChatWindow
@@ -846,17 +686,6 @@ const Quiz = () => {
           />
         )
       }
-      <FaceCaptureModal
-        isOpen={isFaceModalOpen}
-        onClose={() => {
-          setIsFaceModalOpen(false);
-          setCurrentAttendanceSubId(null);
-        }}
-        onCapture={(descriptor) => {
-          handleNormalAttendance(currentAttendanceSubId, descriptor);
-        }}
-        title="Verify Your Face"
-      />
       <QrScannerModal
         isOpen={isQrModalOpen}
         onClose={() => setIsQrModalOpen(false)}
