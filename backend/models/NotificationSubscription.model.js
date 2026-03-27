@@ -6,13 +6,10 @@ const notificationSubscriptionSchema = new mongoose.Schema({
         ref: "User",
         required: true,
     },
-    endpoint: {
+    fcmToken: {
         type: String,
         required: true,
-    },
-    keys: {
-        p256dh: { type: String, required: true },
-        auth: { type: String, required: true },
+        unique: true
     },
     createdAt: {
         type: Date,

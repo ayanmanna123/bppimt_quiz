@@ -19,83 +19,25 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
     const VAPID_PUBLIC_KEY = "BI9CAjZwb3pUMWhVxcwKNQWOF8NZepe3wXuvne7Jr7vtUJ1H-ZtN98OcZcS-a9oNtcTpKi9yt4f8OHdPZHT-rHw";
 
     useEffect(() => {
-        if ('serviceWorker' in navigator && 'PushManager' in window) {
-            registerServiceWorker();
+        if ('serviceWorker' in navigator) {
+            // FCM uses the service worker automatically if named firebase-messaging-sw.js
+            // or we can pass our own registration.
+            checkSubscription();
         }
         checkPersistence();
         checkInstallationStatus();
         checkPeriodicSyncSupport();
     }, []);
 
-    const checkInstallationStatus = () => {
-        const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-        setIsStandalone(!!standalone);
-    };
-
-    const checkPeriodicSyncSupport = async () => {
-        if ('serviceWorker' in navigator && 'periodicSync' in ServiceWorkerRegistration.prototype) {
-            setPeriodicSyncSupported(true);
-            const registration = await navigator.serviceWorker.ready;
-            try {
-                const tags = await registration.periodicSync.getTags();
-                if (!tags.includes('notification-heartbeat')) {
-                    const status = await navigator.permissions.query({
-                        name: 'periodic-background-sync',
-                    });
-                    if (status.state === 'granted') {
-                        await registration.periodicSync.register('notification-heartbeat', {
-                            minInterval: 24 * 60 * 60 * 1000, // 24 hours is often the minimum allowed
-                        });
-                        console.log('Periodic sync registered!');
-                    }
-                }
-            } catch (err) {
-                console.warn('Periodic Sync could not be registered:', err);
-            }
-        }
-    };
-
-    const checkPersistence = async () => {
-        if (navigator.storage && navigator.storage.persisted) {
-            const persisted = await navigator.storage.persisted();
-            setIsPersistent(persisted);
-        }
-    };
-
-    const requestPersistence = async () => {
-        if (navigator.storage && navigator.storage.persist) {
-            const persisted = await navigator.storage.persist();
-            setIsPersistent(persisted);
-            if (persisted) {
-                toast.success("Storage made persistent. This helps notifications work better!");
-            } else {
-                toast.info("Could not enable persistent storage. You may need to bookmark the app or add it to home screen first.");
-            }
-        }
-    };
-
-    const urlBase64ToUint8Array = (base64String) => {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding)
-            .replace(/-/g, '+')
-            .replace(/_/g, '/');
-
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-
-        for (let i = 0; i < rawData.length; ++i) {
-            outputArray[i] = rawData.charCodeAt(i);
-        }
-        return outputArray;
-    };
-
-    const registerServiceWorker = async () => {
+    const checkSubscription = async () => {
         try {
             const registration = await navigator.serviceWorker.ready;
-            const sub = await registration.pushManager.getSubscription();
-            if (sub) {
-                setSubscription(sub);
-                setIsSubscribed(true);
+            if (registration) {
+                // Check if we already have a subscription in local storage or something
+                // For now, we'll just check if permissions are granted
+                if (Notification.permission === 'granted') {
+                    setIsSubscribed(true);
+                }
             }
         } catch (error) {
             console.error("Error checking subscription", error);
@@ -111,52 +53,26 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
                 return;
             }
 
-            console.log("2. Waiting for Service Worker...");
-            if (!('serviceWorker' in navigator)) {
-                toast.error("Service Worker not supported in this browser.");
+            console.log("2. Importing Firebase Messaging...");
+            const { messaging, requestForToken } = await import('../firebase-config');
+
+            console.log("3. Getting FCM Token...");
+            const fcmToken = await requestForToken();
+
+            if (!fcmToken) {
+                toast.error("Failed to get push token. Please try again.");
                 return;
             }
 
-            // This promise will verify if the SW is actually registered and active
-            const registration = await navigator.serviceWorker.ready;
-
-            if (!registration) {
-                console.error("Service Worker ready assertion failed.");
-                toast.error("Service Worker not ready. Try reloading the page.");
-                return;
-            }
-
-            console.log("3. Service Worker ready:", registration);
-
-            const convertedVapidKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
-
-            console.log("4. Subscribing to PushManager...");
-            const sub = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: convertedVapidKey
-            });
-
-            console.log("5. Subscription object:", sub);
-            setSubscription(sub);
-            setIsSubscribed(true);
-
-            // Send subscription to backend
-            console.log("6. Sending subscription to backend...");
-
+            console.log("4. Sending token to backend...");
             if (!user?.sub) {
                 toast.error("Please log in to enable notifications.");
                 return;
             }
 
-            // sub is a PushSubscription object. We need to serialize it or use .toJSON() if we want just the data, 
-            // but axios will serialize the object. However, PushSubscription is special. 
-            // It's safer to explicitly use .toJSON() or construct the object.
-            // standard properties are endpoint, expirationTime, options. keys is inside toJSON().
-
-            const subscriptionData = sub.toJSON();
             const token = await getAccessTokenSilently();
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/notifications/subscribe`, {
-                ...subscriptionData,
+                fcmToken,
                 userId: user.sub
             }, {
                 headers: {
@@ -164,12 +80,14 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
                 }
             });
 
+            setIsSubscribed(true);
             toast.success("Notifications enabled successfully!");
         } catch (error) {
             console.error("Error subscribing to push:", error);
             toast.error(`Error: ${error.message || "Failed to subscribe"}`);
         }
     };
+
 
     const sendTestNotification = async () => {
         if (!user?.sub) return;

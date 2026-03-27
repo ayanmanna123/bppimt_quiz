@@ -1,20 +1,25 @@
 import Notification from "../models/Notification.model.js";
 import NotificationSubscription from "../models/NotificationSubscription.model.js";
-import webpush from "web-push";
+import admin from "firebase-admin";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-// Configure web-push with VAPID keys
-if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
-    webpush.setVapidDetails(
-        "mailto:mannaayan777@gmail.com",
-        process.env.VAPID_PUBLIC_KEY,
-        process.env.VAPID_PRIVATE_KEY
-    );
-} else {
-    console.warn("VAPID keys are missing! Push notifications will not work reliably.");
+// Initialize Firebase Admin
+try {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+        const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+        });
+        console.log("Firebase Admin initialized successfully.");
+    } else {
+        console.warn("FIREBASE_SERVICE_ACCOUNT_KEY is missing! Push notifications will not work.");
+    }
+} catch (error) {
+    console.error("Error initializing Firebase Admin:", error);
 }
+
 
 
 /**
@@ -59,47 +64,64 @@ export const sendNotification = async ({
             io.to(recipientId.toString()).emit("newNotification", notification);
         }
 
-        // 3. Send Web Push Notification
-        // Find subscriptions for this user
+        // 3. Send Web Push Notification via Firebase
         const subscriptions = await NotificationSubscription.find({ userId: recipientId });
 
         if (subscriptions.length > 0) {
-            const payload = JSON.stringify({
-                title: type === "quiz" && onModel === "Result" ? "Quiz Submission Received" : type === "quiz" ? "New Quiz Available" : type === "subject" ? "New Subject Added" : "New Notification",
-                body: message,
-                icon: "/bppimt.svg",
-                badge: "/bppimt.svg",
-                tag: "quiz-notification",
-                renotify: true,
+            const tokens = subscriptions.map(sub => sub.fcmToken);
+            
+            const messagePayload = {
+                tokens: tokens,
+                notification: {
+                    title: type === "quiz" && onModel === "Result" ? "Quiz Submission Received" : type === "quiz" ? "New Quiz Available" : type === "subject" ? "New Subject Added" : "New Notification",
+                    body: message,
+                },
                 data: {
-                    url,
-                    type,
-                    relatedId
-                }
-            });
-
-            const promises = subscriptions.map((sub) => {
-                const subObj = {
-                    endpoint: sub.endpoint,
-                    keys: {
-                        p256dh: sub.keys.p256dh,
-                        auth: sub.keys.auth
+                    url: url.toString(),
+                    type: type.toString(),
+                    relatedId: relatedId ? relatedId.toString() : ""
+                },
+                webpush: {
+                    headers: {
+                      Urgency: 'high',
+                    },
+                    notification: {
+                      icon: "/bppimt.svg",
+                      badge: "/bppimt.svg",
+                      tag: "quiz-notification",
+                      renotify: true,
+                    },
+                    fcmOptions: {
+                        link: url.toString()
                     }
-                };
-                console.log(`Attempting to send push to endpoint: ${sub.endpoint.substring(0, 30)}...`);
-                return webpush.sendNotification(subObj, payload)
-                    .then(() => console.log("Push notification sent successfully"))
-                    .catch(async (err) => {
-                        console.error("Error sending push notification:", err.statusCode, err.message || err);
-                        if (err.statusCode === 410 || err.statusCode === 404) {
-                            // Subscription has expired or is no longer valid
-                            console.log(`Removing expired subscription: ${sub._id}`);
-                            await NotificationSubscription.deleteOne({ _id: sub._id });
+                }
+            };
+
+            try {
+                const response = await admin.messaging().sendEachForMulticast(messagePayload);
+                console.log(`${response.successCount} messages were sent successfully`);
+                
+                if (response.failureCount > 0) {
+                    const failedTokens = [];
+                    response.responses.forEach((resp, idx) => {
+                        if (!resp.success) {
+                            console.error(`Error sending to token ${tokens[idx]}:`, resp.error);
+                            // If invalid or unregistered, clean up
+                            if (resp.error.code === 'messaging/registration-token-not-registered' || 
+                                resp.error.code === 'messaging/invalid-registration-token') {
+                                failedTokens.push(tokens[idx]);
+                            }
                         }
                     });
-            });
-
-            await Promise.all(promises);
+                    
+                    if (failedTokens.length > 0) {
+                        console.log(`Removing ${failedTokens.length} invalid tokens...`);
+                        await NotificationSubscription.deleteMany({ fcmToken: { $in: failedTokens } });
+                    }
+                }
+            } catch (error) {
+                console.error("Error in Firebase Multicast:", error);
+            }
         }
 
 
