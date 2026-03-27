@@ -15,8 +15,10 @@ self.addEventListener('push', (event) => {
         const title = data.title || 'New Notification';
         const options = {
             body: data.body || 'You have a new update.',
-            icon: '/img-1.png',
-            badge: '/img-1.png',
+            icon: '/bppimt.svg',
+            badge: '/bppimt.svg',
+            tag: data.tag || 'general-notification',
+            renotify: data.renotify !== undefined ? data.renotify : true,
             data: data.data || {} // Include data for click handling
         };
 
@@ -53,4 +55,12 @@ self.addEventListener('notificationclick', (event) => {
     });
 
     event.waitUntil(promiseChain);
+});
+
+// Optional: Background Sync / Periodic Sync to keep worker alive
+self.addEventListener('periodicsync', (event) => {
+    if (event.tag === 'notification-heartbeat') {
+        console.log('Periodic sync heartbeat received...');
+        // No action needed, just waking up the SW
+    }
 });
