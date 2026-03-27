@@ -69,7 +69,7 @@ export const sendNotification = async ({
                 body: message,
                 icon: "/bppimt.svg",
                 badge: "/bppimt.svg",
-                tag: type + "-" + (relatedId || "general"),
+                tag: "quiz-notification",
                 renotify: true,
                 data: {
                     url,
