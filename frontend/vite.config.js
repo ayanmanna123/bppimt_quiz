@@ -28,6 +28,9 @@ export default defineConfig({
         short_name: 'QuizApp',
         description: 'BPPIMT Quiz Application for Students',
         theme_color: '#ffffff',
+        background_color: '#ffffff',
+        display: 'standalone',
+        start_url: '/',
         icons: [
           {
             src: 'img-1.png',
