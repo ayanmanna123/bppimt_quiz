@@ -36,43 +36,6 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Howl } from "howler";
 
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-
-// Fix for default marker icon
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-});
-
-function LocationMarker({ position, setPosition, setLatitude, setLongitude }) {
-  const map = useMapEvents({
-    click(e) {
-      setPosition(e.latlng);
-      setLatitude(e.latlng.lat);
-      setLongitude(e.latlng.lng);
-      map.flyTo(e.latlng, map.getZoom());
-    },
-    locationfound(e) {
-      setPosition(e.latlng);
-      map.flyTo(e.latlng, map.getZoom());
-    },
-  });
-
-  React.useEffect(() => {
-    if (position) {
-      map.flyTo(position, map.getZoom());
-    }
-  }, [position, map]);
-
-  return position === null ? null : (
-    <Marker position={position}></Marker>
-  )
-}
-
 const ValidatedInput = ({
   value,
   onChange,
@@ -181,10 +144,6 @@ const CreateSubject = () => {
   const [subjectCode, setSubjectCode] = useState("");
   const [semester, setSemester] = useState("");
   const [department, setDepartment] = useState("");
-  const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
-  const [position, setPosition] = useState(null);
-  const [timeSlots, setTimeSlots] = useState([{ dayOfWeek: "", startTime: "", endTime: "" }]);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const navigate = useNavigate();
 
@@ -201,24 +160,6 @@ const CreateSubject = () => {
     return () => observer.disconnect();
   }, []);
 
-  const handleGetLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          setLatitude(latitude);
-          setLongitude(longitude);
-          setPosition({ lat: latitude, lng: longitude });
-          toast.success("Location retrieved successfully!");
-        },
-        (error) => {
-          toast.error("Error getting location: " + error.message);
-        }
-      );
-    } else {
-      toast.error("Geolocation is not supported by this browser.");
-    }
-  };
 
   const departmentOptions = [
     { value: "EE", label: "Electrical Engineering (EE)" },
@@ -238,30 +179,6 @@ const CreateSubject = () => {
     { value: "eighth", label: "Eighth Semester" }
   ];
 
-  const dayOfWeekOptions = [
-    { value: "Monday", label: "Monday" },
-    { value: "Tuesday", label: "Tuesday" },
-    { value: "Wednesday", label: "Wednesday" },
-    { value: "Thursday", label: "Thursday" },
-    { value: "Friday", label: "Friday" },
-    { value: "Saturday", label: "Saturday" },
-    { value: "Sunday", label: "Sunday" }
-  ];
-
-  const addTimeSlot = () => {
-    setTimeSlots([...timeSlots, { dayOfWeek: "", startTime: "", endTime: "" }]);
-  };
-
-  const removeTimeSlot = (index) => {
-    const newTimeSlots = timeSlots.filter((_, i) => i !== index);
-    setTimeSlots(newTimeSlots);
-  };
-
-  const updateTimeSlot = (index, field, value) => {
-    const newTimeSlots = [...timeSlots];
-    newTimeSlots[index][field] = value;
-    setTimeSlots(newTimeSlots);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -275,16 +192,7 @@ const CreateSubject = () => {
           department,
           semester,
           subjectName,
-          subjectCode,
-          location: {
-            latitude: parseFloat(latitude),
-            longitude: parseFloat(longitude)
-          },
-          timeSlots: timeSlots.map(slot => ({
-            dayOfWeek: slot.dayOfWeek,
-            startTime: slot.startTime,
-            endTime: slot.endTime
-          }))
+          subjectCode
         },
         {
           headers: {
@@ -297,9 +205,6 @@ const CreateSubject = () => {
       setSubjectCode("");
       setSemester("");
       setDepartment("");
-      setLatitude("");
-      setLongitude("");
-      setTimeSlots([{ dayOfWeek: "", startTime: "", endTime: "" }]);
       toast.success(res.data.message);
       const sound = new Howl({
         src: ["/notification.wav"],
@@ -315,14 +220,11 @@ const CreateSubject = () => {
 
   const getCompletionPercentage = () => {
     const basicFields = [subjectName, subjectCode, department, semester].filter(Boolean).length;
-    const locationFields = [latitude, longitude].filter(Boolean).length;
-    const timeSlotsFilled = timeSlots.filter(slot => slot.dayOfWeek && slot.startTime && slot.endTime).length;
-    const totalFields = 4 + 2 + (timeSlots.length > 0 ? 1 : 0);
-    const filledFields = basicFields + locationFields + (timeSlotsFilled > 0 ? 1 : 0);
-    return Math.round((filledFields / totalFields) * 100);
+    const totalFields = 4;
+    return Math.round((basicFields / totalFields) * 100);
   };
 
-  const isFormValid = subjectName && subjectCode && department && semester && latitude && longitude && timeSlots.every(slot => slot.dayOfWeek && slot.startTime && slot.endTime);
+  const isFormValid = subjectName && subjectCode && department && semester;
 
   return (
     <>
@@ -472,154 +374,7 @@ const CreateSubject = () => {
                     />
                   </div>
 
-                  {/* Location Section */}
-                  <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/10 dark:to-cyan-900/10 rounded-2xl p-6 border-l-4 border-blue-400 dark:border-blue-500">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                        <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                        Location Coordinates
-                      </h3>
-                      <Button
-                        type="button"
-                        onClick={handleGetLocation}
-                        className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-4 py-2 text-sm flex items-center gap-2 transition-colors"
-                      >
-                        <Target className="w-4 h-4" />
-                        Get Live Location
-                      </Button>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                      <ValidatedInput
-                        label="Latitude"
-                        icon={MapPin}
-                        type="number"
-                        step="any"
-                        placeholder="e.g., 22.611522"
-                        value={latitude}
-                        onChange={(e) => {
-                          setLatitude(e.target.value);
-                          if (e.target.value && longitude) {
-                            setPosition({ lat: parseFloat(e.target.value), lng: parseFloat(longitude) });
-                          }
-                        }}
-                        required
-                      />
-
-                      <ValidatedInput
-                        label="Longitude"
-                        icon={MapPin}
-                        type="number"
-                        step="any"
-                        placeholder="e.g., 88.420322"
-                        value={longitude}
-                        onChange={(e) => {
-                          setLongitude(e.target.value);
-                          if (latitude && e.target.value) {
-                            setPosition({ lat: parseFloat(latitude), lng: parseFloat(e.target.value) });
-                          }
-                        }}
-                        required
-                      />
-                    </div>
-
-                    <div className="h-64 rounded-xl overflow-hidden border-2 border-blue-200 dark:border-indigo-500/30 shadow-inner z-0 relative">
-                      <MapContainer
-                        center={position || [22.5726, 88.3639]}
-                        zoom={13}
-                        scrollWheelZoom={false}
-                        style={{ height: "100%", width: "100%", zIndex: 0 }}
-                        className="z-0"
-                      >
-                        <TileLayer
-                          attribution={isDarkMode
-                            ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                            : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                          }
-                          url={isDarkMode
-                            ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                            : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                          }
-                        />
-                        <LocationMarker
-                          position={position}
-                          setPosition={setPosition}
-                          setLatitude={setLatitude}
-                          setLongitude={setLongitude}
-                        />
-                        {/* Overlay to ensure dark theme vibe if tiles load slowly */}
-                        <div className="absolute inset-0 bg-indigo-950/20 pointer-events-none z-[400]" />
-                      </MapContainer>
-                    </div>
-                  </div>
-
-                  {/* Time Slots Section */}
-                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-2xl p-6 border-l-4 border-purple-400 dark:border-purple-500">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                        Time Slots
-                      </h3>
-                      <Button
-                        type="button"
-                        onClick={addTimeSlot}
-                        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-xl px-4 py-2 text-sm flex items-center gap-2"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Add Slot
-                      </Button>
-                    </div>
-
-                    <div className="space-y-4">
-                      {timeSlots.map((slot, index) => (
-                        <div key={index} className="bg-white dark:bg-gray-800/50 rounded-xl p-4 border border-purple-200 dark:border-purple-500/20">
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Slot {index + 1}</span>
-                            {timeSlots.length > 1 && (
-                              <Button
-                                type="button"
-                                onClick={() => removeTimeSlot(index)}
-                                className="bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl px-3 py-2"
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                            )}
-                          </div>
-
-                          <div className="space-y-4">
-                            <EnhancedDropdown
-                              label="Day of Week"
-                              icon={Calendar}
-                              placeholder="Select Day"
-                              value={slot.dayOfWeek}
-                              onValueChange={(value) => updateTimeSlot(index, "dayOfWeek", value)}
-                              options={dayOfWeekOptions}
-                              required
-                            />
-
-                            <div className="grid grid-cols-2 gap-4">
-                              <ValidatedInput
-                                label="Start Time"
-                                icon={Clock}
-                                type="time"
-                                value={slot.startTime}
-                                onChange={(e) => updateTimeSlot(index, "startTime", e.target.value)}
-                                required
-                              />
-                              <ValidatedInput
-                                label="End Time"
-                                icon={Clock}
-                                type="time"
-                                value={slot.endTime}
-                                onChange={(e) => updateTimeSlot(index, "endTime", e.target.value)}
-                                required
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
 
                   {/* Form Summary */}
                   <div className="bg-gradient-to-r from-gray-50 to-emerald-50 dark:from-gray-800/30 dark:to-emerald-900/10 rounded-2xl p-6 border-l-4 border-emerald-400 dark:border-emerald-500">
@@ -644,25 +399,7 @@ const CreateSubject = () => {
                           semesterOptions.find(opt => opt.value === semester)?.label || "Not selected"
                         }
                       </p>
-                      <p>
-                        <span className="font-medium text-gray-700 dark:text-gray-300">Location:</span> {
-                          latitude && longitude ? `${latitude}, ${longitude}` : "Not specified"
-                        }
-                      </p>
-                      <p>
-                        <span className="font-medium text-gray-700 dark:text-gray-300">Time Slots:</span> {
-                          timeSlots.filter(slot => slot.dayOfWeek && slot.startTime && slot.endTime).length || "None"
-                        } slot(s)
-                      </p>
-                      {timeSlots.filter(slot => slot.dayOfWeek && slot.startTime && slot.endTime).length > 0 && (
-                        <div className="mt-2 space-y-1">
-                          {timeSlots.filter(slot => slot.dayOfWeek && slot.startTime && slot.endTime).map((slot, idx) => (
-                            <p key={idx} className="text-gray-600 dark:text-gray-400 text-xs pl-4">
-                              • {slot.dayOfWeek}: {slot.startTime} - {slot.endTime}
-                            </p>
-                          ))}
-                        </div>
-                      )}
+
                     </div>
                   </div>
 

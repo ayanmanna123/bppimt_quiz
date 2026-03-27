@@ -11,7 +11,6 @@ import {
   BookOpen,
   Users,
   GraduationCap,
-  Clock,
   FileText,
   ClipboardList,
   Sparkles,
@@ -30,7 +29,6 @@ import {
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import SchlitonSubject from "./SchlitonSubject";
-import EditTimeSlotModal from "./EditTimeSlotModal";
 import CreateMeetingModal from "./CreateMeetingModal";
 import ChatWindow from "../chat/ChatWindow";
 import {
@@ -90,7 +88,6 @@ const Subject = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState(null);
-  const [isTimeSlotModalOpen, setIsTimeSlotModalOpen] = useState(false);
   const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
   const [activeChatSubject, setActiveChatSubject] = useState(null);
   const navigate = useNavigate();
@@ -301,7 +298,6 @@ const Subject = () => {
                                 { icon: Eye, title: "View Quizzes", color: "text-emerald-500 dark:text-emerald-400", onClick: () => navigate(`/Admin/subject/quiz/${subj._id}`) },
                                 { icon: Video, title: "Schedule Meeting", color: "text-violet-500 dark:text-violet-400", onClick: () => { setSelectedSubject(subj); setIsMeetingModalOpen(true); } },
                                 { icon: Users, title: "View Attendance", color: "text-cyan-500 dark:text-cyan-400", onClick: () => navigate(`/attandance/${subj._id}`) },
-                                { icon: Clock, title: "Edit Time Slots", color: "text-amber-500 dark:text-amber-400", onClick: () => { setSelectedSubject(subj); setIsTimeSlotModalOpen(true); } },
                                 { icon: BookOpen, title: "Question Bank", color: "text-blue-500 dark:text-blue-400", onClick: () => navigate(`/admin/question-bank/${subj._id}`) },
                                 { icon: Video, title: "Chat Group", color: "text-slate-500 dark:text-slate-400", onClick: () => setActiveChatSubject(subj) },
                               ].map((action, i) => (
@@ -326,16 +322,6 @@ const Subject = () => {
           )}
         </div>
       </div>
-
-      <EditTimeSlotModal
-        isOpen={isTimeSlotModalOpen}
-        onClose={() => {
-          setIsTimeSlotModalOpen(false);
-          setSelectedSubject(null);
-        }}
-        subjectId={selectedSubject?._id}
-        subjectName={selectedSubject?.subjectName}
-      />
 
       <CreateMeetingModal
         isOpen={isMeetingModalOpen}
