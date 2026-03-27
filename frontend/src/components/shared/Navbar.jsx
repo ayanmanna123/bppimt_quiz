@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target, FileText, ShoppingBag, Settings, ChevronLeft, Sun, Moon, Laptop, Cpu } from "lucide-react";
+import { LogOut, User, Menu, X, Home, BookOpen, BarChart3, GraduationCap, MessageCircle, ChevronDown, Info, Users, Book, Shield, UserCheck, Eye, Target, FileText, ShoppingBag, Settings, ChevronLeft, Sun, Moon, Laptop, Cpu, MoreHorizontal } from "lucide-react";
 import PushNotificationManager from "../PushNotificationManager";
 import { useSocket } from "../../context/SocketContext";
 import axios from "axios";
@@ -223,7 +223,7 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center gap-6">
           <ul className="flex items-center gap-1">
-            {navItems.map((item, index) => {
+            {navItems.slice(0, 3).map((item, index) => {
               const IconComponent = item.icon;
               const isActive = isActivePath(item.path);
 
@@ -327,6 +327,54 @@ const Navbar = () => {
                 </motion.li>
               );
             })}
+
+            {/* 3-dot More Menu */}
+            {navItems.length > 3 && (
+              <motion.li
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+              >
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="relative group flex items-center gap-2 px-3 py-2 rounded-xl font-medium transition-all duration-300 cursor-pointer text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
+                      <div className="relative flex items-center justify-center">
+                         <MoreHorizontal className="w-5 h-5" />
+                         {/* Unseen badge on more menu if chats is unread */}
+                         {navItems.slice(3).some(item => item.path === "/chats") && unseenCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-3 h-3 flex items-center justify-center rounded-full shadow-sm animate-pulse">
+                              
+                            </span>
+                         )}
+                      </div>
+                      <span>More</span>
+                      <ChevronDown className="w-3 h-3 transition-transform duration-300 group-hover:rotate-180" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-64 bg-white/95 dark:bg-[#05001c]/95 backdrop-blur-lg border border-slate-200/60 dark:border-indigo-500/20 shadow-2xl dark:shadow-[0_0_30px_rgba(99,102,241,0.1)] rounded-2xl p-2 z-[60]">
+                    <div className="grid gap-1">
+                      {navItems.slice(3).map((subItem) => {
+                         const isActive = isActivePath(subItem.path);
+                         return (
+                        <Link
+                          key={subItem.path}
+                          to={subItem.path}
+                          className={`flex items-center gap-3 p-3 rounded-xl transition-colors group ${isActive ? "bg-blue-50 dark:bg-indigo-500/20 text-blue-600 dark:text-indigo-300" : "hover:bg-slate-100 dark:hover:bg-indigo-500/10 text-slate-700 dark:text-indigo-100"}`}
+                        >
+                          <subItem.icon className={`w-4 h-4 ${isActive ? "text-blue-600 dark:text-indigo-300" : "text-slate-400 dark:text-indigo-400 group-hover:text-blue-600 dark:group-hover:text-indigo-300"} transition-colors`} />
+                          <span className="text-sm font-medium">{subItem.name}</span>
+                          {subItem.path === "/chats" && unseenCount > 0 && (
+                            <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">
+                              {unseenCount > 9 ? "9+" : unseenCount}
+                            </span>
+                          )}
+                        </Link>
+                      )})}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </motion.li>
+            )}
           </ul>
         </div>
 

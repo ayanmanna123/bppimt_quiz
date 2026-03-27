@@ -17,6 +17,7 @@ import {
   Sparkles,
   Video,
   MoreVertical,
+  QrCode,
 } from "lucide-react";
 
 import {
@@ -275,12 +276,12 @@ const Subject = () => {
                           <Button
                             onClick={(e) => {
                               e.stopPropagation();
-                              navigate(`/admin/createQuize/${subj._id}`);
+                              navigate(`/attandance/${subj._id}?startQr=true`);
                             }}
                             className={`flex-1 ${theme.btnColor} hover:brightness-110 text-white font-bold py-7 rounded-[1.5rem] flex items-center justify-center gap-3 transition-all duration-300 shadow-lg shadow-indigo-100 dark:shadow-none`}
                           >
-                            <Plus className="w-5 h-5" />
-                            Create Quiz
+                            <QrCode className="w-5 h-5" />
+                            Start QR
                           </Button>
 
                           <DropdownMenu>
@@ -294,6 +295,7 @@ const Subject = () => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl dark:bg-slate-900 dark:border-slate-800">
                               {[
+                                { icon: Plus, title: "Create Quiz", color: "text-indigo-500 dark:text-indigo-400", onClick: () => navigate(`/admin/createQuize/${subj._id}`) },
                                 { icon: FileText, title: "View Notes", color: "text-indigo-500 dark:text-indigo-400", onClick: () => navigate(`/subject/notes/${subj._id}`) },
                                 { icon: ClipboardList, title: "Assignments", color: "text-pink-500 dark:text-pink-400", onClick: () => navigate(`/subject/assignments/${subj._id}`) },
                                 { icon: Eye, title: "View Quizzes", color: "text-emerald-500 dark:text-emerald-400", onClick: () => navigate(`/Admin/subject/quiz/${subj._id}`) },
