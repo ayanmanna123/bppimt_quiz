@@ -67,8 +67,8 @@ export const sendNotification = async ({
             const payload = JSON.stringify({
                 title: type === "quiz" && onModel === "Result" ? "Quiz Submission Received" : type === "quiz" ? "New Quiz Available" : type === "subject" ? "New Subject Added" : "New Notification",
                 body: message,
-                icon: "/img-1.png",
-                badge: "/img-1.png",
+                icon: "/bppimt.svg",
+                badge: "/bppimt.svg",
                 data: {
                     url,
                     type,

@@ -15,8 +15,8 @@ self.addEventListener('push', (event) => {
         const title = data.title || 'New Notification';
         const options = {
             body: data.body || 'You have a new update.',
-            icon: '/img-1.png',
-            badge: '/img-1.png',
+            icon: '/bppimt.svg',
+            badge: '/bppimt.svg',
             data: data.data || {} // Include data for click handling
         };
 
