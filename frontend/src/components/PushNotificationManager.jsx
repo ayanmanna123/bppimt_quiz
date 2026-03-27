@@ -20,14 +20,59 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
 
     useEffect(() => {
         if ('serviceWorker' in navigator) {
-            // FCM uses the service worker automatically if named firebase-messaging-sw.js
-            // or we can pass our own registration.
             checkSubscription();
         }
         checkPersistence();
         checkInstallationStatus();
         checkPeriodicSyncSupport();
     }, []);
+
+    const checkInstallationStatus = () => {
+        const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        setIsStandalone(!!standalone);
+    };
+
+    const checkPeriodicSyncSupport = async () => {
+        if ('serviceWorker' in navigator && 'periodicSync' in ServiceWorkerRegistration.prototype) {
+            setPeriodicSyncSupported(true);
+            const registration = await navigator.serviceWorker.ready;
+            try {
+                const tags = await registration.periodicSync.getTags();
+                if (!tags.includes('notification-heartbeat')) {
+                    const status = await navigator.permissions.query({
+                        name: 'periodic-background-sync',
+                    });
+                    if (status.state === 'granted') {
+                        await registration.periodicSync.register('notification-heartbeat', {
+                            minInterval: 24 * 60 * 60 * 1000,
+                        });
+                        console.log('Periodic sync registered!');
+                    }
+                }
+            } catch (err) {
+                console.warn('Periodic Sync could not be registered:', err);
+            }
+        }
+    };
+
+    const checkPersistence = async () => {
+        if (navigator.storage && navigator.storage.persisted) {
+            const persisted = await navigator.storage.persisted();
+            setIsPersistent(persisted);
+        }
+    };
+
+    const requestPersistence = async () => {
+        if (navigator.storage && navigator.storage.persist) {
+            const persisted = await navigator.storage.persist();
+            setIsPersistent(persisted);
+            if (persisted) {
+                toast.success("Storage made persistent. This helps notifications work better!");
+            } else {
+                toast.info("Could not enable persistent storage. You may need to bookmark the app or add it to home screen first.");
+            }
+        }
+    };
 
     const checkSubscription = async () => {
         try {
