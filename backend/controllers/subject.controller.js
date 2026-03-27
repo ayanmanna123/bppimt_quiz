@@ -11,38 +11,19 @@ export const createSubject = async (req, res) => {
       semester,
       subjectName,
       subjectCode,
-      location, // { latitude, longitude }
-      timeSlots, // [{ dayOfWeek, startTime, endTime }]
     } = req.body;
 
     if (
       !department ||
       !semester ||
       !subjectName ||
-      !subjectCode ||
-      !location ||
-      !location.latitude ||
-      !location.longitude ||
-      !timeSlots ||
-      !Array.isArray(timeSlots) ||
-      timeSlots.length === 0
+      !subjectCode
     ) {
       return res.status(400).json({
         message:
-          "All fields (department, semester, subjectName, subjectCode, location, timeSlots) are required",
+          "All fields (department, semester, subjectName, subjectCode) are required",
         success: false,
       });
-    }
-
-    // Validate each timeSlot has dayOfWeek, startTime, and endTime
-    for (const slot of timeSlots) {
-      if (!slot.dayOfWeek || !slot.startTime || !slot.endTime) {
-        return res.status(400).json({
-          message:
-            "Each time slot must include dayOfWeek, startTime, and endTime",
-          success: false,
-        });
-      }
     }
 
     const userId = req.auth?.sub;
@@ -132,13 +113,9 @@ export const createSubject = async (req, res) => {
       teacher: user._id,
       location: {
         type: "Point",
-        coordinates: [location.longitude, location.latitude],
+        coordinates: [0, 0],
       },
-      timeSlots: timeSlots.map((slot) => ({
-        dayOfWeek: slot.dayOfWeek,
-        startTime: slot.startTime,
-        endTime: slot.endTime,
-      })),
+      timeSlots: [],
     });
 
     // Notify Students
