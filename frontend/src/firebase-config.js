@@ -9,17 +9,18 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_VAPID_KEY // Note: using the key for measurementId as user put it there, but we need the real VAPID key for getToken
+  measurementId: "G-P4QS2KY6CL" // Corrected from the user's initial config snippet
 };
 
 const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app);
 export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 
-export const requestForToken = async () => {
+export const requestForToken = async (serviceWorkerRegistration) => {
   try {
     const currentToken = await getToken(messaging, {
-      vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY // THIS SHOULD BE THE REAL VAPID KEY FROM FIREBASE CONSOLE
+      vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
+      serviceWorkerRegistration: serviceWorkerRegistration
     });
     if (currentToken) {
       console.log('FCM Token:', currentToken);

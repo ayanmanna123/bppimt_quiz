@@ -78,16 +78,28 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
         try {
             const registration = await navigator.serviceWorker.ready;
             if (registration) {
-                // Check if we already have a subscription in local storage or something
-                // For now, we'll just check if permissions are granted
                 if (Notification.permission === 'granted') {
+                    console.log("Permission granted, ensuring token is synced...");
+                    const { requestForToken } = await import('../firebase-config');
+                    const fcmToken = await requestForToken(registration);
+                    if (fcmToken && user?.sub) {
+                        const token = await getAccessTokenSilently();
+                        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/notifications/subscribe`, {
+                            fcmToken,
+                            userId: user.sub
+                        }, {
+                            headers: { Authorization: `Bearer ${token}` }
+                        });
+                        console.log("Token synced on mount.");
+                    }
                     setIsSubscribed(true);
                 }
             }
         } catch (error) {
-            console.error("Error checking subscription", error);
+            console.error("Error checking/syncing subscription", error);
         }
     };
+
 
     const subscribeToPush = async () => {
         try {
@@ -100,9 +112,10 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
 
             console.log("2. Importing Firebase Messaging...");
             const { messaging, requestForToken } = await import('../firebase-config');
+            const registration = await navigator.serviceWorker.ready;
 
             console.log("3. Getting FCM Token...");
-            const fcmToken = await requestForToken();
+            const fcmToken = await requestForToken(registration);
 
             if (!fcmToken) {
                 toast.error("Failed to get push token. Please try again.");
