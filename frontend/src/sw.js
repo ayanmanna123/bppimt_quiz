@@ -8,24 +8,32 @@ self.skipWaiting();
 clientsClaim();
 
 self.addEventListener('push', (event) => {
+    let title = 'New Notification';
+    let options = {
+        body: 'You have a new update.',
+        icon: '/bppimt.svg',
+        badge: '/bppimt.svg',
+        data: {}
+    };
+
     try {
-        const data = event.data.json();
-        console.log('Push received...', data);
-
-        const title = data.title || 'New Notification';
-        const options = {
-            body: data.body || 'You have a new update.',
-            icon: '/bppimt.svg',
-            badge: '/bppimt.svg',
-            tag: data.tag || 'general-notification',
-            renotify: data.renotify !== undefined ? data.renotify : true,
-            data: data.data || {} // Include data for click handling
-        };
-
-        event.waitUntil(self.registration.showNotification(title, options));
+        if (event.data) {
+            const data = event.data.json();
+            title = data.title || title;
+            options.body = data.body || options.body;
+            options.icon = data.icon || options.icon;
+            options.badge = data.badge || options.badge;
+            options.tag = data.tag || 'general';
+            options.renotify = data.renotify !== undefined ? data.renotify : true;
+            options.data = data.data || options.data;
+        }
     } catch (err) {
-        console.error('Error in push event handler:', err);
+        console.error('Push payload error:', err);
+        // data was not JSON, maybe text?
+        options.body = event.data ? event.data.text() : options.body;
     }
+
+    event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener('notificationclick', (event) => {
