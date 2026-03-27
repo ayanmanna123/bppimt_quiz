@@ -21,8 +21,14 @@ const jwtCheck = auth({
     tokenSigningAlg: "RS256",
 });
 
-// Configure web-push with VAPID keys handled in utility
-if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
+// Configure web-push with VAPID keys
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    webpush.setVapidDetails(
+        "mailto:example@yourdomain.org",
+        process.env.VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+    );
+} else {
     console.warn("VAPID keys are missing! Push notifications will not work reliably.");
 }
 
