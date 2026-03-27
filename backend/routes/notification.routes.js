@@ -37,6 +37,8 @@ router.delete("/:id", deleteNotification);
 // Subscribe functionality
 router.post("/subscribe", async (req, res) => {
     const { fcmToken, userId: bodyUserId } = req.body;
+    console.log("Subscription request received for user:", bodyUserId, "Token:", fcmToken?.substring(0, 10) + "...");
+
     let userId = req.auth?.payload?.sub || bodyUserId;
 
     try {

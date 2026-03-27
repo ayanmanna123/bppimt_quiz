@@ -3,22 +3,52 @@ import NotificationSubscription from "../models/NotificationSubscription.model.j
 import admin from "firebase-admin";
 import dotenv from "dotenv";
 
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Initialize Firebase Admin
 try {
     if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-        const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+        let serviceAccount;
+        try {
+            // Try parsing directly first
+            serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+        } catch (e) {
+            // If failed, try decoding from Base64
+            try {
+                const decoded = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_KEY, 'base64').toString('utf8');
+                serviceAccount = JSON.parse(decoded);
+            } catch (innerError) {
+                throw new Error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY as JSON or Base64");
+            }
+        }
+        
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount)
         });
-        console.log("Firebase Admin initialized successfully.");
+        console.log("✅ Firebase Admin initialized successfully from environment variable!");
     } else {
-        console.warn("FIREBASE_SERVICE_ACCOUNT_KEY is missing! Push notifications will not work.");
+        const serviceAccountPath = path.join(__dirname, "../firebase-service-account.json");
+        if (fs.existsSync(serviceAccountPath)) {
+            const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+            });
+            console.log("✅ Firebase Admin initialized successfully from JSON file!");
+        } else {
+            console.warn("⚠️ Firebase Service Account configuration missing! Push notifications will not work.");
+        }
     }
 } catch (error) {
-    console.error("Error initializing Firebase Admin:", error);
+    console.error("❌ Error initializing Firebase Admin:", error.message || error);
 }
+
 
 
 
@@ -98,8 +128,10 @@ export const sendNotification = async ({
             };
 
             try {
+                console.log(`[FCM] Attempting to send multicast to ${tokens.length} tokens.`);
                 const response = await admin.messaging().sendEachForMulticast(messagePayload);
-                console.log(`${response.successCount} messages were sent successfully`);
+                console.log(`[FCM] Success: ${response.successCount}, Failure: ${response.failureCount}`);
+
                 
                 if (response.failureCount > 0) {
                     const failedTokens = [];
