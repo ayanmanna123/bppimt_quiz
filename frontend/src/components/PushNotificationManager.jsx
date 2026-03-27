@@ -7,6 +7,8 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
     const { user, getAccessTokenSilently } = useAuth0();
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [subscription, setSubscription] = useState(null);
+    const [isPersistent, setIsPersistent] = useState(false);
+    const [showGuide, setShowGuide] = useState(false);
 
     // ... (existing code)
 
@@ -18,7 +20,27 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
         if ('serviceWorker' in navigator && 'PushManager' in window) {
             registerServiceWorker();
         }
+        checkPersistence();
     }, []);
+
+    const checkPersistence = async () => {
+        if (navigator.storage && navigator.storage.persisted) {
+            const persisted = await navigator.storage.persisted();
+            setIsPersistent(persisted);
+        }
+    };
+
+    const requestPersistence = async () => {
+        if (navigator.storage && navigator.storage.persist) {
+            const persisted = await navigator.storage.persist();
+            setIsPersistent(persisted);
+            if (persisted) {
+                toast.success("Storage made persistent. This helps notifications work better!");
+            } else {
+                toast.info("Could not enable persistent storage. You may need to bookmark the app or add it to home screen first.");
+            }
+        }
+    };
 
     const urlBase64ToUint8Array = (base64String) => {
         const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -139,27 +161,67 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
 
     if (!showButton) return null;
 
-    if (isSubscribed) {
-        return (
-            <div className={inline ? "" : "fixed bottom-4 right-4 z-50"}>
-                <button
-                    onClick={sendTestNotification}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-green-700 transition w-full"
-                >
-                    Send Test Notification 📲
-                </button>
-            </div>
-        );
-    }
-
     return (
-        <div className={inline ? "" : "fixed bottom-4 right-4 z-50"}>
-            <button
-                onClick={subscribeToPush}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-700 transition w-full"
-            >
-                Enable Notifications 🔔
-            </button>
+        <div className={inline ? "space-y-4" : "fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2"}>
+            {isSubscribed && (
+                <div className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 max-w-xs transition-all animate-in fade-in slide-in-from-bottom-4">
+                    <h4 className="font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-2">
+                        <span>Background Activity</span>
+                        <span className="bg-green-100 text-green-700 text-[10px] px-1.5 py-0.5 rounded uppercase">Connected</span>
+                    </h4>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
+                        To receive notifications even when the app is closed, please ensure background activity is allowed.
+                    </p>
+
+                    <div className="space-y-2">
+                        {!isPersistent && (
+                            <button
+                                onClick={requestPersistence}
+                                className="w-full text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 py-2 rounded-lg border border-indigo-100 dark:border-indigo-800 hover:bg-indigo-100 transition"
+                            >
+                                🔒 Optimize Reliability
+                            </button>
+                        )}
+                        
+                        <button
+                            onClick={sendTestNotification}
+                            className="w-full text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-2 rounded-lg hover:bg-slate-200 transition"
+                        >
+                            📲 Send Test Push
+                        </button>
+
+                        <button
+                            onClick={() => setShowGuide(!showGuide)}
+                            className="w-full text-xs text-blue-600 dark:text-blue-400 hover:underline py-1"
+                        >
+                            {showGuide ? "Hide Instructions" : "How to enable background?"}
+                        </button>
+                    </div>
+
+                    {showGuide && (
+                        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-[11px] text-blue-800 dark:text-blue-200 border border-blue-100 dark:border-blue-800/30">
+                            <p className="font-bold mb-1">On Android:</p>
+                            <ol className="list-decimal list-inside space-y-1">
+                                <li>Long-press the app icon</li>
+                                <li>Tap "App Info"</li>
+                                <li>Go to "Battery" or "Power Usage"</li>
+                                <li>Enable "Allow background activity"</li>
+                                <li>Disable "Optimize battery usage"</li>
+                            </ol>
+                        </div>
+                    )}
+                </div>
+            )}
+            
+            {!isSubscribed && (
+                <button
+                    onClick={subscribeToPush}
+                    className="bg-blue-600 text-white px-6 py-3 rounded-xl shadow-xl hover:bg-blue-700 transition flex items-center gap-2 font-bold"
+                >
+                    <span>Enable Notifications</span>
+                    <span className="text-lg">🔔</span>
+                </button>
+            )}
         </div>
     );
 };
