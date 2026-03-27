@@ -9,6 +9,8 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
     const [subscription, setSubscription] = useState(null);
     const [isPersistent, setIsPersistent] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
+    const [isStandalone, setIsStandalone] = useState(false);
+    const [periodicSyncSupported, setPeriodicSyncSupported] = useState(false);
 
     // ... (existing code)
 
@@ -21,7 +23,37 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
             registerServiceWorker();
         }
         checkPersistence();
+        checkInstallationStatus();
+        checkPeriodicSyncSupport();
     }, []);
+
+    const checkInstallationStatus = () => {
+        const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        setIsStandalone(!!standalone);
+    };
+
+    const checkPeriodicSyncSupport = async () => {
+        if ('serviceWorker' in navigator && 'periodicSync' in ServiceWorkerRegistration.prototype) {
+            setPeriodicSyncSupported(true);
+            const registration = await navigator.serviceWorker.ready;
+            try {
+                const tags = await registration.periodicSync.getTags();
+                if (!tags.includes('notification-heartbeat')) {
+                    const status = await navigator.permissions.query({
+                        name: 'periodic-background-sync',
+                    });
+                    if (status.state === 'granted') {
+                        await registration.periodicSync.register('notification-heartbeat', {
+                            minInterval: 24 * 60 * 60 * 1000, // 24 hours is often the minimum allowed
+                        });
+                        console.log('Periodic sync registered!');
+                    }
+                }
+            } catch (err) {
+                console.warn('Periodic Sync could not be registered:', err);
+            }
+        }
+    };
 
     const checkPersistence = async () => {
         if (navigator.storage && navigator.storage.persisted) {
@@ -169,6 +201,13 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
                         <span>Background Activity</span>
                         <span className="bg-green-100 text-green-700 text-[10px] px-1.5 py-0.5 rounded uppercase">Connected</span>
                     </h4>
+                    
+                    {!isStandalone && (
+                        <div className="mb-4 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-[10px] text-amber-800 dark:text-amber-200">
+                            ⚠️ <b>Not Installed:</b> Background pushes are much more reliable when you "Install" the app to your Home Screen.
+                        </div>
+                    )}
+
                     <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
                         To receive notifications even when the app is closed, please ensure background activity is allowed.
                     </p>

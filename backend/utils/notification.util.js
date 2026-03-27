@@ -8,7 +8,7 @@ dotenv.config();
 // Configure web-push with VAPID keys
 if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
     webpush.setVapidDetails(
-        "mailto:example@yourdomain.org",
+        "mailto:mannaayan777@gmail.com",
         process.env.VAPID_PUBLIC_KEY,
         process.env.VAPID_PRIVATE_KEY
     );
@@ -69,6 +69,8 @@ export const sendNotification = async ({
                 body: message,
                 icon: "/bppimt.svg",
                 badge: "/bppimt.svg",
+                tag: type + "-" + (relatedId || "general"),
+                renotify: true,
                 data: {
                     url,
                     type,
