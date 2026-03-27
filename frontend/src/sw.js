@@ -7,34 +7,35 @@ precacheAndRoute(self.__WB_MANIFEST);
 self.skipWaiting();
 clientsClaim();
 
-self.addEventListener('push', (event) => {
-    let title = 'New Notification';
-    let options = {
-        body: 'You have a new update.',
-        icon: '/bppimt.svg',
-        badge: '/bppimt.svg',
-        data: {}
-    };
+// Firebase Messaging in Service Worker
+import { initializeApp } from "firebase/app";
+import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw";
 
-    try {
-        if (event.data) {
-            const data = event.data.json();
-            title = data.title || title;
-            options.body = data.body || options.body;
-            options.icon = data.icon || options.icon;
-            options.badge = data.badge || options.badge;
-            options.tag = data.tag || 'general';
-            options.renotify = data.renotify !== undefined ? data.renotify : true;
-            options.data = data.data || options.data;
-        }
-    } catch (err) {
-        console.error('Push payload error:', err);
-        // data was not JSON, maybe text?
-        options.body = event.data ? event.data.text() : options.body;
-    }
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
 
-    event.waitUntil(self.registration.showNotification(title, options));
+const app = initializeApp(firebaseConfig);
+const messaging = getMessaging(app);
+
+onBackgroundMessage(messaging, (payload) => {
+  console.log('[sw.js] Received background message ', payload);
+  const notificationTitle = payload.notification?.title || 'New Notification';
+  const notificationOptions = {
+    body: payload.notification?.body || 'You have a new update.',
+    icon: '/bppimt.svg',
+    badge: '/bppimt.svg',
+    data: payload.data || {}
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });
+
 
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();

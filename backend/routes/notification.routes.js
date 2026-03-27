@@ -1,5 +1,5 @@
 import express from "express";
-import webpush from "web-push";
+import admin from "firebase-admin";
 import NotificationSubscription from "../models/NotificationSubscription.model.js";
 import User from "../models/User.model.js";
 import {
@@ -21,16 +21,11 @@ const jwtCheck = auth({
     tokenSigningAlg: "RS256",
 });
 
-// Configure web-push with VAPID keys
-if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
-    webpush.setVapidDetails(
-        "mailto:mannaayan777@gmail.com",
-        process.env.VAPID_PUBLIC_KEY,
-        process.env.VAPID_PRIVATE_KEY
-    );
-} else {
-    console.warn("VAPID keys are missing! Push notifications will not work reliably.");
-}
+// Firebase Admin is initialized in notification.util.js
+// but we might need it here for some logic if not encapsulated.
+// For now, we'll use the utils for sending.
+import { sendNotification } from "../utils/notification.util.js";
+
 
 
 // Notification CRUD
@@ -41,39 +36,37 @@ router.delete("/:id", deleteNotification);
 
 // Subscribe functionality
 router.post("/subscribe", async (req, res) => {
-    const subscription = req.body;
-    let userId = req.auth?.payload?.sub || req.body.userId;
+    const { fcmToken, userId: bodyUserId } = req.body;
+    let userId = req.auth?.payload?.sub || bodyUserId;
 
     try {
-        // Resolve Auth0 ID to MongoDB ObjectId
         if (userId) {
             const user = await User.findOne({ auth0Id: userId });
             if (user) {
-                userId = user._id; // Use the ObjectId
+                userId = user._id;
             } else {
-                // If user not found in DB but has Auth0 ID, maybe they haven't completed profile yet?
-                // For now, let's error out or handle gracefully.
                 return res.status(404).json({ error: "User not found in database." });
             }
         } else {
             return res.status(400).json({ error: "User ID required for subscription" });
         }
 
-        // Basic check: if we have a userId from auth, try to find existing sub
-        const existing = await NotificationSubscription.findOne({ endpoint: subscription.endpoint });
+        if (!fcmToken) {
+            return res.status(400).json({ error: "FCM Token required." });
+        }
+
+        // Check if this token is already registered to THIS user
+        const existing = await NotificationSubscription.findOne({ fcmToken });
 
         if (existing) {
-            // Update keys if they changed
-            existing.keys = subscription.keys;
-            existing.userId = userId; // Ensure it's associated with the correct user
+            existing.userId = userId;
             await existing.save();
             return res.status(200).json({ message: "Subscription updated." });
         }
 
         const newSubscription = new NotificationSubscription({
             userId: userId,
-            endpoint: subscription.endpoint,
-            keys: subscription.keys,
+            fcmToken: fcmToken
         });
 
         await newSubscription.save();
@@ -89,39 +82,25 @@ router.post("/send", async (req, res) => {
     let { userId, title, message } = req.body;
 
     try {
-        // Resolve Auth0 ID to MongoDB ObjectId if needed
         if (userId) {
             const user = await User.findOne({ auth0Id: userId });
             if (user) {
                 userId = user._id;
             }
-            // If not found by Auth0 ID, maybe it's already a Mongo ID? 
-            // We'll let the find({}) below handle it or return empty.
         }
 
-        const subscriptions = await NotificationSubscription.find({ userId });
-
-        if (subscriptions.length === 0) {
-            return res.status(404).json({ message: "No subscriptions found for this user." });
-        }
-
-        const notificationPayload = JSON.stringify({
-            title,
-            body: message,
-            data: { url: '/' }
+        const result = await sendNotification({
+            recipientId: userId,
+            message,
+            type: "info",
+            url: "/"
+            // io is not provided here, but sendNotification handles it if missing.
         });
 
-        const promises = subscriptions.map((sub) =>
-            webpush.sendNotification(sub, notificationPayload).catch((err) => {
-                console.error("Error sending notification", err);
-                // Optionally remove invalid subscriptions here (e.g., 410 Gone)
-                if (err.statusCode === 410) {
-                    NotificationSubscription.deleteOne({ _id: sub._id }).exec();
-                }
-            })
-        );
+        if (!result) {
+            return res.status(500).json({ error: "Failed to send notification via utility." });
+        }
 
-        await Promise.all(promises);
         res.status(200).json({ message: "Notification sent successfully." });
     } catch (error) {
         console.error("Error sending notification:", error);
