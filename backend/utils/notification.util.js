@@ -14,17 +14,25 @@ const __dirname = path.dirname(__filename);
 
 // Initialize Firebase Admin
 try {
-    if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
-        const serviceAccount = {
-            projectId: process.env.FIREBASE_PROJECT_ID,
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
-        };
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+        let serviceAccount;
+        try {
+            // Try parsing directly first
+            serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+        } catch (e) {
+            // If failed, try decoding from Base64
+            try {
+                const decoded = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_KEY, 'base64').toString('utf8');
+                serviceAccount = JSON.parse(decoded);
+            } catch (innerError) {
+                throw new Error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY as JSON or Base64");
+            }
+        }
         
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount)
         });
-        console.log("✅ Firebase Admin initialized successfully from environment variables!");
+        console.log("✅ Firebase Admin initialized successfully from environment variable!");
     } else {
         const serviceAccountPath = path.join(__dirname, "../firebase-service-account.json");
         if (fs.existsSync(serviceAccountPath)) {
