@@ -2,57 +2,83 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { useAuth0 } from "@auth0/auth0-react";
+import { generateToken, messaging } from '../firebase-config';
+import { onMessage } from "firebase/messaging";
 
 const PushNotificationManager = ({ showButton = true, inline = false }) => {
     const { user, getAccessTokenSilently } = useAuth0();
     const [isSubscribed, setIsSubscribed] = useState(false);
-    const [subscription, setSubscription] = useState(null);
+    const [token, setToken] = useState('');
     const [isPersistent, setIsPersistent] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
     const [isStandalone, setIsStandalone] = useState(false);
-    const [periodicSyncSupported, setPeriodicSyncSupported] = useState(false);
-
-    // ... (existing code)
-
-    // VAPID Public Key from Backend (Should be in env, but for now hardcoded or fetched)
-    // REPLACEME: Use the Public Key generated earlier
-    const VAPID_PUBLIC_KEY = "BI9CAjZwb3pUMWhVxcwKNQWOF8NZepe3wXuvne7Jr7vtUJ1H-ZtN98OcZcS-a9oNtcTpKi9yt4f8OHdPZHT-rHw";
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if ('serviceWorker' in navigator) {
-            checkSubscription();
-        }
+        const setupNotifications = async () => {
+            if ('serviceWorker' in navigator) {
+                try {
+                    // Check if already granted
+                    if (Notification.permission === 'granted') {
+                        const fetchedToken = await generateToken();
+                        if (fetchedToken) {
+                            setToken(fetchedToken);
+                            setIsSubscribed(true);
+                            // Sync with backend if logged in
+                            if (user?.sub) {
+                                syncTokenWithBackend(fetchedToken);
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error('Failed to setup notifications', err);
+                }
+            }
+        };
+
+        setupNotifications();
         checkPersistence();
         checkInstallationStatus();
-        checkPeriodicSyncSupport();
-    }, []);
+
+        const unsubscribe = onMessage(messaging, (payload) => {
+            console.log('Received foreground message:', payload);
+            
+            // Show toast for foreground message
+            toast(payload.notification?.title || 'Notification', {
+                description: payload.notification?.body || 'New message received',
+                icon: '🔔',
+            });
+
+            // Trigger browser notification in foreground (Test project behavior)
+            if (payload.notification) {
+                new Notification(payload.notification.title, {
+                    body: payload.notification.body,
+                    icon: "/bppimt.svg"
+                });
+            }
+        });
+
+        return () => unsubscribe();
+    }, [user]);
+
+    const syncTokenWithBackend = async (fcmToken) => {
+        try {
+            const token = await getAccessTokenSilently();
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/notifications/subscribe`, {
+                fcmToken,
+                userId: user.sub
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            console.log("Token synced with backend.");
+        } catch (error) {
+            console.error("Error syncing token", error);
+        }
+    };
 
     const checkInstallationStatus = () => {
         const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
         setIsStandalone(!!standalone);
-    };
-
-    const checkPeriodicSyncSupport = async () => {
-        if ('serviceWorker' in navigator && 'periodicSync' in ServiceWorkerRegistration.prototype) {
-            setPeriodicSyncSupported(true);
-            const registration = await navigator.serviceWorker.ready;
-            try {
-                const tags = await registration.periodicSync.getTags();
-                if (!tags.includes('notification-heartbeat')) {
-                    const status = await navigator.permissions.query({
-                        name: 'periodic-background-sync',
-                    });
-                    if (status.state === 'granted') {
-                        await registration.periodicSync.register('notification-heartbeat', {
-                            minInterval: 24 * 60 * 60 * 1000,
-                        });
-                        console.log('Periodic sync registered!');
-                    }
-                }
-            } catch (err) {
-                console.warn('Periodic Sync could not be registered:', err);
-            }
-        }
     };
 
     const checkPersistence = async () => {
@@ -67,103 +93,55 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
             const persisted = await navigator.storage.persist();
             setIsPersistent(persisted);
             if (persisted) {
-                toast.success("Storage made persistent. This helps notifications work better!");
+                toast.success("Storage made persistent!");
             } else {
-                toast.info("Could not enable persistent storage. You may need to bookmark the app or add it to home screen first.");
+                toast.info("Could not enable persistent storage.");
             }
         }
     };
-
-    const checkSubscription = async () => {
-        try {
-            const registration = await navigator.serviceWorker.ready;
-            if (registration) {
-                if (Notification.permission === 'granted') {
-                    console.log("Permission granted, ensuring token is synced...");
-                    const { requestForToken } = await import('../firebase-config');
-                    const fcmToken = await requestForToken(registration);
-                    if (fcmToken && user?.sub) {
-                        const token = await getAccessTokenSilently();
-                        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/notifications/subscribe`, {
-                            fcmToken,
-                            userId: user.sub
-                        }, {
-                            headers: { Authorization: `Bearer ${token}` }
-                        });
-                        console.log("Token synced on mount.");
-                    }
-                    setIsSubscribed(true);
-                }
-            }
-        } catch (error) {
-            console.error("Error checking/syncing subscription", error);
-        }
-    };
-
 
     const subscribeToPush = async () => {
+        setLoading(true);
         try {
-            console.log("1. Requesting notification permission...");
-            const permission = await Notification.requestPermission();
-            if (permission !== 'granted') {
-                toast.error("Permission denied. Please enable notifications in your browser.");
-                return;
-            }
-
-            console.log("2. Importing Firebase Messaging...");
-            const { messaging, requestForToken } = await import('../firebase-config');
-            const registration = await navigator.serviceWorker.ready;
-
-            console.log("3. Getting FCM Token...");
-            const fcmToken = await requestForToken(registration);
-
-            if (!fcmToken) {
-                toast.error("Failed to get push token. Please try again.");
-                return;
-            }
-
-            console.log("4. Sending token to backend...");
-            if (!user?.sub) {
-                toast.error("Please log in to enable notifications.");
-                return;
-            }
-
-            const token = await getAccessTokenSilently();
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/notifications/subscribe`, {
-                fcmToken,
-                userId: user.sub
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
+            const fetchedToken = await generateToken();
+            if (fetchedToken) {
+                setToken(fetchedToken);
+                setIsSubscribed(true);
+                if (user?.sub) {
+                    await syncTokenWithBackend(fetchedToken);
                 }
-            });
-
-            setIsSubscribed(true);
-            toast.success("Notifications enabled successfully!");
+                toast.success("Notifications enabled successfully!");
+            } else {
+                toast.error("Permission denied or failed to get token.");
+            }
         } catch (error) {
             console.error("Error subscribing to push:", error);
-            toast.error(`Error: ${error.message || "Failed to subscribe"}`);
+            toast.error("Failed to enable notifications.");
+        } finally {
+            setLoading(false);
         }
     };
 
-
     const sendTestNotification = async () => {
-        if (!user?.sub) return;
+        if (!user?.sub) {
+            toast.error("Please log in first.");
+            return;
+        }
         try {
-            const token = await getAccessTokenSilently();
+            const auth0Token = await getAccessTokenSilently();
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/notifications/send`, {
                 userId: user.sub,
                 title: "Test Notification",
-                message: "This is a test message to verify push notifications work!"
+                message: "Working exactly like the test project! 🚀"
             }, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${auth0Token}`
                 }
             });
-            toast.success("Test notification sent! Check your device.");
+            toast.success("Test notification request sent!");
         } catch (error) {
             console.error("Error sending test notification:", error);
-            toast.error("Failed to send test notification.");
+            toast.error("Failed to send test push.");
         }
     };
 
@@ -174,21 +152,17 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
             {isSubscribed && (
                 <div className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 max-w-xs transition-all animate-in fade-in slide-in-from-bottom-4">
                     <h4 className="font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-2">
-                        <span>Background Activity</span>
-                        <span className="bg-green-100 text-green-700 text-[10px] px-1.5 py-0.5 rounded uppercase">Connected</span>
+                        <span>Notification Status</span>
+                        <span className="bg-green-100 text-green-700 text-[10px] px-1.5 py-0.5 rounded uppercase">Active</span>
                     </h4>
                     
                     {!isStandalone && (
-                        <div className="mb-4 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-[10px] text-amber-800 dark:text-amber-200">
-                            ⚠️ <b>Not Installed:</b> Background pushes are much more reliable when you "Install" the app to your Home Screen.
+                        <div className="mb-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-[10px] text-amber-800 dark:text-amber-200">
+                            💡 Install app for better background delivery.
                         </div>
                     )}
 
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
-                        To receive notifications even when the app is closed, please ensure background activity is allowed.
-                    </p>
-
-                    <div className="space-y-2">
+                    <div className="space-y-2 mt-4">
                         {!isPersistent && (
                             <button
                                 onClick={requestPersistence}
@@ -209,20 +183,17 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
                             onClick={() => setShowGuide(!showGuide)}
                             className="w-full text-xs text-blue-600 dark:text-blue-400 hover:underline py-1"
                         >
-                            {showGuide ? "Hide Instructions" : "How to enable background?"}
+                            {showGuide ? "Hide Guide" : "Background delivery help?"}
                         </button>
                     </div>
 
                     {showGuide && (
-                        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-[11px] text-blue-800 dark:text-blue-200 border border-blue-100 dark:border-blue-800/30">
-                            <p className="font-bold mb-1">On Android:</p>
-                            <ol className="list-decimal list-inside space-y-1">
-                                <li>Long-press the app icon</li>
-                                <li>Tap "App Info"</li>
-                                <li>Go to "Battery" or "Power Usage"</li>
-                                <li>Enable "Allow background activity"</li>
-                                <li>Disable "Optimize battery usage"</li>
-                            </ol>
+                        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-[10px] text-blue-800 dark:text-blue-200 border border-blue-100 dark:border-blue-800/30">
+                            <p className="font-bold mb-1">Android Tips:</p>
+                            <ul className="list-disc list-inside space-y-1">
+                                <li>Allow background activity in App Info</li>
+                                <li>Disable battery optimization</li>
+                            </ul>
                         </div>
                     )}
                 </div>
@@ -231,10 +202,11 @@ const PushNotificationManager = ({ showButton = true, inline = false }) => {
             {!isSubscribed && (
                 <button
                     onClick={subscribeToPush}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-xl shadow-xl hover:bg-blue-700 transition flex items-center gap-2 font-bold"
+                    disabled={loading}
+                    className="bg-blue-600 text-white px-6 py-3 rounded-xl shadow-xl hover:bg-blue-700 transition flex items-center gap-2 font-bold disabled:opacity-50"
                 >
-                    <span>Enable Notifications</span>
-                    <span className="text-lg">🔔</span>
+                    <span>{loading ? "Enabling..." : "Enable Notifications"}</span>
+                    {!loading && <span className="text-lg">🔔</span>}
                 </button>
             )}
         </div>

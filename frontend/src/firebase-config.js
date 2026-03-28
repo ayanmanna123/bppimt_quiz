@@ -3,40 +3,46 @@ import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: "G-P4QS2KY6CL" // Corrected from the user's initial config snippet
+    apiKey: "AIzaSyBoA5Kfdl3Lfi_AmNpJQleUX5nQWcGSass",
+    authDomain: "test-fe849.firebaseapp.com",
+    projectId: "test-fe849",
+    storageBucket: "test-fe849.firebasestorage.app",
+    messagingSenderId: "220007914367",
+    appId: "1:220007914367:web:c1410eea51d526e24ad84a",
+    measurementId: "G-RP905YCPBD"
 };
 
 const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app);
 export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 
-export const requestForToken = async (serviceWorkerRegistration) => {
-  try {
-    const currentToken = await getToken(messaging, {
-      vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
-      serviceWorkerRegistration: serviceWorkerRegistration
-    });
-    if (currentToken) {
-      console.log('FCM Token:', currentToken);
-      return currentToken;
-    } else {
-      console.log('No registration token available. Request permission to generate one.');
+export const generateToken = async () => {
+    try {
+        const permission = await Notification.requestPermission()
+        console.log("Permission status:", permission);
+        if (permission === "granted") {
+            const token = await getToken(messaging, {
+                vapidKey: "BFGF7gIbbivjnRw48yHIp_xGuZM-vQiGnArPamUMBjAEJ7t2uBNjU0iD8bamGQV0XZ0R8KORfktmPayAOV80xfQ"
+            })
+            console.log("FCM Token generated:", token)
+            return token;
+        }
+        return null;
+    } catch (err) {
+        console.error('An error occurred while retrieving token. ', err);
+        return null;
     }
-  } catch (err) {
-    console.log('An error occurred while retrieving token. ', err);
-  }
+}
+
+// Keeping this for compatibility with existing code if needed
+export const requestForToken = async (serviceWorkerRegistration) => {
+    return await generateToken();
 };
 
 export const onMessageListener = () =>
-  new Promise((resolve) => {
-    onMessage(messaging, (payload) => {
-      console.log('On Message:', payload);
-      resolve(payload);
+    new Promise((resolve) => {
+        onMessage(messaging, (payload) => {
+            console.log('On Message (Foreground):', payload);
+            resolve(payload);
+        });
     });
-  });
