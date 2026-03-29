@@ -20,8 +20,13 @@ export const generateToken = async () => {
     try {
         const permission = await Notification.requestPermission()
         console.log("Permission status:", permission);
+        
         if (permission === "granted") {
+            // Get the service worker registration
+            const registration = await navigator.serviceWorker.ready;
+            
             const token = await getToken(messaging, {
+                serviceWorkerRegistration: registration,
                 vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY
             })
             console.log("FCM Token generated:", token)
@@ -36,13 +41,12 @@ export const generateToken = async () => {
 
 // Keeping this for compatibility with existing code if needed
 export const requestForToken = async (serviceWorkerRegistration) => {
+    // If registration is passed, use it, otherwise fall back to generateToken's default
+    if (serviceWorkerRegistration) {
+        return await getToken(messaging, {
+            serviceWorkerRegistration,
+            vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY
+        });
+    }
     return await generateToken();
 };
-
-export const onMessageListener = () =>
-    new Promise((resolve) => {
-        onMessage(messaging, (payload) => {
-            console.log('On Message (Foreground):', payload);
-            resolve(payload);
-        });
-    });
