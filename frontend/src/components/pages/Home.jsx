@@ -1,6 +1,6 @@
 import { useState, lazy, Suspense, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, BookOpen, Trophy, ShoppingBag, ArrowRight, Zap, GraduationCap } from "lucide-react";
+import { Users, BookOpen, Trophy, ShoppingBag, ArrowRight, Zap, GraduationCap, Download } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -209,6 +209,24 @@ const Home = () => {
                     <ShoppingBag className="w-5 h-5" />
                     <span>Visit Store</span>
                   </span>
+                </Button>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  asChild
+                  variant="outline"
+                  className="group relative bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-2 border-slate-200 dark:border-indigo-500/30 text-slate-700 dark:text-indigo-300 rounded-2xl px-8 py-6 text-lg font-semibold shadow-lg hover:border-emerald-500 dark:hover:border-emerald-500 transition-all duration-300"
+                >
+                  <a href="/microprocessor.pdf" download="microprocessor.pdf">
+                    <span className="relative z-10 flex items-center space-x-2">
+                      <Download className="w-5 h-5 transition-transform duration-300 group-hover:translate-y-0.5" />
+                      <span>Download PDF</span>
+                    </span>
+                  </a>
                 </Button>
               </motion.div>
             </div>
