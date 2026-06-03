@@ -25,12 +25,19 @@ const messaging = getMessaging(app);
 
 onBackgroundMessage(messaging, (payload) => {
   console.log('[sw.js] Received background message ', payload);
-  const notificationTitle = payload.notification?.title || 'New Notification';
+  
+  // Customizing notification
+  const notificationTitle = payload.notification?.title || payload.data?.title || 'BPPIMT Quiz Update';
   const notificationOptions = {
-    body: payload.notification?.body || 'You have a new update.',
+    body: payload.notification?.body || payload.data?.message || payload.data?.body || 'You have a new notification.',
     icon: '/bppimt.svg',
     badge: '/bppimt.svg',
-    data: payload.data || {}
+    tag: payload.data?.tag || 'fcm-notification',
+    renotify: true,
+    data: {
+      ...payload.data,
+      url: payload.data?.url || '/'
+    }
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
