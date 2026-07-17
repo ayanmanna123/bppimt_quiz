@@ -1,10 +1,10 @@
-import { useState, lazy, Suspense, useEffect } from "react";
+import { useState, lazy, Suspense, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, BookOpen, Trophy, ShoppingBag, ArrowRight, Zap, GraduationCap } from "lucide-react";
+import { Users, BookOpen, Trophy, ShoppingBag, ArrowRight, Zap, GraduationCap, ChevronDown, Download } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 const SplitText = lazy(() => import("./SplitText"));
 const TextType = lazy(() => import("./TextType"));
 
@@ -19,6 +19,61 @@ const Home = () => {
   const { isDark } = useTheme();
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const STUDY_FILES = [
+    {
+      name: "DC Load Flow Study",
+      filename: "DC load flow study.txt",
+      path: "/study_file/DC load flow study.txt",
+    },
+    {
+      name: "Newton Raphson",
+      filename: "Newton raphson.txt",
+      path: "/study_file/Newton raphson.txt",
+    },
+    {
+      name: "Economic Load Despatch Matrix",
+      filename: "economic load despatch matrix.txt",
+      path: "/study_file/economic load despatch matrix.txt",
+    },
+    {
+      name: "Gauss Siedel Matrix",
+      filename: "gauss siedel matrix.txt",
+      path: "/study_file/gauss siedel matrix.txt",
+    },
+  ];
+
+  const downloadFile = (filePath, fileName) => {
+    const link = document.createElement("a");
+    link.href = filePath;
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const downloadAllFiles = () => {
+    STUDY_FILES.forEach((file, index) => {
+      setTimeout(() => {
+        downloadFile(file.path, file.filename);
+      }, index * 200);
+    });
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const updateProfile = async () => {
     try {
@@ -48,7 +103,7 @@ const Home = () => {
   return (
     <>
       {/* Hero Section with Enhanced Deep Space Background */}
-      <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014] transition-colors duration-700 overflow-hidden">
+      <div className="relative z-10 min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-[#030014] dark:via-[#05001c] dark:to-[#030014] transition-colors duration-700 overflow-x-hidden">
         {/* Animated Background Pattern */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-indigo-500/5 dark:to-purple-500/5"></div>
         <div
@@ -211,6 +266,79 @@ const Home = () => {
                   </span>
                 </Button>
               </motion.div>
+
+              {/* Study Materials Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button
+                    variant="outline"
+                    className="group relative bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-2 border-slate-200 dark:border-indigo-500/30 text-slate-700 dark:text-indigo-300 rounded-2xl px-8 py-6 text-lg font-semibold shadow-lg hover:border-purple-500 dark:hover:border-purple-500 transition-all duration-300"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  >
+                    <span className="relative z-10 flex items-center space-x-2">
+                      <BookOpen className="w-5 h-5" />
+                      <span>Study Files</span>
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDropdownOpen ? "rotate-180" : ""}`} />
+                    </span>
+                  </Button>
+                </motion.div>
+
+                {/* Dropdown Menu */}
+                <AnimatePresence>
+                  {isDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute z-50 bottom-full mb-3 left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 w-72 origin-bottom rounded-2xl border-2 border-slate-200/80 dark:border-indigo-500/30 bg-white/90 dark:bg-[#07021e]/90 backdrop-blur-xl p-2 shadow-2xl"
+                    >
+                      {/* Download All option */}
+                      <button
+                        onClick={() => {
+                          downloadAllFiles();
+                          setIsDropdownOpen(false);
+                        }}
+                        className="flex w-full items-center space-x-3 rounded-xl bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 hover:from-blue-600/20 hover:via-purple-600/20 hover:to-pink-600/20 dark:from-indigo-500/10 dark:to-purple-500/10 dark:hover:from-indigo-500/25 dark:hover:to-purple-500/25 p-3 text-left text-sm font-semibold text-slate-800 dark:text-indigo-200 transition-all duration-200"
+                      >
+                        <Download className="w-4 h-4 text-purple-500 dark:text-indigo-400" />
+                        <div className="flex-1">
+                          <p className="text-slate-900 dark:text-white">Download All Files</p>
+                          <p className="text-xs text-slate-500 dark:text-indigo-300/60 font-normal">Saves all 4 files separately</p>
+                        </div>
+                      </button>
+
+                      <div className="my-2 border-t border-slate-200/60 dark:border-indigo-500/20" />
+
+                      {/* Individual files */}
+                      <div className="space-y-1">
+                        {STUDY_FILES.map((file, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => {
+                              downloadFile(file.path, file.filename);
+                              setIsDropdownOpen(false);
+                            }}
+                            className="flex w-full items-center space-x-3 rounded-xl p-2.5 text-left text-sm text-slate-700 dark:text-indigo-200/90 hover:bg-slate-100 dark:hover:bg-indigo-500/15 transition-colors duration-150"
+                          >
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 dark:bg-indigo-950/40 text-slate-500 dark:text-indigo-300">
+                              <span className="text-[10px] font-bold font-mono">TXT</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="truncate font-medium text-slate-800 dark:text-indigo-100">{file.name}</p>
+                              <p className="text-[10px] text-slate-400 dark:text-indigo-400/50 truncate">{file.filename}</p>
+                            </div>
+                            <Download className="w-4 h-4 text-slate-400 dark:text-indigo-400/40 hover:text-slate-600 dark:hover:text-indigo-200 transition-colors" />
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </motion.div>
 
