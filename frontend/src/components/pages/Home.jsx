@@ -44,6 +44,11 @@ const Home = () => {
       filename: "gauss siedel matrix.txt",
       path: "/study_file/gauss siedel matrix.txt",
     },
+    {
+      name: "Microprocessor",
+      filename: "microprocessor (2).pdf",
+      path: "/study_file/microprocessor (2).pdf",
+    },
   ];
 
   const downloadFile = (filePath, fileName) => {
@@ -307,7 +312,7 @@ const Home = () => {
                         <Download className="w-4 h-4 text-purple-500 dark:text-indigo-400" />
                         <div className="flex-1">
                           <p className="text-slate-900 dark:text-white">Download All Files</p>
-                          <p className="text-xs text-slate-500 dark:text-indigo-300/60 font-normal">Saves all 4 files separately</p>
+                          <p className="text-xs text-slate-500 dark:text-indigo-300/60 font-normal">Saves all {STUDY_FILES.length} files separately</p>
                         </div>
                       </button>
 
@@ -325,7 +330,9 @@ const Home = () => {
                             className="flex w-full items-center space-x-3 rounded-xl p-2.5 text-left text-sm text-slate-700 dark:text-indigo-200/90 hover:bg-slate-100 dark:hover:bg-indigo-500/15 transition-colors duration-150"
                           >
                             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 dark:bg-indigo-950/40 text-slate-500 dark:text-indigo-300">
-                              <span className="text-[10px] font-bold font-mono">TXT</span>
+                              <span className="text-[10px] font-bold font-mono">
+                                {file.filename.split(".").pop().toUpperCase()}
+                              </span>
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="truncate font-medium text-slate-800 dark:text-indigo-100">{file.name}</p>
