@@ -49,6 +49,11 @@ const Home = () => {
       filename: "microprocessor (2).pdf",
       path: "/study_file/microprocessor (2).pdf",
     },
+    {
+      name: "For 8086 Assignment 1",
+      filename: "For 8086 Assignment 1.docx",
+      path: "/study_file/For 8086 Assignment 1.docx",
+    },
   ];
 
   const downloadFile = (filePath, fileName) => {
